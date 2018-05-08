@@ -1,77 +1,78 @@
 package br.com.engecopi.estoque.ui
 
+import br.com.engecopi.estoque.ui.views.EntradaView
+import br.com.engecopi.estoque.ui.views.ProdutoView
+import br.com.engecopi.estoque.ui.views.SaidaView
+import com.github.vok.karibudsl.autoViewProvider
+import com.github.vok.karibudsl.fillParent
+import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.valoMenu
+import com.github.vok.karibudsl.w
 import com.vaadin.annotations.JavaScript
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
+import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
+import com.vaadin.navigator.ViewDisplay
+import com.vaadin.server.Page
 import com.vaadin.server.VaadinRequest
+import com.vaadin.server.VaadinServlet
+import com.vaadin.shared.Position
+import com.vaadin.ui.HasComponents
+import com.vaadin.ui.Notification
+import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
+import com.vaadin.ui.themes.ValoTheme
+import org.slf4j.LoggerFactory
+import org.slf4j.bridge.SLF4JBridgeHandler
+import javax.servlet.annotation.WebServlet
 
 @Theme("mytheme")
 @Title("Controle de estoque")
 @Viewport("width=device-width, initial-scale=1.0")
-@JavaScript("https://code.jquery.com/jquery-2.1.4.min.js", "https://code.responsivevoice.org/responsivevoice.js")
+@JavaScript("https://code.jquery.com/jquery-2.1.4.min.js",
+            "https://code.responsivevoice.org/responsivevoice.js")
 @PushStateNavigation
 class EstoqueUI : UI() {
   override fun init(request: VaadinRequest?) {
     val content = valoMenu {
-      appTitle = "<h3>Karibu-DSL <strong>Sample App</strong></h3>"
-      userMenu {
-        item("John Doe", ClassResource("profilepic300px.jpg")) {
-          item("Edit Profile")
-          item("Preferences")
-          addSeparator()
-          item("Sign Out")
-        }
-      }
-      menuButton("Welcome", VaadinIcons.MENU, "3", WelcomeView::class.java)
-      menuButton("Common UI Elements", VaadinIcons.NOTEBOOK, view = CommonElementsView::class.java)
-      section("Components", "5")
-      menuButton("Labels", VaadinIcons.TEXT_LABEL, view = Labels::class.java)
-      menuButton("Buttons & Links", VaadinIcons.BUTTON, view = ButtonsAndLinks::class.java)
-      menuButton("Text Fields", VaadinIcons.TEXT_INPUT, view = TextFields::class.java)
-      menuButton("Date Fields", VaadinIcons.DATE_INPUT, view = DateFields::class.java)
-      menuButton("Combo Boxes", VaadinIcons.DROP, view = ComboBoxes::class.java)
-      menuButton("Selects", VaadinIcons.SELECT, view = NativeSelects::class.java)
-      menuButton("Check Boxes & Option Groups", VaadinIcons.CHECK, view = CheckBoxes::class.java)
-      menuButton("Sliders", VaadinIcons.SLIDER, view = Sliders::class.java)
-      menuButton("Color Pickers", VaadinIcons.PAINTBRUSH, view = ColorPickers::class.java)
-      menuButton("Menu Bars", VaadinIcons.MENU, view = MenuBars::class.java)
-      menuButton("Trees", VaadinIcons.FILE_TREE, view = Trees::class.java)
-      section("Containers", "4")
-      menuButton("Panels", VaadinIcons.PANEL, view = Panels::class.java)
-      menuButton("Split Panels", VaadinIcons.ROAD_SPLIT, view = SplitPanels::class.java)
-      menuButton("Tabs", VaadinIcons.TAB, "123", Tabsheets::class.java)
-      menuButton("Accordions", VaadinIcons.ACCORDION_MENU, view = Accordions::class.java)
-      menuButton("Popup Views", VaadinIcons.MODAL, view = PopupViews::class.java)
-      section("Other", "1")
-      menuButton("Form Demo", VaadinIcons.FORM, view = FormView::class.java)
+      appTitle = "<h3>Estoque <strong>Engecopi</strong></h3>"
+      
+      section("Movimentacao")
+      menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
+      menuButton("Saida", VaadinIcons.OUTBOX, view = SaidaView::class.java)
+      section("Consulta")
+      menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
     }
-  
+    
     // Read more about navigators here: https://github.com/mvysny/karibu-dsl
     navigator = Navigator(this, content as ViewDisplay)
     navigator.addProvider(autoViewProvider)
     setErrorHandler { e ->
-      log.error("Vaadin UI uncaught exception ${e.throwable}", e.throwable)
+      log.error("Erro não identificado ${e.throwable}", e.throwable)
       // when the exception occurs, show a nice notification
-      Notification("Oops", "An error occurred, and we are really sorry about that. Already working on the fix!", Notification.Type.ERROR_MESSAGE).apply {
-        styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
-        position = Position.TOP_CENTER
-        show(Page.getCurrent())
-      }
+      Notification("Oops", "\n" +
+                           "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
+                   ERROR_MESSAGE)
+              .apply {
+                styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
+                position = Position.TOP_CENTER
+                show(Page.getCurrent())
+              }
     }
   }
   
   companion object {
     @JvmStatic
-    private val log = LoggerFactory.getLogger(MyUI::class.java)
+    private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
   }
 }
 
 @WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
-@VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
+@VaadinServletConfiguration(ui = EstoqueUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet() {
   companion object {
     init {
@@ -84,5 +85,5 @@ class MyUIServlet : VaadinServlet() {
 
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
-  addStyleNames(ValoTheme.LABEL_H1, ValoTheme.LABEL_COLORED)
+  addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
 }

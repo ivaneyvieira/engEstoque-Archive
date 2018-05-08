@@ -1,0 +1,29 @@
+@startuml
+class Produto{
+	codigo
+	data_cadastro
+}
+
+class NotaEntrada{
+	numero
+	loja
+	data
+	quantidade	
+}
+
+class NotaSaida{
+	numero
+	loja
+	data
+	quantidade	
+}
+
+class Saldo{
+	loja
+	quantidade
+}
+
+NotaEntrada	-->	Produto
+NotaSaida	-->	Produto
+Saldo		-u->	Produto
+@enduml
