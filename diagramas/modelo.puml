@@ -9,7 +9,7 @@ class ItemEntrada{
 	custo_unitario
 }
 
-class NotaEntrada{
+class Entrada{
 	numero
 	loja
 	data
@@ -21,7 +21,7 @@ class ItemSaida{
 	custo_unitario
 }
 
-class NotaSaida{
+class Saida{
 	loja
 	data
 	hora
@@ -32,9 +32,9 @@ class Saldo{
 	quantidade
 }
 
-NotaEntrada	<-- ItemEntrada
-NotaSaida	<-- ItemSaida
-ItemEntrada	-->	Produto
-ItemSaida	-->	Produto
-Saldo		-u->	Produto
+Entrada	<-- ItemEntrada
+Saida	<-- ItemSaida
+ItemEntrada	-l->	Produto
+ItemSaida	-r->	Produto
+Saldo		-d->	Produto
 @enduml
