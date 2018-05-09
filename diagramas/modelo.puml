@@ -4,18 +4,27 @@ class Produto{
 	data_cadastro
 }
 
+class ItemEntrada{
+	quantidade
+	custo
+}
+
 class NotaEntrada{
 	numero
 	loja
 	data
-	quantidade	
+	hora
+}
+
+class ItemSaida{
+	quantidade
+	custo
 }
 
 class NotaSaida{
-	numero
 	loja
 	data
-	quantidade	
+	hora
 }
 
 class Saldo{
@@ -23,7 +32,9 @@ class Saldo{
 	quantidade
 }
 
-NotaEntrada	-->	Produto
-NotaSaida	-->	Produto
+NotaEntrada	<-- ItemEntrada
+NotaSaida	<-- ItemSaida
+ItemEntrada	-->	Produto
+ItemSaida	-->	Produto
 Saldo		-u->	Produto
 @enduml
