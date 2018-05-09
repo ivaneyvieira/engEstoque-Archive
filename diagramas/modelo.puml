@@ -1,4 +1,4 @@
-@startuml
+@startuml modelo
 class Produto{
 	codigo
 	data_cadastro
