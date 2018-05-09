@@ -1,7 +1,6 @@
 package br.com.engecopi.utils
 
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.IOUtils
+
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -9,7 +8,12 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.URISyntaxException
+import java.nio.charset.Charset
 import javax.imageio.ImageIO
+import java.nio.file.Paths
+import java.nio.file.Files
+
+
 
 object SystemUtils {
   private val enviroment = System.getenv()
@@ -37,10 +41,7 @@ object SystemUtils {
     return imageInByte
   }
   
-  fun md5(md5: String): String? {
-    return DigestUtils.md5Hex(md5)
-  }
-  
+ 
   fun getResourceAsStream(name: String?): InputStream? {
     var nameRet = name
     nameRet = resolveName(nameRet)
@@ -70,13 +71,12 @@ object SystemUtils {
   }
   
   fun readFile(file: String): String? {
-    val inputStream = FileInputStream(file)
-    return try {
-      IOUtils.toString(inputStream, "UTF-8")
-    } catch (e: URISyntaxException) {
-      throw RuntimeException(e)
-    } catch (e: IOException) {
-      throw RuntimeException(e)
-    }
+    return readFile(file, Charset.defaultCharset())
+  }
+  
+  @Throws(IOException::class)
+  fun readFile(path: String, encoding: Charset): String {
+    val encoded = Files.readAllBytes(Paths.get(path))
+    return String(encoded, encoding)
   }
 }
