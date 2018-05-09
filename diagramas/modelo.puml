@@ -6,7 +6,7 @@ class Produto{
 
 class ItemEntrada{
 	quantidade
-	custo
+	custo_unitario
 }
 
 class NotaEntrada{
@@ -18,7 +18,7 @@ class NotaEntrada{
 
 class ItemSaida{
 	quantidade
-	custo
+	custo_unitario
 }
 
 class NotaSaida{
