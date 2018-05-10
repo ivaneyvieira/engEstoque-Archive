@@ -62,6 +62,8 @@ dependencies {
   compile("org.xerial:sqlite-jdbc:3.21.0.1")
   compile("org.sql2o:sql2o:1.5.4")
   compile("org.imgscalr:imgscalr-lib:4.2")
+  compile("de.steinwedel.vaadin.addon:messagebox:4.0.21")
+  
   // heroku app runner
   testRuntime("com.github.jsimone:webapp-runner:8.5.30.0")
   

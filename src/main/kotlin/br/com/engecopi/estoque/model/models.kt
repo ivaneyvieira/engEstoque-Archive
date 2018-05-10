@@ -9,6 +9,8 @@ import org.jetbrains.exposed.dao.IntIdTable
 
 object Produtos : IntIdTable() {
   val codigo = varchar("codigo", 16).uniqueIndex()
+  val grade = varchar("grade", 8)
+  var codbar = varchar("codbar", 16)
   val data_cadastro = date("data_cadastro")
 }
 
@@ -48,10 +50,12 @@ object Saldos : IntIdTable() {
 class Produto(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Produto>(Produtos)
   
-  val codigo by Produtos.codigo
-  val data_cadastro by Produtos.data_cadastro
+  var codigo by Produtos.codigo
+  var grade by Produtos.grade
+  var codbar by Produtos.codbar
+  var data_cadastro by Produtos.data_cadastro
   val produtoSaci: ProdutoSaci? by lazy {
-    QuerySaci.querySaci.findProduto(codigo)
+    QuerySaci.querySaci.findProduto(codigo).first { it.grade == grade }
   }
   
   val nome by lazy { produtoSaci?.nome ?: "" }
@@ -61,38 +65,38 @@ class Produto(id: EntityID<Int>) : IntEntity(id) {
 class Entrada(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Entrada>(Entradas)
   
-  val numero by Entradas.numero
-  val loja by Entradas.loja
-  val data by Entradas.data
-  val hora by Entradas.hora
+  var numero by Entradas.numero
+  var loja by Entradas.loja
+  var data by Entradas.data
+  var hora by Entradas.hora
 }
 
 class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<ItemEntrada>(ItensEntrada)
   
-  val quantidade by ItensEntrada.quantidade
-  val custo_unitario by ItensEntrada.custo_unitario
+  var quantidade by ItensEntrada.quantidade
+  var custo_unitario by ItensEntrada.custo_unitario
 }
 
 class Saida(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Saida>(Saidas)
   
-  val loja by Saidas.loja
-  val data by Saidas.data
-  val hora by Saidas.hora
+  var loja by Saidas.loja
+  var data by Saidas.data
+  var hora by Saidas.hora
 }
 
 class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<ItemSaida>(ItensSaida)
   
-  val quantidade by ItensSaida.quantidade
-  val custo_unitario by ItensSaida.custo_unitario
+  var quantidade by ItensSaida.quantidade
+  var custo_unitario by ItensSaida.custo_unitario
 }
 
 class Saldo(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Saldo>(Saldos)
   
-  val loja by Saldos.loja
-  val quantidade by Saldos.quantidade
-  val produto by Saldos.produto
+  var loja by Saldos.loja
+  var quantidade by Saldos.quantidade
+  var produto by Saldos.produto
 }

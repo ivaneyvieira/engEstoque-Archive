@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils.create
+import org.jetbrains.exposed.sql.SchemaUtils.createMissingTablesAndColumns
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection.TRANSACTION_SERIALIZABLE
 
@@ -12,7 +13,7 @@ class DB {
   
   companion object {
     fun createTable() = transaction {
-      create(Produtos, Entradas, Saidas, ItensEntrada, ItensSaida, Saldos)
+      createMissingTablesAndColumns(Produtos, Entradas, Saidas, ItensEntrada, ItensSaida, Saldos)
     }
     
     fun connect() {

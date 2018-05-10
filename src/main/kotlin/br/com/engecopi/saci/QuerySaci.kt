@@ -6,11 +6,11 @@ import br.com.engecopi.utils.lpad
 
 class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   
-  fun findProduto(prdno : String) : ProdutoSaci? {
+  fun findProduto(prdno : String) : List<ProdutoSaci> {
     val sql = "findProdutos.sql"
     return query(sql) { q ->
       q.addParameter("prdno", prdno.lpad(16, " "))
-              .executeAndFetchFirst(ProdutoSaci::class.java)
+              .executeAndFetch(ProdutoSaci::class.java)
     }
   }
   
