@@ -10,7 +10,7 @@ import org.jetbrains.exposed.dao.IntIdTable
 object Produtos : IntIdTable() {
   val codigo = varchar("codigo", 16).uniqueIndex()
   val grade = varchar("grade", 8)
-  var codbar = varchar("codbar", 16)
+  var codebar = varchar("codebar", 16)
   val data_cadastro = date("data_cadastro")
 }
 
@@ -52,7 +52,7 @@ class Produto(id: EntityID<Int>) : IntEntity(id) {
   
   var codigo by Produtos.codigo
   var grade by Produtos.grade
-  var codbar by Produtos.codbar
+  var codebar by Produtos.codebar
   var data_cadastro by Produtos.data_cadastro
   val produtoSaci: ProdutoSaci? by lazy {
     QuerySaci.querySaci.findProduto(codigo).first { it.grade == grade }

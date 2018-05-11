@@ -1,8 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
-import com.github.vok.karibudsl.beanValidationBinder
 import com.vaadin.data.BeanValidationBinder
-import com.vaadin.data.Binder
 import com.vaadin.shared.Registration
 import com.vaadin.ui.Button
 import com.vaadin.ui.Component
@@ -19,15 +17,15 @@ class DialogPopup<BEAN : Any>(
         caption: String, classBean: KClass<BEAN>,
         private val configForm: DialogPopup<BEAN>.() -> Unit
                              ) : Window(caption) {
-  val binder  = BeanValidationBinder(classBean.java)
-  val form = buildForm()
+  val binder = BeanValidationBinder(classBean.java)
+  val form = FormLayout()
   
-  private val btnOk: Button = Button("Confirma")
-  private val btnCancel: Button
+  private val btnOk: Button = Button("Confirma").apply {
+    addStyleName(ValoTheme.BUTTON_PRIMARY)
+  }
+  private val btnCancel=  Button("Cancela")
   
   init {
-    btnOk.addStyleName(ValoTheme.BUTTON_PRIMARY)
-    this.btnCancel = Button("Cancela")
     isClosable = false
     isResizable = false
     isModal = true
@@ -78,15 +76,4 @@ class DialogPopup<BEAN : Any>(
     close()
   }
   
-  private fun buildForm(): FormLayout {
-    val form = FormLayout()
-//    form.addStyleName(ValoTheme.FORMLAYOUT_LIGHT)
-    return form
-  }
-  
-  var bean: BEAN
-    get() = binder.bean
-    set(bean) {
-      binder.bean = bean
-    }
 }

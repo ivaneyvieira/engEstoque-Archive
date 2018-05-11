@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
+import br.com.engecopi.estoque.viewmodel.ProdutoViewModel.ProdutoVo
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
@@ -31,7 +32,7 @@ import java.text.DecimalFormat
 @AutoView
 class ProdutoView : VerticalLayout(), View {
   var grid: Grid<Produto>? = null
-  val viewModel = ProdutoViewModel { viewModel ->
+  private val viewModel = ProdutoViewModel { viewModel ->
     grid?.dataProvider = ListDataProvider(viewModel.listaGrid)
     gradeProduto?.let {
       gradeProduto.setItems(viewModel.grades)
@@ -39,7 +40,7 @@ class ProdutoView : VerticalLayout(), View {
         gradeProduto.value = it
       }
     }
-    descricaoProduto?.value = viewModel.descricaoProduto
+    descricaoProduto?.value = viewModel.produtoVo.descricaoProduto
   }
   
   val codigoProduto = TextField().apply {
@@ -70,7 +71,8 @@ class ProdutoView : VerticalLayout(), View {
     codigoProduto.bind(binder).bind(ProdutoVo::codigoProduto)
     gradeProduto?.bind(binder)?.bind(ProdutoVo::gradeProduto)
     addClickListenerOk{
-      val produto = bean
+      this.binder.writeBean(viewModel.produtoVo)
+      viewModel.saveUpdateProduto()
     }
   }
   
@@ -89,13 +91,13 @@ class ProdutoView : VerticalLayout(), View {
     horizontalLayout {
       button("Adionar Produto") {
         addClickListener {
-          val prd = ProdutoVo()
-          dialogProduto.bean = prd
+          dialogProduto.binder.readBean(viewModel.produtoVo)
           dialogProduto.show()
         }
       }
       button("Remover Produto") {
-      
+        addClickListener {
+        }
       }
     }
     grid = grid(Produto::class) {
@@ -121,7 +123,4 @@ class ProdutoView : VerticalLayout(), View {
   
 }
 
-data class ProdutoVo(
-        var codigoProduto: String = "19",
-        var gradeProduto: String = ""
-                    )
+
