@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Produtos
+import br.com.engecopi.estoque.model.Saldo
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,6 +13,8 @@ class ProdutoViewModel(private val updateModel: (ProdutoViewModel) -> Unit) {
   var listaGrid: List<Produto> = emptyList()
   var grades: List<String> = emptyList()
   val produtoVo = ProdutoVo()
+  
+  fun lojasSaldo() = transaction { Saldo.lojas() }
   
   fun execPesquisa() {
     transaction {
@@ -50,6 +53,21 @@ class ProdutoViewModel(private val updateModel: (ProdutoViewModel) -> Unit) {
         produto.codebar = produtoVo.codebar
       }
     }
+    execPesquisa()
+  }
+  
+  fun saldoProduto(prd: Produto?, loja: Int?) = transaction {
+    prd?.saldos?.filter { it.loja == loja }?.map { it.quantidade }?.firstOrNull() ?: 0
+  }
+  
+  fun validaDelete(produto: Produto): String = transaction {
+    if (produto.saldos.sumBy { it.quantidade } > 0)
+      "Este produto tem saldo"
+    else ""
+  }
+  
+  fun deleta(produto: Produto) = transaction {
+    produto.delete()
     execPesquisa()
   }
   

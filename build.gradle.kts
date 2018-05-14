@@ -63,10 +63,9 @@ dependencies {
   compile("org.sql2o:sql2o:1.5.4")
   compile("org.imgscalr:imgscalr-lib:4.2")
   compile("de.steinwedel.vaadin.addon:messagebox:4.0.21")
-  
+  compile("org.vaadin.patrik:GridFastNavigation:2.2.2")
   // heroku app runner
   testRuntime("com.github.jsimone:webapp-runner:8.5.30.0")
-  
 }
 
 // Heroku
