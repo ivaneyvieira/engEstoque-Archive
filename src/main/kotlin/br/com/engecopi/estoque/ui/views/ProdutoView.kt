@@ -41,7 +41,7 @@ import java.text.DecimalFormat
 class ProdutoView : VerticalLayout(), View {
   var grid: Grid<Produto>? = null
   private val viewModel = ProdutoViewModel { viewModel ->
-    grid?.dataProvider = ListDataProvider(viewModel.listaGrid)
+    grid?.dataProvider?.refreshAll()
     dialogProduto.apply {
       
       gradeProduto.setItems(viewModel.grades)
@@ -61,6 +61,7 @@ class ProdutoView : VerticalLayout(), View {
     title("Entrada de produtos")
     
     horizontalLayout {
+      isVisible = false
       w = fillParent
       isMargin = false
       textField("Pesquisa") {
@@ -96,20 +97,12 @@ class ProdutoView : VerticalLayout(), View {
       }
     }
     grid = grid(Produto::class) {
-      val nav = FastNavigation(this, false, true)
-      nav.changeColumnAfterLastRow = true
-      nav.openEditorWithSingleClick = true
-      nav.addEditorOpenShortcut(KeyCode.F2)
-      nav.addEditorCloseShortcut(KeyCode.F3)
-      
-      nav.setSaveWithCtrlS(true);
-      
+      dataProvider = ListDataProvider(viewModel.listaGrid)
       removeAllColumns()
       setSizeFull()
       expandRatio = 1.0f
       addColumnFor(Produto::codigo) {
         caption = "Código"
-        
       }
       addColumnFor(Produto::nome) {
         expandRatio = 5

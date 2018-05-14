@@ -8,9 +8,9 @@ import br.com.engecopi.saci.beans.ProdutoSaci
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-class ProdutoViewModel(private val updateModel: (ProdutoViewModel) -> Unit) {
+class ProdutoViewModel(val updateModel: (ProdutoViewModel) -> Unit) {
   var pesquisa: String = ""
-  var listaGrid: List<Produto> = emptyList()
+  val listaGrid: MutableList<Produto> = mutableListOf()
   var grades: List<String> = emptyList()
   val produtoVo = ProdutoVo()
   
@@ -18,9 +18,10 @@ class ProdutoViewModel(private val updateModel: (ProdutoViewModel) -> Unit) {
   
   fun execPesquisa() {
     transaction {
-      listaGrid = Produto.all().filter { prd ->
+      listaGrid.clear()
+      listaGrid.addAll(Produto.all().filter { prd ->
         prd.nome.contains(pesquisa) || prd.codigo == pesquisa
-      }
+      })
     }
     updateModel(this)
   }
