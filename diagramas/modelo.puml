@@ -34,7 +34,7 @@ class Saldo{
 
 Entrada	<-- ItemEntrada
 Saida	<-- ItemSaida
-ItemEntrada	-l->	Produto
-ItemSaida	-r->	Produto
-Saldo		-d->	Produto
+ItemEntrada	-->	Produto
+ItemSaida	-->	Produto
+Saldo		-->	Produto
 @enduml

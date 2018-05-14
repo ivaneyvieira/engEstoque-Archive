@@ -10,10 +10,12 @@ import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
+import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.horizontalLayout
+import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.textField
@@ -34,47 +36,18 @@ class ProdutoView : VerticalLayout(), View {
   var grid: Grid<Produto>? = null
   private val viewModel = ProdutoViewModel { viewModel ->
     grid?.dataProvider = ListDataProvider(viewModel.listaGrid)
-    gradeProduto?.let {
+    dialogProduto.apply {
+      
       gradeProduto.setItems(viewModel.grades)
       viewModel.grades.firstOrNull()?.let {
         gradeProduto.value = it
       }
-    }
-    descricaoProduto?.value = viewModel.produtoVo.descricaoProduto
-  }
-  
-  val codigoProduto = TextField().apply {
-    icon = VaadinIcons.BARCODE
-    caption = "Código"
-    addValueChangeListener { e ->
-      if (e.isUserOriginated) {
-        viewModel.updateGrades(e.value)
-      }
+      
+      descricaoProduto.value = viewModel.produtoVo.descricaoProduto
     }
   }
   
-  val descricaoProduto: Label? = label {
-    caption = "Descrição"
-  }
-  
-  val gradeProduto: ComboBox<String>? = ComboBox<String>().apply {
-    icon = VaadinIcons.GRID
-    caption = "Grade"
-    isEmptySelectionAllowed = false
-    isTextInputAllowed = false
-  }
-  
-  val dialogProduto = DialogPopup("Produto", ProdutoVo::class) {
-    form.addComponent(codigoProduto)
-    form.addComponent(descricaoProduto)
-    form.addComponent(gradeProduto)
-    codigoProduto.bind(binder).bind(ProdutoVo::codigoProduto)
-    gradeProduto?.bind(binder)?.bind(ProdutoVo::gradeProduto)
-    addClickListenerOk{
-      this.binder.writeBean(viewModel.produtoVo)
-      viewModel.saveUpdateProduto()
-    }
-  }
+  val dialogProduto = DialogProduto()
   
   init {
     isMargin = true
@@ -109,7 +82,11 @@ class ProdutoView : VerticalLayout(), View {
         
       }
       addColumnFor(Produto::nome) {
+        expandRatio = 5
         caption = "Descrição"
+      }
+      addColumnFor(Produto::grade) {
+        caption = "Grade"
       }
       addColumnFor(Produto::custo) {
         caption = "Custo"
@@ -121,6 +98,39 @@ class ProdutoView : VerticalLayout(), View {
     
   }
   
+  inner class DialogProduto : DialogPopup<ProdutoVo>("Produto", ProdutoVo::class) {
+    val codigoProduto: TextField
+    val descricaoProduto: Label
+    val gradeProduto: ComboBox<String>
+    
+    init {
+      codigoProduto = form.textField {
+        icon = VaadinIcons.BARCODE
+        caption = "Código"
+        addValueChangeListener { e ->
+          if (e.isUserOriginated) {
+            viewModel.updateGrades(e.value)
+          }
+        }
+        bind(binder).bind(ProdutoVo::codigoProduto)
+      }
+      
+      descricaoProduto = form.label("Descrição")
+      
+      gradeProduto = form.comboBox<String> {
+        icon = VaadinIcons.GRID
+        caption = "Grade"
+        isEmptySelectionAllowed = false
+        isTextInputAllowed = false
+        bind(binder).bind(ProdutoVo::gradeProduto)
+      }
+      
+      addClickListenerOk {
+        this.binder.writeBean(viewModel.produtoVo)
+        viewModel.saveUpdateProduto()
+      }
+    }
+  }
 }
 
 

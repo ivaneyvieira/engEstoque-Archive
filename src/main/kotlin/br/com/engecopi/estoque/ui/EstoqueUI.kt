@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.ui
 
+import br.com.engecopi.estoque.model.DB
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
@@ -28,7 +29,12 @@ import com.vaadin.ui.UI
 import com.vaadin.ui.themes.ValoTheme
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import javax.servlet.ServletContextEvent
+import javax.servlet.ServletContextListener
+import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
+
+private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 
 @Theme("mytheme")
 @Title("Controle de estoque")
@@ -64,10 +70,27 @@ class EstoqueUI : UI() {
               }
     }
   }
+}
+
+
+
+@WebListener
+class Bootstrap: ServletContextListener {
+  override fun contextDestroyed(sce: ServletContextEvent?) {
+    log.info("Shutting down");
+    log.info("Destroying VaadinOnKotlin")
+    log.info("Shutdown complete")  }
   
-  companion object {
-    @JvmStatic
-    private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
+  override fun contextInitialized(sce: ServletContextEvent?) {
+    log.info("Starting up")
+    DB.connect()
+   // log.info("Initializing VaadinOnKotlin")
+  //  VaadinOnKotlin.init()
+  //  log.info("Running DB migrations")
+   // val flyway = Flyway()
+  //  flyway.dataSource = VaadinOnKotlin.dataSource
+  //  flyway.migrate()
+  //  log.info("Initialization complete")
   }
 }
 

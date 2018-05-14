@@ -13,17 +13,16 @@ import com.vaadin.ui.Window
 import com.vaadin.ui.themes.ValoTheme
 import kotlin.reflect.KClass
 
-class DialogPopup<BEAN : Any>(
-        caption: String, classBean: KClass<BEAN>,
-        private val configForm: DialogPopup<BEAN>.() -> Unit
-                             ) : Window(caption) {
+open class DialogPopup<BEAN : Any>(
+        caption: String, classBean: KClass<BEAN>
+                                  ) : Window(caption) {
   val binder = BeanValidationBinder(classBean.java)
   val form = FormLayout()
   
   private val btnOk: Button = Button("Confirma").apply {
     addStyleName(ValoTheme.BUTTON_PRIMARY)
   }
-  private val btnCancel=  Button("Cancela")
+  private val btnCancel = Button("Cancela")
   
   init {
     isClosable = false
@@ -38,8 +37,11 @@ class DialogPopup<BEAN : Any>(
     UI.getCurrent().addWindow(this)
   }
   
+  fun initForm(condigForm: (FormLayout) -> Unit) {
+    condigForm(form)
+  }
+  
   private fun buildContent(): Component {
-    configForm()
     val toolBar = buildToolBar()
     toolBar.setSizeFull()
     val layout = VerticalLayout(form, toolBar)
