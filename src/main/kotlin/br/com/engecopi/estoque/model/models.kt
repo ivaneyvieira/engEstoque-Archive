@@ -6,7 +6,6 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
-import org.jetbrains.exposed.sql.select
 
 object Produtos : IntIdTable() {
   val codigo = varchar("codigo", 16).uniqueIndex()
@@ -97,13 +96,12 @@ class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
 }
 
 class Saldo(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<Saldo>(Saldos){
+  companion object : IntEntityClass<Saldo>(Saldos) {
     fun lojas() = Saldo.all().map { it.loja }.distinct().sorted()
   }
   
   var loja by Saldos.loja
   var quantidade by Saldos.quantidade
   var produto by Saldos.produto
-  
   
 }

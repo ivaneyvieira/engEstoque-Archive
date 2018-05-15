@@ -58,7 +58,7 @@ class ProdutoView : VerticalLayout(), View {
   init {
     isMargin = true
     setSizeFull()
-    title("Entrada de produtos")
+    title("Produtos")
     
     horizontalLayout {
       isVisible = false
@@ -161,6 +161,7 @@ class ProdutoView : VerticalLayout(), View {
       }
     }
   }
+  
 }
 
 
