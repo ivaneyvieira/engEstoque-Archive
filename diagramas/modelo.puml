@@ -32,9 +32,9 @@ class Saldo{
 	quantidade
 }
 
-Entrada	<-- ItemEntrada
-Saida	<-- ItemSaida
+Entrada			<-- ItemEntrada
+Saida				<-- ItemSaida
 ItemEntrada	-->	Produto
-ItemSaida	-->	Produto
-Saldo		-->	Produto
+ItemSaida		-->	Produto
+Saldo				-->	Produto
 @enduml
