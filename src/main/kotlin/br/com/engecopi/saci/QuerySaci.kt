@@ -1,16 +1,28 @@
 package br.com.engecopi.saci
 
+import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.utils.DB
 import br.com.engecopi.utils.lpad
 
 class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   
-  fun findProduto(prdno : String) : List<ProdutoSaci> {
+  fun findProduto(prdno: String): List<ProdutoSaci> {
     val sql = "findProdutos.sql"
     return query(sql) { q ->
-      q.addParameter("prdno", prdno.lpad(16, " "))
-              .executeAndFetch(ProdutoSaci::class.java)
+      val codigo = prdno.lpad(16, " ")
+      q.addParameter("prdno", codigo)
+      q.executeAndFetch(ProdutoSaci::class.java)
+    }
+  }
+  
+  fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
+    val sql = "findNotaEntrada.sql"
+    return query(sql) { q ->
+      q.addParameter("storeno", "$storeno")
+              .addParameter("nfname", nfname)
+              .addParameter("invse", invse)
+              .executeAndFetch(NotaEntradaSaci::class.java)
     }
   }
   

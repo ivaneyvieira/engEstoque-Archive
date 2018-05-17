@@ -38,7 +38,7 @@ object ItensSaida : IntIdTable() {
   val quantidade = integer("quantidade")
   val custo_unitario = decimal("custo_unitario", 15, 4)
   val produto = reference("idProduto", Produtos)
-  val notaEntrada = reference("idNotaEntrada", Saidas)
+  val notaSaida = reference("idNotaSaida", Saidas)
 }
 
 object Saldos : IntIdTable() {
@@ -78,6 +78,8 @@ class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
   
   var quantidade by ItensEntrada.quantidade
   var custo_unitario by ItensEntrada.custo_unitario
+  var notaEntrada by Entrada referencedOn ItensEntrada.notaEntrada
+  var produto by Produto referencedOn ItensEntrada.produto
 }
 
 class Saida(id: EntityID<Int>) : IntEntity(id) {
@@ -93,6 +95,8 @@ class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
   
   var quantidade by ItensSaida.quantidade
   var custo_unitario by ItensSaida.custo_unitario
+  var notaSaida by Saida referencedOn ItensSaida.notaSaida
+  var produto by Produto referencedOn ItensSaida.produto
 }
 
 class Saldo(id: EntityID<Int>) : IntEntity(id) {

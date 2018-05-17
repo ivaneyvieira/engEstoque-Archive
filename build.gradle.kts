@@ -22,19 +22,11 @@ tasks.withType<KotlinCompile> {
 }
 
 vaadin {
-  version = "8.4.1"
+  version = "8.4.2"
 }
 
 gretty {
   contextPath = "/"
-}
-
-tasks.withType<Test> {
-  useJUnitPlatform()
-  testLogging {
-    // to see the exceptions of failed tests in Travis-CI console.
-    exceptionFormat = TestExceptionFormat.FULL
-  }
 }
 
 dependencies {

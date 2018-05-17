@@ -22,7 +22,6 @@ import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.event.ShortcutAction.KeyCode.DELETE
 import com.vaadin.event.ShortcutAction.KeyCode.INSERT
 import com.vaadin.icons.VaadinIcons
@@ -34,7 +33,6 @@ import com.vaadin.ui.Notification
 import com.vaadin.ui.TextField
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.NumberRenderer
-import org.vaadin.patrik.FastNavigation
 import java.text.DecimalFormat
 
 @AutoView
@@ -130,12 +128,11 @@ class ProdutoView : VerticalLayout(), View {
   
   inner class DialogProduto : DialogPopup<ProdutoVo>("Produto", ProdutoVo::class) {
     val codigoProduto: TextField
-    val descricaoProduto: Label
+    val descricaoProduto: TextField
     val gradeProduto: ComboBox<String>
     
     init {
       codigoProduto = form.textField {
-        icon = VaadinIcons.BARCODE
         caption = "Código"
         addValueChangeListener { e ->
           if (e.isUserOriginated) {
@@ -145,10 +142,11 @@ class ProdutoView : VerticalLayout(), View {
         bind(binder).bind(ProdutoVo::codigoProduto)
       }
       
-      descricaoProduto = form.label("Descrição")
+      descricaoProduto = form.textField  ("Descrição"){
+        isReadOnly = true
+      }
       
-      gradeProduto = form.comboBox<String> {
-        icon = VaadinIcons.GRID
+      gradeProduto = form.comboBox {
         caption = "Grade"
         isEmptySelectionAllowed = false
         isTextInputAllowed = false
