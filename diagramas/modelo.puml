@@ -1,6 +1,7 @@
 @startuml modelo
 class Produto{
 	codigo
+	grade
 	data_cadastro
 }
 

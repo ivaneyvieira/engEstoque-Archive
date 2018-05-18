@@ -33,6 +33,14 @@ class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
     notasProduto.forEach { nota ->
       addNotaEntrada(nota)
     }
+    execPesquisa()
+  }
+  
+  fun execPesquisa() {
+    val entradas = transaction { Entrada.all() }
+    listaGrid.clear()
+    listaGrid.addAll(entradas)
+    updateModel(this)
   }
   
   private fun addNotaEntrada(nota: NotaEntradaSaci) {

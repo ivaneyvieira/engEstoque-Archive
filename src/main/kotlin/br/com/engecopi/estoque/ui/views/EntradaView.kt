@@ -32,9 +32,9 @@ import com.vaadin.ui.VerticalLayout
 @AutoView("")
 class EntradaView : VerticalLayout(), View {
   val viewModel = EntradaViewModel {
-  
+   grid?.dataProvider?.refreshAll()
   }
-  val grid: Grid<Entrada>
+  val grid: Grid<Entrada>?
   
   val dialogNotaEntrada = DialogNotaEntrada()
   
