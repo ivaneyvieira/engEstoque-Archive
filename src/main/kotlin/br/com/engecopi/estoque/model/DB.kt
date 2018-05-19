@@ -1,10 +1,9 @@
 package br.com.engecopi.estoque.model
 
+import org.apache.commons.dbcp2.BasicDataSource
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.SchemaUtils.createMissingTablesAndColumns
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.sql.Connection.TRANSACTION_SERIALIZABLE
 
 class DB {
   init {
@@ -17,10 +16,10 @@ class DB {
     }
     
     fun connect() {
-      Database.connect(
-              url = "jdbc:mysql://localhost/engEstoque",
-              driver = "com.mysql.jdbc.Driver"
-                      )
+      val ds = BasicDataSource()
+      ds.driverClassName = "com.mysql.jdbc.Driver"
+      ds.url = "jdbc:mysql://localhost/engEstoque"
+      Database.connect(ds)
     }
   }
 }

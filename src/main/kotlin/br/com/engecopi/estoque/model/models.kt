@@ -91,6 +91,9 @@ class Entrada(id: EntityID<Int>) : IntEntity(id) {
   var data by Entradas.data
   var hora by Entradas.hora
   val itens by ItemEntrada referrersOn ItensEntrada.notaEntrada
+  
+  fun cacheItens() = Cache{ itens  }.value()
+  
   val dataEntrada: Date
     get() = transaction { data.toDate() }
 }
@@ -102,6 +105,17 @@ class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
   var custo_unitario by ItensEntrada.custo_unitario
   var notaEntrada by Entrada referencedOn ItensEntrada.notaEntrada
   var produto by Produto referencedOn ItensEntrada.produto
+  
+  val codigo by lazy {
+    transaction { produto.codigo }
+  }
+  val nome by lazy {
+    transaction { produto.nome }
+  }
+  val grade by lazy {
+    transaction { produto.grade }
+  }
+  
 }
 
 class Saida(id: EntityID<Int>) : IntEntity(id) {
@@ -132,4 +146,19 @@ class Saldo(id: EntityID<Int>) : IntEntity(id) {
   var loja by Saldos.loja
   var quantidade by Saldos.quantidade
   var produto by Produto referencedOn Saldos.produto
+}
+
+class Cache<T>(val exec: () -> T) {
+  val millisecond = System.currentTimeMillis()
+  var lastValue: T = exec()
+  
+  fun value() {
+    if (millisecond - System.currentTimeMillis() > 5000) {
+      lastValue = transaction { exec() }
+      return lastValue
+    } else {
+      return lastValue
+    }
+  }
+  
 }

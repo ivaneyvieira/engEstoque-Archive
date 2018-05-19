@@ -10,6 +10,7 @@ then
   git pull
   ./gradlew vaadinCompile
   ./gradlew vaadinThemeCompile
+  bzcat  sql/engEstoque.sql.bz2 | mysql engEstoque 
 else
   mysqldump engEstoque | bzip2 > sql/engEstoque.sql.bz2
   git add .

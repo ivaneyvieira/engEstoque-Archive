@@ -110,13 +110,13 @@ class EntradaView : VerticalLayout(), View {
       removeAllColumns()
       setSizeFull()
       expandRatio = 1.0f
-      addColumn{ transaction { it.produto.codigo}}.apply {
+      addColumn{  it.codigo}.apply {
         caption = "Código"
       }
-      addColumn{transaction { it.produto.nome}}.apply {
+      addColumn{it.nome}.apply {
         caption = "Descrição"
       }
-      addColumn{transaction { it.produto.grade}}.apply {
+      addColumn{it.grade}.apply {
         caption = "Grade"
       }
       addColumn{it.quantidade}.apply {

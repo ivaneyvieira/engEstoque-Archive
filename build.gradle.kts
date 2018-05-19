@@ -51,6 +51,8 @@ dependencies {
   compile("com.vaadin:vaadin-client-compiled:${vaadin.version}")
   compile("org.jetbrains.exposed:exposed:0.10.2")
   compile("mysql:mysql-connector-java:5.1.45")
+  compile("org.apache.commons:commons-dbcp2:2.3.0")
+  
   compile("org.xerial:sqlite-jdbc:3.21.0.1")
   compile("org.sql2o:sql2o:1.5.4")
   compile("org.imgscalr:imgscalr-lib:4.2")
