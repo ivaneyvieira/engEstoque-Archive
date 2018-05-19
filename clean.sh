@@ -11,6 +11,7 @@ then
   ./gradlew vaadinCompile
   ./gradlew vaadinThemeCompile
 else
+  mysqldump engEstoque | bzip2 > sql/engEstoque.sql.bz2
   git add .
   git commit -m"$COMMENT"
   git push
