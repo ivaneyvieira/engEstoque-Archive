@@ -6,6 +6,10 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 object Produtos : IntIdTable() {
   val codigo = varchar("codigo", 16).uniqueIndex()
@@ -18,7 +22,7 @@ object Entradas : IntIdTable() {
   val numero = varchar("numero", 15)
   val loja = integer("loja")
   val data = date("data")
-  val hora = datetime("hora")
+  val hora = varchar("hora", 5)
 }
 
 object ItensEntrada : IntIdTable() {
@@ -31,7 +35,7 @@ object ItensEntrada : IntIdTable() {
 object Saidas : IntIdTable() {
   val loja = integer("loja")
   val data = date("data")
-  val hora = datetime("hora")
+  val hora = varchar("hora", 5)
 }
 
 object ItensSaida : IntIdTable() {
@@ -62,6 +66,21 @@ class Produto(id: EntityID<Int>) : IntEntity(id) {
   val custo by lazy { produtoSaci?.custo ?: 0.0000 }
   
   val saldos by Saldo referrersOn Saldos.produto
+  val entradas by ItemEntrada referrersOn ItensEntrada.produto
+  val saidas by ItemSaida referrersOn ItensSaida.produto
+  
+  fun recalcula(loja: Int) = transaction {
+    Saldos.deleteWhere { (Saldos.produto eq this@Produto.id) and (Saldos.loja eq loja) }
+    
+    val totalEntradas = entradas.filter { it.notaEntrada.loja == loja }.sumBy { it.quantidade }
+    val totalSaidas = saidas.filter { it.notaSaida.loja == loja }.sumBy { it.quantidade }
+    val saldo = totalEntradas - totalSaidas
+    Saldo.new {
+      this.loja = loja
+      this.quantidade = saldo
+      this.produto = this@Produto
+    }
+  }
 }
 
 class Entrada(id: EntityID<Int>) : IntEntity(id) {
@@ -71,6 +90,9 @@ class Entrada(id: EntityID<Int>) : IntEntity(id) {
   var loja by Entradas.loja
   var data by Entradas.data
   var hora by Entradas.hora
+  val itens by ItemEntrada referrersOn ItensEntrada.notaEntrada
+  val dataEntrada: Date
+    get() = transaction { data.toDate() }
 }
 
 class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
@@ -88,6 +110,9 @@ class Saida(id: EntityID<Int>) : IntEntity(id) {
   var loja by Saidas.loja
   var data by Saidas.data
   var hora by Saidas.hora
+  val dataSaida: Date
+    get() = data.toDate()
+  
 }
 
 class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
@@ -101,11 +126,10 @@ class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
 
 class Saldo(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Saldo>(Saldos) {
-    fun lojas() = Saldo.all().map { it.loja }.distinct().sorted()
+    fun lojas() = Saldo.all().filter { it.quantidade != 0 }.map { it.loja }.distinct().sorted()
   }
   
   var loja by Saldos.loja
   var quantidade by Saldos.quantidade
-  var produto by Saldos.produto
-  
+  var produto by Produto referencedOn Saldos.produto
 }

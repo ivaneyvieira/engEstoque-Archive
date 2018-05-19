@@ -10,8 +10,10 @@ import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
+import org.joda.time.format.DateTimeFormat
 import java.math.BigDecimal
 
 class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
@@ -37,19 +39,22 @@ class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
   }
   
   fun execPesquisa() {
-    val entradas = transaction { Entrada.all() }
-    listaGrid.clear()
-    listaGrid.addAll(entradas)
+    transaction {
+      val entradas = Entrada.all()
+      listaGrid.clear()
+      listaGrid.addAll(entradas)
+    }
     updateModel(this)
   }
   
   private fun addNotaEntrada(nota: NotaEntradaSaci) {
+    val dtf = DateTimeFormat.forPattern("HH:mm")
     val numero = "${nota.invno}"
     val entrada = Entrada.find { Entradas.numero eq numero }.firstOrNull() ?: Entrada.new {
-      this.numero = nota.prdno?.trim() ?: ""
+      this.numero = numero
       this.loja = nota.storeno ?: 0
       this.data = LocalDate.now().toDateTime(LocalTime(0, 0))
-      this.hora = LocalTime.now().toDateTimeToday()
+      this.hora = dtf.print(DateTime.now())
     }
     addProdutoNotaEntrada(entrada, nota)
   }
@@ -66,6 +71,7 @@ class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
           this.quantidade = nota.quant ?: 0
           this.custo_unitario = nota.custo?.toBigDecimal() ?: BigDecimal.ZERO
         }
+      nota.storeno?.let { loja -> prd.recalcula(loja) }
     }
   }
 }

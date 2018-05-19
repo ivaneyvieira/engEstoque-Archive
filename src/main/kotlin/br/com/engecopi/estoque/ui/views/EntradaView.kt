@@ -1,15 +1,19 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Entrada
+import br.com.engecopi.estoque.model.ItemEntrada
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
+import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
+import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.clickShortcut
+import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
@@ -28,6 +32,11 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.WARNING_MESSAGE
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.DateRenderer
+import com.vaadin.ui.renderers.NumberRenderer
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 @AutoView("")
 class EntradaView : VerticalLayout(), View {
@@ -35,6 +44,7 @@ class EntradaView : VerticalLayout(), View {
    grid?.dataProvider?.refreshAll()
   }
   val grid: Grid<Entrada>?
+  var gridProduto: Grid<ItemEntrada>?=null
   
   val dialogNotaEntrada = DialogNotaEntrada()
   
@@ -77,15 +87,45 @@ class EntradaView : VerticalLayout(), View {
       addColumnFor(Entrada::loja) {
         caption = "Loja"
       }
-      addColumnFor(Entrada::data) {
+      addColumnFor(Entrada::dataEntrada) {
         caption = "Data"
-        // setRenderer(DateTimeRenderer("dd/MM/yyyy"))
+        setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
       }
       addColumnFor(Entrada::hora) {
         caption = "Hora"
-        //  setRenderer(DateTimeRenderer("hh:mm"))
+      }
+      addSelectionListener {
+        transaction {
+          it.firstSelectedItem?.let {
+            if(it.isPresent) {
+              gridProduto?.dataProvider = ListDataProvider(it.get().itens.toList())
+            }
+          }
+          
+        }
       }
     }
+    gridProduto = grid(ItemEntrada::class){
+      caption = "Itens da nota de entrada"
+      removeAllColumns()
+      setSizeFull()
+      expandRatio = 1.0f
+      addColumn{ transaction { it.produto.codigo}}.apply {
+        caption = "Código"
+      }
+      addColumn{transaction { it.produto.nome}}.apply {
+        caption = "Descrição"
+      }
+      addColumn{transaction { it.produto.grade}}.apply {
+        caption = "Grade"
+      }
+      addColumn{it.quantidade}.apply {
+        caption = "Quantidade"
+        setRenderer(NumberRenderer(DecimalFormat("0")))
+        align = VAlign.Right
+      }
+    }
+    viewModel.execPesquisa()
   }
   
   inner class DialogNotaEntrada : DialogPopup<NotaEntradaVo>("Pesquisa Nota de Entrada", NotaEntradaVo::class) {

@@ -93,6 +93,18 @@ class ProdutoView : VerticalLayout(), View {
           }
         }
       }
+      button("Atualiza Saldo") {
+        addClickListener{
+          val produto = grid?.selectedItems?.firstOrNull()
+          if (produto == null) {
+            Notification.show("Não há produto selecionado",
+                              Notification.Type.WARNING_MESSAGE
+                             )
+          } else {
+            viewModel.atualizaSaldo(produto)
+          }
+        }
+      }
     }
     grid = grid(Produto::class) {
       dataProvider = ListDataProvider(viewModel.listaGrid)

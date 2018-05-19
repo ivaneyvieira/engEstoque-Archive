@@ -72,6 +72,13 @@ class ProdutoViewModel(val updateModel: (ProdutoViewModel) -> Unit) {
     execPesquisa()
   }
   
+  fun atualizaSaldo(produto: Produto) = transaction{
+    Saldo.lojas().forEach {loja->
+      produto.recalcula(loja)
+    }
+    execPesquisa()
+  }
+  
   data class ProdutoVo(
           var codigoProduto: String = "",
           var gradeProduto: String = "",
