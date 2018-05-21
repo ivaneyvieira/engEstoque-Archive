@@ -3,13 +3,13 @@
 COMMENT="$1"
 
 git config --global credential.helper 'cache --timeout=3600'
-  ./gradlew clean
+./gradlew --console=rich  clean
 
 if [[ "$COMMENT" == "" ]]
 then
   git pull
-  ./gradlew vaadinCompile
-  ./gradlew vaadinThemeCompile
+  ./gradlew --console=rich  vaadinCompile
+  ./gradlew --console=rich  vaadinThemeCompile
   bzcat  sql/engEstoque.sql.bz2 | mysql engEstoque 
 else
   mysqldump engEstoque | bzip2 > sql/engEstoque.sql.bz2

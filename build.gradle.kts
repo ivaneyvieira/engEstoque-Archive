@@ -58,19 +58,9 @@ dependencies {
   compile("org.imgscalr:imgscalr-lib:4.2")
   compile("de.steinwedel.vaadin.addon:messagebox:4.0.21")
   compile("org.vaadin.patrik:GridFastNavigation:2.2.2")
+  compile("org.vaadin:viritin:2.5")
   // heroku app runner
   testRuntime("com.github.jsimone:webapp-runner:8.5.30.0")
 }
 
-// Heroku
-tasks {
-  "copyToLib"(Copy::class) {
-    into("$buildDir/server")
-    from(configurations.testRuntime) {
-      include("webapp-runner*")
-    }
-  }
-  "stage" {
-    dependsOn("build", "copyToLib")
-  }
-}
+

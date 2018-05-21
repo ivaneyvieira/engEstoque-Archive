@@ -98,10 +98,9 @@ class EntradaView : VerticalLayout(), View {
         transaction {
           it.firstSelectedItem?.let {
             if(it.isPresent) {
-              gridProduto?.dataProvider = ListDataProvider(it.get().itens.toList())
+              gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
             }
           }
-          
         }
       }
     }

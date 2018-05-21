@@ -33,6 +33,7 @@ object ItensEntrada : IntIdTable() {
 }
 
 object Saidas : IntIdTable() {
+  val numero = integer("numero")
   val loja = integer("loja")
   val data = date("data")
   val hora = varchar("hora", 5)
@@ -92,7 +93,9 @@ class Entrada(id: EntityID<Int>) : IntEntity(id) {
   var hora by Entradas.hora
   val itens by ItemEntrada referrersOn ItensEntrada.notaEntrada
   
-  fun cacheItens() = Cache{ itens  }.value()
+  val cacheItens = Cache { itens }
+  
+  fun cacheItens() = cacheItens.value()
   
   val dataEntrada: Date
     get() = transaction { data.toDate() }
@@ -119,14 +122,26 @@ class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
 }
 
 class Saida(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<Saida>(Saidas)
+  companion object : IntEntityClass<Saida>(Saidas){
+    fun novoNumero(): Int = transaction{
+      val maxNum=Saida.all().map { it.numero }.max()?:0
+      maxNum + 1
+    }
+  }
   
+  var numero by Saidas.numero
   var loja by Saidas.loja
   var data by Saidas.data
   var hora by Saidas.hora
+  
+  val itens by ItemSaida referrersOn ItensSaida.notaSaida
+  
+  val cacheItens = Cache { itens }
+  
+  fun cacheItens() = cacheItens.value()
+
   val dataSaida: Date
     get() = data.toDate()
-  
 }
 
 class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
@@ -136,6 +151,16 @@ class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
   var custo_unitario by ItensSaida.custo_unitario
   var notaSaida by Saida referencedOn ItensSaida.notaSaida
   var produto by Produto referencedOn ItensSaida.produto
+  
+  val codigo by lazy {
+    transaction { produto.codigo }
+  }
+  val nome by lazy {
+    transaction { produto.nome }
+  }
+  val grade by lazy {
+    transaction { produto.grade }
+  }
 }
 
 class Saldo(id: EntityID<Int>) : IntEntity(id) {
@@ -149,16 +174,23 @@ class Saldo(id: EntityID<Int>) : IntEntity(id) {
 }
 
 class Cache<T>(val exec: () -> T) {
-  val millisecond = System.currentTimeMillis()
-  var lastValue: T = exec()
+  var millisecond = System.currentTimeMillis()
+  var lastValue: T? = null
   
-  fun value() {
-    if (millisecond - System.currentTimeMillis() > 5000) {
-      lastValue = transaction { exec() }
-      return lastValue
-    } else {
-      return lastValue
-    }
+  fun execValue(delay: Long = 0) = transaction {
+    println("cache $delay")
+    transaction { exec() }
   }
   
+  fun value(): T {
+    val currentTimeMillis = System.currentTimeMillis()
+    val delay = currentTimeMillis - millisecond
+    millisecond = System.currentTimeMillis()
+    if (delay > 30000) {
+      lastValue = execValue(delay)
+    }
+    val ret = lastValue ?: execValue(delay)
+    lastValue = ret
+    return ret
+  }
 }

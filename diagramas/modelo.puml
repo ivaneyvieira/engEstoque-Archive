@@ -1,6 +1,7 @@
 @startuml modelo
 class Produto{
 	codigo
+	nome
 	grade
 	data_cadastro
 }
@@ -23,6 +24,7 @@ class ItemSaida{
 }
 
 class Saida{
+	numero
 	loja
 	data
 	hora

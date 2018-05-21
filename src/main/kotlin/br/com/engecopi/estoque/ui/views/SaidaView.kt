@@ -1,9 +1,201 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemSaida
+import br.com.engecopi.estoque.model.Saida
+import br.com.engecopi.estoque.ui.title
+import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
+import br.com.engecopi.estoque.viewmodel.NotaSaidaVo
+import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.VAlign
+import com.github.vok.karibudsl.addColumnFor
+import com.github.vok.karibudsl.align
+import com.github.vok.karibudsl.alignment
+import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.button
+import com.github.vok.karibudsl.expandRatio
+import com.github.vok.karibudsl.fillParent
+import com.github.vok.karibudsl.grid
+import com.github.vok.karibudsl.horizontalLayout
+import com.github.vok.karibudsl.isMargin
+import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.textField
+import com.github.vok.karibudsl.w
+import com.vaadin.data.converter.StringToIntegerConverter
+import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.navigator.View
+import com.vaadin.ui.ComboBox
+import com.vaadin.ui.Grid
+import com.vaadin.ui.TextField
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.DateRenderer
+import com.vaadin.ui.renderers.NumberRenderer
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.vaadin.viritin.fields.IntegerField
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 @AutoView
 class SaidaView : VerticalLayout(), View {
+  val viewModel = SaidaViewModel {
+    grid?.dataProvider?.refreshAll()
+  }
+  val grid: Grid<Saida>?
+  var gridProduto: Grid<ItemSaida>? = null
+  
+  val dialogNotaSaida = DialogNotaSaida()
+  
+  init {
+    isMargin = true
+    setSizeFull()
+    title("Saída de produtos")
+    
+    horizontalLayout {
+      isVisible = false
+      w = fillParent
+      isMargin = false
+      textField("Pesquisa") {
+        w = fillParent
+      }
+    }
+    
+    horizontalLayout {
+      button("Adiciona Nota de Saída") {
+        addClickListener {
+          viewModel.novaNotaEntrada()
+          dialogNotaSaida.binder.readBean(viewModel.notaSaidaVo)
+          dialogNotaSaida.show()
+        }
+      }
+      button("Remover Remover Nota de Saída") {
+      
+      }
+    }
+    grid = grid(Saida::class) {
+      dataProvider = ListDataProvider(viewModel.listaGrid)
+      removeAllColumns()
+      setSizeFull()
+      expandRatio = 1.0f
+      addColumnFor(Saida::numero)
+      addColumnFor(Saida::loja) {
+        caption = "Loja"
+      }
+      addColumnFor(Saida::dataSaida) {
+        caption = "Data"
+        setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
+      }
+      addColumnFor(Saida::hora) {
+        caption = "Hora"
+      }
+      addSelectionListener {
+        transaction {
+          it.firstSelectedItem?.let {
+            if (it.isPresent) {
+              gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
+            }
+          }
+          
+        }
+      }
+    }
+    gridProduto = grid(ItemSaida::class) {
+      caption = "Itens da nota de saída"
+      removeAllColumns()
+      setSizeFull()
+      expandRatio = 1.0f
+      addColumn { it.codigo }.apply {
+        caption = "Código"
+      }
+      addColumn { it.nome }.apply {
+        caption = "Descrição"
+      }
+      addColumn { it.grade }.apply {
+        caption = "Grade"
+      }
+      addColumn { it.quantidade }.apply {
+        caption = "Quantidade"
+        setRenderer(NumberRenderer(DecimalFormat("0")))
+        align = VAlign.Right
+      }
+    }
+    viewModel.execPesquisa()
+  }
+  
+  inner class DialogNotaSaida : DialogPopup<NotaSaidaVo>("Pesquisa Nota de Entrada", NotaSaidaVo::class) {
+    
+    
+    init {
+      w = 50.perc
+      form.w = 100.perc
+      form.textField(caption = "Número") {
+        isReadOnly = true
+        bind(binder)
+                .withConverter(StringToIntegerConverter("Número inválido"))
+                .bind(NotaSaidaVo::numero)
+      }
+      form.textField("Loja") {
+        bind(binder)
+                .withConverter(StringToIntegerConverter("A loja deve ser numérica"))
+                .withValidator(LojaValidator())
+                .bind(NotaSaidaVo::loja)
+      }
+      form.grid(NotaSaidaItemVo::class) {
+        
+        val edtDescricao = TextField().apply {
+          isReadOnly = true
+        }
+        val cmbGrade = ComboBox<String>().apply {
+          isTextInputAllowed = false
+        }
+        val edtQuant = IntegerField().apply {
+        
+        }
+        val edtCodigo = TextField().apply {
+          addValueChangeListener {
+            if (it.isUserOriginated) {
+              val descricao = viewModel.descricao(it.value)
+              edtDescricao.value = descricao
+              val grades = viewModel.grades(it.value)
+              cmbGrade.setItems(grades)
+              if (grades.isNotEmpty())
+                cmbGrade.value = grades.first()
+            }
+          }
+        }
+        val binder = editor.binder
+        removeAllColumns()
+        dataProvider = ListDataProvider(viewModel.notaSaidaVo.itensSaida)
+        addColumnFor(NotaSaidaItemVo::codigo) {
+          caption = "Código"
+          editorBinding = binder.bind(edtCodigo, NotaSaidaItemVo::codigo.getter, NotaSaidaItemVo::codigo.setter)
+          
+        }
+        addColumnFor(NotaSaidaItemVo::descricao) {
+          expandRatio = 1
+          caption = "Descrição"
+          editorBinding =
+                  binder.bind(edtDescricao, NotaSaidaItemVo::descricao.getter, NotaSaidaItemVo::descricao.setter)
+        }
+        addColumnFor(NotaSaidaItemVo::grade) {
+          caption = "Grade"
+          editorBinding = binder.bind(cmbGrade, NotaSaidaItemVo::grade.getter, NotaSaidaItemVo::grade.setter)
+        }
+        addColumnFor(NotaSaidaItemVo::quantidade) {
+          caption = "Quantidade"
+          editorBinding = binder.bind(edtQuant, NotaSaidaItemVo::quantidade.getter, NotaSaidaItemVo::quantidade.setter)
+        }
+        editor.isEnabled = true
+        editor.addSaveListener {
+          
+          viewModel.notaSaidaVo.addNewItem()
+          dataProvider.refreshAll()
+          setDataProvider(dataProvider)
+        }
+      }
+      addClickListenerOk {
+      
+      }
+    }
+  }
 }
+

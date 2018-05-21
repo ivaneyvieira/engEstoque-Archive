@@ -49,7 +49,7 @@ class EstoqueUI : UI() {
       
       section("Movimentacao")
       menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
-      menuButton("Saida", VaadinIcons.OUTBOX, view = SaidaView::class.java)
+      menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
       section("Consulta")
       menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
     }

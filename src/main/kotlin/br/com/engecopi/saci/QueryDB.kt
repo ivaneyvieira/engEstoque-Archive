@@ -5,15 +5,17 @@ import org.sql2o.Connection
 import org.sql2o.Query
 import org.sql2o.Sql2o
 
-open class QueryDB(val driver: String, val url: String, val username: String,
-                   val password: String, val sqldir: String) {
+open class QueryDB(
+        val driver: String, val url: String, val username: String,
+        val password: String, val sqldir: String
+                  ) {
   private val sql2o: Sql2o
-
+  
   init {
     registerDriver(driver)
     this.sql2o = Sql2o(url, username, password)
   }
-
+  
   private fun registerDriver(driver: String) {
     try {
       Class.forName(driver)
@@ -21,7 +23,7 @@ open class QueryDB(val driver: String, val url: String, val username: String,
       throw RuntimeException(e)
     }
   }
-
+  
   protected fun <T> query(file: String, lambda: (Query) -> T): T {
     return buildQuery(file) { con, query ->
       val ret = lambda(query)
@@ -29,15 +31,17 @@ open class QueryDB(val driver: String, val url: String, val username: String,
       ret
     }
   }
-
+  
   private inline fun <C : AutoCloseable, R> C.trywr(block: (C) -> R): R {
     this.use {
       return block(this)
     }
   }
-
-  protected fun execute(file: String, vararg params: Pair<String, String>,
-                        monitor: (String, Int, Int) -> Unit = { _, _, _ -> }) {
+  
+  protected fun execute(
+          file: String, vararg params: Pair<String, String>,
+          monitor: (String, Int, Int) -> Unit = { _, _, _ -> }
+                       ) {
     var sqlScript = SystemUtils.readFile(sqldir + file)
     sql2o.beginTransaction().trywr { con ->
       params.forEach { sqlScript = sqlScript?.replace(":${it.first}", it.second) }
@@ -55,12 +59,36 @@ open class QueryDB(val driver: String, val url: String, val username: String,
       con.commit()
     }
   }
-
+  
   private fun <T> buildQuery(file: String, proc: (Connection, Query) -> T): T {
     val sql = SystemUtils.readFile(sqldir + file)
     this.sql2o.open().trywr { con ->
       val query = con.createQuery(sql)
       return proc(con, query)
+    }
+  }
+}
+
+class Cache<P, T>(val exec: (P) -> T) {
+  var millisecond = System.currentTimeMillis()
+  var mapValue=  mutableMapOf<P, T>()
+  
+  fun execValue(par : P, delay: Long = 0): T {
+    println("cache $delay")
+    return exec(par)
+  }
+  
+  fun value(par : P): T {
+    val currentTimeMillis = System.currentTimeMillis()
+    val delay = currentTimeMillis - millisecond
+    millisecond = System.currentTimeMillis()
+
+    if (delay > 30000) {
+      mapValue.clear()
+    }
+
+    return mapValue.getOrPut(par){
+      execValue(par, delay)
     }
   }
 }

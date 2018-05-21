@@ -7,13 +7,17 @@ import br.com.engecopi.utils.lpad
 
 class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   
-  fun findProduto(prdno: String): List<ProdutoSaci> {
+  val findProduto = Cache<String, List<ProdutoSaci>> { prdno ->
     val sql = "findProdutos.sql"
-    return query(sql) { q ->
+    query(sql) { q ->
       val codigo = prdno.lpad(16, " ")
       q.addParameter("prdno", codigo)
       q.executeAndFetch(ProdutoSaci::class.java)
     }
+  }
+  
+  fun findProduto(prdno: String): List<ProdutoSaci> {
+    return findProduto.value(prdno)
   }
   
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
