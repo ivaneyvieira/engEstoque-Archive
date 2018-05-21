@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.ItemEntrada
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
+import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
 import com.github.vok.karibudsl.VAlign
@@ -14,6 +15,7 @@ import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.clickShortcut
 import com.github.vok.karibudsl.column
+import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
@@ -140,9 +142,16 @@ class EntradaView : VerticalLayout(), View {
               .bind(NotaEntradaVo::serie)
       
     }
-    val loja = form.textField("Loja") {
+    val loja = form.comboBox<Int>("Loja") {
+      val lojas = QuerySaci.querySaci.findLojas()
+      setItems(lojas.map { it.storeno })
+      setItemCaptionGenerator {storeno ->
+        lojas.firstOrNull { it.storeno?:0 == storeno }?.sigla ?: ""
+      }
+      isTextInputAllowed = false
+      isEmptySelectionAllowed = false
+      this.isScrollToSelectedItem = true
       bind(binder)
-              .withConverter(StringToIntegerConverter("A loja deve ser numérica"))
               .withValidator(LojaValidator())
               .bind(NotaEntradaVo::loja)
     }

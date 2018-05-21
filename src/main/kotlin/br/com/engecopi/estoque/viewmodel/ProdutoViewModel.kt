@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.Produtos
 import br.com.engecopi.estoque.model.Saldo
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
@@ -41,7 +42,8 @@ class ProdutoViewModel(val updateModel: (ProdutoViewModel) -> Unit) {
   
   fun saveUpdateProduto() {
     transaction {
-      val produto = Produto.find { Produtos.codigo eq produtoVo.codigoProduto }.firstOrNull()
+      val produto = Produto.find { (Produtos.codigo eq produtoVo.codigoProduto) and
+              (Produtos.grade eq produtoVo.gradeProduto) }.firstOrNull()
       if (produto == null) {
         Produto.new {
           codigo = produtoVo.codigoProduto

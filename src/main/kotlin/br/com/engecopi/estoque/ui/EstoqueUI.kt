@@ -20,6 +20,7 @@ import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.Page
 import com.vaadin.server.VaadinRequest
+import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
 import com.vaadin.shared.Position
 import com.vaadin.ui.HasComponents
@@ -33,6 +34,7 @@ import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
+import javax.servlet.http.Cookie
 
 private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 
@@ -72,25 +74,24 @@ class EstoqueUI : UI() {
   }
 }
 
-
-
 @WebListener
-class Bootstrap: ServletContextListener {
+class Bootstrap : ServletContextListener {
   override fun contextDestroyed(sce: ServletContextEvent?) {
     log.info("Shutting down");
     log.info("Destroying VaadinOnKotlin")
-    log.info("Shutdown complete")  }
+    log.info("Shutdown complete")
+  }
   
   override fun contextInitialized(sce: ServletContextEvent?) {
     log.info("Starting up")
     DB.connect()
-   // log.info("Initializing VaadinOnKotlin")
-  //  VaadinOnKotlin.init()
-  //  log.info("Running DB migrations")
-   // val flyway = Flyway()
-  //  flyway.dataSource = VaadinOnKotlin.dataSource
-  //  flyway.migrate()
-  //  log.info("Initialization complete")
+    // log.info("Initializing VaadinOnKotlin")
+    //  VaadinOnKotlin.init()
+    //  log.info("Running DB migrations")
+    // val flyway = Flyway()
+    //  flyway.dataSource = VaadinOnKotlin.dataSource
+    //  flyway.migrate()
+    //  log.info("Initialization complete")
   }
 }
 
@@ -109,4 +110,25 @@ class MyUIServlet : VaadinServlet() {
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
   addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
+}
+
+fun UI.setCookie(nome: String, valor: String) {
+  // Create a new cookie
+  val myCookie = Cookie(nome, valor)
+  
+  // Make cookie expire in 2 minutes
+  myCookie.maxAge = 60 * 60 * 24 * 5
+  // Set the cookie path.
+  myCookie.path = VaadinService.getCurrentRequest().contextPath
+  
+  // Save cookie
+  VaadinService.getCurrentResponse().addCookie(myCookie)
+}
+
+fun UI.getCokies(name: String): String? {
+  val cookie = VaadinService.getCurrentRequest().cookies.toList().firstOrNull { it.name == name }
+  cookie?.let {
+    setCookie(it.name, it.value)
+  }
+  return cookie?.value
 }

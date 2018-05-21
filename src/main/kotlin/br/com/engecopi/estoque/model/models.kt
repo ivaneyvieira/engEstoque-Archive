@@ -12,10 +12,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 object Produtos : IntIdTable() {
-  val codigo = varchar("codigo", 16).uniqueIndex()
+  val codigo = varchar("codigo", 16)
   val grade = varchar("grade", 8)
   var codebar = varchar("codebar", 16)
   val data_cadastro = date("data_cadastro")
+  
+  init{
+    uniqueIndex(codigo, grade)
+  }
 }
 
 object Entradas : IntIdTable() {

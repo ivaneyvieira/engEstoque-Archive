@@ -1,5 +1,6 @@
 package br.com.engecopi.saci
 
+import br.com.engecopi.saci.beans.LojaSaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.utils.DB
@@ -27,6 +28,13 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
               .addParameter("nfname", nfname)
               .addParameter("invse", invse)
               .executeAndFetch(NotaEntradaSaci::class.java)
+    }
+  }
+  
+  fun findLojas(): List<LojaSaci> {
+    val sql = "findLojas.sql"
+    return query(sql) { q ->
+      q.executeAndFetch(LojaSaci::class.java)
     }
   }
   

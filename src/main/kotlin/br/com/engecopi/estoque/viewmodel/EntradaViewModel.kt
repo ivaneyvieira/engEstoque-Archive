@@ -28,8 +28,8 @@ class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
                                                           )
     val produtos = Produto.all().toList()
     val notasProduto = notasEntrada.filter { nota ->
-      val produto = nota?.prdno?.trim() ?: ""
-      val grade = nota?.grade ?: ""
+      val produto = nota.prdno?.trim() ?: ""
+      val grade = nota.grade ?: ""
       produtos.any { it.codigo == produto && it.grade == grade }
     }
     notasProduto.forEach { nota ->

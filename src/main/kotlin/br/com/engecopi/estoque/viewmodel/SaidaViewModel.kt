@@ -56,6 +56,6 @@ data class NotaSaidaItemVo(
         var id: Int = 0,
         var codigo: String = "",
         var descricao: String = "",
-        var grade: String = "",
+        var grade: String? = "",
         var quantidade: Int = 0
                      )

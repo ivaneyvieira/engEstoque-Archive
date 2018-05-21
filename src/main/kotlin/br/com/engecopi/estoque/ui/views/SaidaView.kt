@@ -10,7 +10,6 @@ import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.align
-import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.expandRatio
@@ -30,8 +29,9 @@ import com.vaadin.ui.TextField
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
+import com.vaadin.ui.themes.ValoTheme
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.vaadin.viritin.fields.IntegerField
+import org.vaadin.patrik.FastNavigation
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
@@ -122,13 +122,10 @@ class SaidaView : VerticalLayout(), View {
   }
   
   inner class DialogNotaSaida : DialogPopup<NotaSaidaVo>("Pesquisa Nota de Entrada", NotaSaidaVo::class) {
-    
-    
     init {
-      w = 50.perc
+      w = 75.perc
       form.w = 100.perc
       form.textField(caption = "Número") {
-        isReadOnly = true
         bind(binder)
                 .withConverter(StringToIntegerConverter("Número inválido"))
                 .bind(NotaSaidaVo::numero)
@@ -141,14 +138,31 @@ class SaidaView : VerticalLayout(), View {
       }
       form.grid(NotaSaidaItemVo::class) {
         
+        val nav = FastNavigation(this, false, true)
+        
+        nav.changeColumnAfterLastRow = true
+        // nav.setRowValidation(false)
+        nav.openEditorOnTyping = true
+        nav.openEditorWithSingleClick = true
+        nav.setRowValidation(true)
+        nav.selectTextOnEditorOpen = true
+        nav.allowArrowToChangeRow = true
+        // nav.allowTabToChangeRow = true
+        // nav.addEditorSaveShortcut(KeyCode.ENTER)
+        
+        caption = "Produtos"
+        w = fillParent
         val edtDescricao = TextField().apply {
           isReadOnly = true
+          isEnabled = false
         }
         val cmbGrade = ComboBox<String>().apply {
-          isTextInputAllowed = false
+          isTextInputAllowed = true
+          isEmptySelectionAllowed = false
+          this.isScrollToSelectedItem = true
         }
-        val edtQuant = IntegerField().apply {
-        
+        val edtQuant = TextField().apply {
+          addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
         }
         val edtCodigo = TextField().apply {
           addValueChangeListener {
@@ -167,29 +181,48 @@ class SaidaView : VerticalLayout(), View {
         dataProvider = ListDataProvider(viewModel.notaSaidaVo.itensSaida)
         addColumnFor(NotaSaidaItemVo::codigo) {
           caption = "Código"
-          editorBinding = binder.bind(edtCodigo, NotaSaidaItemVo::codigo.getter, NotaSaidaItemVo::codigo.setter)
+          editorBinding = binder
+                  .forField(edtCodigo)
+                  .bind(NotaSaidaItemVo::codigo)
           
         }
         addColumnFor(NotaSaidaItemVo::descricao) {
           expandRatio = 1
           caption = "Descrição"
-          editorBinding =
-                  binder.bind(edtDescricao, NotaSaidaItemVo::descricao.getter, NotaSaidaItemVo::descricao.setter)
+          editorBinding = binder
+                  .forField(edtDescricao)
+                  .bind(NotaSaidaItemVo::descricao)
         }
         addColumnFor(NotaSaidaItemVo::grade) {
           caption = "Grade"
           editorBinding = binder.bind(cmbGrade, NotaSaidaItemVo::grade.getter, NotaSaidaItemVo::grade.setter)
+          this.width = 150.0
         }
         addColumnFor(NotaSaidaItemVo::quantidade) {
           caption = "Quantidade"
-          editorBinding = binder.bind(edtQuant, NotaSaidaItemVo::quantidade.getter, NotaSaidaItemVo::quantidade.setter)
+          editorBinding = binder
+                  .forField(edtQuant)
+                  .withConverter(StringToIntegerConverter("Quantidade Inválida"))
+                  .bind(NotaSaidaItemVo::quantidade)
+          align = VAlign.Right
         }
         editor.isEnabled = true
-        editor.addSaveListener {
-          
+        editor.isBuffered = true
+        editor.cancelCaption = "Cancela"
+        editor.saveCaption = "Salva"
+        nav.addEditorCloseListener {
           viewModel.notaSaidaVo.addNewItem()
           dataProvider.refreshAll()
           setDataProvider(dataProvider)
+        }
+        editor.addSaveListener {
+          viewModel.notaSaidaVo.addNewItem()
+          dataProvider.refreshAll()
+          setDataProvider(dataProvider)
+        }
+        editor.addOpenListener {
+          if (it.bean == null)
+            it.grid.editor.cancel()
         }
       }
       addClickListenerOk {

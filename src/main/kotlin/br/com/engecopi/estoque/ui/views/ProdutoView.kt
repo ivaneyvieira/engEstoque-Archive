@@ -39,7 +39,10 @@ import java.text.DecimalFormat
 class ProdutoView : VerticalLayout(), View {
   var grid: Grid<Produto>? = null
   private val viewModel = ProdutoViewModel { viewModel ->
-    grid?.dataProvider?.refreshAll()
+    grid?.apply{
+      dataProvider.refreshAll()
+      setDataProvider(dataProvider)
+    }
     dialogProduto.apply {
       
       gradeProduto.setItems(viewModel.grades)
