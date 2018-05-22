@@ -16,9 +16,10 @@ class DB {
     }
     
     fun connect() {
+      val db = br.com.engecopi.utils.DB("est")
       val ds = BasicDataSource()
-      ds.driverClassName = "com.mysql.jdbc.Driver"
-      ds.url = "jdbc:mysql://localhost/engEstoque"
+      ds.driverClassName = db.driver
+      ds.url = db.url
       Database.connect(ds)
     }
   }

@@ -5,8 +5,10 @@ import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import com.github.vok.karibudsl.autoViewProvider
+import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.label
+import com.github.vok.karibudsl.onLeftClick
 import com.github.vok.karibudsl.valoMenu
 import com.github.vok.karibudsl.w
 import com.vaadin.annotations.JavaScript
@@ -45,31 +47,43 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
             "https://code.responsivevoice.org/responsivevoice.js")
 @PushStateNavigation
 class EstoqueUI : UI() {
+  val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
   override fun init(request: VaadinRequest?) {
-    val content = valoMenu {
-      appTitle = "<h3>Estoque <strong>Engecopi</strong></h3>"
+    val user = LoginService.currentUser
+    if (user == null) {
+      content = LoginForm(title)
+    } else {
+      val content = valoMenu {
+        this.appTitle = title
+        
+        section("Usuário: " + user.login)
+        menuButton("Sair", icon = VaadinIcons.OUT){
+          onLeftClick {
+            LoginService.logout()
+          }
+        }
+        section("Movimentacao")
+        menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
+        menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
+        section("Consulta")
+        menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
+      }
       
-      section("Movimentacao")
-      menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
-      menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
-      section("Consulta")
-      menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
-    }
-    
-    // Read more about navigators here: https://github.com/mvysny/karibu-dsl
-    navigator = Navigator(this, content as ViewDisplay)
-    navigator.addProvider(autoViewProvider)
-    setErrorHandler { e ->
-      log.error("Erro não identificado ${e.throwable}", e.throwable)
-      // when the exception occurs, show a nice notification
-      Notification("Oops", "\n" +
-                           "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
-                   ERROR_MESSAGE)
-              .apply {
-                styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
-                position = Position.TOP_CENTER
-                show(Page.getCurrent())
-              }
+      // Read more about navigators here: https://github.com/mvysny/karibu-dsl
+      navigator = Navigator(this, content as ViewDisplay)
+      navigator.addProvider(autoViewProvider)
+      setErrorHandler { e ->
+        log.error("Erro não identificado ${e.throwable}", e.throwable)
+        // when the exception occurs, show a nice notification
+        Notification("Oops", "\n" +
+                             "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
+                     ERROR_MESSAGE)
+                .apply {
+                  styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
+                  position = Position.TOP_CENTER
+                  show(Page.getCurrent())
+                }
+      }
     }
   }
 }

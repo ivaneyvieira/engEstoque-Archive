@@ -16,9 +16,12 @@ import org.joda.time.LocalTime
 import org.joda.time.format.DateTimeFormat
 import java.math.BigDecimal
 
-class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
+class EntradaViewModel(val lojaDefault : Int, private val updateModel: (EntradaViewModel) -> Unit) {
+  
   val listaGrid: MutableCollection<Entrada> = mutableListOf()
-  val notaEntradaVo = NotaEntradaVo()
+  val notaEntradaVo = NotaEntradaVo().apply {
+    loja = lojaDefault
+  }
   
   fun processaNotaEntrada() = transaction {
     val notasEntrada = QuerySaci.querySaci.findNotaEntrada(
@@ -40,7 +43,7 @@ class EntradaViewModel(private val updateModel: (EntradaViewModel) -> Unit) {
   
   fun execPesquisa() {
     transaction {
-      val entradas = Entrada.all()
+      val entradas = Entrada.all().filter { it.loja == lojaDefault || lojaDefault == 0 }
       listaGrid.clear()
       listaGrid.addAll(entradas)
     }

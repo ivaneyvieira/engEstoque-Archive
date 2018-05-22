@@ -3,6 +3,7 @@ package br.com.engecopi.saci
 import br.com.engecopi.saci.beans.LojaSaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.utils.DB
 import br.com.engecopi.utils.lpad
 
@@ -31,10 +32,19 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
-  fun findLojas(): List<LojaSaci> {
+  fun findLojas(lojaDefault: Int): List<LojaSaci> {
     val sql = "findLojas.sql"
     return query(sql) { q ->
-      q.executeAndFetch(LojaSaci::class.java)
+      q.executeAndFetch(LojaSaci::class.java).filter { it.storeno == lojaDefault || lojaDefault == 0 }
+    }
+  }
+  
+  fun findUser(login: String): UserSaci? {
+    val sql = "userSenha.sql"
+    return query(sql) { q ->
+      q.addParameter("login", login)
+              .executeAndFetch(UserSaci::class.java)
+              .firstOrNull()
     }
   }
   

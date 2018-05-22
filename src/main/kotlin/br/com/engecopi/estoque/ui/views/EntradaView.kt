@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Entrada
 import br.com.engecopi.estoque.model.ItemEntrada
+import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
@@ -14,7 +15,6 @@ import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.clickShortcut
-import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
@@ -26,7 +26,6 @@ import com.github.vok.karibudsl.w
 import com.vaadin.data.ValidationResult
 import com.vaadin.data.Validator
 import com.vaadin.data.ValueContext
-import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.navigator.View
@@ -42,11 +41,12 @@ import java.text.SimpleDateFormat
 
 @AutoView("")
 class EntradaView : VerticalLayout(), View {
-  val viewModel = EntradaViewModel {
-   grid?.dataProvider?.refreshAll()
+  val lojaDefault = LoginService.currentUser?.storeno ?: 0
+  val viewModel = EntradaViewModel(lojaDefault) {
+    grid?.dataProvider?.refreshAll()
   }
   val grid: Grid<Entrada>?
-  var gridProduto: Grid<ItemEntrada>?=null
+  var gridProduto: Grid<ItemEntrada>? = null
   
   val dialogNotaEntrada = DialogNotaEntrada()
   
@@ -99,28 +99,28 @@ class EntradaView : VerticalLayout(), View {
       addSelectionListener {
         transaction {
           it.firstSelectedItem?.let {
-            if(it.isPresent) {
+            if (it.isPresent) {
               gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
             }
           }
         }
       }
     }
-    gridProduto = grid(ItemEntrada::class){
+    gridProduto = grid(ItemEntrada::class) {
       caption = "Itens da nota de entrada"
       removeAllColumns()
       setSizeFull()
       expandRatio = 1.0f
-      addColumn{  it.codigo}.apply {
+      addColumn { it.codigo }.apply {
         caption = "Código"
       }
-      addColumn{it.nome}.apply {
+      addColumn { it.nome }.apply {
         caption = "Descrição"
       }
-      addColumn{it.grade}.apply {
+      addColumn { it.grade }.apply {
         caption = "Grade"
       }
-      addColumn{it.quantidade}.apply {
+      addColumn { it.quantidade }.apply {
         caption = "Quantidade"
         setRenderer(NumberRenderer(DecimalFormat("0")))
         align = VAlign.Right
@@ -134,7 +134,7 @@ class EntradaView : VerticalLayout(), View {
       bind(binder)
               .withValidator(RequiredString("O número deve ser informado"))
               .bind(NotaEntradaVo::numero)
-              
+      
     }
     val serie = form.textField("Série") {
       bind(binder)
@@ -143,17 +143,16 @@ class EntradaView : VerticalLayout(), View {
       
     }
     val loja = form.comboBox<Int>("Loja") {
-      val lojas = QuerySaci.querySaci.findLojas()
+      val lojas = QuerySaci.querySaci.findLojas(lojaDefault)
       setItems(lojas.map { it.storeno })
-      setItemCaptionGenerator {storeno ->
-        lojas.firstOrNull { it.storeno?:0 == storeno }?.sigla ?: ""
+      setItemCaptionGenerator { storeno ->
+        lojas.firstOrNull { it.storeno ?: 0 == storeno }?.sigla ?: ""
       }
+      value = lojas.map { it.storeno }.firstOrNull()
       isTextInputAllowed = false
       isEmptySelectionAllowed = false
       this.isScrollToSelectedItem = true
-      bind(binder)
-              .withValidator(LojaValidator())
-              .bind(NotaEntradaVo::loja)
+      bind(binder).bind(NotaEntradaVo::loja)
     }
     
     init {
@@ -170,21 +169,10 @@ class EntradaView : VerticalLayout(), View {
 
 class RequiredString(val errorMsg: String) : Validator<String> {
   override fun apply(value: String?, context: ValueContext?): ValidationResult {
-   return if(value == null || value == "")
-     ValidationResult.error(errorMsg)
+    return if (value == null || value == "")
+      ValidationResult.error(errorMsg)
     else
-     ValidationResult.ok()
+      ValidationResult.ok()
   }
 }
 
-class LojaValidator : Validator<Int> {
-  override fun apply(value: Int?, context: ValueContext?): ValidationResult {
-    return if (value == null)
-      ValidationResult.error("A loja deve ser informada")
-    else
-      if (listOf(1, 2, 3, 4, 5, 6, 7, 10).contains(value))
-        ValidationResult.ok()
-      else
-        ValidationResult.error("A loja é inválida")
-  }
-}

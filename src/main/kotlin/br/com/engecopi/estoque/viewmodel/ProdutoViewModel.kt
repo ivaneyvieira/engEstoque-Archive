@@ -9,13 +9,13 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-class ProdutoViewModel(val updateModel: (ProdutoViewModel) -> Unit) {
+class ProdutoViewModel(val lojaDefault : Int, val updateModel: (ProdutoViewModel) -> Unit) {
   var pesquisa: String = ""
   val listaGrid: MutableList<Produto> = mutableListOf()
   var grades: List<String> = emptyList()
   val produtoVo = ProdutoVo()
   
-  fun lojasSaldo() = transaction { Saldo.lojas() }
+  fun lojasSaldo() = transaction { Saldo.lojas().filter { it == lojaDefault || lojaDefault == 0 } }
   
   fun execPesquisa() {
     transaction {

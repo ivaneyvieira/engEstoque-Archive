@@ -2,16 +2,19 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemSaida
 import br.com.engecopi.estoque.model.Saida
+import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
 import br.com.engecopi.estoque.viewmodel.NotaSaidaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
+import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
+import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
@@ -37,7 +40,8 @@ import java.text.SimpleDateFormat
 
 @AutoView
 class SaidaView : VerticalLayout(), View {
-  val viewModel = SaidaViewModel {
+  val lojaDefault = LoginService.currentUser?.storeno ?: 0
+  val viewModel = SaidaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
   }
   val grid: Grid<Saida>?
@@ -130,25 +134,27 @@ class SaidaView : VerticalLayout(), View {
                 .withConverter(StringToIntegerConverter("Número inválido"))
                 .bind(NotaSaidaVo::numero)
       }
-      form.textField("Loja") {
-        bind(binder)
-                .withConverter(StringToIntegerConverter("A loja deve ser numérica"))
-                .withValidator(LojaValidator())
-                .bind(NotaSaidaVo::loja)
+      form.comboBox<Int>("Loja") {
+        val lojas = QuerySaci.querySaci.findLojas(lojaDefault)
+        setItems(lojas.map { it.storeno })
+        setItemCaptionGenerator { storeno ->
+          lojas.firstOrNull { it.storeno ?: 0 == storeno }?.sigla ?: ""
+        }
+        value = lojas.map { it.storeno }.firstOrNull()
+        isTextInputAllowed = false
+        isEmptySelectionAllowed = false
+        this.isScrollToSelectedItem = true
+        bind(binder).bind(NotaSaidaVo::loja)
       }
       form.grid(NotaSaidaItemVo::class) {
-        
         val nav = FastNavigation(this, false, true)
         
         nav.changeColumnAfterLastRow = true
-        // nav.setRowValidation(false)
         nav.openEditorOnTyping = true
         nav.openEditorWithSingleClick = true
         nav.setRowValidation(true)
         nav.selectTextOnEditorOpen = true
         nav.allowArrowToChangeRow = true
-        // nav.allowTabToChangeRow = true
-        // nav.addEditorSaveShortcut(KeyCode.ENTER)
         
         caption = "Produtos"
         w = fillParent
@@ -226,7 +232,7 @@ class SaidaView : VerticalLayout(), View {
         }
       }
       addClickListenerOk {
-      
+        viewModel.salvaSaida();
       }
     }
   }

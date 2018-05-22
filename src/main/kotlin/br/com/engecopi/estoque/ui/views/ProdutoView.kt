@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel.ProdutoVo
@@ -37,8 +38,9 @@ import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : VerticalLayout(), View {
+  val lojaDefault= LoginService.currentUser?.storeno ?: 0
   var grid: Grid<Produto>? = null
-  private val viewModel = ProdutoViewModel { viewModel ->
+  private val viewModel = ProdutoViewModel(lojaDefault) { viewModel ->
     grid?.apply{
       dataProvider.refreshAll()
       setDataProvider(dataProvider)
