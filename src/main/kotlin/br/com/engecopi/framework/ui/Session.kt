@@ -1,4 +1,4 @@
-package br.com.engecopi.estoque.ui
+package br.com.engecopi.framework.ui
 
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinResponse
@@ -48,7 +48,8 @@ class SessionScoped<out R>(private val clazz: Class<R>) : ReadOnlyProperty<Any?,
  * The object is bound under the string key of class full name.
  * @param R the object type
  */
-inline fun <reified R> lazySession() where R : Any, R : Serializable = SessionScoped(R::class.java)
+inline fun <reified R> lazySession() where R : Any, R : Serializable =
+        SessionScoped(R::class.java)
 
 /**
  * Just a namespace object for attaching your [SessionScoped] objects.
@@ -132,9 +133,11 @@ object Cookies {
   }
 }
 
-infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
+infix operator fun Cookies.plusAssign(cookie: Cookie) =
+        set(cookie.name, cookie)
 
-infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
+infix operator fun Cookies.minusAssign(cookie: Cookie) =
+        set(cookie.name, null)
 
 /**
  * Checks that this thread runs with Vaadin UI set.

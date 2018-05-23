@@ -40,8 +40,8 @@ class SaidaViewModel(val lojaDefault: Int, private val updateModel: (SaidaViewMo
   fun salvaSaida() = transaction {
     val dtf = DateTimeFormat.forPattern("HH:mm")
     val saidaNova = Saida.new {
-      numero = Saida.novoNumero()
-      loja = notaSaidaVo.loja
+      this.numero = Saida.novoNumero()
+      this.loja = notaSaidaVo.loja
       this.data = LocalDate.now().toDateTime(LocalTime(0, 0))
       this.hora = dtf.print(DateTime.now())
     }
@@ -57,6 +57,14 @@ class SaidaViewModel(val lojaDefault: Int, private val updateModel: (SaidaViewMo
         prd.recalcula(notaSaidaVo.loja)
       }
     }
+    execPesquisa()
+  }
+  
+  fun removeSaida(saida: Saida) = transaction{
+    saida.itens.forEach {
+      it.delete()
+    }
+    saida.delete()
     execPesquisa()
   }
 }

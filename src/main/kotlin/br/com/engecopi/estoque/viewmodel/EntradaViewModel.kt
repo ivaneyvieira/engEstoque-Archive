@@ -6,6 +6,8 @@ import br.com.engecopi.estoque.model.ItemEntrada
 import br.com.engecopi.estoque.model.ItensEntrada
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Produtos
+import br.com.engecopi.framework.viewmodel.EViewModel
+import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import org.jetbrains.exposed.sql.and
@@ -16,7 +18,7 @@ import org.joda.time.LocalTime
 import org.joda.time.format.DateTimeFormat
 import java.math.BigDecimal
 
-class EntradaViewModel(val lojaDefault : Int, private val updateModel: (EntradaViewModel) -> Unit) {
+class EntradaViewModel(val lojaDefault : Int,  updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   
   val listaGrid: MutableCollection<Entrada> = mutableListOf()
   val notaEntradaVo = NotaEntradaVo().apply {
@@ -42,12 +44,11 @@ class EntradaViewModel(val lojaDefault : Int, private val updateModel: (EntradaV
   }
   
   fun execPesquisa() {
-    transaction {
+    exec {
       val entradas = Entrada.all().filter { it.loja == lojaDefault || lojaDefault == 0 }
       listaGrid.clear()
       listaGrid.addAll(entradas)
     }
-    updateModel(this)
   }
   
   private fun addNotaEntrada(nota: NotaEntradaSaci) {

@@ -5,6 +5,8 @@ import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel.ProdutoVo
+import br.com.engecopi.framework.ui.view.DialogPopup
+import br.com.engecopi.framework.ui.view.LayoutView
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
 import com.github.vok.karibudsl.VAlign
@@ -19,17 +21,14 @@ import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.horizontalLayout
 import com.github.vok.karibudsl.isMargin
-import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode.DELETE
 import com.vaadin.event.ShortcutAction.KeyCode.INSERT
-import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.View
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
-import com.vaadin.ui.Label
 import com.vaadin.ui.Notification
 import com.vaadin.ui.TextField
 import com.vaadin.ui.VerticalLayout
@@ -37,7 +36,7 @@ import com.vaadin.ui.renderers.NumberRenderer
 import java.text.DecimalFormat
 
 @AutoView
-class ProdutoView : VerticalLayout(), View {
+class ProdutoView : LayoutView() {
   val lojaDefault= LoginService.currentUser?.storeno ?: 0
   var grid: Grid<Produto>? = null
   private val viewModel = ProdutoViewModel(lojaDefault) { viewModel ->

@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.ui
 
+import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.UserSaci
 import com.github.vok.karibudsl.alignment

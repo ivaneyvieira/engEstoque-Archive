@@ -6,6 +6,8 @@ import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
+import br.com.engecopi.framework.ui.view.DialogPopup
+import br.com.engecopi.framework.ui.view.LayoutView
 import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
@@ -40,9 +42,9 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
 @AutoView("")
-class EntradaView : VerticalLayout(), View {
+class EntradaView : LayoutView() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
-  val viewModel = EntradaViewModel(lojaDefault) {
+  override val viewModel = EntradaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
   }
   val grid: Grid<Entrada>?
@@ -72,7 +74,7 @@ class EntradaView : VerticalLayout(), View {
           dialogNotaEntrada.show()
         }
       }
-      button("Remover Remover Nota de Entrada") {
+      button("Remover Nota de Entrada") {
         clickShortcut = Ctrl + KeyCode.DELETE
         addClickListener {
         }

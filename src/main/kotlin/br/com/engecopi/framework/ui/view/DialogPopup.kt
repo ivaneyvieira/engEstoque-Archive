@@ -1,8 +1,7 @@
-package br.com.engecopi.estoque.ui.views
+package br.com.engecopi.framework.ui.view
 
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.shared.Registration
-import com.vaadin.shared.ui.ContentMode
 import com.vaadin.ui.Button
 import com.vaadin.ui.Component
 import com.vaadin.ui.FormLayout
@@ -12,9 +11,6 @@ import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
 import com.vaadin.ui.themes.ValoTheme
-import org.jsoup.Jsoup
-import org.jsoup.safety.Whitelist
-import java.util.stream.*
 import kotlin.reflect.KClass
 
 open class DialogPopup<BEAN : Any>(

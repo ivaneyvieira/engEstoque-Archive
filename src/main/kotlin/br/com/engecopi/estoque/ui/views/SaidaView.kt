@@ -7,6 +7,8 @@ import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
 import br.com.engecopi.estoque.viewmodel.NotaSaidaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
+import br.com.engecopi.framework.ui.view.DialogPopup
+import br.com.engecopi.framework.ui.view.LayoutView
 import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
@@ -39,12 +41,12 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
 @AutoView
-class SaidaView : VerticalLayout(), View {
+class SaidaView : LayoutView() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
   val viewModel = SaidaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
   }
-  val grid: Grid<Saida>?
+  var grid: Grid<Saida>? = null
   var gridProduto: Grid<ItemSaida>? = null
   
   val dialogNotaSaida = DialogNotaSaida()
@@ -71,8 +73,12 @@ class SaidaView : VerticalLayout(), View {
           dialogNotaSaida.show()
         }
       }
-      button("Remover Remover Nota de Saída") {
-      
+      button("Remover Nota de Saída") {
+        addClickListener {
+          grid?.selectedItems?.firstOrNull()?.let {saida ->
+                        viewModel.removeSaida(saida)
+          }
+        }
       }
     }
     grid = grid(Saida::class) {
@@ -130,6 +136,8 @@ class SaidaView : VerticalLayout(), View {
       w = 75.perc
       form.w = 100.perc
       form.textField(caption = "Número") {
+        isReadOnly = true
+        addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
         bind(binder)
                 .withConverter(StringToIntegerConverter("Número inválido"))
                 .bind(NotaSaidaVo::numero)
@@ -232,7 +240,8 @@ class SaidaView : VerticalLayout(), View {
         }
       }
       addClickListenerOk {
-        viewModel.salvaSaida();
+        dialogNotaSaida.binder.writeBean(viewModel.notaSaidaVo)
+        viewModel.salvaSaida()
       }
     }
   }
