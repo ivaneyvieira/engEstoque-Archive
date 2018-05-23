@@ -75,8 +75,10 @@ object SystemUtils {
   }
   
   @Throws(IOException::class)
-  fun readFile(path: String, encoding: Charset): String {
-    val encoded = Files.readAllBytes(Paths.get(path))
+  fun readFile(filename: String, encoding: Charset): String {
+    val resource = SystemUtils::class.java.getResource(filename)
+    val path =Paths.get(resource.toURI())
+    val encoded = Files.readAllBytes(path)
     return String(encoded, encoding)
   }
 }

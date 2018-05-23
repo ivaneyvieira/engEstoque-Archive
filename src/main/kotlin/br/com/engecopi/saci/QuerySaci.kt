@@ -10,7 +10,7 @@ import br.com.engecopi.utils.lpad
 class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   
   val findProduto = Cache<String, List<ProdutoSaci>> { prdno ->
-    val sql = "findProdutos.sql"
+    val sql = "/sqlSaci/findProdutos.sql"
     query(sql) { q ->
       val codigo = prdno.lpad(16, " ")
       q.addParameter("prdno", codigo)
@@ -23,7 +23,7 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   }
   
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
-    val sql = "findNotaEntrada.sql"
+    val sql = "/sqlSaci/findNotaEntrada.sql"
     return query(sql) { q ->
       q.addParameter("storeno", "$storeno")
               .addParameter("nfname", nfname)
@@ -33,14 +33,14 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   }
   
   fun findLojas(lojaDefault: Int): List<LojaSaci> {
-    val sql = "findLojas.sql"
+    val sql = "/sqlSaci/findLojas.sql"
     return query(sql) { q ->
       q.executeAndFetch(LojaSaci::class.java).filter { it.storeno == lojaDefault || lojaDefault == 0 }
     }
   }
   
   fun findUser(login: String): UserSaci? {
-    val sql = "userSenha.sql"
+    val sql = "/sqlSaci/userSenha.sql"
     return query(sql) { q ->
       q.addParameter("login", login)
               .executeAndFetch(UserSaci::class.java)
