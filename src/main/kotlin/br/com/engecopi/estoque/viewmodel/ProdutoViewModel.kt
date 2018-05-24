@@ -3,13 +3,14 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Produtos
 import br.com.engecopi.estoque.model.Saldo
+import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-class ProdutoViewModel(val lojaDefault : Int, val updateModel: (ProdutoViewModel) -> Unit) {
+class ProdutoViewModel(private val lojaDefault : Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   var pesquisa: String = ""
   val listaGrid: MutableList<Produto> = mutableListOf()
   var grades: List<String> = emptyList()
@@ -17,17 +18,16 @@ class ProdutoViewModel(val lojaDefault : Int, val updateModel: (ProdutoViewModel
   
   fun lojasSaldo() = transaction { Saldo.lojas().filter { it == lojaDefault || lojaDefault == 0 } }
   
-  fun execPesquisa() {
+  fun execPesquisa() = exec{
     transaction {
       listaGrid.clear()
       listaGrid.addAll(Produto.all().filter { prd ->
         prd.nome.contains(pesquisa) || prd.codigo == pesquisa
       })
     }
-    updateModel(this)
   }
   
-  fun updateGrades(codigo: String) {
+  fun updateGrades(codigo: String) = exec {
     val produtos = QuerySaci.querySaci.findProduto(codigo)
     produtoVo.codigoProduto = codigo.trim()
     produtoVo.descricaoProduto = produtos.firstOrNull()?.nome ?: "Produto não encontrado"
@@ -37,7 +37,6 @@ class ProdutoViewModel(val lojaDefault : Int, val updateModel: (ProdutoViewModel
       gradesSaci
     else
       listOf("")
-    updateModel(this)
   }
   
   fun saveUpdateProduto() {

@@ -11,8 +11,8 @@ open class ViewModel(private val updateView: (e:ViewModel) -> Unit) {
     showMessage = block
   }
   
-  fun updateModel(e: EViewModel?) {
-    e?.let { e ->
+  fun updateModel(exception: EViewModel?) {
+    exception?.let { e ->
       showMessage?.let { showMessage ->
         showMessage(e)
       }

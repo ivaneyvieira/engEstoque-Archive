@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.ItemSaida
 import br.com.engecopi.estoque.model.Saida
 import br.com.engecopi.estoque.ui.LoginService
-import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
 import br.com.engecopi.estoque.viewmodel.NotaSaidaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
@@ -27,11 +26,9 @@ import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.navigator.View
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
-import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
@@ -41,9 +38,9 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
 @AutoView
-class SaidaView : LayoutView() {
+class SaidaView : LayoutView<SaidaViewModel>() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
-  val viewModel = SaidaViewModel(lojaDefault) {
+  override val viewModel = SaidaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
   }
   var grid: Grid<Saida>? = null
@@ -52,80 +49,80 @@ class SaidaView : LayoutView() {
   val dialogNotaSaida = DialogNotaSaida()
   
   init {
-    isMargin = true
-    setSizeFull()
-    title("Saída de produtos")
     
-    horizontalLayout {
-      isVisible = false
-      w = fillParent
-      isMargin = false
-      textField("Pesquisa") {
+    form("Saída de produtos") {
+      
+      horizontalLayout {
+        isVisible = false
         w = fillParent
-      }
-    }
-    
-    horizontalLayout {
-      button("Adiciona Nota de Saída") {
-        addClickListener {
-          viewModel.novaNotaEntrada()
-          dialogNotaSaida.binder.readBean(viewModel.notaSaidaVo)
-          dialogNotaSaida.show()
+        isMargin = false
+        textField("Pesquisa") {
+          w = fillParent
         }
       }
-      button("Remover Nota de Saída") {
-        addClickListener {
-          grid?.selectedItems?.firstOrNull()?.let {saida ->
-                        viewModel.removeSaida(saida)
+      
+      horizontalLayout {
+        button("Adiciona Nota de Saída") {
+          addClickListener {
+            viewModel.novaNotaEntrada()
+            dialogNotaSaida.binder.readBean(viewModel.notaSaidaVo)
+            dialogNotaSaida.show()
           }
         }
-      }
-    }
-    grid = grid(Saida::class) {
-      dataProvider = ListDataProvider(viewModel.listaGrid)
-      removeAllColumns()
-      setSizeFull()
-      expandRatio = 1.0f
-      addColumnFor(Saida::numero)
-      addColumnFor(Saida::loja) {
-        caption = "Loja"
-      }
-      addColumnFor(Saida::dataSaida) {
-        caption = "Data"
-        setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
-      }
-      addColumnFor(Saida::hora) {
-        caption = "Hora"
-      }
-      addSelectionListener {
-        transaction {
-          it.firstSelectedItem?.let {
-            if (it.isPresent) {
-              gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
+        button("Remover Nota de Saída") {
+          addClickListener {
+            grid?.selectedItems?.firstOrNull()?.let { saida ->
+              viewModel.removeSaida(saida)
             }
           }
-          
         }
       }
-    }
-    gridProduto = grid(ItemSaida::class) {
-      caption = "Itens da nota de saída"
-      removeAllColumns()
-      setSizeFull()
-      expandRatio = 1.0f
-      addColumn { it.codigo }.apply {
-        caption = "Código"
+      grid = grid(Saida::class) {
+        dataProvider = ListDataProvider(viewModel.listaGrid)
+        removeAllColumns()
+        setSizeFull()
+        expandRatio = 1.0f
+        addColumnFor(Saida::numero)
+        addColumnFor(Saida::loja) {
+          caption = "Loja"
+        }
+        addColumnFor(Saida::dataSaida) {
+          caption = "Data"
+          setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
+        }
+        addColumnFor(Saida::hora) {
+          caption = "Hora"
+        }
+        addSelectionListener {
+          transaction {
+            it.firstSelectedItem?.let {
+              if (it.isPresent) {
+                gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
+              }
+            }
+            
+          }
+        }
       }
-      addColumn { it.nome }.apply {
-        caption = "Descrição"
-      }
-      addColumn { it.grade }.apply {
-        caption = "Grade"
-      }
-      addColumn { it.quantidade }.apply {
-        caption = "Quantidade"
-        setRenderer(NumberRenderer(DecimalFormat("0")))
-        align = VAlign.Right
+      gridProduto = grid(ItemSaida::class) {
+        caption = "Itens da nota de saída"
+        removeAllColumns()
+        setSizeFull()
+        expandRatio = 1.0f
+        addColumn { it.codigo }.apply {
+          caption = "Código"
+        }
+        addColumn { it.nome }.apply {
+          caption = "Descrição"
+        }
+        addColumn { it.grade }.apply {
+          caption = "Grade"
+        }
+        addColumn { it.quantidade }.apply {
+          caption = "Quantidade"
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
       }
     }
     viewModel.execPesquisa()

@@ -26,21 +26,20 @@ import com.github.vok.karibudsl.w
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode.DELETE
 import com.vaadin.event.ShortcutAction.KeyCode.INSERT
-import com.vaadin.navigator.View
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Notification
 import com.vaadin.ui.TextField
-import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.NumberRenderer
 import java.text.DecimalFormat
 
 @AutoView
-class ProdutoView : LayoutView() {
-  val lojaDefault= LoginService.currentUser?.storeno ?: 0
+class ProdutoView : LayoutView<ProdutoViewModel>() {
+  val lojaDefault = LoginService.currentUser?.storeno ?: 0
   var grid: Grid<Produto>? = null
-  private val viewModel = ProdutoViewModel(lojaDefault) { viewModel ->
-    grid?.apply{
+  override val viewModel = ProdutoViewModel(lojaDefault) { viewModel ->
+    viewModel as ProdutoViewModel
+    grid?.apply {
       dataProvider.refreshAll()
       setDataProvider(dataProvider)
     }
@@ -98,7 +97,7 @@ class ProdutoView : LayoutView() {
         }
       }
       button("Atualiza Saldo") {
-        addClickListener{
+        addClickListener {
           val produto = grid?.selectedItems?.firstOrNull()
           if (produto == null) {
             Notification.show("Não há produto selecionado",
@@ -158,7 +157,7 @@ class ProdutoView : LayoutView() {
         bind(binder).bind(ProdutoVo::codigoProduto)
       }
       
-      descricaoProduto = form.textField  ("Descrição"){
+      descricaoProduto = form.textField("Descrição") {
         isReadOnly = true
       }
       

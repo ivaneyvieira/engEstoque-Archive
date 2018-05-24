@@ -42,7 +42,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
 @AutoView("")
-class EntradaView : LayoutView() {
+class EntradaView : LayoutView<EntradaViewModel>() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
   override val viewModel = EntradaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
