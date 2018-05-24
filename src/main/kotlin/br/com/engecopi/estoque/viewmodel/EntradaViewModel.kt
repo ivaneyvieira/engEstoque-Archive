@@ -6,7 +6,6 @@ import br.com.engecopi.estoque.model.ItemEntrada
 import br.com.engecopi.estoque.model.ItensEntrada
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Produtos
-import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
@@ -18,14 +17,14 @@ import org.joda.time.LocalTime
 import org.joda.time.format.DateTimeFormat
 import java.math.BigDecimal
 
-class EntradaViewModel(val lojaDefault : Int,  updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
+class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   
   val listaGrid: MutableCollection<Entrada> = mutableListOf()
   val notaEntradaVo = NotaEntradaVo().apply {
     loja = lojaDefault
   }
   
-  fun processaNotaEntrada() = transaction {
+  fun processaNotaEntrada() = exec {
     val notasEntrada = QuerySaci.querySaci.findNotaEntrada(
             storeno = notaEntradaVo.loja,
             nfname = notaEntradaVo.numero,
@@ -40,11 +39,10 @@ class EntradaViewModel(val lojaDefault : Int,  updateModel: (ViewModel) -> Unit)
     notasProduto.forEach { nota ->
       addNotaEntrada(nota)
     }
-    execPesquisa()
   }
   
-  fun execPesquisa() {
-    exec {
+  override fun execUpdate() {
+    transaction {
       val entradas = Entrada.all().filter { it.loja == lojaDefault || lojaDefault == 0 }
       listaGrid.clear()
       listaGrid.addAll(entradas)

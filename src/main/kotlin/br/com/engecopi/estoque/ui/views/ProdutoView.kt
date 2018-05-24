@@ -138,7 +138,7 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
         }
       }
     }
-    viewModel.execPesquisa()
+    viewModel.updateModel()
   }
   
   inner class DialogProduto : DialogPopup<ProdutoVo>("Produto", ProdutoVo::class) {

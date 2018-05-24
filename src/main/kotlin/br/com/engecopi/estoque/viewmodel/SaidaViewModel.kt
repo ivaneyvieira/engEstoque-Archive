@@ -13,13 +13,15 @@ import org.joda.time.LocalTime
 import org.joda.time.format.DateTimeFormat
 import java.math.BigDecimal
 
-class SaidaViewModel(val lojaDefault: Int,  updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
+class SaidaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   val listaGrid: MutableCollection<Saida> = mutableListOf()
   val notaSaidaVo = NotaSaidaVo()
   
-  fun execPesquisa() = exec {
-    listaGrid.clear()
-    listaGrid.addAll(Saida.all())
+  override fun execUpdate() {
+    transaction {
+      listaGrid.clear()
+      listaGrid.addAll(Saida.all())
+    }
   }
   
   fun novaNotaEntrada() {
@@ -37,7 +39,7 @@ class SaidaViewModel(val lojaDefault: Int,  updateModel: (ViewModel) -> Unit) : 
     codigo?.let { Produto.find { Produtos.codigo eq it }.map { it.grade } } ?: emptyList()
   }
   
-  fun salvaSaida() = transaction {
+  fun salvaSaida() = exec {
     val dtf = DateTimeFormat.forPattern("HH:mm")
     val saidaNova = Saida.new {
       this.numero = Saida.novoNumero()
@@ -57,15 +59,13 @@ class SaidaViewModel(val lojaDefault: Int,  updateModel: (ViewModel) -> Unit) : 
         prd.recalcula(notaSaidaVo.loja)
       }
     }
-    execPesquisa()
   }
   
-  fun removeSaida(saida: Saida) = transaction{
+  fun removeSaida(saida: Saida) = exec {
     saida.itens.forEach {
       it.delete()
     }
     saida.delete()
-    execPesquisa()
   }
 }
 

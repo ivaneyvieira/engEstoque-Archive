@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-class ProdutoViewModel(private val lojaDefault : Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
+class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   var pesquisa: String = ""
   val listaGrid: MutableList<Produto> = mutableListOf()
   var grades: List<String> = emptyList()
@@ -18,7 +18,7 @@ class ProdutoViewModel(private val lojaDefault : Int, updateModel: (ViewModel) -
   
   fun lojasSaldo() = transaction { Saldo.lojas().filter { it == lojaDefault || lojaDefault == 0 } }
   
-  fun execPesquisa() = exec{
+  override fun execUpdate() {
     transaction {
       listaGrid.clear()
       listaGrid.addAll(Produto.all().filter { prd ->
@@ -39,23 +39,22 @@ class ProdutoViewModel(private val lojaDefault : Int, updateModel: (ViewModel) -
       listOf("")
   }
   
-  fun saveUpdateProduto() {
-    transaction {
-      val produto = Produto.find { (Produtos.codigo eq produtoVo.codigoProduto) and
-              (Produtos.grade eq produtoVo.gradeProduto) }.firstOrNull()
-      if (produto == null) {
-        Produto.new {
-          codigo = produtoVo.codigoProduto
-          grade = produtoVo.gradeProduto
-          codebar = produtoVo.codebar
-          data_cadastro = DateTime.now()
-        }
-      } else {
-        produto.grade = produtoVo.gradeProduto
-        produto.codebar = produtoVo.codebar
+  fun saveUpdateProduto() = exec {
+    val produto = Produto.find {
+      (Produtos.codigo eq produtoVo.codigoProduto) and
+              (Produtos.grade eq produtoVo.gradeProduto)
+    }.firstOrNull()
+    if (produto == null) {
+      Produto.new {
+        codigo = produtoVo.codigoProduto
+        grade = produtoVo.gradeProduto
+        codebar = produtoVo.codebar
+        data_cadastro = DateTime.now()
       }
+    } else {
+      produto.grade = produtoVo.gradeProduto
+      produto.codebar = produtoVo.codebar
     }
-    execPesquisa()
   }
   
   fun saldoProduto(prd: Produto?, loja: Int?) = transaction {
@@ -68,16 +67,14 @@ class ProdutoViewModel(private val lojaDefault : Int, updateModel: (ViewModel) -
     else ""
   }
   
-  fun deleta(produto: Produto) = transaction {
+  fun deleta(produto: Produto) = exec {
     produto.delete()
-    execPesquisa()
   }
   
-  fun atualizaSaldo(produto: Produto) = transaction{
-    Saldo.lojas().forEach {loja->
+  fun atualizaSaldo(produto: Produto) = exec {
+    Saldo.lojas().forEach { loja ->
       produto.recalcula(loja)
     }
-    execPesquisa()
   }
   
   data class ProdutoVo(

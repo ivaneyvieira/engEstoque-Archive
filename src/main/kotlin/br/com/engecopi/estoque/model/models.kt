@@ -140,9 +140,9 @@ class Saida(id: EntityID<Int>) : IntEntity(id) {
   
   val itens by ItemSaida referrersOn ItensSaida.notaSaida
   
-  val cacheItens = Cache { itens }
+  val cacheItens = Cache { transaction {itens} }
   
-  fun cacheItens() = cacheItens.value()
+  fun cacheItens() = transaction {cacheItens.value()}
 
   val dataSaida: Date
     get() = data.toDate()

@@ -11,13 +11,18 @@ open class ViewModel(private val updateView: (e:ViewModel) -> Unit) {
     showMessage = block
   }
   
-  fun updateModel(exception: EViewModel?) {
-    exception?.let { e ->
-      showMessage?.let { showMessage ->
-        showMessage(e)
+  protected open fun execUpdate(){
+  
+  }
+  
+  fun updateModel(exception: EViewModel? = null) {
+    if(exception == null)
+      execUpdate()
+    else    {
+      this.showMessage?.let { showMsg ->
+        showMsg(exception)
       }
     }
-    
     updateView(this)
   }
   
@@ -30,7 +35,7 @@ open class ViewModel(private val updateView: (e:ViewModel) -> Unit) {
           inExcection = true
           block()
           inExcection = false
-          updateModel(null)
+          updateModel()
         }
       } catch (e: EViewModel) {
         updateModel(e)

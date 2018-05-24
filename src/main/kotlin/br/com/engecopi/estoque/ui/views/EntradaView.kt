@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Entrada
 import br.com.engecopi.estoque.model.ItemEntrada
 import br.com.engecopi.estoque.ui.LoginService
-import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
 import br.com.engecopi.framework.ui.view.DialogPopup
@@ -30,11 +29,9 @@ import com.vaadin.data.Validator
 import com.vaadin.data.ValueContext
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode
-import com.vaadin.navigator.View
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.WARNING_MESSAGE
-import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -47,88 +44,86 @@ class EntradaView : LayoutView<EntradaViewModel>() {
   override val viewModel = EntradaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
   }
-  val grid: Grid<Entrada>?
+  var grid: Grid<Entrada>? = null
   var gridProduto: Grid<ItemEntrada>? = null
   
   val dialogNotaEntrada = DialogNotaEntrada()
   
   init {
-    isMargin = true
-    setSizeFull()
-    title("Entrada de produtos")
-    
-    horizontalLayout {
-      isVisible = false
-      w = fillParent
-      isMargin = false
-      textField("Pesquisa") {
+    form("Entrada de produtos") {
+      horizontalLayout {
+        isVisible = false
         w = fillParent
-      }
-    }
-    
-    horizontalLayout {
-      button("Carregar Nota de Entrada") {
-        clickShortcut = Ctrl + KeyCode.INSERT
-        addClickListener {
-          dialogNotaEntrada.binder.readBean(viewModel.notaEntradaVo)
-          dialogNotaEntrada.show()
+        isMargin = false
+        textField("Pesquisa") {
+          w = fillParent
         }
       }
-      button("Remover Nota de Entrada") {
-        clickShortcut = Ctrl + KeyCode.DELETE
-        addClickListener {
+      
+      horizontalLayout {
+        button("Carregar Nota de Entrada") {
+          clickShortcut = Ctrl + KeyCode.INSERT
+          addClickListener {
+            dialogNotaEntrada.binder.readBean(viewModel.notaEntradaVo)
+            dialogNotaEntrada.show()
+          }
+        }
+        button("Remover Nota de Entrada") {
+          clickShortcut = Ctrl + KeyCode.DELETE
+          addClickListener {
+          }
         }
       }
-    }
-    grid = grid(Entrada::class) {
-      dataProvider = ListDataProvider(viewModel.listaGrid)
-      removeAllColumns()
-      setSizeFull()
-      expandRatio = 1.0f
-      addColumnFor(Entrada::numero) {
-        caption = "Número"
-      }
-      addColumnFor(Entrada::loja) {
-        caption = "Loja"
-      }
-      addColumnFor(Entrada::dataEntrada) {
-        caption = "Data"
-        setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
-      }
-      addColumnFor(Entrada::hora) {
-        caption = "Hora"
-      }
-      addSelectionListener {
-        transaction {
-          it.firstSelectedItem?.let {
-            if (it.isPresent) {
-              gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
+      grid = grid(Entrada::class) {
+        dataProvider = ListDataProvider(viewModel.listaGrid)
+        removeAllColumns()
+        setSizeFull()
+        expandRatio = 1.0f
+        addColumnFor(Entrada::numero) {
+          caption = "Número"
+        }
+        addColumnFor(Entrada::loja) {
+          caption = "Loja"
+        }
+        addColumnFor(Entrada::dataEntrada) {
+          caption = "Data"
+          setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
+        }
+        addColumnFor(Entrada::hora) {
+          caption = "Hora"
+        }
+        addSelectionListener {
+          transaction {
+            it.firstSelectedItem?.let {
+              if (it.isPresent) {
+                gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
+              }
             }
           }
         }
       }
+      gridProduto = grid(ItemEntrada::class) {
+        caption = "Itens da nota de entrada"
+        removeAllColumns()
+        setSizeFull()
+        expandRatio = 1.0f
+        addColumn { it.codigo }.apply {
+          caption = "Código"
+        }
+        addColumn { it.nome }.apply {
+          caption = "Descrição"
+        }
+        addColumn { it.grade }.apply {
+          caption = "Grade"
+        }
+        addColumn { it.quantidade }.apply {
+          caption = "Quantidade"
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+      }
     }
-    gridProduto = grid(ItemEntrada::class) {
-      caption = "Itens da nota de entrada"
-      removeAllColumns()
-      setSizeFull()
-      expandRatio = 1.0f
-      addColumn { it.codigo }.apply {
-        caption = "Código"
-      }
-      addColumn { it.nome }.apply {
-        caption = "Descrição"
-      }
-      addColumn { it.grade }.apply {
-        caption = "Grade"
-      }
-      addColumn { it.quantidade }.apply {
-        caption = "Quantidade"
-        setRenderer(NumberRenderer(DecimalFormat("0")))
-        align = VAlign.Right
-      }
-    }
-    viewModel.execPesquisa()
+    viewModel.updateModel()
   }
   
   inner class DialogNotaEntrada : DialogPopup<NotaEntradaVo>("Pesquisa Nota de Entrada", NotaEntradaVo::class) {

@@ -22,9 +22,11 @@ import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.horizontalLayout
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.refresh
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.converter.StringToIntegerConverter
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
@@ -41,7 +43,9 @@ import java.text.SimpleDateFormat
 class SaidaView : LayoutView<SaidaViewModel>() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
   override val viewModel = SaidaViewModel(lojaDefault) {
-    grid?.dataProvider?.refreshAll()
+    gridProduto?.dataProvider = DataProvider.ofItems()
+    gridProduto?.refresh()
+    grid?.refresh()
   }
   var grid: Grid<Saida>? = null
   var gridProduto: Grid<ItemSaida>? = null
@@ -82,7 +86,9 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         removeAllColumns()
         setSizeFull()
         expandRatio = 1.0f
-        addColumnFor(Saida::numero)
+        addColumnFor(Saida::numero) {
+          caption = "Número"
+        }
         addColumnFor(Saida::loja) {
           caption = "Loja"
         }
@@ -94,13 +100,11 @@ class SaidaView : LayoutView<SaidaViewModel>() {
           caption = "Hora"
         }
         addSelectionListener {
-          transaction {
-            it.firstSelectedItem?.let {
-              if (it.isPresent) {
-                gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
-              }
-            }
-            
+          val saida = it.firstSelectedItem?.orElse(null)
+          gridProduto?.dataProvider = if (saida == null)
+            ListDataProvider(emptyList())
+          else transaction {
+            ListDataProvider(saida.cacheItens().toList())
           }
         }
       }
@@ -113,6 +117,7 @@ class SaidaView : LayoutView<SaidaViewModel>() {
           caption = "Código"
         }
         addColumn { it.nome }.apply {
+          expandRatio = 1
           caption = "Descrição"
         }
         addColumn { it.grade }.apply {
@@ -125,7 +130,7 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         }
       }
     }
-    viewModel.execPesquisa()
+    viewModel.updateModel()
   }
   
   inner class DialogNotaSaida : DialogPopup<NotaSaidaVo>("Pesquisa Nota de Entrada", NotaSaidaVo::class) {
