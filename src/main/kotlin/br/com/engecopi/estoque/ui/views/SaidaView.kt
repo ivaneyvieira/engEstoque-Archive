@@ -8,6 +8,7 @@ import br.com.engecopi.estoque.viewmodel.NotaSaidaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.framework.ui.view.DialogPopup
 import br.com.engecopi.framework.ui.view.LayoutView
+import br.com.engecopi.framework.ui.view.MessageDialog
 import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
@@ -75,8 +76,11 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         }
         button("Remover Nota de Saída") {
           addClickListener {
-            grid?.selectedItems?.firstOrNull()?.let { saida ->
-              viewModel.removeSaida(saida)
+            grid?.actionSelected("Selecione uma Nota de Saída") { saida ->
+              MessageDialog.question(
+                      message = "Remove a Nota de Entrada (${saida.numero})?",
+                      execYes = { viewModel.removeSaida(saida) }
+                                    )
             }
           }
         }

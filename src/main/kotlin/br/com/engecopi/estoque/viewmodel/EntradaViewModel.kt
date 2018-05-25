@@ -76,6 +76,11 @@ class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) :
       nota.storeno?.let { loja -> prd.recalcula(loja) }
     }
   }
+  
+  fun removeEntrada(entrada: Entrada) = exec{
+    entrada.itens.forEach { it.delete() }
+    entrada.delete()
+  }
 }
 
 data class NotaEntradaVo(

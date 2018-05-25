@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
 import br.com.engecopi.framework.ui.view.DialogPopup
 import br.com.engecopi.framework.ui.view.LayoutView
+import br.com.engecopi.framework.ui.view.MessageDialog
 import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
@@ -71,6 +72,12 @@ class EntradaView : LayoutView<EntradaViewModel>() {
         button("Remover Nota de Entrada") {
           clickShortcut = Ctrl + KeyCode.DELETE
           addClickListener {
+            grid?.actionSelected("Selecione uma Nota de Entrada") { entrada ->
+              MessageDialog.question(
+                      message = "Remove a Nota de Entrada (${entrada.numero})?",
+                      execYes = { viewModel.removeEntrada(entrada) }
+                                    )
+            }
           }
         }
       }
@@ -172,4 +179,5 @@ class RequiredString(val errorMsg: String) : Validator<String> {
       ValidationResult.ok()
   }
 }
+
 

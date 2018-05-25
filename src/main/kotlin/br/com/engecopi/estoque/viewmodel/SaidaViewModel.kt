@@ -62,9 +62,7 @@ class SaidaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : V
   }
   
   fun removeSaida(saida: Saida) = exec {
-    saida.itens.forEach {
-      it.delete()
-    }
+    saida.itens.forEach { it.delete() }
     saida.delete()
   }
 }
