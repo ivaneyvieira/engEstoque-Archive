@@ -1,4 +1,6 @@
 @startuml modelo
+hide methods
+
 class Produto{
 	codigo
 	nome
@@ -16,6 +18,7 @@ class Entrada{
 	loja
 	data
 	hora
+	observacao
 }
 
 class ItemSaida{
@@ -28,16 +31,16 @@ class Saida{
 	loja
 	data
 	hora
+	observacao
 }
 
-class Saldo{
-	loja
-	quantidade
-}
 
-Entrada			<-- ItemEntrada
-Saida				<-- ItemSaida
+
+Entrada		<--	ItemEntrada
+Saida		<-- 	ItemSaida
 ItemEntrada	-->	Produto
-ItemSaida		-->	Produto
-Saldo				-->	Produto
+ItemSaida	-->	Produto
+
+
+
 @enduml

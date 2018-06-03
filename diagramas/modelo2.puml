@@ -1,0 +1,43 @@
+@startuml modelo
+hide methods
+
+class Produto{
+	codigo
+	nome
+	grade
+	data_cadastro
+	tipo [NORMAL, FIOS_PECA, FIO-BOBINA, PISO]
+	quant_lote
+	quant_bobina
+}
+
+class ItemNota{
+	quantidade
+}
+
+class Nota {
+	numero
+	tipoMov [ENTRADA, SAIDA]
+	loja
+	data
+	hora
+	observacao
+}
+
+class Lote {
+	sequencia
+	total
+}
+
+class Movimentacao {
+	quantidade
+	saldo
+}
+
+ItemNota	-u->	Nota
+ItemNota	-l->	Produto
+Lote		-->	Produto
+Movimentacao	-l->	Lote
+Movimentacao	-->	ItemNota
+
+@enduml
