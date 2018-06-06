@@ -7,6 +7,7 @@ git config --global credential.helper 'cache --timeout=3600'
 
 if [[ "$COMMENT" == "" ]]
 then
+  git add .
   git pull
   ./gradlew --console=rich  vaadinCompile
   ./gradlew --console=rich  vaadinThemeCompile

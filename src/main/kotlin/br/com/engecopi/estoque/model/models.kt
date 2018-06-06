@@ -1,60 +1,68 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.framework.model.cacheValue
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+
+enum class TipoProduto { NORMAL,
+  PECA,
+  BOBINA,
+  CAIXA
+}
+
+enum class TipoMov { ENTRADA,
+  SAIDA
+}
 
 object Produtos : IntIdTable() {
   val codigo = varchar("codigo", 16)
   val grade = varchar("grade", 8)
   var codebar = varchar("codebar", 16)
   val data_cadastro = date("data_cadastro")
+  val tipo = enumerationByName("tipo", 10, TipoProduto::class.java)
+  val quant_lote = integer("quant_lote")
+  val quant_bobina = integer("quant_bobina")
   
-  init{
+  init {
     uniqueIndex(codigo, grade)
   }
 }
 
-object Entradas : IntIdTable() {
+object Notas : IntIdTable() {
   val numero = varchar("numero", 15)
+  val tipoMov = enumerationByName("tipoMov", 10, TipoMov::class.java)
   val loja = integer("loja")
   val data = date("data")
   val hora = varchar("hora", 5)
+  val observacao = varchar("observacao", 100)
 }
 
-object ItensEntrada : IntIdTable() {
-  val quantidade = integer("quantidade")
-  val custo_unitario = decimal("custo_unitario", 15, 4)
-  val produto = reference("idProduto", Produtos)
-  val notaEntrada = reference("idNotaEntrada", Entradas)
-}
-
-object Saidas : IntIdTable() {
-  val numero = integer("numero")
-  val loja = integer("loja")
-  val data = date("data")
-  val hora = varchar("hora", 5)
-}
-
-object ItensSaida : IntIdTable() {
-  val quantidade = integer("quantidade")
-  val custo_unitario = decimal("custo_unitario", 15, 4)
-  val produto = reference("idProduto", Produtos)
-  val notaSaida = reference("idNotaSaida", Saidas)
-}
-
-object Saldos : IntIdTable() {
-  val loja = integer("loja")
+object ItensNota : IntIdTable() {
   val quantidade = integer("quantidade")
   val produto = reference("idProduto", Produtos)
+  val nota = reference("idNota", Notas)
 }
+
+object Lotes : IntIdTable() {
+  val sequencia = integer("sequencia")
+  val total = integer("total")
+  val produto = reference("idProduto", Produtos)
+}
+
+object Movimentacoes : IntIdTable() {
+  val quantidade = integer("quantidade")
+  val saldo = integer("saldo")
+  val lote = reference("idLote", Lotes)
+  val itemNota = reference("idItemNota", ItensNota)
+}
+
+/******************************* ENTIDADES ***************************/
 
 class Produto(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Produto>(Produtos)
@@ -63,12 +71,12 @@ class Produto(id: EntityID<Int>) : IntEntity(id) {
   var grade by Produtos.grade
   var codebar by Produtos.codebar
   var data_cadastro by Produtos.data_cadastro
-  val produtoSaci: ProdutoSaci? by lazy {
+  val produtoSaci: ProdutoSaci? by cacheValue {
     QuerySaci.querySaci.findProduto(codigo).first { it.grade == grade }
   }
   
-  val nome by lazy { produtoSaci?.nome ?: "" }
-  val custo by lazy { produtoSaci?.custo ?: 0.0000 }
+  val nome by cacheValue { produtoSaci?.nome ?: "" }
+  val custo by cacheValue { produtoSaci?.custo ?: 0.0000 }
   
   val saldos by Saldo referrersOn Saldos.produto
   val entradas by ItemEntrada referrersOn ItensEntrada.produto
@@ -126,9 +134,9 @@ class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
 }
 
 class Saida(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<Saida>(Saidas){
-    fun novoNumero(): Int = transaction{
-      val maxNum=Saida.all().map { it.numero }.max()?:0
+  companion object : IntEntityClass<Saida>(Saidas) {
+    fun novoNumero(): Int = transaction {
+      val maxNum = Saida.all().map { it.numero }.max() ?: 0
       maxNum + 1
     }
   }
@@ -140,10 +148,10 @@ class Saida(id: EntityID<Int>) : IntEntity(id) {
   
   val itens by ItemSaida referrersOn ItensSaida.notaSaida
   
-  val cacheItens = Cache { transaction {itens} }
+  val cacheItens = Cache { transaction { itens } }
   
-  fun cacheItens() = transaction {cacheItens.value()}
-
+  fun cacheItens() = transaction { cacheItens.value() }
+  
   val dataSaida: Date
     get() = data.toDate()
 }
