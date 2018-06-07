@@ -1,71 +1,56 @@
 package br.com.engecopi.framework.model
 
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.IntEntity
 import kotlin.reflect.KProperty
 
-const val duration = 30000
+val mapCache = mutableMapOf<String, Any?>()
 
-class ExpireValue<T>(private val _value: T?) {
-  val expire: Long = System.currentTimeMillis() + duration
-  val value: T?
-    get() = if (expire > System.currentTimeMillis())
-      _value
-    else null
-}
-
-val mapCache = mutableMapOf<String, ExpireValue<*>>()
-
-class DelegadeCacheValue<T>(private val initializer: () -> T?) {
+open class Cache<T>(private val initializer: () -> T?) {
   private var millisecond = System.currentTimeMillis()
   
-  operator fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+  protected fun composeKey(thisRef: Any?, property: KProperty<*>): String {
     val classe = thisRef?.javaClass?.simpleName
-    val key = if (thisRef is IntIdTable) {
+    val key = if (thisRef is IntEntity) {
       val id = thisRef.id
       "$classe:$id:${property.name}"
     } else {
       "$classe:${property.name}"
     }
+    return key
+  }
+  
+  private fun calculeDelay(): Long {
+    val currentTimeMillis = System.currentTimeMillis()
+    val delay = currentTimeMillis - millisecond
+    millisecond = System.currentTimeMillis()
+    return delay
+  }
+  
+  protected fun getValue(key: String): T? {
+    val delay = calculeDelay()
     
-    
-    return synchronized(mapCache) {
-      val expireValue = mapCache.getOrPut(key) {
-        ExpireValue(initializer())
-      }
-      
-      
-      if (expireValue.expire < System.currentTimeMillis())
-        mapCache[key] = ExpireValue(initializer())
-      
-      mapCache[key]?.value as T
+    return if (delay < 30000 && mapCache.containsKey(key)) {
+      @Suppress("UNCHECKED_CAST")
+      mapCache[key] as? T
+    } else {
+      val value = initializer()
+      mapCache[key] = value
+      value
     }
   }
 }
 
-class DelegadeCacheList<T>(private val initializer: () -> List<T>) {
-  private var millisecond = System.currentTimeMillis()
-  
+class DelegadeCacheValue<T>(initializer: () -> T?) : Cache<T>(initializer) {
+  operator fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+    val key = composeKey(thisRef, property)
+    return getValue(key)
+  }
+}
+
+class DelegadeCacheList<T>(initializer: () -> List<T>) : Cache<List<T>>(initializer) {
   operator fun getValue(thisRef: Any?, property: KProperty<*>): List<T> {
-    val classe = thisRef?.javaClass?.simpleName
-    val key = if (thisRef is IntIdTable) {
-      val id = thisRef.id
-      "$classe:$id:${property.name}"
-    } else {
-      "$classe:${property.name}"
-    }
-    
-    return synchronized(mapCache) {
-      val expireValue = mapCache.getOrPut(key) {
-        ExpireValue(initializer())
-      }
-      
-      if (expireValue.expire < System.currentTimeMillis()) {
-        val expireValue = ExpireValue(initializer())
-        mapCache[key] = expireValue
-        expireValue.value.orEmpty()
-      } else
-        (expireValue as? List<T>).orEmpty()
-    }
+    val key = composeKey(thisRef, property)
+    return getValue(key).orEmpty()
   }
 }
 
