@@ -112,13 +112,9 @@ class Nota(id: EntityID<Int>) : IntEntity(id) {
   var hora by Notas.hora
   var observacao by Notas.observacao
   
-  val itens by ItemEntrada referrersOn ItensEntrada.notaEntrada
+  val itens by ItemNota referrersOn ItensNota.nota
   val loja by Loja referencedOn Notas.loja
-  
-  val cacheItens = Cache { itens }
-  
-  fun cacheItens() = cacheItens.value()
-  
+ 
   val dataEntrada
     get() = data.toDate()
 }
@@ -130,6 +126,7 @@ class ItemNota(id: EntityID<Int>) : IntEntity(id) {
   
   var nota by Nota referencedOn ItensNota.nota
   var produto by Produto referencedOn ItensNota.produto
+  val movimentacoes by Movimentacao referrersOn Movimentacoes.itemNota
   
   val codigo
     get() = produto.codigo
@@ -145,9 +142,11 @@ class ItemNota(id: EntityID<Int>) : IntEntity(id) {
 class Movimentacao(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Movimentacao>(Movimentacoes)
   
-  var saldo by Movimentacoes.saldo
   var quantidade by Movimentacoes.quantidade
-  var produto by Produto referencedOn Saldos.produto
+  var saldo by Movimentacoes.saldo
+
+  var lote by Lote referencedOn Movimentacoes.lote
+  var itemNota by ItemNota referencedOn Movimentacoes.itemNota
 }
 
 class Lote(id: EntityID<Int>) : IntEntity(id) {
@@ -155,16 +154,24 @@ class Lote(id: EntityID<Int>) : IntEntity(id) {
   
   var sequencia by Lotes.sequencia
   var total by Lotes.total
+  
+  val movimentaccoes by Movimentacao referrersOn  Movimentacoes.lote
+  var produto by Produto referencedOn  Lotes.produto
 }
 
 class Loja(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Loja>(Lojas)
   
   var numero by Lojas.numero
+  
+  val notas by Nota referrersOn Notas.loja
+  val usuarios by Usuario referrersOn Usuarios.loja
 }
 
 class Usuario(id: EntityID<Int>) : IntEntity(id) {
   companion object : IntEntityClass<Usuario>(Usuarios)
   
   var numero by Usuarios.numero
+  
+  var loja by Loja referencedOn Usuarios.loja
 }
