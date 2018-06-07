@@ -3,7 +3,6 @@ hide methods
 
 class Produto{
 	codigo
-	nome
 	grade
 	data_cadastro
 	tipo [NORMAL, FIOS_PECA, FIO-BOBINA, PISO]
@@ -18,7 +17,6 @@ class ItemNota{
 class Nota {
 	numero
 	tipoMov [ENTRADA, SAIDA]
-	loja
 	data
 	hora
 	observacao
@@ -34,10 +32,20 @@ class Movimentacao {
 	saldo
 }
 
+class Loja {
+	numero
+}
+
+class Usuario {
+	numero
+}
+
 ItemNota	-u->	Nota
 ItemNota	-l->	Produto
 Lote		-->	Produto
 Movimentacao	-l->	Lote
 Movimentacao	-->	ItemNota
+Nota		-->	Loja
+Usuario		-->	Loja
 
 @enduml

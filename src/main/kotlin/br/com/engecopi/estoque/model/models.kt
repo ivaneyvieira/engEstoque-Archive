@@ -7,8 +7,6 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
 
 enum class TipoProduto { NORMAL,
   PECA,
@@ -37,14 +35,16 @@ object Produtos : IntIdTable() {
 object Notas : IntIdTable() {
   val numero = varchar("numero", 15)
   val tipoMov = enumerationByName("tipoMov", 10, TipoMov::class.java)
-  val loja = integer("loja")
   val data = date("data")
   val hora = varchar("hora", 5)
   val observacao = varchar("observacao", 100)
+  
+  val loja = reference("idLoja", Lojas)
 }
 
 object ItensNota : IntIdTable() {
   val quantidade = integer("quantidade")
+  
   val produto = reference("idProduto", Produtos)
   val nota = reference("idNota", Notas)
 }
@@ -52,14 +52,26 @@ object ItensNota : IntIdTable() {
 object Lotes : IntIdTable() {
   val sequencia = integer("sequencia")
   val total = integer("total")
+  
   val produto = reference("idProduto", Produtos)
 }
 
 object Movimentacoes : IntIdTable() {
   val quantidade = integer("quantidade")
   val saldo = integer("saldo")
+  
   val lote = reference("idLote", Lotes)
   val itemNota = reference("idItemNota", ItensNota)
+}
+
+object Lojas : IntIdTable() {
+  val numero = integer("numero")
+}
+
+object Usuarios : IntIdTable() {
+  val numero = integer("numero")
+  
+  val loja = reference("idLoja", Lojas)
 }
 
 /******************************* ENTIDADES ***************************/
@@ -71,6 +83,10 @@ class Produto(id: EntityID<Int>) : IntEntity(id) {
   var grade by Produtos.grade
   var codebar by Produtos.codebar
   var data_cadastro by Produtos.data_cadastro
+  var tipo by Produtos.tipo
+  var quant_lote by Produtos.quant_lote
+  var quant_bobina by Produtos.quant_bobina
+  
   val produtoSaci: ProdutoSaci? by cacheValue {
     QuerySaci.querySaci.findProduto(codigo).first { it.grade == grade }
   }
@@ -78,131 +94,77 @@ class Produto(id: EntityID<Int>) : IntEntity(id) {
   val nome by cacheValue { produtoSaci?.nome ?: "" }
   val custo by cacheValue { produtoSaci?.custo ?: 0.0000 }
   
-  val saldos by Saldo referrersOn Saldos.produto
-  val entradas by ItemEntrada referrersOn ItensEntrada.produto
-  val saidas by ItemSaida referrersOn ItensSaida.produto
+  val itensNota by ItemNota referrersOn ItensNota.produto
+  val lotes by Lote referrersOn Lotes.produto
   
-  fun recalcula(loja: Int) = transaction {
-    Saldos.deleteWhere { (Saldos.produto eq this@Produto.id) and (Saldos.loja eq loja) }
-    
-    val totalEntradas = entradas.filter { it.notaEntrada.loja == loja }.sumBy { it.quantidade }
-    val totalSaidas = saidas.filter { it.notaSaida.loja == loja }.sumBy { it.quantidade }
-    val saldo = totalEntradas - totalSaidas
-    Saldo.new {
-      this.loja = loja
-      this.quantidade = saldo
-      this.produto = this@Produto
-    }
+  fun saldo(loja: Int): Int {
+    return itensNota.filter { it.nota.loja.numero == loja }.map { it.quantidade }.sum()
   }
 }
 
-class Entrada(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<Entrada>(Entradas)
+class Nota(id: EntityID<Int>) : IntEntity(id) {
+  companion object : IntEntityClass<Nota>(Notas)
   
-  var numero by Entradas.numero
-  var loja by Entradas.loja
-  var data by Entradas.data
-  var hora by Entradas.hora
+  var numero by Notas.numero
+  var tipoMov by Notas.tipoMov
+  
+  var data by Notas.data
+  var hora by Notas.hora
+  var observacao by Notas.observacao
+  
   val itens by ItemEntrada referrersOn ItensEntrada.notaEntrada
+  val loja by Loja referencedOn Notas.loja
   
   val cacheItens = Cache { itens }
   
   fun cacheItens() = cacheItens.value()
   
-  val dataEntrada: Date
-    get() = transaction { data.toDate() }
-}
-
-class ItemEntrada(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<ItemEntrada>(ItensEntrada)
-  
-  var quantidade by ItensEntrada.quantidade
-  var custo_unitario by ItensEntrada.custo_unitario
-  var notaEntrada by Entrada referencedOn ItensEntrada.notaEntrada
-  var produto by Produto referencedOn ItensEntrada.produto
-  
-  val codigo by lazy {
-    transaction { produto.codigo }
-  }
-  val nome by lazy {
-    transaction { produto.nome }
-  }
-  val grade by lazy {
-    transaction { produto.grade }
-  }
-  
-}
-
-class Saida(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<Saida>(Saidas) {
-    fun novoNumero(): Int = transaction {
-      val maxNum = Saida.all().map { it.numero }.max() ?: 0
-      maxNum + 1
-    }
-  }
-  
-  var numero by Saidas.numero
-  var loja by Saidas.loja
-  var data by Saidas.data
-  var hora by Saidas.hora
-  
-  val itens by ItemSaida referrersOn ItensSaida.notaSaida
-  
-  val cacheItens = Cache { transaction { itens } }
-  
-  fun cacheItens() = transaction { cacheItens.value() }
-  
-  val dataSaida: Date
+  val dataEntrada
     get() = data.toDate()
 }
 
-class ItemSaida(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<ItemSaida>(ItensSaida)
+class ItemNota(id: EntityID<Int>) : IntEntity(id) {
+  companion object : IntEntityClass<ItemNota>(ItensNota)
   
-  var quantidade by ItensSaida.quantidade
-  var custo_unitario by ItensSaida.custo_unitario
-  var notaSaida by Saida referencedOn ItensSaida.notaSaida
-  var produto by Produto referencedOn ItensSaida.produto
+  var quantidade by ItensNota.quantidade
   
-  val codigo by lazy {
-    transaction { produto.codigo }
-  }
-  val nome by lazy {
-    transaction { produto.nome }
-  }
-  val grade by lazy {
-    transaction { produto.grade }
-  }
+  var nota by Nota referencedOn ItensNota.nota
+  var produto by Produto referencedOn ItensNota.produto
+  
+  val codigo
+    get() = produto.codigo
+  
+  val nome
+    get() = produto.nome
+  
+  val grade
+    get() = produto.grade
+  
 }
 
-class Saldo(id: EntityID<Int>) : IntEntity(id) {
-  companion object : IntEntityClass<Saldo>(Saldos) {
-    fun lojas() = Saldo.all().filter { it.quantidade != 0 }.map { it.loja }.distinct().sorted()
-  }
+class Movimentacao(id: EntityID<Int>) : IntEntity(id) {
+  companion object : IntEntityClass<Movimentacao>(Movimentacoes)
   
-  var loja by Saldos.loja
-  var quantidade by Saldos.quantidade
+  var saldo by Movimentacoes.saldo
+  var quantidade by Movimentacoes.quantidade
   var produto by Produto referencedOn Saldos.produto
 }
 
-class Cache<T>(val exec: () -> T) {
-  var millisecond = System.currentTimeMillis()
-  var lastValue: T? = null
+class Lote(id: EntityID<Int>) : IntEntity(id) {
+  companion object : IntEntityClass<Lote>(Lotes)
   
-  fun execValue(delay: Long = 0) = transaction {
-    println("cache $delay")
-    transaction { exec() }
-  }
+  var sequencia by Lotes.sequencia
+  var total by Lotes.total
+}
+
+class Loja(id: EntityID<Int>) : IntEntity(id) {
+  companion object : IntEntityClass<Loja>(Lojas)
   
-  fun value(): T {
-    val currentTimeMillis = System.currentTimeMillis()
-    val delay = currentTimeMillis - millisecond
-    millisecond = System.currentTimeMillis()
-    if (delay > 30000) {
-      lastValue = execValue(delay)
-    }
-    val ret = lastValue ?: execValue(delay)
-    lastValue = ret
-    return ret
-  }
+  var numero by Lojas.numero
+}
+
+class Usuario(id: EntityID<Int>) : IntEntity(id) {
+  companion object : IntEntityClass<Usuario>(Usuarios)
+  
+  var numero by Usuarios.numero
 }
