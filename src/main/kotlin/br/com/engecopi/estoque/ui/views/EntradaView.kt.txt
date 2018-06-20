@@ -1,7 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.Entrada
-import br.com.engecopi.estoque.model.ItemEntrada
+import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
@@ -33,11 +33,8 @@ import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.WARNING_MESSAGE
-import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 
 @AutoView("")
 class EntradaView : LayoutView<EntradaViewModel>() {
@@ -45,8 +42,8 @@ class EntradaView : LayoutView<EntradaViewModel>() {
   override val viewModel = EntradaViewModel(lojaDefault) {
     grid?.dataProvider?.refreshAll()
   }
-  var grid: Grid<Entrada>? = null
-  var gridProduto: Grid<ItemEntrada>? = null
+  var grid: Grid<Nota>? = null
+  var gridProduto: Grid<ItemNota>? = null
   
   val dialogNotaEntrada = DialogNotaEntrada()
   
@@ -81,35 +78,33 @@ class EntradaView : LayoutView<EntradaViewModel>() {
           }
         }
       }
-      grid = grid(Entrada::class) {
+      grid = grid(Nota::class) {
         dataProvider = ListDataProvider(viewModel.listaGrid)
         removeAllColumns()
         setSizeFull()
         expandRatio = 1.0f
-        addColumnFor(Entrada::numero) {
+        addColumnFor(Nota::numero) {
           caption = "Número"
         }
-        addColumnFor(Entrada::loja) {
+        addColumnFor(Nota::loja) {
           caption = "Loja"
         }
-        addColumnFor(Entrada::dataEntrada) {
+        addColumnFor(Nota::data) {
           caption = "Data"
-          setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
+          
         }
-        addColumnFor(Entrada::hora) {
+        addColumnFor(Nota::hora) {
           caption = "Hora"
         }
         addSelectionListener {
-          transaction {
-            it.firstSelectedItem?.let {
-              if (it.isPresent) {
-                gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
-              }
+          it.firstSelectedItem?.let {
+            if (it.isPresent) {
+              // gridProduto?.dataProvider = ListDataProvider(it.get().cacheItens().toList())
             }
           }
         }
       }
-      gridProduto = grid(ItemEntrada::class) {
+      gridProduto = grid(ItemNota::class) {
         caption = "Itens da nota de entrada"
         removeAllColumns()
         setSizeFull()

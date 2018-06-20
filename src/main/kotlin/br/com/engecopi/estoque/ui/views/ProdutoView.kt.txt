@@ -23,6 +23,7 @@ import com.github.vok.karibudsl.horizontalLayout
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
+import com.sun.javafx.webkit.theme.Renderer.setRenderer
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode.DELETE
 import com.vaadin.event.ShortcutAction.KeyCode.INSERT
@@ -124,17 +125,12 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
       addColumnFor(Produto::grade) {
         caption = "Grade"
       }
-      addColumnFor(Produto::custo) {
-        caption = "Custo"
-        setRenderer(NumberRenderer(DecimalFormat("0.0000")))
-        align = VAlign.Right
-      }
       
       viewModel.lojasSaldo().forEach { loja ->
         addColumn { prd -> viewModel.saldoProduto(prd, loja) }.apply {
           caption = "Loja $loja"
-          setRenderer(NumberRenderer(DecimalFormat("0")))
-          align = VAlign.Right
+         // setRenderer(NumberRenderer(DecimalFormat("0")))
+        //  align = VAlign.Right
         }
       }
     }

@@ -1,16 +1,16 @@
 package br.com.engecopi.framework.model
 
-import org.jetbrains.exposed.dao.IntEntity
+import br.com.engecopi.framework.model.BaseModel
 import kotlin.reflect.KProperty
 
 val mapCache = mutableMapOf<String, Any?>()
 
-open class Cache<T>(private val initializer: () -> T?) {
+open class Cache<T>(val initializer: () -> T?) {
   private var millisecond = System.currentTimeMillis()
   
   protected fun composeKey(thisRef: Any?, property: KProperty<*>): String {
     val classe = thisRef?.javaClass?.simpleName
-    val key = if (thisRef is IntEntity) {
+    val key = if (thisRef is BaseModel) {
       val id = thisRef.id
       "$classe:$id:${property.name}"
     } else {
@@ -54,6 +54,6 @@ class DelegadeCacheList<T>(initializer: () -> List<T>) : Cache<List<T>>(initiali
   }
 }
 
-fun <T> cacheValue(initializer: () -> T?) = DelegadeCacheValue(initializer)
+fun <T : Any> cacheValue(initializer: () -> T?) = DelegadeCacheValue(initializer)
 
-fun <T> cacheList(initializer: () -> List<T>) = DelegadeCacheList(initializer)
+fun <T : Any> cacheList(initializer: () -> List<T>) = DelegadeCacheList(initializer)

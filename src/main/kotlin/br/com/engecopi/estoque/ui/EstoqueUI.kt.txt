@@ -1,11 +1,9 @@
 package br.com.engecopi.estoque.ui
 
-import br.com.engecopi.estoque.model.DB
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import com.github.vok.karibudsl.autoViewProvider
-import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.onLeftClick
@@ -57,7 +55,7 @@ class EstoqueUI : UI() {
         this.appTitle = title
         
         section("Usuário: " + user.login)
-        menuButton("Sair", icon = VaadinIcons.OUT){
+        menuButton("Sair", icon = VaadinIcons.OUT) {
           onLeftClick {
             LoginService.logout()
           }
@@ -98,18 +96,11 @@ class Bootstrap : ServletContextListener {
   
   override fun contextInitialized(sce: ServletContextEvent?) {
     log.info("Starting up")
-    DB.connect()
-    // log.info("Initializing VaadinOnKotlin")
-    //  VaadinOnKotlin.init()
-    //  log.info("Running DB migrations")
-    // val flyway = Flyway()
-    //  flyway.dataSource = VaadinOnKotlin.dataSource
-    //  flyway.migrate()
-    //  log.info("Initialization complete")
+    //Inicia o banco
   }
 }
 
-@WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
+@WebServlet(urlPatterns = ["/*"], name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = EstoqueUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet() {
   companion object {

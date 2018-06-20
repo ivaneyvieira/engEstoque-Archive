@@ -1,6 +1,8 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.ItemSaida
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Saida
 import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
@@ -26,6 +28,7 @@ import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.refresh
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
+import com.sun.javafx.webkit.theme.Renderer.setRenderer
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
@@ -48,8 +51,8 @@ class SaidaView : LayoutView<SaidaViewModel>() {
     gridProduto?.refresh()
     grid?.refresh()
   }
-  var grid: Grid<Saida>? = null
-  var gridProduto: Grid<ItemSaida>? = null
+  var grid: Grid<Nota>? = null
+  var gridProduto: Grid<ItemNota>? = null
   
   val dialogNotaSaida = DialogNotaSaida()
   
@@ -85,22 +88,22 @@ class SaidaView : LayoutView<SaidaViewModel>() {
           }
         }
       }
-      grid = grid(Saida::class) {
+      grid = grid(Nota::class) {
         dataProvider = ListDataProvider(viewModel.listaGrid)
         removeAllColumns()
         setSizeFull()
         expandRatio = 1.0f
-        addColumnFor(Saida::numero) {
+        addColumnFor(Nota::numero) {
           caption = "Número"
         }
-        addColumnFor(Saida::loja) {
+        addColumnFor(Nota::loja) {
           caption = "Loja"
         }
-        addColumnFor(Saida::dataSaida) {
+        addColumnFor(Nota::data) {
           caption = "Data"
           setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
         }
-        addColumnFor(Saida::hora) {
+        addColumnFor(Nota::hora) {
           caption = "Hora"
         }
         addSelectionListener {

@@ -1,14 +1,9 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.Produtos
-import br.com.engecopi.estoque.model.Saldo
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 
 class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   var pesquisa: String = ""
@@ -19,7 +14,7 @@ class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) ->
   fun lojasSaldo() = transaction { Saldo.lojas().filter { it == lojaDefault || lojaDefault == 0 } }
   
   override fun execUpdate() {
-    transaction {
+    exec {
       listaGrid.clear()
       listaGrid.addAll(Produto.all().filter { prd ->
         prd.nome.contains(pesquisa) || prd.codigo == pesquisa

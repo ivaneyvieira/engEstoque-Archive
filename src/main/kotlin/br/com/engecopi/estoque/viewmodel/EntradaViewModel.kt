@@ -1,32 +1,24 @@
 package br.com.engecopi.estoque.viewmodel
 
-import br.com.engecopi.estoque.model.Entrada
-import br.com.engecopi.estoque.model.Entradas
-import br.com.engecopi.estoque.model.ItemEntrada
-import br.com.engecopi.estoque.model.ItensEntrada
+import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.Produtos
+import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
-import org.joda.time.LocalDate
-import org.joda.time.LocalTime
-import org.joda.time.format.DateTimeFormat
-import java.math.BigDecimal
 
 class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   
-  val listaGrid: MutableCollection<Entrada> = mutableListOf()
+  val listaGrid: MutableCollection<Nota> = mutableListOf()
   val notaEntradaVo = NotaEntradaVo().apply {
-    loja = lojaDefault
+    loja = Loja.findLoja(lojaDefault)
   }
   
   fun processaNotaEntrada() = exec {
     val notasEntrada = QuerySaci.querySaci.findNotaEntrada(
-            storeno = notaEntradaVo.loja,
+            storeno = notaEntradaVo.loja?.numero ?: 0,
             nfname = notaEntradaVo.numero,
             invse = notaEntradaVo.serie
                                                           )
@@ -42,43 +34,39 @@ class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) :
   }
   
   override fun execUpdate() {
-    transaction {
-      val entradas = Entrada.all().filter { it.loja == lojaDefault || lojaDefault == 0 }
-      listaGrid.clear()
-      listaGrid.addAll(entradas)
-    }
+    val entradas = Nota.findEntradas(lojaDefault)
+    listaGrid.clear()
+    listaGrid.addAll(entradas)
   }
   
   private fun addNotaEntrada(nota: NotaEntradaSaci) {
-    val dtf = DateTimeFormat.forPattern("HH:mm")
     val numero = "${nota.invno}"
-    val entrada = Entrada.find { Entradas.numero eq numero }.firstOrNull() ?: Entrada.new {
+    val entrada = Nota.findEntrada(numero) ?: Nota().apply {
       this.numero = numero
-      this.loja = nota.storeno ?: 0
-      this.data = LocalDate.now().toDateTime(LocalTime(0, 0))
-      this.hora = dtf.print(DateTime.now())
+      this.loja = Loja.findLoja(nota.storeno)
+      this.tipoMov = ENTRADA
     }
     addProdutoNotaEntrada(entrada, nota)
   }
   
-  private fun addProdutoNotaEntrada(entrada: Entrada, nota: NotaEntradaSaci) {
+  private fun addProdutoNotaEntrada(entrada: Nota, nota: NotaEntradaSaci) {
     val codigo = nota.prdno ?: ""
     val grade = nota.grade ?: ""
-    val produto = Produto.find { (Produtos.codigo eq codigo) and (Produtos.grade eq grade) }.firstOrNull()
+    val produto = Produto.findProduto(codigo, grade)
     produto?.let { prd ->
-      if (ItemEntrada.find { (ItensEntrada.notaEntrada eq entrada.id) and (ItensEntrada.produto eq prd.id) }.count() == 0)
-        ItemEntrada.new {
-          this.notaEntrada = entrada
-          this.produto = prd
-          this.quantidade = nota.quant ?: 0
-          this.custo_unitario = nota.custo?.toBigDecimal() ?: BigDecimal.ZERO
-        }
-      nota.storeno?.let { loja -> prd.recalcula(loja) }
+      val item = entrada.findItem(prd) ?: ItemNota().apply {
+        this.produto = prd
+        this.nota = entrada
+      }
+      
+      item.quantidade = nota.quant ?: 0
+      
+      item.save()
     }
   }
   
-  fun removeEntrada(entrada: Entrada) = exec{
-    entrada.itens.forEach { it.delete() }
+  fun removeEntrada(entrada: Nota) = exec {
+    entrada.itensNota?.forEach { it.delete() }
     entrada.delete()
   }
 }
@@ -86,5 +74,5 @@ class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) :
 data class NotaEntradaVo(
         var numero: String = "",
         var serie: String = "",
-        var loja: Int = 0
+        var loja: Loja? = null
                         )

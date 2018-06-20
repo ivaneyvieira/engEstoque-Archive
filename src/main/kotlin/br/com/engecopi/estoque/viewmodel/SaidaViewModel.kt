@@ -1,20 +1,15 @@
 package br.com.engecopi.estoque.viewmodel
 
-import br.com.engecopi.estoque.model.ItemSaida
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.Produtos
-import br.com.engecopi.estoque.model.Saida
 import br.com.engecopi.framework.viewmodel.ViewModel
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
-import org.joda.time.LocalDate
-import org.joda.time.LocalTime
-import org.joda.time.format.DateTimeFormat
+import io.ebean.config.JsonConfig.DateTime
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalTime
 
 class SaidaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
-  val listaGrid: MutableCollection<Saida> = mutableListOf()
+  val listaGrid: MutableCollection<Nota> = mutableListOf()
   val notaSaidaVo = NotaSaidaVo()
   
   override fun execUpdate() {

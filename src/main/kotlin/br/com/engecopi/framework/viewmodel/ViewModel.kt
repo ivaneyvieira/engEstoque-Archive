@@ -1,24 +1,23 @@
 package br.com.engecopi.framework.viewmodel
 
-import org.jetbrains.exposed.sql.transactions.transaction
+import br.com.engecopi.framework.model.Transaction
 
-open class ViewModel(private val updateView: (e:ViewModel) -> Unit) {
+open class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
   private var inExcection = false
   
   var showMessage: ((e: EViewModel) -> Unit)? = null
   
-  fun showMessage(block :(e: EViewModel) -> Unit){
+  fun showMessage(block: (e: EViewModel) -> Unit) {
     showMessage = block
   }
   
-  protected open fun execUpdate(){
-  
+  protected open fun execUpdate() {
   }
   
   fun updateModel(exception: EViewModel? = null) {
-    if(exception == null)
+    if (exception == null)
       execUpdate()
-    else    {
+    else {
       this.showMessage?.let { showMsg ->
         showMsg(exception)
       }
@@ -40,6 +39,17 @@ open class ViewModel(private val updateView: (e:ViewModel) -> Unit) {
       } catch (e: EViewModel) {
         updateModel(e)
       }
+    }
+  }
+  
+  private fun <T> transaction(block: () -> T): T {
+    return try{
+      val ret = block()
+      Transaction.commit()
+      ret
+    }catch (e : Throwable){
+      Transaction.rollback()
+      throw e
     }
   }
 }
