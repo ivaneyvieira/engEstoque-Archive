@@ -1,25 +1,25 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import io.ebean.config.JsonConfig.DateTime
 
 class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   var pesquisa: String = ""
   val listaGrid: MutableList<Produto> = mutableListOf()
   var grades: List<String> = emptyList()
   val produtoVo = ProdutoVo()
+  val lojasSaldo: List<Loja> = exec {  Loja.lojaSaldo(lojaDefault) }.orEmpty()
   
-  fun lojasSaldo() = transaction { Saldo.lojas().filter { it == lojaDefault || lojaDefault == 0 } }
   
-  override fun execUpdate() {
-    exec {
-      listaGrid.clear()
-      listaGrid.addAll(Produto.all().filter { prd ->
-        prd.nome.contains(pesquisa) || prd.codigo == pesquisa
-      })
-    }
+  override fun execUpdate(): Unit = exec {
+    listaGrid.clear()
+    listaGrid.addAll(Produto.all().filter { prd ->
+      prd.nome.contains(pesquisa) || prd.codigo == pesquisa
+    })
   }
   
   fun updateGrades(codigo: String) = exec {

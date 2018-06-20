@@ -2,7 +2,7 @@ package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.Transaction
 
-open class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
+abstract class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
   private var inExcection = false
   
   var showMessage: ((e: EViewModel) -> Unit)? = null
@@ -11,43 +11,45 @@ open class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
     showMessage = block
   }
   
-  protected open fun execUpdate() {
-  }
+  protected abstract fun execUpdate()
   
   fun updateModel(exception: EViewModel? = null) {
     if (exception == null)
       execUpdate()
-    else {
+    else
       this.showMessage?.let { showMsg ->
         showMsg(exception)
       }
-    }
+    
     updateView(this)
   }
   
-  fun exec(block: () -> Unit) {
+@Throws(EViewModel::class)
+  fun <T>exec(block: () -> T) : T?{
     return transaction {
       try {
         if (inExcection)
           block()
         else {
           inExcection = true
-          block()
+          val retBlock = block()
           inExcection = false
           updateModel()
+          retBlock
         }
       } catch (e: EViewModel) {
         updateModel(e)
+        null
       }
     }
   }
   
   private fun <T> transaction(block: () -> T): T {
-    return try{
+    return try {
       val ret = block()
       Transaction.commit()
       ret
-    }catch (e : Throwable){
+    } catch (e: Throwable) {
       Transaction.rollback()
       throw e
     }

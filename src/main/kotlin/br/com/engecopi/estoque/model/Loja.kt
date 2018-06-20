@@ -20,6 +20,10 @@ class Loja : BaseModel() {
     fun findLoja(storeno: Int?): Loja? {
       TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+  
+    fun lojaSaldo(lojaDefault: Int): List<Loja> {
+      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
   }
   
 }
