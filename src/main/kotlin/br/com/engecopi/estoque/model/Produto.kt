@@ -31,6 +31,8 @@ class Produto : BaseModel() {
   val itensNota: List<ItemNota>? = null
   @OneToMany(mappedBy = "produto")
   val lotes: List<Lote>? = null
+  @OneToMany(mappedBy = "produto")
+  val saldos: List<Saldo>? = null
   
   fun produtoSaci() : ProdutoSaci {
     TODO()
@@ -57,6 +59,10 @@ class Produto : BaseModel() {
 
   fun saldoTotal() : Int {
     TODO("not implemented")
+  }
+  
+  fun atualizaSaldo() {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 }
 

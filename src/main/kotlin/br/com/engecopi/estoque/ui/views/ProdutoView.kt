@@ -100,13 +100,9 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
       button("Atualiza Saldo") {
         addClickListener {
           val produto = grid?.selectedItems?.firstOrNull()
-          if (produto == null) {
-            Notification.show("Não há produto selecionado",
-                              Notification.Type.WARNING_MESSAGE
-                             )
-          } else {
-            viewModel.atualizaSaldo(produto)
-          }
+          produto?.let { viewModel.atualizaSaldo(produto) }
+          ?: Notification.show("Não há produto selecionado",
+                               Notification.Type.WARNING_MESSAGE)
         }
       }
     }
@@ -118,7 +114,7 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
       addColumnFor(Produto::codigo) {
         caption = "Código"
       }
-      addColumnFor(Produto::nome) {
+      addColumnFor(Produto::descricao) {
         expandRatio = 5
         caption = "Descrição"
       }
@@ -126,11 +122,11 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
         caption = "Grade"
       }
       
-      viewModel.lojasSaldo().forEach { loja ->
+      viewModel.lojasSaldo.forEach { loja ->
         addColumn { prd -> viewModel.saldoProduto(prd, loja) }.apply {
           caption = "Loja $loja"
-         // setRenderer(NumberRenderer(DecimalFormat("0")))
-        //  align = VAlign.Right
+          // setRenderer(NumberRenderer(DecimalFormat("0")))
+          //  align = VAlign.Right
         }
       }
     }
@@ -170,7 +166,6 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
       }
     }
   }
-  
 }
 
 

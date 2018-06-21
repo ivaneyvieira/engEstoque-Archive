@@ -14,6 +14,7 @@ import java.time.LocalTime
 class SaidaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   val listaGrid: MutableCollection<Nota> = mutableListOf()
   val notaSaidaVo = NotaSaidaVo()
+  val lojaSaida = Loja.findLojaUser(lojaDefault)
   
   override fun execUpdate() {
     exec {

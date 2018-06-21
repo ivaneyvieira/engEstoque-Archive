@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
@@ -112,7 +113,7 @@ class EntradaView : LayoutView<EntradaViewModel>() {
         addColumn { it.codigo }.apply {
           caption = "Código"
         }
-        addColumn { it.nome }.apply {
+        addColumn { it.descricao }.apply {
           caption = "Descrição"
         }
         addColumn { it.grade }.apply {
@@ -141,13 +142,13 @@ class EntradaView : LayoutView<EntradaViewModel>() {
               .bind(NotaEntradaVo::serie)
       
     }
-    val loja = form.comboBox<Int>("Loja") {
-      val lojas = QuerySaci.querySaci.findLojas(lojaDefault)
-      setItems(lojas.map { it.storeno })
-      setItemCaptionGenerator { storeno ->
-        lojas.firstOrNull { it.storeno ?: 0 == storeno }?.sigla ?: ""
+    val loja = form.comboBox<Loja>("Loja") {
+      val lojas = viewModel.lojaEntrada
+      setItems(lojas)
+      setItemCaptionGenerator { loja ->
+        loja.sigla
       }
-      value = lojas.map { it.storeno }.firstOrNull()
+      value = lojas.firstOrNull()
       isTextInputAllowed = false
       isEmptySelectionAllowed = false
       this.isScrollToSelectedItem = true

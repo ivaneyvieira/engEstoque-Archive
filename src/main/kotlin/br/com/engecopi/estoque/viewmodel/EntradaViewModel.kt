@@ -10,7 +10,7 @@ import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 
 class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
-  
+  val lojaEntrada = Loja.findLojaUser(lojaDefault)
   val listaGrid: MutableCollection<Nota> = mutableListOf()
   val notaEntradaVo = NotaEntradaVo().apply {
     loja = Loja.findLoja(lojaDefault)

@@ -32,10 +32,10 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
-  fun findLojas(lojaDefault: Int): List<LojaSaci> {
+  fun findLojas(storeno: Int): List<LojaSaci> {
     val sql = "/sqlSaci/findLojas.sql"
     return query(sql) { q ->
-      q.executeAndFetch(LojaSaci::class.java).filter { it.storeno == lojaDefault || lojaDefault == 0 }
+      q.executeAndFetch(LojaSaci::class.java).filter { it.storeno == storeno || storeno == 0 }
     }
   }
   

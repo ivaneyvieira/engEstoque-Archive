@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import com.vaadin.ui.Notification.Type
 
 class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
   var pesquisa: String = ""
@@ -59,6 +60,10 @@ class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) ->
   
   fun deleta(produto: Produto) = exec {
     produto.delete()
+  }
+  
+  fun atualizaSaldo(produto: Produto) {
+    produto.atualizaSaldo()
   }
   
   data class ProdutoVo(

@@ -1,9 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.ItemSaida
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.Saida
 import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
 import br.com.engecopi.estoque.viewmodel.NotaSaidaVo
@@ -36,9 +34,9 @@ import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
 import com.vaadin.ui.renderers.DateRenderer
+import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.vaadin.patrik.FastNavigation
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -101,7 +99,7 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         }
         addColumnFor(Nota::data) {
           caption = "Data"
-          setRenderer(DateRenderer(SimpleDateFormat("dd/MM/yyyy")))
+          setRenderer(LocalDateRenderer("dd/MM/yyyy"))
         }
         addColumnFor(Nota::hora) {
           caption = "Hora"
@@ -110,12 +108,12 @@ class SaidaView : LayoutView<SaidaViewModel>() {
           val saida = it.firstSelectedItem?.orElse(null)
           gridProduto?.dataProvider = if (saida == null)
             ListDataProvider(emptyList())
-          else transaction {
-            ListDataProvider(saida.cacheItens().toList())
-          }
+          else
+            ListDataProvider(saida.itensNota.orEmpty())
+          
         }
       }
-      gridProduto = grid(ItemSaida::class) {
+      gridProduto = grid(ItemNota::class) {
         caption = "Itens da nota de saída"
         removeAllColumns()
         setSizeFull()
@@ -123,7 +121,7 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         addColumn { it.codigo }.apply {
           caption = "Código"
         }
-        addColumn { it.nome }.apply {
+        addColumn { it.descricao }.apply {
           expandRatio = 1
           caption = "Descrição"
         }
@@ -152,7 +150,7 @@ class SaidaView : LayoutView<SaidaViewModel>() {
                 .bind(NotaSaidaVo::numero)
       }
       form.comboBox<Int>("Loja") {
-        val lojas = QuerySaci.querySaci.findLojas(lojaDefault)
+        val lojas = viewModel.lo
         setItems(lojas.map { it.storeno })
         setItemCaptionGenerator { storeno ->
           lojas.firstOrNull { it.storeno ?: 0 == storeno }?.sigla ?: ""
