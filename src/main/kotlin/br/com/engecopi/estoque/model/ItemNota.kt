@@ -21,8 +21,8 @@ class ItemNota : BaseModel() {
   @OneToMany(mappedBy = "itemNota")
   var movimentacoes: List<Movimentacao>? = null
   
-  val nome: String?
-    @Transient get() = produto?.nome
+  val descricao: String?
+    @Transient get() = produto?.descricao
   
   val codigo: String?
     @Transient get() = produto?.codigo

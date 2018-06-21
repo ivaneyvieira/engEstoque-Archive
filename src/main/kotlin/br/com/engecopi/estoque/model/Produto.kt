@@ -36,14 +36,27 @@ class Produto : BaseModel() {
     TODO()
   }
   
-  val nome : String?
+  val descricao : String?
     @Transient
     get() = produtoSaci().nome
   
+ 
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String, grade: String): Produto? {
       TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    fun findProdutos(codigo: String): List<Produto> {
+      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+  }
+  
+  fun saldoLoja(loja : Loja) : Int {
+    TODO("not implemented")
+  }
+
+  fun saldoTotal() : Int {
+    TODO("not implemented")
   }
 }
 

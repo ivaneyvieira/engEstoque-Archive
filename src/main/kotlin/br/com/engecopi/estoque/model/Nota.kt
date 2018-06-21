@@ -45,11 +45,19 @@ class Nota : BaseModel() {
               .findOne()
     }
     
-    fun findEntradas(loja: Int): Collection<Nota> {
+    fun findEntradas(loja: Int): List<Nota> {
       return Nota.where()
               .tipoMov.eq(ENTRADA)
               .findList()
               .filter { (it.loja?.numero ?: 0) == loja || loja == 0 }
+    }
+    
+    fun findSaidas() : List<Nota>{
+      TODO("não implementado")
+    }
+  
+    fun novoNumero(): Int {
+      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
   }
   

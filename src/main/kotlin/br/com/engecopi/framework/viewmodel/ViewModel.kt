@@ -24,8 +24,8 @@ abstract class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
     updateView(this)
   }
   
-@Throws(EViewModel::class)
-  fun <T>exec(block: () -> T) : T?{
+  @Throws(EViewModel::class)
+  fun <T> execValue(block: () -> T): T? {
     return transaction {
       try {
         if (inExcection)
@@ -42,6 +42,26 @@ abstract class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
         null
       }
     }
+  }
+  
+  @Throws(EViewModel::class)
+  fun execString(block: () -> String): String {
+    return execValue(block) ?: ""
+  }
+  
+  @Throws(EViewModel::class)
+  fun execInt(block: () -> Int): Int {
+    return execValue(block) ?: 0
+  }
+  
+  @Throws(EViewModel::class)
+  fun exec(block: () -> Unit) {
+    execValue(block)
+  }
+  
+  @Throws(EViewModel::class)
+  fun <T> execList(block: () -> List<T>): List<T> {
+    return execValue(block).orEmpty()
   }
   
   private fun <T> transaction(block: () -> T): T {
