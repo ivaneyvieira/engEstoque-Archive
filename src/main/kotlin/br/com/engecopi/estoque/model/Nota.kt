@@ -53,19 +53,20 @@ class Nota : BaseModel() {
     }
     
     fun findSaidas(): List<Nota> {
-      where().tipoMov.eq(SAIDA).findList()
+      return where().tipoMov.eq(SAIDA).findList()
     }
     
     fun novoNumero(): Int {
       val regex = "[0-9]+".toRegex()
       val max = where().findList().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
       val numMax = max.toInt()
-      numMax + 1
+      return numMax + 1
     }
   }
   
   fun findItem(produto: Produto): ItemNota? {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    refresh()
+    return itensNota?.firstOrNull { it.produto == produto }
   }
 }
 

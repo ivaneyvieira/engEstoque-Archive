@@ -1,8 +1,11 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.estoque.model.TipoProduto.PECA
 import br.com.engecopi.framework.model.BaseModel
+import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import java.time.LocalDate
 import javax.persistence.Entity
@@ -17,16 +20,16 @@ import javax.validation.constraints.Size
 @Table(name = "produtos")
 class Produto : BaseModel() {
   @Size(max = 16)
-  var codigo : String = ""
+  var codigo: String = ""
   @Size(max = 8)
-  var grade : String = ""
+  var grade: String = ""
   @Size(max = 16)
-  var codebar : String=""
-  var data_cadastro : LocalDate = LocalDate.now()
+  var codebar: String = ""
+  var data_cadastro: LocalDate = LocalDate.now()
   @Enumerated(EnumType.STRING)
-  var tipo : TipoProduto = PECA
-  var quant_lote : Int = 0
-  var quant_bobina : Int = 0
+  var tipo: TipoProduto = PECA
+  var quant_lote: Int = 0
+  var quant_bobina: Int = 0
   @OneToMany(mappedBy = "produto")
   val itensNota: List<ItemNota>? = null
   @OneToMany(mappedBy = "produto")
@@ -34,35 +37,59 @@ class Produto : BaseModel() {
   @OneToMany(mappedBy = "produto")
   val saldos: List<Saldo>? = null
   
-  fun produtoSaci() : ProdutoSaci {
-    TODO()
+  fun produtoSaci(): ProdutoSaci? {
+    return QuerySaci.querySaci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
   }
   
-  val descricao : String?
+  val descricao: String?
     @Transient
-    get() = produtoSaci().nome
+    get() = produtoSaci()?.nome
   
- 
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String, grade: String): Produto? {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+      return where().codigo.eq(codigo).grade.eq(grade).findOne()
     }
-
+    
     fun findProdutos(codigo: String): List<Produto> {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+      return where().codigo.eq(codigo).findList()
     }
   }
   
-  fun saldoLoja(loja : Loja) : Int {
-    TODO("not implemented")
+  fun saldoLoja(loja: Loja): Int {
+    refresh()
+    return saldos?.filter { it.loja == loja }?.sumBy { it.quantidade } ?: 0
   }
-
-  fun saldoTotal() : Int {
-    TODO("not implemented")
+  
+  fun saldoTotal(): Int {
+    refresh()
+    return saldos?.sumBy { it.quantidade } ?: 0
   }
   
   fun atualizaSaldo() {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    val saidas = ItemNota
+            .where()
+            .produto.id.eq(this.id)
+            .nota.tipoMov.eq(SAIDA)
+            .findList()
+            .groupBy { it.nota?.loja }
+    val entradas = ItemNota
+            .where()
+            .produto.id.eq(this.id)
+            .nota.tipoMov.eq(ENTRADA)
+            .findList()
+            .groupBy { it.nota?.loja }
+    val lojas = (saidas.keys + entradas.keys).distinct()
+    lojas.forEach { loja ->
+      val qtSaida = saidas[loja]?.sumBy { it.quantidade } ?: 0
+      val qtEntrada = entradas[loja]?.sumBy { it.quantidade } ?: 0
+      val quant = qtEntrada + qtSaida
+      val saldo = Saldo.where().produto.id.eq(this.id).loja.id.eq(loja?.id).findOne() ?: Saldo().apply {
+        this.produto = this@Produto
+        this.loja = loja
+      }
+      saldo.quantidade = quant
+      saldo.save()
+    }
   }
 }
 

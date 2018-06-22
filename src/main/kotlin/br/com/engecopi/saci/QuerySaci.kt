@@ -19,7 +19,7 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   }
   
   fun findProduto(prdno: String): List<ProdutoSaci> {
-    return findProduto.value(prdno)
+    return findProduto.value(prdno.lpad(16, " "))
   }
   
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
