@@ -9,11 +9,13 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "lotes")
-class Lote: BaseModel() {
-  var sequencia : Int = 0
-  var total : Int = 0
+class Lote : BaseModel() {
+  var sequencia: Int = 0
+  var total: Int = 0
   @ManyToOne
-  var produto : Produto? = null
+  var produto: Produto? = null
   @OneToMany(mappedBy = "lote")
   val movimentacoes: List<Movimentacao>? = null
+  
+  companion object Find : LoteFinder()
 }

@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.viewmodel.NotaSaidaItemVo
@@ -9,7 +10,6 @@ import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.framework.ui.view.DialogPopup
 import br.com.engecopi.framework.ui.view.LayoutView
 import br.com.engecopi.framework.ui.view.MessageDialog
-import br.com.engecopi.saci.QuerySaci
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
@@ -26,20 +26,17 @@ import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.refresh
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
-import com.sun.javafx.webkit.theme.Renderer.setRenderer
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
-import com.vaadin.ui.renderers.DateRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.patrik.FastNavigation
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 
 @AutoView
 class SaidaView : LayoutView<SaidaViewModel>() {
@@ -149,13 +146,13 @@ class SaidaView : LayoutView<SaidaViewModel>() {
                 .withConverter(StringToIntegerConverter("Número inválido"))
                 .bind(NotaSaidaVo::numero)
       }
-      form.comboBox<Int>("Loja") {
-        val lojas = viewModel.lo
-        setItems(lojas.map { it.storeno })
-        setItemCaptionGenerator { storeno ->
-          lojas.firstOrNull { it.storeno ?: 0 == storeno }?.sigla ?: ""
+      form.comboBox<Loja>("Loja") {
+        val lojas = viewModel.lojasSaida
+        setItems(lojas)
+        setItemCaptionGenerator { loja ->
+          loja?.sigla ?: ""
         }
-        value = lojas.map { it.storeno }.firstOrNull()
+        value = lojas.firstOrNull()
         isTextInputAllowed = false
         isEmptySelectionAllowed = false
         this.isScrollToSelectedItem = true

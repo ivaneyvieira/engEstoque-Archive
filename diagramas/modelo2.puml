@@ -40,12 +40,17 @@ class Usuario {
 	numero
 }
 
-ItemNota	-u->	Nota
+class Saldo {
+	quantidade
+}
+
+ItemNota	-r->	Nota
 ItemNota	-l->	Produto
 Lote		-->	Produto
 Movimentacao	-l->	Lote
 Movimentacao	-->	ItemNota
 Nota		-->	Loja
-Usuario		-->	Loja
-
+Usuario		-l->	Loja
+Saldo		-u->	Produto
+Saldo		-r->	Loja
 @enduml

@@ -3,8 +3,6 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.LojaFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
-import br.com.engecopi.saci.beans.LojaSaci
-import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -26,16 +24,25 @@ class Loja : BaseModel() {
     get() = lojaSaci()?.sigla ?: ""
   
   companion object Find : LojaFinder() {
-    fun findLoja(storeno: Int?): Loja? {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun findLoja(storeno: Int): Loja? {
+      return if(storeno == 0) null
+      else
+        where().numero.eq(storeno).findOne()
+        ?: QuerySaci.querySaci.findLojas(storeno).firstOrNull()?.let { lojaSaci ->
+          val loja = Loja().apply {
+            numero = lojaSaci.storeno ?: 0
+          }
+          loja.insert()
+          loja
+        }
     }
     
     fun lojaSaldo(lojaDefault: Int): List<Loja> {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+      return where().notas.id.gt(0).findList()
     }
     
     fun findLojaUser(storeno: Int): List<Loja> {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+      return where().findList().filter { loja -> loja.numero == storeno || storeno == 0 }
     }
   }
 }

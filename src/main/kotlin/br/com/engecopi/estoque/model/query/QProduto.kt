@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLote
+import br.com.engecopi.estoque.model.query.assoc.QAssocSaldo
 import io.ebean.EbeanServer
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
@@ -43,6 +44,7 @@ class QProduto : TQRootBean<Produto, QProduto> {
   lateinit var quant_bobina: PInteger<QProduto>
   lateinit var itensNota: QAssocItemNota<QProduto>
   lateinit var lotes: QAssocLote<QProduto>
+  lateinit var saldos: QAssocSaldo<QProduto>
 
 
   /**

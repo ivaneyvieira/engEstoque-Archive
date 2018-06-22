@@ -1,7 +1,7 @@
 buildscript {
   ext.kotlin_version = '1.2.50'
   ext.karibu_version = '0.4.3'
-  ext.vaadin_version = '8.4.3'
+  ext.vaadin_version = '8.4.4'
   repositories {
     mavenCentral()
   }
@@ -46,7 +46,7 @@ gretty {
 }
 
 vaadin {
-  version "8.4.3"
+  version "8.4.4"
 }
 
 compileKotlin {
@@ -76,7 +76,7 @@ dependencies {
   
   //Dependências do ebean
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
-  compile "io.ebean:ebean:11.17.3"
+  compile "io.ebean:ebean:11.17.5"
   compile "io.ebean:ebean-querybean:11.3.1"
   compile "io.ebean:ebean-annotation:3.11"
   compile "io.ebean.tools:finder-generator:4.2.2"

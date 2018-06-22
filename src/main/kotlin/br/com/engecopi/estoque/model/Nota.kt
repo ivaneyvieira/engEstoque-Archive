@@ -52,12 +52,15 @@ class Nota : BaseModel() {
               .filter { (it.loja?.numero ?: 0) == loja || loja == 0 }
     }
     
-    fun findSaidas() : List<Nota>{
-      TODO("não implementado")
+    fun findSaidas(): List<Nota> {
+      where().tipoMov.eq(SAIDA).findList()
     }
-  
+    
     fun novoNumero(): Int {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+      val regex = "[0-9]+".toRegex()
+      val max = where().findList().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
+      val numMax = max.toInt()
+      numMax + 1
     }
   }
   

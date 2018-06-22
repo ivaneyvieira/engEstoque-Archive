@@ -12,6 +12,7 @@ object MainQueryBeanGenerator {
     
     val config = GeneratorConfig()
     config.lang = "kt"
+    config.classesDirectory = "./out/production/classes/"
     config.classesDirectory = "./build/classes/kotlin/main/"
     config.destDirectory = "./src/main/kotlin"
     config.destResourceDirectory = "./src/main/resources"

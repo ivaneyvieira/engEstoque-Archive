@@ -34,6 +34,7 @@ class QAssocProduto<R>(name: String, root: R) : TQAssocBean<Produto,R>(name, roo
   lateinit var quant_bobina: PInteger<R>
   lateinit var itensNota: QAssocItemNota<R>
   lateinit var lotes: QAssocLote<R>
+  lateinit var saldos: QAssocSaldo<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

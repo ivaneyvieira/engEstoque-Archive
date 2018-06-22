@@ -12,4 +12,6 @@ class Usuario: BaseModel() {
   var numero : Int = 0
   @ManyToOne
   var loja : Loja? = null
+  
+  companion object Find : UsuarioFinder()
 }
