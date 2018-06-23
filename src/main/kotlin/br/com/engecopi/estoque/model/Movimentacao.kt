@@ -9,12 +9,12 @@ import javax.persistence.Table
 @Entity
 @Table(name = "movimentacoes")
 class Movimentacao : BaseModel() {
-
-  companion object Find : MovimentacaoFinder()
   var quantidade: Int = 0
   var saldo: Int = 0
   @ManyToOne
   var lote: Lote? = null
   @ManyToOne
   var itemNota: ItemNota? = null
+
+  companion object Find : MovimentacaoFinder()
 }

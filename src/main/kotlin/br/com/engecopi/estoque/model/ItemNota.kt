@@ -11,8 +11,6 @@ import javax.persistence.Transient
 @Entity
 @Table(name = "itens_nota")
 class ItemNota : BaseModel() {
-
-  companion object Find : ItemNotaFinder()
   var quantidade: Int = 0
   @ManyToOne
   var produto: Produto? = null
@@ -29,4 +27,6 @@ class ItemNota : BaseModel() {
   
   val grade: String?
     @Transient get() = produto?.grade
+  
+  companion object Find : ItemNotaFinder()
 }
