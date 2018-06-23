@@ -37,8 +37,9 @@ class Loja : BaseModel() {
         }
     }
     
-    fun lojaSaldo(lojaDefault: Int): List<Loja> {
+    fun lojaSaldo(storeno: Int): List<Loja> {
       return where().notas.id.gt(0).findList()
+              .filter { loja -> loja.numero == storeno || storeno == 0 }
     }
     
     fun findLojaUser(storeno: Int): List<Loja> {

@@ -43,7 +43,7 @@ class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) :
     val numero = "${nota.invno}"
     val entrada = Nota.findEntrada(numero) ?: Nota().apply {
       this.numero = numero
-      this.loja = Loja.findLoja(nota.storeno)
+      this.loja = Loja.findLoja(nota.storeno ?: 0)
       this.tipoMov = ENTRADA
     }
     addProdutoNotaEntrada(entrada, nota)

@@ -73,6 +73,17 @@ create table produtos (
   constraint pk_produtos primary key (id)
 );
 
+create table saldos (
+  id                            bigint auto_increment not null,
+  produto_id                    bigint,
+  loja_id                       bigint,
+  quantidade                    integer not null,
+  created_at                    datetime(6) not null,
+  updated_at                    datetime(6) not null,
+  version                       integer not null,
+  constraint pk_saldos primary key (id)
+);
+
 create table usuarios (
   id                            bigint auto_increment not null,
   numero                        integer not null,
@@ -100,6 +111,12 @@ alter table movimentacoes add constraint fk_movimentacoes_item_nota_id foreign k
 
 create index ix_notas_loja_id on notas (loja_id);
 alter table notas add constraint fk_notas_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
+
+create index ix_saldos_produto_id on saldos (produto_id);
+alter table saldos add constraint fk_saldos_produto_id foreign key (produto_id) references produtos (id) on delete restrict on update restrict;
+
+create index ix_saldos_loja_id on saldos (loja_id);
+alter table saldos add constraint fk_saldos_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
 
 create index ix_usuarios_loja_id on usuarios (loja_id);
 alter table usuarios add constraint fk_usuarios_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;

@@ -27,6 +27,10 @@ repositories {
   maven { url "https://jcenter.bintray.com" }
 }
 
+configurations {
+  apt
+}
+
 configurations.all {
   resolutionStrategy.cacheChangingModulesFor 4, 'hours'
 }
@@ -47,6 +51,11 @@ gretty {
 
 vaadin {
   version "8.4.4"
+}
+
+ebean {
+  debugLevel = 1
+  queryBeans = true
 }
 
 compileKotlin {
@@ -77,8 +86,8 @@ dependencies {
   //Dependências do ebean
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
   compile "io.ebean:ebean:11.17.5"
-  compile "io.ebean:ebean-querybean:11.3.1"
-  compile "io.ebean:ebean-annotation:3.11"
+  compile "io.ebean:ebean-querybean:11.4.1"
+  compile "io.ebean:ebean-annotation:3.12"
   compile "io.ebean.tools:finder-generator:4.2.2"
   
   // workaround until https://youtrack.jetbrains.com/issue/IDEA-178071 is fixed
