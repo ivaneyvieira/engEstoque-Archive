@@ -10,6 +10,7 @@ import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.framework.ui.view.DialogPopup
 import br.com.engecopi.framework.ui.view.LayoutView
 import br.com.engecopi.framework.ui.view.MessageDialog
+import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
@@ -41,18 +42,14 @@ import java.text.DecimalFormat
 @AutoView
 class SaidaView : LayoutView<SaidaViewModel>() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
-  override val viewModel = SaidaViewModel(lojaDefault) {
-    gridProduto?.dataProvider = DataProvider.ofItems()
-    gridProduto?.refresh()
-    grid?.refresh()
-  }
+  override val viewModel = SaidaViewModel(lojaDefault, this)
+  
   var grid: Grid<Nota>? = null
   var gridProduto: Grid<ItemNota>? = null
   
   val dialogNotaSaida = DialogNotaSaida()
   
   init {
-    
     form("Saída de produtos") {
       
       horizontalLayout {
@@ -132,7 +129,6 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         }
       }
     }
-    viewModel.updateModel()
   }
   
   inner class DialogNotaSaida : DialogPopup<NotaSaidaVo>("Pesquisa Nota de Entrada", NotaSaidaVo::class) {
@@ -248,6 +244,16 @@ class SaidaView : LayoutView<SaidaViewModel>() {
         viewModel.salvaSaida()
       }
     }
+  }
+  
+  override fun updateModel() {
+  
+  }
+  
+  override fun updateView(viewModel: ViewModel) {
+    gridProduto?.dataProvider = DataProvider.ofItems()
+    gridProduto?.refresh()
+    grid?.refresh()
   }
 }
 

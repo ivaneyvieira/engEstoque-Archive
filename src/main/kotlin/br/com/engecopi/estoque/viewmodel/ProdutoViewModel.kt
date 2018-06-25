@@ -2,12 +2,14 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.model.TipoProduto.PECA
+import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
-import com.vaadin.ui.Notification.Type
 
-class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
+class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(view) {
   var pesquisa: String = ""
   val listaGrid: MutableList<Produto> = mutableListOf()
   var grades: List<String> = emptyList()
@@ -16,7 +18,7 @@ class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) ->
   
   override fun execUpdate() = exec {
     listaGrid.clear()
-    listaGrid.addAll(Produto.all().filter { prd ->
+    listaGrid.addAll(Produto.where().findList().filter { prd ->
       val descricao = prd.descricao ?: ""
       descricao.contains(pesquisa) || prd.codigo == pesquisa
     })
@@ -36,16 +38,17 @@ class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) ->
   
   fun saveUpdateProduto() = exec {
     val produto = Produto.findProduto(produtoVo.codigoProduto, produtoVo.gradeProduto)
-    if (produto == null) {
-      Produto().apply {
-        codigo = produtoVo.codigoProduto
-        grade = produtoVo.gradeProduto
-        codebar = produtoVo.codebar
-      }
-    } else {
-      produto.grade = produtoVo.gradeProduto
-      produto.codebar = produtoVo.codebar
-    }
+                  ?: Produto().apply {
+                    codigo = produtoVo.codigoProduto
+                    grade = produtoVo.gradeProduto
+                  }
+    
+    produto.codebar = produtoVo.codebar
+    produto.tipo = produtoVo.tipo
+    produto.quant_bobina = produtoVo.quant_bobina
+    produto.quant_lote = produtoVo.quant_lote
+    
+    produto.save()
   }
   
   fun saldoProduto(prd: Produto, loja: Loja) = execValue {
@@ -70,6 +73,9 @@ class ProdutoViewModel(private val lojaDefault: Int, updateModel: (ViewModel) ->
           var codigoProduto: String = "",
           var gradeProduto: String = "",
           var descricaoProduto: String = "",
+          var tipo : TipoProduto = PECA,
+          var quant_lote : Int = 0,
+          var quant_bobina : Int = 0,
           var produtos: List<ProdutoSaci> = emptyList()
                       ) {
     val codebar: String

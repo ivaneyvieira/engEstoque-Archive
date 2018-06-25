@@ -5,13 +5,14 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import io.ebean.config.JsonConfig.DateTime
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
 
-class SaidaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
+class SaidaViewModel(val lojaDefault: Int, view : IView) : ViewModel(view) {
   val listaGrid: MutableCollection<Nota> = mutableListOf()
   val notaSaidaVo = NotaSaidaVo()
   val lojasSaida = Loja.findLojaUser(lojaDefault)

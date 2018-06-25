@@ -9,7 +9,7 @@ import br.com.engecopi.estoque.viewmodel.NotaEntradaVo
 import br.com.engecopi.framework.ui.view.DialogPopup
 import br.com.engecopi.framework.ui.view.LayoutView
 import br.com.engecopi.framework.ui.view.MessageDialog
-import br.com.engecopi.saci.QuerySaci
+import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
 import com.github.vok.karibudsl.VAlign
@@ -40,15 +40,14 @@ import java.text.DecimalFormat
 @AutoView("")
 class EntradaView : LayoutView<EntradaViewModel>() {
   val lojaDefault = LoginService.currentUser?.storeno ?: 0
-  override val viewModel = EntradaViewModel(lojaDefault) {
-    grid?.dataProvider?.refreshAll()
-  }
+  override val viewModel = EntradaViewModel(lojaDefault, this)
   var grid: Grid<Nota>? = null
   var gridProduto: Grid<ItemNota>? = null
   
   val dialogNotaEntrada = DialogNotaEntrada()
   
   init {
+    
     form("Entrada de produtos") {
       horizontalLayout {
         isVisible = false
@@ -126,7 +125,6 @@ class EntradaView : LayoutView<EntradaViewModel>() {
         }
       }
     }
-    viewModel.updateModel()
   }
   
   inner class DialogNotaEntrada : DialogPopup<NotaEntradaVo>("Pesquisa Nota de Entrada", NotaEntradaVo::class) {
@@ -134,14 +132,14 @@ class EntradaView : LayoutView<EntradaViewModel>() {
       bind(binder)
               .withValidator(RequiredString("O número deve ser informado"))
               .bind(NotaEntradaVo::numero)
-      
     }
+    
     val serie = form.textField("Série") {
       bind(binder)
               .withValidator(RequiredString("A série deve ser informada"))
               .bind(NotaEntradaVo::serie)
-      
     }
+    
     val loja = form.comboBox<Loja>("Loja") {
       val lojas = viewModel.lojaEntrada
       setItems(lojas)
@@ -164,6 +162,15 @@ class EntradaView : LayoutView<EntradaViewModel>() {
           Notification.show("Foram encontrados erros", WARNING_MESSAGE)
       }
     }
+  }
+  
+  
+  override fun updateModel() {
+  
+  }
+  
+  override fun updateView(viewModel: ViewModel) {
+    grid?.dataProvider?.refreshAll()
   }
 }
 

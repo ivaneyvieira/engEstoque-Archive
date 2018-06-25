@@ -2,43 +2,31 @@ package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.Transaction
 
-abstract class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
+abstract class ViewModel(val view: IView) {
   private var inExcection = false
-  
-  var showMessage: ((e: EViewModel) -> Unit)? = null
-  
-  fun showMessage(block: (e: EViewModel) -> Unit) {
-    showMessage = block
-  }
   
   protected abstract fun execUpdate()
   
-  fun updateModel(exception: EViewModel? = null) {
+  private fun updateView(exception: EViewModel? = null) {
     if (exception == null)
       execUpdate()
     else
-      this.showMessage?.let { showMsg ->
-        showMsg(exception)
-      }
+      view.showWarning(exception.message ?: "Erro desconhecido")
     
-    updateView(this)
+    view.updateView(this)
+  }
+  
+  private fun updateModel() {
+    view.updateModel()
   }
   
   @Throws(EViewModel::class)
   fun <T> execValue(block: () -> T): T? {
     return transaction {
       try {
-        if (inExcection)
-          block()
-        else {
-          inExcection = true
-          val retBlock = block()
-          inExcection = false
-          updateModel()
-          retBlock
-        }
+        block()
       } catch (e: EViewModel) {
-        updateModel(e)
+        updateView(e)
         null
       }
     }
@@ -56,7 +44,24 @@ abstract class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
   
   @Throws(EViewModel::class)
   fun exec(block: () -> Unit) {
-    execValue(block)
+    return transaction {
+      try {
+        if (inExcection)
+          block()
+        else {
+          inExcection = true
+          updateModel()
+          
+          block()
+          
+          updateView()
+          inExcection = false
+        }
+      } catch (e: EViewModel) {
+        updateView(e)
+        throw e
+      }
+    }
   }
   
   @Throws(EViewModel::class)
@@ -77,3 +82,15 @@ abstract class ViewModel(private val updateView: (e: ViewModel) -> Unit) {
 }
 
 class EViewModel(msg: String) : Exception(msg)
+
+interface IView {
+  fun updateView(viewModel: ViewModel)
+  
+  fun updateModel()
+  
+  fun showWarning(msg: String)
+  
+  fun showError(msg: String)
+  
+  fun showInfo(msg: String)
+}

@@ -5,7 +5,7 @@ import javax.persistence.RollbackException
 
 object Transaction {
   private fun isNestedTransaction(): Boolean {
-    return Ebean.getDefaultServer().currentTransaction() != null
+    return Ebean.getDefaultServer()?.currentTransaction() != null
   }
   
   @Throws(Exception::class)

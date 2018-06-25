@@ -5,5 +5,7 @@ class ProdutoSaci(
         val nome: String?,
         val grade: String?,
         val codebar: String?,
-        val custo: Double?
+        val custo: Double?,
+        val unidade : String?,
+        val tipo : String?
                  )

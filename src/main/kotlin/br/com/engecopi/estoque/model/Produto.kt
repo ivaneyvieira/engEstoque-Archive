@@ -93,8 +93,9 @@ class Produto : BaseModel() {
   }
 }
 
-enum class TipoProduto { NORMAL,
-  PECA,
-  BOBINA,
-  CAIXA
+enum class TipoProduto(val descricao : String) {
+  NORMAL("Normal"),
+  PECA("Peça"),
+  BOBINA("Bobina"),
+  CAIXA("Caixa")
 }

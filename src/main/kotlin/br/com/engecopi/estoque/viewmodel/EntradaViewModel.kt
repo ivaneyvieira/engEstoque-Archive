@@ -5,11 +5,12 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 
-class EntradaViewModel(val lojaDefault: Int, updateModel: (ViewModel) -> Unit) : ViewModel(updateModel) {
+class EntradaViewModel(val lojaDefault: Int, view : IView) : ViewModel(view) {
   val lojaEntrada = Loja.findLojaUser(lojaDefault)
   val listaGrid: MutableCollection<Nota> = mutableListOf()
   val notaEntradaVo = NotaEntradaVo().apply {
