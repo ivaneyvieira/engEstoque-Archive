@@ -26,8 +26,13 @@ class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(vi
   
   fun updateGrades(codigo: String) = exec {
     val produtos = QuerySaci.querySaci.findProduto(codigo)
-    produtoVo.codigoProduto = codigo.trim()
-    produtoVo.descricaoProduto = produtos.firstOrNull()?.nome ?: "Produto não encontrado"
+    produtos.firstOrNull()?.let { produto ->
+      produtoVo.codigoProduto = codigo.trim()
+      produtoVo.descricaoProduto = produto.nome ?: "Produto não encontrado"
+      produto.tipo?.let { tipo ->
+        produtoVo.tipo = TipoProduto.valueOf(tipo)
+      }
+    }
     
     val gradesSaci = produtos.mapNotNull { it.grade }.filter { it != "" }
     grades = if (gradesSaci.isNotEmpty())
@@ -38,12 +43,8 @@ class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(vi
   
   fun saveUpdateProduto() = exec {
     val produto = Produto.findProduto(produtoVo.codigoProduto, produtoVo.gradeProduto)
-                  ?: Produto().apply {
-                    codigo = produtoVo.codigoProduto
-                    grade = produtoVo.gradeProduto
-                  }
+                  ?: Produto.createProduto(produtoVo.codigoProduto, produtoVo.gradeProduto)
     
-    produto.codebar = produtoVo.codebar
     produto.tipo = produtoVo.tipo
     produto.quant_bobina = produtoVo.quant_bobina
     produto.quant_lote = produtoVo.quant_lote
@@ -73,9 +74,9 @@ class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(vi
           var codigoProduto: String = "",
           var gradeProduto: String = "",
           var descricaoProduto: String = "",
-          var tipo : TipoProduto = PECA,
-          var quant_lote : Int = 0,
-          var quant_bobina : Int = 0,
+          var tipo: TipoProduto = PECA,
+          var quant_lote: Int = 0,
+          var quant_bobina: Int = 0,
           var produtos: List<ProdutoSaci> = emptyList()
                       ) {
     val codebar: String

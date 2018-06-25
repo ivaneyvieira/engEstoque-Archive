@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.model.TipoProduto.BOBINA
 import br.com.engecopi.estoque.ui.LoginService
 import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
@@ -24,6 +25,8 @@ import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.horizontalLayout
 import com.github.vok.karibudsl.isMargin
+import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.converter.StringToIntegerConverter
@@ -46,67 +49,65 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
   val dialogProduto = DialogProduto()
   
   init {
-    isMargin = true
-    setSizeFull()
-    title("Produtos")
-    
-    horizontalLayout {
-      isVisible = false
-      w = fillParent
-      isMargin = false
-      textField("Pesquisa") {
+    form("Produtos") {
+      horizontalLayout {
+        isVisible = false
         w = fillParent
-      }
-    }
-    horizontalLayout {
-      button("Adionar Produto") {
-        clickShortcut = Ctrl + INSERT
-        addClickListener {
-          dialogProduto.binder.readBean(viewModel.produtoVo)
-          dialogProduto.show()
+        isMargin = false
+        textField("Pesquisa") {
+          w = fillParent
         }
       }
-      button("Remover Produto") {
-        clickShortcut = Ctrl + DELETE
-        addClickListener {
-          grid?.actionSelected("Não há produto selecionado") { produto ->
-            val msg = viewModel.validaDelete(produto)
-            if (msg == "")
-              viewModel.deleta(produto)
-            else
-              showWarning(msg)
+      horizontalLayout {
+        button("Adionar Produto") {
+          clickShortcut = Ctrl + INSERT
+          addClickListener {
+            dialogProduto.binder.readBean(viewModel.produtoVo)
+            dialogProduto.show()
+          }
+        }
+        button("Remover Produto") {
+          clickShortcut = Ctrl + DELETE
+          addClickListener {
+            grid?.actionSelected("Não há produto selecionado") { produto ->
+              val msg = viewModel.validaDelete(produto)
+              if (msg == "")
+                viewModel.deleta(produto)
+              else
+                showWarning(msg)
+            }
+          }
+        }
+        button("Atualiza Saldo") {
+          addClickListener {
+            grid?.actionSelected("Não há produto selecionado") { produto ->
+              viewModel.atualizaSaldo(produto)
+            }
           }
         }
       }
-      button("Atualiza Saldo") {
-        addClickListener {
-          grid?.actionSelected("Não há produto selecionado") { produto ->
-            viewModel.atualizaSaldo(produto)
-          }
+      grid = grid(Produto::class) {
+        dataProvider = ListDataProvider(viewModel.listaGrid)
+        removeAllColumns()
+        setSizeFull()
+        expandRatio = 1.0f
+        addColumnFor(Produto::codigo) {
+          caption = "Código"
         }
-      }
-    }
-    grid = grid(Produto::class) {
-      dataProvider = ListDataProvider(viewModel.listaGrid)
-      removeAllColumns()
-      setSizeFull()
-      expandRatio = 1.0f
-      addColumnFor(Produto::codigo) {
-        caption = "Código"
-      }
-      addColumnFor(Produto::descricao) {
-        expandRatio = 5
-        caption = "Descrição"
-      }
-      addColumnFor(Produto::grade) {
-        caption = "Grade"
-      }
-      
-      viewModel.lojasSaldo.forEach { loja ->
-        addColumn { prd -> viewModel.saldoProduto(prd, loja) }.apply {
-          caption = "Loja $loja"
-          setRenderer(NumberRenderer(DecimalFormat("0")))
-          align = VAlign.Right
+        addColumnFor(Produto::descricao) {
+          expandRatio = 5
+          caption = "Descrição"
+        }
+        addColumnFor(Produto::grade) {
+          caption = "Grade"
+        }
+        
+        viewModel.lojasSaldo.forEach { loja ->
+          addColumn { prd -> viewModel.saldoProduto(prd, loja) }.apply {
+            caption = "Loja $loja"
+            setRenderer(NumberRenderer(DecimalFormat("0")))
+            align = VAlign.Right
+          }
         }
       }
     }
@@ -118,51 +119,61 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
     
     var gradeProduto: ComboBox<String>? = null
     
+    var tipoProduto: ComboBox<TipoProduto>? = null
+    
     init {
       form.apply {
-        textField {
-          caption = "Código"
-          addValueChangeListener { e ->
-            if (e.isUserOriginated) {
-              viewModel.updateGrades(e.value)
+        row {
+          textField {
+            expandRatio = 1f
+            caption = "Código"
+            addValueChangeListener { e ->
+              if (e.isUserOriginated) {
+                viewModel.updateGrades(e.value)
+              }
             }
+            bind(binder).bind(ProdutoVo::codigoProduto)
           }
-          bind(binder).bind(ProdutoVo::codigoProduto)
-        }
-        
-        descricaoProduto = textField("Descrição") {
-          isReadOnly = true
-        }
-  
-        gradeProduto= comboBox {
-          caption = "Grade"
-          isEmptySelectionAllowed = false
-          isTextInputAllowed = false
-          bind(binder).bind(ProdutoVo::gradeProduto)
-        }
-  
-        comboBox<TipoProduto> {
-          caption = "Tipo"
-          isEmptySelectionAllowed = false
-          isTextInputAllowed = false
-          setItemCaptionGenerator { it.descricao }
-          bind(binder).bind(ProdutoVo::tipo)
-        }
-        
-        textField {
-          caption="Quant Lote"
-          addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-          bind(binder).withConverter(StringToIntegerConverter("Valor inválido"))
-                  .bind(ProdutoVo::quant_lote)
           
+          descricaoProduto = textField("Descrição") {
+            expandRatio = 3f
+            isReadOnly = true
+          }
+          gradeProduto = comboBox {
+            expandRatio = 1f
+            caption = "Grade"
+            isEmptySelectionAllowed = false
+            isTextInputAllowed = false
+            bind(binder).bind(ProdutoVo::gradeProduto)
+          }
         }
-  
-        textField {
-          caption="Quant Bobina"
-          addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-          bind(binder).withConverter(StringToIntegerConverter("Valor inválido"))
-                  .bind(ProdutoVo::quant_bobina)
-    
+        row {
+          tipoProduto = comboBox<TipoProduto> {
+            expandRatio = 1f
+            caption = "Tipo"
+            isEmptySelectionAllowed = false
+            isTextInputAllowed = false
+            setItems(TipoProduto.values().toList())
+            setItemCaptionGenerator { it.descricao }
+            bind(binder).bind(ProdutoVo::tipo)
+          }
+          
+          textField {
+            expandRatio = 1f
+            caption = "Quant Lote"
+            addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+            bind(binder).withConverter(StringToIntegerConverter("Valor inválido"))
+                    .bind(ProdutoVo::quant_lote)
+            
+          }
+          textField {
+            expandRatio = 1f
+            caption = "Quant Bobina"
+            addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+            bind(binder).withConverter(StringToIntegerConverter("Valor inválido"))
+                    .bind(ProdutoVo::quant_bobina)
+            
+          }
         }
       }
       
@@ -183,11 +194,12 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
       setDataProvider(dataProvider)
     }
     dialogProduto.apply {
-      
       gradeProduto?.setItems(viewModel.grades)
       viewModel.grades.firstOrNull()?.let {
         gradeProduto?.value = it
       }
+      
+      tipoProduto?.value = viewModel.produtoVo.tipo
       
       descricaoProduto?.value = viewModel.produtoVo.descricaoProduto
     }

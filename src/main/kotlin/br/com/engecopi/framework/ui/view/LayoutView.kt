@@ -43,3 +43,4 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
       MessageDialog.info(message = msg)
   }
 }
+

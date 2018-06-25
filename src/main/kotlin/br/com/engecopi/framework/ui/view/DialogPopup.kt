@@ -1,5 +1,7 @@
 package br.com.engecopi.framework.ui.view
 
+import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.w
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.shared.Registration
 import com.vaadin.ui.Button
@@ -17,8 +19,18 @@ open class DialogPopup<BEAN : Any>(
         caption: String, classBean: KClass<BEAN>
                                   ) : Window(caption) {
   val binder = BeanValidationBinder(classBean.java)
-  val form = FormLayout().apply {
-    setSizeUndefined()
+  val form = VerticalLayout().apply {
+    setSizeFull()
+  }
+  
+  fun VerticalLayout.row(block : HorizontalLayout.() -> Unit){
+    val horizontalLayout = HorizontalLayout()
+    horizontalLayout.w = 100.perc
+    horizontalLayout.block()
+    horizontalLayout.iterator().forEach {component ->
+      component.w = 100.perc
+    }
+    addComponent(horizontalLayout)
   }
   
   private val btnOk: Button = Button("Confirma").apply {
@@ -41,7 +53,7 @@ open class DialogPopup<BEAN : Any>(
     UI.getCurrent().addWindow(this)
   }
   
-  fun initForm(condigForm: (FormLayout) -> Unit) {
+  fun initForm(condigForm: (VerticalLayout) -> Unit) {
     condigForm(form)
   }
   

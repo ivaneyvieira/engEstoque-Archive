@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
+import br.com.engecopi.estoque.ui.views.UsuarioView
 import com.github.vok.karibudsl.autoViewProvider
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.label
@@ -65,6 +66,7 @@ class EstoqueUI : UI() {
         menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
         section("Consulta")
         menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
+        menuButton("Usuário", VaadinIcons.USER, view = UsuarioView::class.java)
       }
       
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl

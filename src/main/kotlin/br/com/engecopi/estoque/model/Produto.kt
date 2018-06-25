@@ -53,6 +53,19 @@ class Produto : BaseModel() {
     fun findProdutos(codigo: String): List<Produto> {
       return where().codigo.eq(codigo).findList()
     }
+    
+    fun createProduto(codigoProduto: String, gradeProduto: String): Produto {
+      val produtoSaci = QuerySaci.querySaci.findProduto(codigoProduto)
+              .firstOrNull { it.grade == gradeProduto }
+      return Produto().apply {
+        produtoSaci?.let { pSaci ->
+          codigo = pSaci.codigo ?: codigo
+          grade = pSaci.grade ?: grade
+          tipo = TipoProduto.valueOf(pSaci.tipo ?: "NORMAL")
+          codebar = pSaci.codebar ?: codebar
+        }
+      }
+    }
   }
   
   fun saldoLoja(loja: Loja): Int {
@@ -93,9 +106,9 @@ class Produto : BaseModel() {
   }
 }
 
-enum class TipoProduto(val descricao : String) {
+enum class TipoProduto(val descricao: String) {
   NORMAL("Normal"),
   PECA("Peça"),
   BOBINA("Bobina"),
-  CAIXA("Caixa")
+  CAIXA("Piso")
 }

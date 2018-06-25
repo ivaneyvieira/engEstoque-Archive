@@ -4,7 +4,7 @@ import io.ebean.Ebean
 import javax.persistence.RollbackException
 
 object Transaction {
-  private fun isNestedTransaction(): Boolean {
+  private fun inTransaction(): Boolean {
     return Ebean.getDefaultServer()?.currentTransaction() != null
   }
   
@@ -29,13 +29,13 @@ object Transaction {
   }
   
   fun commit() {
-    if (!isNestedTransaction())
+    if (inTransaction())
       Ebean.commitTransaction()
     Ebean.beginTransaction()
   }
   
   fun rollback() {
-    if (!isNestedTransaction())
+    if (inTransaction())
       Ebean.rollbackTransaction()
     Ebean.beginTransaction()
   }

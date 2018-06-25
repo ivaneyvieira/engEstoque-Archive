@@ -104,6 +104,7 @@ dependencies {
   compile "de.steinwedel.vaadin.addon:messagebox:4.0.21"
   compile "org.vaadin.patrik:GridFastNavigation:2.2.3"
   compile "org.vaadin:viritin:2.5"
+  compile 'org.vaadin.crudui:crudui:2.3.0'
   // heroku app runner
   testCompile "junit:junit:4.11"
 }

@@ -47,7 +47,6 @@ class EntradaView : LayoutView<EntradaViewModel>() {
   val dialogNotaEntrada = DialogNotaEntrada()
   
   init {
-    
     form("Entrada de produtos") {
       horizontalLayout {
         isVisible = false

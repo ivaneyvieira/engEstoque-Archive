@@ -51,7 +51,6 @@ class SaidaView : LayoutView<SaidaViewModel>() {
   
   init {
     form("Saída de produtos") {
-      
       horizontalLayout {
         isVisible = false
         w = fillParent
