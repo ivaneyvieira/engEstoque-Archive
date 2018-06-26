@@ -5,6 +5,8 @@ import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
 import br.com.engecopi.estoque.model.query.assoc.QAssocProduto
 import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
+import io.ebean.typequery.PLocalDateTime
+import io.ebean.typequery.PLong
 import io.ebean.typequery.TQRootBean
 import io.ebean.typequery.TypeQueryBean
 
@@ -24,6 +26,10 @@ class QSaldo : TQRootBean<Saldo, QSaldo> {
     val _alias = QSaldo(true)
   }
 
+  lateinit var id: PLong<QSaldo>
+  lateinit var createdAt: PLocalDateTime<QSaldo>
+  lateinit var updatedAt: PLocalDateTime<QSaldo>
+  lateinit var version: PInteger<QSaldo>
   lateinit var produto: QAssocProduto<QSaldo>
   lateinit var loja: QAssocLoja<QSaldo>
   lateinit var quantidade: PInteger<QSaldo>

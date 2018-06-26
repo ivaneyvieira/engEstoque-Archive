@@ -45,5 +45,18 @@ class Loja : BaseModel() {
     fun findLojaUser(storeno: Int): List<Loja> {
       return where().findList().filter { loja -> loja.numero == storeno || storeno == 0 }
     }
+    
+    fun carregasLojas() {
+      QuerySaci.querySaci.findLojas(0).forEach {lojaSaci->
+        lojaSaci.storeno?.let {storeno ->
+          val loja = Loja.findLoja(storeno)
+          if(loja == null){
+            Loja().apply {
+              numero = storeno
+            }.insert()
+          }
+        }
+      }
+    }
   }
 }

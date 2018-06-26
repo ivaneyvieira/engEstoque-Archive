@@ -6,6 +6,7 @@ import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
+import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
 import io.ebean.typequery.TypeQueryBean
 
@@ -29,7 +30,7 @@ class QUsuario : TQRootBean<Usuario, QUsuario> {
   lateinit var createdAt: PLocalDateTime<QUsuario>
   lateinit var updatedAt: PLocalDateTime<QUsuario>
   lateinit var version: PInteger<QUsuario>
-  lateinit var numero: PInteger<QUsuario>
+  lateinit var loginName: PString<QUsuario>
   lateinit var loja: QAssocLoja<QUsuario>
 
 

@@ -1,5 +1,7 @@
 package br.com.engecopi.framework.model
 
+import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Loja.Find
 import io.ebean.Ebean
 import io.ebean.annotation.Platform
 import io.ebean.dbmigration.DbMigration
@@ -17,13 +19,13 @@ object MainDbMigration {
     migration.setStrictMode(false)
     migration.setPlatform(Platform.MYSQL)
     migration.generateMigration()
-  
+    
     System.setProperty("disableTestProperties", "true")
-  
+    
     // starting EbeanServer triggers the apply of migrations
     // ... when ebean.migration.run=true
-    Ebean.getDefaultServer()
-  
+    // Ebean.getDefaultServer()
+    
     System.out.println("done")
   }
 }

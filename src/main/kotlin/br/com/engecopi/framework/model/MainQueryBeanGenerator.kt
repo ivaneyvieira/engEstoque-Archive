@@ -13,7 +13,7 @@ object MainQueryBeanGenerator {
     val config = GeneratorConfig()
     config.lang = "kt"
     config.classesDirectory = "./out/production/classes/"
-    config.classesDirectory = "./build/classes/kotlin/main/"
+    //config.classesDirectory = "./build/classes/kotlin/main/"
     config.destDirectory = "./src/main/kotlin"
     config.destResourceDirectory = "./src/main/resources"
   
@@ -21,7 +21,6 @@ object MainQueryBeanGenerator {
     config.destPackage = "br.com.engecopi.estoque.model.query"
   
     config.isOverwriteExistingFinders = true
-    
     
     val generator = Generator(config)
     generator.generateQueryBeans()

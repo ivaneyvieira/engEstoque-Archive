@@ -72,7 +72,7 @@
         </createTable>
         <createTable name="usuarios" identityType="identity" pkName="pk_usuarios">
             <column name="id" type="bigint" primaryKey="true"/>
-            <column name="numero" type="integer" notnull="true"/>
+            <column name="login_name" type="varchar(8)" notnull="true"/>
             <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_usuarios_loja_id" foreignKeyIndex="ix_usuarios_loja_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>

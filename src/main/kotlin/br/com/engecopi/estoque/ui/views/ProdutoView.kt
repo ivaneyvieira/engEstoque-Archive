@@ -144,7 +144,7 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
           }
         }
         row {
-          tipoProduto = comboBox<TipoProduto> {
+          tipoProduto = comboBox {
             expandRatio = 1f
             caption = "Tipo"
             isEmptySelectionAllowed = false

@@ -86,7 +86,7 @@ create table saldos (
 
 create table usuarios (
   id                            bigint auto_increment not null,
-  numero                        integer not null,
+  login_name                    varchar(8) not null,
   loja_id                       bigint,
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
