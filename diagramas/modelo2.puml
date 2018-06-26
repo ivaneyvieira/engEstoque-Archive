@@ -4,8 +4,9 @@ hide methods
 class Produto{
 	codigo
 	grade
+	codebar
 	data_cadastro
-	tipo [NORMAL, FIOS_PECA, FIO-BOBINA, PISO]
+	tipo [NORMAL, PECA, BOBINA, CAIXA]
 	quant_lote
 	quant_bobina
 }

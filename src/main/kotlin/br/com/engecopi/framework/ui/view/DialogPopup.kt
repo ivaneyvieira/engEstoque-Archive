@@ -23,15 +23,7 @@ open class DialogPopup<BEAN : Any>(
     setSizeFull()
   }
   
-  fun VerticalLayout.row(block : HorizontalLayout.() -> Unit){
-    val horizontalLayout = HorizontalLayout()
-    horizontalLayout.w = 100.perc
-    horizontalLayout.block()
-    horizontalLayout.iterator().forEach {component ->
-      component.w = 100.perc
-    }
-    addComponent(horizontalLayout)
-  }
+
   
   private val btnOk: Button = Button("Confirma").apply {
     addStyleName(ValoTheme.BUTTON_PRIMARY)
@@ -87,4 +79,14 @@ open class DialogPopup<BEAN : Any>(
     if (!status.hasErrors())
       close()
   }
+}
+
+fun VerticalLayout.row(block : HorizontalLayout.() -> Unit){
+  val horizontalLayout = HorizontalLayout()
+  horizontalLayout.w = 100.perc
+  horizontalLayout.block()
+  horizontalLayout.iterator().forEach {component ->
+    component.w = 100.perc
+  }
+  addComponent(horizontalLayout)
 }

@@ -9,15 +9,12 @@ import com.github.vok.karibudsl.AutoView
 class UsuarioView : CrudLayoutView<UsuarioViewModel>() {
   
   override val viewModel = UsuarioViewModel(this)
-
-  override fun fieldsRead(): List<String> {
-    return listOf(UsuarioCrudVo::codigo.name, UsuarioCrudVo::nome.name, UsuarioCrudVo::loja.name)
-  }
+  
+  override fun fieldsRead() = listOf(UsuarioCrudVo::codigo, UsuarioCrudVo::nome, UsuarioCrudVo::loja)
   
   init {
-    form("Usuários") {}
-    gridCrud(viewModel.crudClass.java) {
-    
+    form("Usuários") {
+      gridCrud(viewModel.crudClass.java)
     }
   }
 }

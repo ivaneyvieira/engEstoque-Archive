@@ -2,20 +2,18 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
-import br.com.engecopi.estoque.model.TipoProduto.BOBINA
 import br.com.engecopi.estoque.ui.LoginService
-import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel.ProdutoVo
 import br.com.engecopi.framework.ui.view.DialogPopup
 import br.com.engecopi.framework.ui.view.LayoutView
+import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.ModifierKey.Ctrl
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.align
-import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.clickShortcut
@@ -25,8 +23,6 @@ import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.horizontalLayout
 import com.github.vok.karibudsl.isMargin
-import com.github.vok.karibudsl.perc
-import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.converter.StringToIntegerConverter
