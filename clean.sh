@@ -11,9 +11,9 @@ then
   git pull
   ./gradlew --console=rich  vaadinCompile
   ./gradlew --console=rich  vaadinThemeCompile
-#  bzcat  sql/engEstoque.sql.bz2 | mysql engEstoque 
+  bzcat  sql/engEstoque.sql.bz2 | mysql engEstoque 
 else
-#  mysqldump engEstoque | bzip2 > sql/engEstoque.sql.bz2
+  mysqldump engEstoque | bzip2 > sql/engEstoque.sql.bz2
   git add .
   git commit -m"$COMMENT"
   git push

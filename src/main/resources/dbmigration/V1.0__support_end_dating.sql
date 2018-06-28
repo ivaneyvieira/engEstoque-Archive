@@ -2,6 +2,7 @@
 create table itens_nota (
   id                            bigint auto_increment not null,
   quantidade                    integer not null,
+  tamanho_lote                  integer not null,
   produto_id                    bigint,
   nota_id                       bigint,
   created_at                    datetime(6) not null,
@@ -24,6 +25,7 @@ create table lotes (
   sequencia                     integer not null,
   total                         integer not null,
   produto_id                    bigint,
+  loja_id                       bigint,
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
@@ -64,8 +66,7 @@ create table produtos (
   codebar                       varchar(16) not null,
   data_cadastro                 date not null,
   tipo                          varchar(6) not null,
-  quant_lote                    integer not null,
-  quant_bobina                  integer not null,
+  tamanho_lote                  integer not null,
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
@@ -102,6 +103,9 @@ alter table itens_nota add constraint fk_itens_nota_nota_id foreign key (nota_id
 
 create index ix_lotes_produto_id on lotes (produto_id);
 alter table lotes add constraint fk_lotes_produto_id foreign key (produto_id) references produtos (id) on delete restrict on update restrict;
+
+create index ix_lotes_loja_id on lotes (loja_id);
+alter table lotes add constraint fk_lotes_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
 
 create index ix_movimentacoes_lote_id on movimentacoes (lote_id);
 alter table movimentacoes add constraint fk_movimentacoes_lote_id foreign key (lote_id) references lotes (id) on delete restrict on update restrict;

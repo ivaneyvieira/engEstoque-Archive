@@ -28,10 +28,9 @@ class QAssocProduto<R>(name: String, root: R) : TQAssocBean<Produto,R>(name, roo
   lateinit var codigo: PString<R>
   lateinit var grade: PString<R>
   lateinit var codebar: PString<R>
-  lateinit var data_cadastro: PLocalDate<R>
+  lateinit var dataCadastro: PLocalDate<R>
   lateinit var tipo: PEnum<R,TipoProduto>
-  lateinit var quant_lote: PInteger<R>
-  lateinit var quant_bobina: PInteger<R>
+  lateinit var tamanhoLote: PInteger<R>
   lateinit var itensNota: QAssocItemNota<R>
   lateinit var lotes: QAssocLote<R>
   lateinit var saldos: QAssocSaldo<R>

@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.model.finder.NotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import java.time.LocalDate
 import java.time.LocalTime
+import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -25,9 +26,9 @@ class Nota : BaseModel() {
   var hora: LocalTime = LocalTime.now()
   @Size(max = 100)
   var observacao: String = ""
-  @ManyToOne
+  @ManyToOne(cascade = [ALL])
   var loja: Loja? = null
-  @OneToMany(mappedBy = "nota")
+  @OneToMany(mappedBy = "nota", cascade = [ALL])
   val itensNota: List<ItemNota>? = null
   
   companion object Find : NotaFinder() {

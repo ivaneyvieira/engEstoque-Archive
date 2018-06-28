@@ -84,8 +84,9 @@ dependencies {
   testCompile "com.github.mvysny.dynatest:dynatest:0.8"
   //Dependências do ebean
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
-  compile "io.ebean:ebean:11.18.1"
-  compile "io.ebean:ebean-querybean:11.4.1"
+  compile "io.ebean:ebean:11.18.2"
+  compile "io.ebean:kotlin-querybean-generator:11.4.1"
+  compile "io.ebean:querybean-generator:11.4.1"
   compile "io.ebean:ebean-annotation:3.12"
   compile "io.ebean.tools:finder-generator:4.2.2"
   
@@ -95,7 +96,12 @@ dependencies {
   compile "mysql:mysql-connector-java:5.1.45"
   compile "org.apache.commons:commons-dbcp2:2.3.0"
   compile  "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
-  
+
+  compile 'javax.xml.bind:jaxb-api:2.2.11'
+  compile 'com.sun.xml.bind:jaxb-core:2.2.11'
+  compile 'com.sun.xml.bind:jaxb-impl:2.2.11'
+  compile 'javax.activation:activation:1.1.1'
+
   compile "org.xerial:sqlite-jdbc:3.21.0.1"
   compile "org.sql2o:sql2o:1.5.4"
   compile "org.imgscalr:imgscalr-lib:4.2"

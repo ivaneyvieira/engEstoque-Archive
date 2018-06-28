@@ -32,6 +32,7 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var updatedAt: PLocalDateTime<QItemNota>
   lateinit var version: PInteger<QItemNota>
   lateinit var quantidade: PInteger<QItemNota>
+  lateinit var tamanhoLote: PInteger<QItemNota>
   lateinit var produto: QAssocProduto<QItemNota>
   lateinit var nota: QAssocNota<QItemNota>
   lateinit var movimentacoes: QAssocMovimentacao<QItemNota>

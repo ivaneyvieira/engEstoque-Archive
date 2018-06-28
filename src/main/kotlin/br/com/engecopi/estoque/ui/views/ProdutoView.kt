@@ -140,6 +140,7 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
             caption = "Grade"
             isEmptySelectionAllowed = false
             isTextInputAllowed = false
+            
             bind(binder).bind(ProdutoVo::gradeProduto)
           }
         }
@@ -151,23 +152,17 @@ class ProdutoView : LayoutView<ProdutoViewModel>() {
             isTextInputAllowed = false
             setItems(TipoProduto.values().toList())
             setItemCaptionGenerator { it.descricao }
+            
             bind(binder).bind(ProdutoVo::tipo)
           }
           
           textField {
             expandRatio = 1f
-            caption = "Quant Lote"
+            caption = "Tamanho do Lote"
             addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-            bind(binder).withConverter(StringToIntegerConverter("Valor inválido"))
-                    .bind(ProdutoVo::quant_lote)
-            
-          }
-          textField {
-            expandRatio = 1f
-            caption = "Quant Bobina"
-            addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-            bind(binder).withConverter(StringToIntegerConverter("Valor inválido"))
-                    .bind(ProdutoVo::quant_bobina)
+            bind(binder)
+                    .withConverter(StringToIntegerConverter("Valor inválido"))
+                    .bind(ProdutoVo::tamanhoLote)
             
           }
         }

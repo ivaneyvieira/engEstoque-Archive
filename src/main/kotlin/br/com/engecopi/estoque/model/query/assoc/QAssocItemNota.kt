@@ -22,6 +22,7 @@ class QAssocItemNota<R>(name: String, root: R) : TQAssocBean<ItemNota,R>(name, r
   lateinit var updatedAt: PLocalDateTime<R>
   lateinit var version: PInteger<R>
   lateinit var quantidade: PInteger<R>
+  lateinit var tamanhoLote: PInteger<R>
   lateinit var produto: QAssocProduto<R>
   lateinit var nota: QAssocNota<R>
   lateinit var movimentacoes: QAssocMovimentacao<R>

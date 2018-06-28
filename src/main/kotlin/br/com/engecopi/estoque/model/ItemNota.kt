@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
+import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
@@ -12,11 +13,12 @@ import javax.persistence.Transient
 @Table(name = "itens_nota")
 class ItemNota : BaseModel() {
   var quantidade: Int = 0
-  @ManyToOne
+  var tamanhoLote: Int = 0
+  @ManyToOne(cascade = [ALL])
   var produto: Produto? = null
-  @ManyToOne
+  @ManyToOne(cascade = [ALL])
   var nota: Nota? = null
-  @OneToMany(mappedBy = "itemNota")
+  @OneToMany(mappedBy = "itemNota", cascade = [ALL])
   var movimentacoes: List<Movimentacao>? = null
   
   val descricao: String?

@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.Lote
+import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
 import br.com.engecopi.estoque.model.query.assoc.QAssocMovimentacao
 import br.com.engecopi.estoque.model.query.assoc.QAssocProduto
 import io.ebean.EbeanServer
@@ -33,6 +34,7 @@ class QLote : TQRootBean<Lote, QLote> {
   lateinit var sequencia: PInteger<QLote>
   lateinit var total: PInteger<QLote>
   lateinit var produto: QAssocProduto<QLote>
+  lateinit var loja: QAssocLoja<QLote>
   lateinit var movimentacoes: QAssocMovimentacao<QLote>
 
 

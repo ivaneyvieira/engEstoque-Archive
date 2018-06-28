@@ -24,6 +24,7 @@ class QAssocLote<R>(name: String, root: R) : TQAssocBean<Lote,R>(name, root) {
   lateinit var sequencia: PInteger<R>
   lateinit var total: PInteger<R>
   lateinit var produto: QAssocProduto<R>
+  lateinit var loja: QAssocLoja<R>
   lateinit var movimentacoes: QAssocMovimentacao<R>
 
   // type safe fetch(properties) using varargs not supported yet ...

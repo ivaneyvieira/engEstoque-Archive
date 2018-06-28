@@ -8,6 +8,7 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import java.time.LocalDate
+import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -25,16 +26,15 @@ class Produto : BaseModel() {
   var grade: String = ""
   @Size(max = 16)
   var codebar: String = ""
-  var data_cadastro: LocalDate = LocalDate.now()
+  var dataCadastro: LocalDate = LocalDate.now()
   @Enumerated(EnumType.STRING)
   var tipo: TipoProduto = PECA
-  var quant_lote: Int = 0
-  var quant_bobina: Int = 0
-  @OneToMany(mappedBy = "produto")
+  var tamanhoLote: Int = 0
+  @OneToMany(mappedBy = "produto", cascade = [ALL])
   val itensNota: List<ItemNota>? = null
-  @OneToMany(mappedBy = "produto")
+  @OneToMany(mappedBy = "produto", cascade = [ALL])
   val lotes: List<Lote>? = null
-  @OneToMany(mappedBy = "produto")
+  @OneToMany(mappedBy = "produto", cascade = [ALL])
   val saldos: List<Saldo>? = null
   
   fun produtoSaci(): ProdutoSaci? {

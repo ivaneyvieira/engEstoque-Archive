@@ -4,6 +4,7 @@
         <createTable name="itens_nota" identityType="identity" pkName="pk_itens_nota">
             <column name="id" type="bigint" primaryKey="true"/>
             <column name="quantidade" type="integer" notnull="true"/>
+            <column name="tamanho_lote" type="integer" notnull="true"/>
             <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_itens_nota_produto_id" foreignKeyIndex="ix_itens_nota_produto_id"/>
             <column name="nota_id" type="bigint" references="notas.id" foreignKeyName="fk_itens_nota_nota_id" foreignKeyIndex="ix_itens_nota_nota_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
@@ -22,6 +23,7 @@
             <column name="sequencia" type="integer" notnull="true"/>
             <column name="total" type="integer" notnull="true"/>
             <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_lotes_produto_id" foreignKeyIndex="ix_lotes_produto_id"/>
+            <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_lotes_loja_id" foreignKeyIndex="ix_lotes_loja_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>
@@ -55,8 +57,7 @@
             <column name="codebar" type="varchar(16)" notnull="true"/>
             <column name="data_cadastro" type="date" notnull="true"/>
             <column name="tipo" type="varchar(6)" notnull="true" checkConstraint="check ( tipo in ('NORMAL','PECA','BOBINA','CAIXA'))" checkConstraintName="ck_produtos_tipo"/>
-            <column name="quant_lote" type="integer" notnull="true"/>
-            <column name="quant_bobina" type="integer" notnull="true"/>
+            <column name="tamanho_lote" type="integer" notnull="true"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>

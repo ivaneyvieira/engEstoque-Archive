@@ -46,8 +46,7 @@ class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(vi
                   ?: Produto.createProduto(produtoVo.codigoProduto, produtoVo.gradeProduto)
     
     produto.tipo = produtoVo.tipo
-    produto.quant_bobina = produtoVo.quant_bobina
-    produto.quant_lote = produtoVo.quant_lote
+    produto.tamanhoLote = produtoVo.tamanhoLote
     
     produto.save()
   }
@@ -75,8 +74,7 @@ class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(vi
           var gradeProduto: String = "",
           var descricaoProduto: String = "",
           var tipo: TipoProduto = PECA,
-          var quant_lote: Int = 0,
-          var quant_bobina: Int = 0,
+          var tamanhoLote: Int = 0,
           var produtos: List<ProdutoSaci> = emptyList()
                       ) {
     val codebar: String
