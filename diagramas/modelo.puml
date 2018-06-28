@@ -34,8 +34,6 @@ class Saida{
 	observacao
 }
 
-
-
 Entrada		<--	ItemEntrada
 Saida		<-- 	ItemSaida
 ItemEntrada	-->	Produto

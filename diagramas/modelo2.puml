@@ -7,12 +7,12 @@ class Produto{
 	codebar
 	data_cadastro
 	tipo [NORMAL, PECA, BOBINA, CAIXA]
-	quant_lote
-	quant_bobina
+	tamanho_lote
 }
 
 class ItemNota{
 	quantidade
+	tamanhoLote
 }
 
 class Nota {
@@ -29,6 +29,8 @@ class Lote {
 }
 
 class Movimentacao {
+	data
+	hora
 	quantidade
 	saldo
 }
@@ -45,11 +47,12 @@ class Saldo {
 	quantidade
 }
 
-ItemNota	-r->	Nota
-ItemNota	-l->	Produto
-Lote		-->	Produto
+ItemNota	-d->	Nota
+ItemNota	-u->	Produto
+Lote		-u->	Produto
+Lote		-->	Loja
 Movimentacao	-l->	Lote
-Movimentacao	-->	ItemNota
+Movimentacao	-r->	ItemNota
 Nota		-->	Loja
 Usuario		-l->	Loja
 Saldo		-u->	Produto
