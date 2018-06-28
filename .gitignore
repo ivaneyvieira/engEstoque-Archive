@@ -6,4 +6,5 @@ styles.css
 styles.css.gz
 classes
 out
+bin
 deploy.sh
