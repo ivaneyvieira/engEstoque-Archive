@@ -1,79 +1,101 @@
 package br.com.engecopi.estoque.viewmodel
 
-import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
+import br.com.engecopi.utils.localDate
+import java.time.LocalDate
 
-class EntradaViewModel(val lojaDefault: Int, view : IView) : ViewModel(view) {
-  val lojaEntrada = Loja.findLojaUser(lojaDefault)
-  val listaGrid: MutableCollection<Nota> = mutableListOf()
-  val notaEntradaVo = NotaEntradaVo().apply {
-    loja = Loja.findLoja(lojaDefault)
+class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::class) {
+  override fun update() {
+  
   }
   
-  fun processaNotaEntrada() = exec {
-    val notasEntrada = QuerySaci.querySaci.findNotaEntrada(
-            storeno = notaEntradaVo.loja?.numero ?: 0,
-            nfname = notaEntradaVo.numero,
-            invse = notaEntradaVo.serie
-                                                          )
-    val produtos = Produto.all().toList()
-    val notasProduto = notasEntrada.filter { nota ->
-      val produto = nota.prdno?.trim() ?: ""
-      val grade = nota.grade ?: ""
-      produtos.any { it.codigo == produto && it.grade == grade }
-    }
-    notasProduto.forEach { nota ->
-      addNotaEntrada(nota)
-    }
+  override fun add() {
+  
   }
   
-  override fun execUpdate() {
-    val entradas = Nota.findEntradas(lojaDefault)
-    listaGrid.clear()
-    listaGrid.addAll(entradas)
+  override fun findAll(): List<EntradaVo> {
+    return emptyList()
   }
   
-  private fun addNotaEntrada(nota: NotaEntradaSaci) {
-    val numero = "${nota.invno}"
-    val entrada = Nota.findEntrada(numero) ?: Nota().apply {
-      this.numero = numero
-      this.loja = Loja.findLoja(nota.storeno ?: 0)
-      this.tipoMov = ENTRADA
-    }
-    addProdutoNotaEntrada(entrada, nota)
+  override fun delete() {
+  
   }
   
-  private fun addProdutoNotaEntrada(entrada: Nota, nota: NotaEntradaSaci) {
-    val codigo = nota.prdno ?: ""
-    val grade = nota.grade ?: ""
-    val produto = Produto.findProduto(codigo, grade)
-    produto?.let { prd ->
-      val item = entrada.findItem(prd) ?: ItemNota().apply {
-        this.produto = prd
-        this.nota = entrada
-      }
-      
-      item.quantidade = nota.quant ?: 0
-      
-      item.save()
-    }
-  }
-  
-  fun removeEntrada(entrada: Nota) = exec {
-    entrada.itensNota?.forEach { it.delete() }
-    entrada.delete()
+  fun findLojas(): List<Loja>? {
+    return Loja.all()
   }
 }
 
-data class NotaEntradaVo(
-        var numero: String = "",
-        var serie: String = "",
-        var loja: Loja? = null
-                        )
+class EntradaVo {
+  var numeroNF: String? = ""
+  var lojaNF: Loja? = null
+  
+  val notaEntradaSaci: List<NotaEntradaSaci>
+    get() = Nota.findNotaEntradaSaci(numeroNF, lojaNF)
+  
+  var dataNota: LocalDate? = null
+    get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
+  
+  var numeroInterno: Int = 0
+    get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
+  
+  var fornecedor: String = ""
+    get() = notaEntradaSaci.firstOrNull()?.vendName ?: ""
+  
+  var observacaoNota: String? = ""
+  
+  var produto: Produto? = null
+    set(value) {
+      field = value
+      tamanho = value?.tamanhoLote
+    }
+  
+  var descricaoProduto: String = ""
+    get() = produto?.descricao ?: ""
+  
+  var quantProduto: Int = 0
+    get() = notaEntradaSaci.filter { neSaci ->
+      (neSaci.prdno ?: "") == (produto?.codigo ?: "") &&
+      (neSaci.grade ?: "") == (produto?.grade ?: "")
+    }.firstOrNull()?.quant ?: 0
+  
+  var tamanho: Int? = 0
+  
+  var lote: Lote? = null
+    get() = produto?.ultimoLoteLoja(lojaNF)
+  
+  var sequencia: String = ""
+    get() {
+      lote?.sequencia ?: return ""
+      lote?.total ?: return ""
+      return "${lote?.sequencia}/${lote?.total}"
+    }
+  
+  var saldo: Int = 0
+    get() = produto?.saldoLoja(lojaNF) ?: 0
+  
+  var movimentacao: List<MovimentacaoVO> = emptyList()
+    get() {
+      return emptyList()
+    }
+}
+
+class MovimentacaoVO {
+  var sequencia: Int? = 0
+  var total: Int? = 0
+  var quantidade: Int? = 0
+  
+  val descLote: String
+    get() {
+      sequencia ?: return ""
+      total ?: return ""
+      return "$sequencia/$total"
+    }
+}

@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.TipoProduto.PECA
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import io.ebean.annotation.Index
 import java.time.LocalDate
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
@@ -19,12 +20,14 @@ import javax.validation.constraints.Size
 
 @Entity
 @Table(name = "produtos")
+@Index(unique = true, columnNames = ["codigo", "grade"])
 class Produto : BaseModel() {
   @Size(max = 16)
   var codigo: String = ""
   @Size(max = 8)
   var grade: String = ""
   @Size(max = 16)
+  @Index(unique = false)
   var codebar: String = ""
   var dataCadastro: LocalDate = LocalDate.now()
   @Enumerated(EnumType.STRING)
@@ -68,7 +71,8 @@ class Produto : BaseModel() {
     }
   }
   
-  fun saldoLoja(loja: Loja): Int {
+  fun saldoLoja(loja: Loja?): Int {
+    loja ?: return 0
     refresh()
     return saldos?.filter { it.loja == loja }?.sumBy { it.quantidade } ?: 0
   }
@@ -103,6 +107,11 @@ class Produto : BaseModel() {
       saldo.quantidade = quant
       saldo.save()
     }
+  }
+  
+  fun ultimoLoteLoja(loja: Loja?): Lote? {
+    loja ?: return null
+    return Lote.where().loja.id.eq(loja.id).produto.id.eq(this.id).orderBy().sequencia.desc().findList().firstOrNull()
   }
 }
 

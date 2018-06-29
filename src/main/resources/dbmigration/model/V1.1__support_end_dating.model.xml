@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <addUniqueConstraint constraintName="uq_itens_nota_nota_id_produto_id" tableName="itens_nota" columnNames="nota_id,produto_id" nullableColumns="nota_id,produto_id" oneToOne="false"/>
+        <addUniqueConstraint constraintName="uq_lojas_numero" tableName="lojas" columnNames="numero" nullableColumns="" oneToOne="false"/>
+        <addUniqueConstraint constraintName="uq_lotes_sequencia" tableName="lotes" columnNames="sequencia" nullableColumns="" oneToOne="false"/>
+        <addUniqueConstraint constraintName="uq_movimentacoes_lote_id_item_nota_id" tableName="movimentacoes" columnNames="lote_id,item_nota_id" nullableColumns="lote_id,item_nota_id" oneToOne="false"/>
+        <addUniqueConstraint constraintName="uq_produtos_codigo_grade" tableName="produtos" columnNames="codigo,grade" nullableColumns="" oneToOne="false"/>
+        <addUniqueConstraint constraintName="uq_saldos_produto_id_loja_id" tableName="saldos" columnNames="produto_id,loja_id" nullableColumns="produto_id,loja_id" oneToOne="false"/>
+        <addUniqueConstraint constraintName="uq_usuarios_login_name" tableName="usuarios" columnNames="login_name" nullableColumns="" oneToOne="false"/>
+        <createIndex indexName="ix_notas_numero" tableName="notas" columns="numero"/>
+        <createIndex indexName="ix_produtos_codebar" tableName="produtos" columns="codebar"/>
+    </changeSet>
+</migration>
