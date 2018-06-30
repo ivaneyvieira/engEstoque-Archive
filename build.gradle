@@ -101,6 +101,7 @@ dependencies {
   //compile 'com.sun.xml.bind:jaxb-core:2.2.11'
   //compile 'com.sun.xml.bind:jaxb-impl:2.2.11'
   //compile 'javax.activation:activation:1.1.1'
+  compile 'org.cups4j:cups4j:0.7.1'
 
   compile "org.xerial:sqlite-jdbc:3.21.0.1"
   compile "org.sql2o:sql2o:1.5.4"

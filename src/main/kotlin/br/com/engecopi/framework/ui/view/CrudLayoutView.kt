@@ -71,6 +71,7 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
     setWindowCaption(ADD, "Adiciona")
     setWindowCaption(UPDATE, "Modifica")
     setWindowCaption(DELETE, "Apaga")
+    setFormWindowWidth("80%")
   }
   
   private fun <T> CustomCrudFormFactory<T>.defaults() {
@@ -113,7 +114,9 @@ class CustomCrudFormFactory<T>(
     
     val footerLayout = buildFooter(operation, domainObject, cancelButtonClickListener, operationButtonClickListener)
     
-    val mainLayout = VerticalLayout(layout, footerLayout)
+    val mainLayout = VerticalLayout()
+    mainLayout.addComponentsAndExpand(layout)
+    mainLayout.addComponent(footerLayout)
     mainLayout.setComponentAlignment(footerLayout, Alignment.BOTTOM_RIGHT)
     mainLayout.setMargin(true)
     
