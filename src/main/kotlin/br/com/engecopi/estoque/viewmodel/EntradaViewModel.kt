@@ -3,20 +3,75 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Lote
+import br.com.engecopi.estoque.model.Movimentacao
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.framework.model.ViewException
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
+import kotlin.math.ceil
 
 class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::class) {
   override fun update(bean: EntradaVo) {
   }
   
   override fun add(bean: EntradaVo) {
+    bean.notaEntradaSaci.firstOrNull() ?: ViewException("Nota não encontrada no saci")
+    val nota: Nota = bean.nota ?: Nota()
+    nota.apply {
+      this.numero = bean.numeroNF ?: ""
+      this.tipoMov = ENTRADA
+      this.observacao = bean.observacaoNota ?: ""
+    }
+    
+    nota.save()
+    
+    bean.produto ?: ViewException("Produto não encontrada no saci")
+    bean.produto?.tamanhoLote = bean.tamanho ?: 0
+    bean.produto?.save()
+    
+    val item = bean.itemNota ?: ItemNota()
+    item.apply {
+      this.nota = nota
+      this.produto = produto
+      this.quantidade = bean.quantProduto
+      this.tamanhoLote = bean.tamanho ?: 0
+    }
+    item.save()
+    
+    item.movimentacoes?.forEach { mov ->
+      mov.lote?.delete()
+      mov.delete()
+    }
+    
+    var saldo = bean.quantProduto
+    val tamanho = bean.tamanho ?: 0
+    val ultimoLote = bean.lote
+    var sequencia = ultimoLote?.sequencia ?: 0
+    val total = ultimoLote?.total ?: 0 + ceil(saldo*1f/tamanho).toInt()
+    while(saldo > 0){
+    val quant = if(saldo > tamanho) tamanho else saldo
+      val lote = Lote()
+      sequencia++
+      lote.total = total
+      lote.sequencia = sequencia
+      lote.loja = bean.lojaNF
+      lote.produto = bean.produto
+      lote.save()
+      
+      val movimentacao = Movimentacao()
+      movimentacao.itemNota = item
+      movimentacao.lote = lote
+      movimentacao.quantidade = quant
+      movimentacao.saldo = quant
+      movimentacao.save()
+  
+      saldo -= tamanho
+    }
   }
   
   override fun allBeans(): List<EntradaVo> {
@@ -28,7 +83,6 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
                 this.lojaNF = nota?.loja
                 this.observacaoNota = nota?.observacao
                 this.produto = itemNota.produto
-                this.quantProduto = itemNota.movimentacoes?.sumBy { it.quantidade } ?: 0
                 this.tamanho = itemNota.produto?.tamanhoLote
               }
             }
@@ -41,11 +95,10 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     return Loja.all()
   }
   
-  fun findProdutoNota(entravaVo: EntradaVo): List<Produto> {
-    return entravaVo.notaEntradaSaci.mapNotNull {
-      Produto
-              .findProduto(it.prdno ?: "", it.grade ?: "")
-    }
+  fun findProdutoNota(entravaVo: EntradaVo?): List<Produto> {
+    return entravaVo?.notaEntradaSaci?.mapNotNull {
+      Produto.findProduto(it.prdno ?: "", it.grade ?: "")
+    }.orEmpty()
   }
 }
 
@@ -56,13 +109,13 @@ class EntradaVo {
   val notaEntradaSaci: List<NotaEntradaSaci>
     get() = Nota.findNotaEntradaSaci(numeroNF, lojaNF)
   
-  var dataNota: LocalDate? = null
+  val dataNota: LocalDate?
     get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
   
-  var numeroInterno: Int = 0
+  val numeroInterno: Int
     get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
   
-  var fornecedor: String = ""
+  val fornecedor: String
     get() = notaEntradaSaci.firstOrNull()?.vendName ?: ""
   
   var observacaoNota: String? = ""
@@ -73,35 +126,41 @@ class EntradaVo {
       tamanho = value?.tamanhoLote
     }
   
-  var descricaoProduto: String = ""
+  val descricaoProduto: String
     get() = produto?.descricao ?: ""
   
-  var quantProduto: Int = 0
-    get() = notaEntradaSaci.firstOrNull { neSaci ->
-      (neSaci.prdno ?: "") == (produto?.codigo ?: "") &&
-      (neSaci.grade ?: "") == (produto?.grade ?: "")
-    }?.quant ?: 0
+  val quantProduto: Int
+    get() = itemNota?.quantidade
+            ?: notaEntradaSaci.firstOrNull { neSaci ->
+              (neSaci.prdno ?: "") == (produto?.codigo ?: "") &&
+              (neSaci.grade ?: "") == (produto?.grade ?: "")
+            }?.quant
+            ?: 0
   
   var tamanho: Int? = 0
   
-  var lote: Lote? = null
+  val lote: Lote?
     get() = produto?.ultimoLoteLoja(lojaNF)
   
-  var sequencia: String = ""
+  val sequencia: String
     get() {
       lote?.sequencia ?: return ""
       lote?.total ?: return ""
       return "${lote?.sequencia}/${lote?.total}"
     }
   
-  var saldo: Int = 0
+  val saldo: Int
     get() = produto?.saldoLoja(lojaNF) ?: 0
   
-  var movimentacao: List<MovimentacaoVO> = emptyList()
+  val nota: Nota?
+    get() = Nota.findEntrada(numeroNF ?: "", lojaNF)
+  
+  val itemNota: ItemNota?
+    get() = ItemNota.where().nota.id.eq(nota?.id).produto.id.eq(produto?.id).findOne()
+  
+  val movimentacao: List<MovimentacaoVO>
     get() {
-      val nota = Nota.findEntrada(numeroNF ?: "", lojaNF) ?: return emptyList()
-      val itemNota = ItemNota.where().nota.id.eq(nota.id).produto.id.eq(produto?.id).findOne() ?: return emptyList()
-      return itemNota.movimentacoes?.map { mov ->
+      return itemNota?.movimentacoes?.map { mov ->
         MovimentacaoVO().apply {
           this.sequencia = mov.lote?.sequencia
           this.total = mov.lote?.total

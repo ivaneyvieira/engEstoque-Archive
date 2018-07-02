@@ -69,7 +69,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             dateField("Data") {
               expandRatio = 1f
               isReadOnly = true
-              bind(binder).bind(EntradaVo::dataNota)
+              bind(binder).bind(EntradaVo::dataNota.name)
             }
             textField("Número Interno") {
               expandRatio = 1f
@@ -77,12 +77,12 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
               isReadOnly = true
               this.bind(binder)
                       .withConverter(StringToIntegerConverter(""))
-                      .bind(EntradaVo::numeroInterno)
+                      .bind(EntradaVo::numeroInterno.name)
             }
             textField("Fornecedor") {
               expandRatio = 2f
               isReadOnly = true
-              bind(binder).bind(EntradaVo::fornecedor)
+              bind(binder).bind(EntradaVo::fornecedor.name)
             }
           }
         }
@@ -100,13 +100,13 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             textField("Descrição") {
               expandRatio = 4f
               isReadOnly = true
-              bind(binder).bind(EntradaVo::descricaoProduto)
+              bind(binder).bind(EntradaVo::descricaoProduto.name)
             }
             textField("Quantidade") {
               expandRatio = 1f
               this.bind(binder)
                       .withConverter(StringToIntegerConverter("Quantidade inválida"))
-                      .bind(EntradaVo::quantProduto)
+                      .bind(EntradaVo::quantProduto.name)
             }
           }
           row {
@@ -119,14 +119,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             textField("Sequencia") {
               expandRatio = 1f
               isReadOnly = true
-              bind(binder).bind(EntradaVo::sequencia)
+              bind(binder).bind(EntradaVo::sequencia.name)
             }
             textField("Saldo") {
               expandRatio = 1f
               isReadOnly = true
               this.bind(binder)
                       .withConverter(StringToIntegerConverter(""))
-                      .bind(EntradaVo::saldo)
+                      .bind(EntradaVo::saldo.name)
             }
             label {
               expandRatio = 3f
