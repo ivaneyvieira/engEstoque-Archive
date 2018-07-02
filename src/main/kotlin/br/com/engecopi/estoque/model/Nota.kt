@@ -22,7 +22,7 @@ import javax.validation.constraints.Size
 @Table(name = "notas")
 class Nota : BaseModel() {
   @Size(max = 15)
-  @Index(unique=false)
+  @Index(unique = false)
   var numero: String = ""
   @Enumerated(EnumType.STRING)
   var tipoMov: TipoMov = ENTRADA
@@ -36,10 +36,11 @@ class Nota : BaseModel() {
   val itensNota: List<ItemNota>? = null
   
   companion object Find : NotaFinder() {
-    fun findEntrada(numero: String): Nota? {
+    fun findEntrada(numero: String?, loja : Loja?): Nota? {
       return Nota.where()
               .tipoMov.eq(ENTRADA)
               .numero.eq(numero)
+              .loja.id.eq(loja?.id)
               .findOne()
     }
     
@@ -67,13 +68,14 @@ class Nota : BaseModel() {
       val numMax = max.toInt()
       return numMax + 1
     }
-  
+    
     fun findNotaEntradaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaEntradaSaci> {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
       val numero = numeroNF.split("/").getOrNull(0) ?: ""
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return QuerySaci.querySaci.findNotaEntrada(lojaNF.numero, numero, serie)
+              .filter { Produto.findProduto(it.prdno ?: "", it.grade ?: "") != null }
     }
   }
   

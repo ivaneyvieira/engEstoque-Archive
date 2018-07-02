@@ -59,3 +59,12 @@ fun Date?.format() : String? {
   val sdf = SimpleDateFormat("dd/MM/yyyy")
   return sdf.format(this)
 }
+
+fun Int.localDate() : LocalDate? {
+  val strDate = this.toString()
+  if(strDate.length != 8) return null
+  val year = strDate.substring(0, 4).toInt()
+  val month = strDate.substring(4, 6).toInt()
+  val day = strDate.substring(6, 8).toInt()
+  return LocalDate.of(year, month, day)
+}

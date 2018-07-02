@@ -8,6 +8,7 @@ create table itens_nota (
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
+  constraint uq_itens_nota_nota_id_produto_id unique (nota_id,produto_id),
   constraint pk_itens_nota primary key (id)
 );
 
@@ -17,6 +18,7 @@ create table lojas (
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
+  constraint uq_lojas_numero unique (numero),
   constraint pk_lojas primary key (id)
 );
 
@@ -29,6 +31,7 @@ create table lotes (
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
+  constraint uq_lotes_sequencia unique (sequencia),
   constraint pk_lotes primary key (id)
 );
 
@@ -41,6 +44,7 @@ create table movimentacoes (
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
+  constraint uq_movimentacoes_lote_id_item_nota_id unique (lote_id,item_nota_id),
   constraint pk_movimentacoes primary key (id)
 );
 
@@ -71,6 +75,7 @@ create table produtos (
   updated_at                    datetime(6) not null,
   version                       integer not null,
   constraint ck_produtos_tipo check ( tipo in ('NORMAL','PECA','BOBINA','CAIXA')),
+  constraint uq_produtos_codigo_grade unique (codigo,grade),
   constraint pk_produtos primary key (id)
 );
 
@@ -82,6 +87,7 @@ create table saldos (
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
+  constraint uq_saldos_produto_id_loja_id unique (produto_id,loja_id),
   constraint pk_saldos primary key (id)
 );
 
@@ -92,9 +98,12 @@ create table usuarios (
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
+  constraint uq_usuarios_login_name unique (login_name),
   constraint pk_usuarios primary key (id)
 );
 
+create index ix_notas_numero on notas (numero);
+create index ix_produtos_codebar on produtos (codebar);
 create index ix_itens_nota_produto_id on itens_nota (produto_id);
 alter table itens_nota add constraint fk_itens_nota_produto_id foreign key (produto_id) references produtos (id) on delete restrict on update restrict;
 

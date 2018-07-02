@@ -7,6 +7,7 @@ import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.isMargin
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.VerticalLayout
 
@@ -21,7 +22,7 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   }
   
   override fun enter(event: ViewChangeEvent) {
-      updateView(viewModel)
+    updateView(viewModel)
   }
   
   fun <T> Grid<T>.actionSelected(msgErro: String = "Selecione um item", action: (T) -> Unit) {
@@ -43,4 +44,21 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
       MessageDialog.info(message = msg)
   }
 }
+
+fun <T> ComboBox<T>.default(
+        itens: () -> List<T> = { emptyList() },
+        captionGenerator: (T) -> String = { it.toString() },
+        valueEmpty: T? = null
+                           ) {
+  isEmptySelectionAllowed = false
+  isTextInputAllowed = false
+  valueEmpty?.let {
+    this.emptySelectionCaption = "Todas"
+    isEmptySelectionAllowed = true
+  }
+  val values = itens()
+  setDataProvider({ _, _, _ -> values.stream() }, { values.size })
+  setItemCaptionGenerator(captionGenerator)
+}
+
 

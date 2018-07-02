@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
+import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
@@ -11,6 +12,7 @@ import javax.persistence.Transient
 
 @Entity
 @Table(name = "itens_nota")
+@Index(unique = true, columnNames = ["nota_id", "produto_id"])
 class ItemNota : BaseModel() {
   var quantidade: Int = 0
   var tamanhoLote: Int = 0

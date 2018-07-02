@@ -7,5 +7,6 @@ class NotaEntradaSaci(
         val prdno: String?,
         val grade: String?,
         val quant: Int?,
-        val custo: Double?
+        val custo: Double?,
+        val vendName : String?
                      )

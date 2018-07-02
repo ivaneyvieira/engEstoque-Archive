@@ -6,11 +6,24 @@ abstract class CrudViewModel<C : Any>(view: IView, val crudClass: KClass<C>) : V
   var crudBean: C? = null
   override fun execUpdate() {}
   
-  abstract fun update()
+  abstract fun update(bean: C)
+  abstract fun add(bean: C)
+  abstract fun delete(bean: C)
+  abstract fun allBeans(): List<C>
   
-  abstract fun add()
+  fun update() = exec {
+    crudBean?.let { bean -> update(bean) }
+  }
   
-  abstract fun findAll() : List<C>
+  fun add() = exec {
+    crudBean?.let { bean -> add(bean) }
+  }
   
-  abstract fun delete()
+  fun findAll(): List<C> = execList {
+    allBeans()
+  }
+  
+  fun delete() = exec {
+    crudBean?.let { bean -> delete(bean) }
+  }
 }

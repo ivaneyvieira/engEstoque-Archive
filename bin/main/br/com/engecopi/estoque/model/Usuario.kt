@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
+import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size
 @Table(name = "usuarios")
 class Usuario : BaseModel() {
   @Size(max = 8)
+  @Index(unique=true)
   var loginName: String = ""
   @ManyToOne(cascade = [ALL])
   var loja: Loja? = null

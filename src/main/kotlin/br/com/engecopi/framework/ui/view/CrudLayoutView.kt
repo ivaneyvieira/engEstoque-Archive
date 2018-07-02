@@ -5,14 +5,16 @@ import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.getColumnBy
 import com.github.vok.karibudsl.init
-import com.vaadin.data.BeanValidationBinder
 import com.vaadin.data.Binder
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Window
+import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudListener
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
@@ -42,7 +44,7 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
                             ): GridCrud<C> {
     setSizeFull()
     
-    val crudLayout = WindowBasedCrudLayout()
+    val crudLayout = WindowsCrud()
     crudLayout.defaults()
     val crudFormFactory = CustomCrudFormFactory(domainType, ::layoutForm)
     crudFormFactory.defaults()
@@ -147,4 +149,26 @@ class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<T>) : Crud
   }
 }
 
-
+class WindowsCrud : WindowBasedCrudLayout() {
+  override fun showForm(operation: CrudOperation, form: Component) {
+    if (operation != CrudOperation.READ) {
+      showWindow(windowCaptions[operation], form)
+    }
+  }
+  
+  private fun showWindow(caption: String?, form: Component) {
+    val windowLayout = VerticalLayout(form)
+    windowLayout.setWidth("100%")
+    windowLayout.setMargin(false)
+    windowLayout.isResponsive=true
+    
+    formWindow = Window(caption, windowLayout)
+    //formWindow.setWidth(formWindowWidth)
+    formWindow.isClosable = false
+    formWindow.isResizable = false
+    formWindow.isModal = true
+    formWindow.styleName = "modal"
+    formWindow.center()
+    UI.getCurrent().addWindow(formWindow)
+  }
+}

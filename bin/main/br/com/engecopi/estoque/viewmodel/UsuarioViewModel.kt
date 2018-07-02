@@ -6,27 +6,23 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
 class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, UsuarioCrudVo::class) {
-  override fun update() = exec {
-    crudBean?.let { bean ->
-      Usuario.findUsuario(bean.loginName ?: "")?.let { usuario ->
-        usuario.loja = bean.loja
-        usuario.update()
-      }
+  override fun update(bean: UsuarioCrudVo) {
+    Usuario.findUsuario(bean.loginName ?: "")?.let { usuario ->
+      usuario.loja = bean.loja
+      usuario.update()
     }
   }
   
-  override fun add() = exec {
-    crudBean?.let { bean ->
-      val usuario = Usuario().apply {
-        this.loginName = bean.loginName ?: ""
-        this.loja = bean.loja
-      }
-      usuario.insert()
+  override fun add(bean: UsuarioCrudVo) {
+    val usuario = Usuario().apply {
+      this.loginName = bean.loginName ?: ""
+      this.loja = bean.loja
     }
+    usuario.insert()
   }
   
-  override fun findAll(): List<UsuarioCrudVo> = execList {
-    Usuario.all().map { usuario ->
+  override fun allBeans(): List<UsuarioCrudVo> {
+    return Usuario.all().map { usuario ->
       UsuarioCrudVo().apply {
         this.loginName = usuario.loginName
         this.loja = usuario.loja
@@ -34,8 +30,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
     }
   }
   
-  override fun delete() {
-    Usuario.findUsuario(crudBean?.loginName ?: "")?.delete()
+  override fun delete(bean: UsuarioCrudVo) {
+    Usuario.findUsuario(bean.loginName ?: "")?.delete()
   }
   
   val lojas = execList { Loja.all() }

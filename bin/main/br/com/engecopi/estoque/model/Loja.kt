@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.LojaFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
+import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.OneToMany
@@ -12,6 +13,7 @@ import javax.persistence.Transient
 @Entity
 @Table(name = "lojas")
 class Loja : BaseModel() {
+  @Index(unique = true)
   var numero: Int = 0
   @OneToMany(mappedBy = "loja", cascade = [ALL])
   val notas: List<Nota>? = null
