@@ -3,7 +3,9 @@ package br.com.engecopi.estoque.model.query.assoc
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.query.QItemNota
 import io.ebean.typequery.PInteger
+import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
+import io.ebean.typequery.PLocalTime
 import io.ebean.typequery.PLong
 import io.ebean.typequery.TQAssocBean
 import io.ebean.typequery.TQProperty
@@ -21,6 +23,8 @@ class QAssocItemNota<R>(name: String, root: R) : TQAssocBean<ItemNota,R>(name, r
   lateinit var createdAt: PLocalDateTime<R>
   lateinit var updatedAt: PLocalDateTime<R>
   lateinit var version: PInteger<R>
+  lateinit var data: PLocalDate<R>
+  lateinit var hora: PLocalTime<R>
   lateinit var quantidade: PInteger<R>
   lateinit var tamanhoLote: PInteger<R>
   lateinit var produto: QAssocProduto<R>

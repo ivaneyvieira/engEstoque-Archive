@@ -23,6 +23,7 @@ class QAssocLote<R>(name: String, root: R) : TQAssocBean<Lote,R>(name, root) {
   lateinit var version: PInteger<R>
   lateinit var sequencia: PInteger<R>
   lateinit var total: PInteger<R>
+  lateinit var saldo: PInteger<R>
   lateinit var produto: QAssocProduto<R>
   lateinit var loja: QAssocLoja<R>
   lateinit var movimentacoes: QAssocMovimentacao<R>

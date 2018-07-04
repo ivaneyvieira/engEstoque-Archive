@@ -37,8 +37,6 @@ class Produto : BaseModel() {
   val itensNota: List<ItemNota>? = null
   @OneToMany(mappedBy = "produto", cascade = [ALL])
   val lotes: List<Lote>? = null
-  @OneToMany(mappedBy = "produto", cascade = [ALL])
-  val saldos: List<Saldo>? = null
   
   fun produtoSaci(): ProdutoSaci? {
     return QuerySaci.querySaci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
@@ -57,9 +55,7 @@ class Produto : BaseModel() {
       return where().codigo.eq(codigo).findList()
     }
     
-    fun createProduto(codigoProduto: String, gradeProduto: String): Produto {
-      val produtoSaci = QuerySaci.querySaci.findProduto(codigoProduto)
-              .firstOrNull { it.grade == gradeProduto }
+    fun createProduto(produtoSaci: ProdutoSaci?): Produto {
       return Produto().apply {
         produtoSaci?.let { pSaci ->
           codigo = pSaci.codigo ?: codigo
@@ -69,44 +65,27 @@ class Produto : BaseModel() {
         }
       }
     }
+    
+    fun createProduto(codigoProduto: String, gradeProduto: String): Produto {
+      val produtoSaci = QuerySaci.querySaci.findProduto(codigoProduto)
+              .firstOrNull { it.grade == gradeProduto }
+      return createProduto(produtoSaci)
+    }
   }
   
   fun saldoLoja(loja: Loja?): Int {
     loja ?: return 0
     refresh()
-    return saldos?.filter { it.loja == loja }?.sumBy { it.quantidade } ?: 0
+    return lotes?.filter { it.loja == loja }?.sumBy { it.saldo } ?: 0
   }
   
   fun saldoTotal(): Int {
     refresh()
-    return saldos?.sumBy { it.quantidade } ?: 0
+    return lotes?.sumBy { it.saldo } ?: 0
   }
   
   fun atualizaSaldo() {
-    val saidas = ItemNota
-            .where()
-            .produto.id.eq(this.id)
-            .nota.tipoMov.eq(SAIDA)
-            .findList()
-            .groupBy { it.nota?.loja }
-    val entradas = ItemNota
-            .where()
-            .produto.id.eq(this.id)
-            .nota.tipoMov.eq(ENTRADA)
-            .findList()
-            .groupBy { it.nota?.loja }
-    val lojas = (saidas.keys + entradas.keys).distinct()
-    lojas.forEach { loja ->
-      val qtSaida = saidas[loja]?.sumBy { it.quantidade } ?: 0
-      val qtEntrada = entradas[loja]?.sumBy { it.quantidade } ?: 0
-      val quant = qtEntrada + qtSaida
-      val saldo = Saldo.where().produto.id.eq(this.id).loja.id.eq(loja?.id).findOne() ?: Saldo().apply {
-        this.produto = this@Produto
-        this.loja = loja
-      }
-      saldo.quantidade = quant
-      saldo.save()
-    }
+    TODO()
   }
   
   fun ultimoLoteLoja(loja: Loja?): Lote? {

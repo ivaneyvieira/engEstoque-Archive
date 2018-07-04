@@ -13,7 +13,6 @@ import javax.persistence.Table
 @Index(unique=true, columnNames = ["lote_id", "item_nota_id"])
 class Movimentacao : BaseModel() {
   var quantidade: Int = 0
-  var saldo: Int = 0
   @ManyToOne(cascade = [ALL])
   var lote: Lote? = null
   @ManyToOne(cascade = [ALL])

@@ -33,6 +33,7 @@ class QLote : TQRootBean<Lote, QLote> {
   lateinit var version: PInteger<QLote>
   lateinit var sequencia: PInteger<QLote>
   lateinit var total: PInteger<QLote>
+  lateinit var saldo: PInteger<QLote>
   lateinit var produto: QAssocProduto<QLote>
   lateinit var loja: QAssocLoja<QLote>
   lateinit var movimentacoes: QAssocMovimentacao<QLote>
