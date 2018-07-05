@@ -10,6 +10,9 @@ import io.ebean.annotation.Index
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.persistence.CascadeType.ALL
+import javax.persistence.CascadeType.MERGE
+import javax.persistence.CascadeType.PERSIST
+import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -30,9 +33,9 @@ class Nota : BaseModel() {
   var hora: LocalTime = LocalTime.now()
   @Size(max = 100)
   var observacao: String = ""
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
-  @OneToMany(mappedBy = "nota", cascade = [ALL])
+  @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   
   companion object Find : NotaFinder() {

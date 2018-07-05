@@ -5,6 +5,9 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
 import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
+import javax.persistence.CascadeType.MERGE
+import javax.persistence.CascadeType.PERSIST
+import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.Table
@@ -17,7 +20,7 @@ class Usuario : BaseModel() {
   @Size(max = 8)
   @Index(unique=true)
   var loginName: String = ""
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
   
   fun usuarioSaci() = QuerySaci.querySaci.findUser(loginName)

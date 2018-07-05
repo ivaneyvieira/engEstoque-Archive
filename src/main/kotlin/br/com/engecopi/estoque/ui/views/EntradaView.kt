@@ -12,7 +12,9 @@ import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.saci.beans.ProdutoSaci
 import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.dateField
@@ -27,6 +29,7 @@ import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.converter.StringToIntegerConverter
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
@@ -121,6 +124,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
               this.bind(binder)
                       .withConverter(StringToIntegerConverter("Tamanho inválido"))
                       .bind(EntradaVo::tamanho)
+              reloadBinderOnChange(binder)
             }
             textField("Sequencia") {
               expandRatio = 1f
@@ -141,12 +145,16 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
       }
       row {
-        grid<MovimentacaoVO> {
+        grid(MovimentacaoVO::class) {
           h = 150.px
           caption = "Lotes"
+          addStyleName(ValoTheme.TABLE_COMPACT)
           bindItens(binder) { entrada ->
             entrada.movimentacao
           }
+          removeAllColumns()
+          addColumnFor(MovimentacaoVO::descLote)
+          addColumnFor(MovimentacaoVO::quantidade)
         }
       }
     }
@@ -156,7 +164,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
         column(EntradaVo::numeroNF) {
-          expandRatio = 1
+          //expandRatio = 1
         }
         column(EntradaVo::lojaNF) {
           setRenderer({ loja -> loja?.sigla ?: "Todas" }, TextRenderer())

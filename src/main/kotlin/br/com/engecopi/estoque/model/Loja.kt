@@ -5,6 +5,9 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
 import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
+import javax.persistence.CascadeType.MERGE
+import javax.persistence.CascadeType.PERSIST
+import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -15,9 +18,9 @@ import javax.persistence.Transient
 class Loja : BaseModel() {
   @Index(unique = true)
   var numero: Int = 0
-  @OneToMany(mappedBy = "loja", cascade = [ALL])
+  @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val notas: List<Nota>? = null
-  @OneToMany(mappedBy = "loja", cascade = [ALL])
+  @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val usuarios: List<Usuario>? = null
   
   fun lojaSaci() = QuerySaci.querySaci.findLojas(numero).firstOrNull()
