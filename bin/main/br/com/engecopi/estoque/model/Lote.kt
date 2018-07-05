@@ -15,6 +15,7 @@ class Lote : BaseModel() {
   @Index(unique=true)
   var sequencia: Int = 0
   var total: Int = 0
+  var saldo: Int = 0
   @ManyToOne(cascade = [ALL])
   var produto: Produto? = null
   @ManyToOne(cascade = [ALL])

@@ -3,6 +3,8 @@
     <changeSet type="apply">
         <createTable name="itens_nota" identityType="identity" pkName="pk_itens_nota">
             <column name="id" type="bigint" primaryKey="true"/>
+            <column name="data" type="date" notnull="true"/>
+            <column name="hora" type="time" notnull="true"/>
             <column name="quantidade" type="integer" notnull="true"/>
             <column name="tamanho_lote" type="integer" notnull="true"/>
             <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_itens_nota_produto_id" foreignKeyIndex="ix_itens_nota_produto_id"/>
@@ -24,6 +26,7 @@
             <column name="id" type="bigint" primaryKey="true"/>
             <column name="sequencia" type="integer" notnull="true"/>
             <column name="total" type="integer" notnull="true"/>
+            <column name="saldo" type="integer" notnull="true"/>
             <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_lotes_produto_id" foreignKeyIndex="ix_lotes_produto_id"/>
             <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_lotes_loja_id" foreignKeyIndex="ix_lotes_loja_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
@@ -34,7 +37,6 @@
         <createTable name="movimentacoes" identityType="identity" pkName="pk_movimentacoes">
             <column name="id" type="bigint" primaryKey="true"/>
             <column name="quantidade" type="integer" notnull="true"/>
-            <column name="saldo" type="integer" notnull="true"/>
             <column name="lote_id" type="bigint" references="lotes.id" foreignKeyName="fk_movimentacoes_lote_id" foreignKeyIndex="ix_movimentacoes_lote_id"/>
             <column name="item_nota_id" type="bigint" references="itens_nota.id" foreignKeyName="fk_movimentacoes_item_nota_id" foreignKeyIndex="ix_movimentacoes_item_nota_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
@@ -66,16 +68,6 @@
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>
             <uniqueConstraint name="uq_produtos_codigo_grade" columnNames="codigo,grade" oneToOne="false" nullableColumns=""/>
-        </createTable>
-        <createTable name="saldos" identityType="identity" pkName="pk_saldos">
-            <column name="id" type="bigint" primaryKey="true"/>
-            <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_saldos_produto_id" foreignKeyIndex="ix_saldos_produto_id"/>
-            <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_saldos_loja_id" foreignKeyIndex="ix_saldos_loja_id"/>
-            <column name="quantidade" type="integer" notnull="true"/>
-            <column name="created_at" type="timestamp" notnull="true"/>
-            <column name="updated_at" type="timestamp" notnull="true"/>
-            <column name="version" type="integer" notnull="true"/>
-            <uniqueConstraint name="uq_saldos_produto_id_loja_id" columnNames="produto_id,loja_id" oneToOne="false" nullableColumns="produto_id,loja_id"/>
         </createTable>
         <createTable name="usuarios" identityType="identity" pkName="pk_usuarios">
             <column name="id" type="bigint" primaryKey="true"/>

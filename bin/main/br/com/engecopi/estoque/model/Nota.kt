@@ -74,8 +74,8 @@ class Nota : BaseModel() {
       lojaNF ?: return emptyList()
       val numero = numeroNF.split("/").getOrNull(0) ?: ""
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return QuerySaci.querySaci.findNotaEntrada(lojaNF.numero, numero, serie)
-              .filter { Produto.findProduto(it.prdno ?: "", it.grade ?: "") != null }
+      val nota = QuerySaci.querySaci.findNotaEntrada(lojaNF.numero, numero, serie)
+      return nota
     }
   }
   

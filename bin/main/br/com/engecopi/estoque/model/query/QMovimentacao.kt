@@ -31,7 +31,6 @@ class QMovimentacao : TQRootBean<Movimentacao, QMovimentacao> {
   lateinit var updatedAt: PLocalDateTime<QMovimentacao>
   lateinit var version: PInteger<QMovimentacao>
   lateinit var quantidade: PInteger<QMovimentacao>
-  lateinit var saldo: PInteger<QMovimentacao>
   lateinit var lote: QAssocLote<QMovimentacao>
   lateinit var itemNota: QAssocItemNota<QMovimentacao>
 

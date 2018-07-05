@@ -22,7 +22,6 @@ class QAssocMovimentacao<R>(name: String, root: R) : TQAssocBean<Movimentacao,R>
   lateinit var updatedAt: PLocalDateTime<R>
   lateinit var version: PInteger<R>
   lateinit var quantidade: PInteger<R>
-  lateinit var saldo: PInteger<R>
   lateinit var lote: QAssocLote<R>
   lateinit var itemNota: QAssocItemNota<R>
 

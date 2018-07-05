@@ -3,6 +3,8 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.annotation.Index
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
@@ -14,6 +16,8 @@ import javax.persistence.Transient
 @Table(name = "itens_nota")
 @Index(unique = true, columnNames = ["nota_id", "produto_id"])
 class ItemNota : BaseModel() {
+  var data: LocalDate = LocalDate.now()
+  var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
   var tamanhoLote: Int = 0
   @ManyToOne(cascade = [ALL])

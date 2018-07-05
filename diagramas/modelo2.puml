@@ -11,6 +11,8 @@ class Produto{
 }
 
 class ItemNota{
+	data
+	hora
 	quantidade
 	tamanhoLote
 }
@@ -26,13 +28,11 @@ class Nota {
 class Lote {
 	sequencia
 	total
+	saldo
 }
 
 class Movimentacao {
-	data
-	hora
 	quantidade
-	saldo
 }
 
 class Loja {
@@ -43,18 +43,13 @@ class Usuario {
 	numero
 }
 
-class Saldo {
-	quantidade
-}
 
-ItemNota	-d->	Nota
-ItemNota	-u->	Produto
-Lote		-u->	Produto
-Lote		-->	Loja
+ItemNota	-u->	Nota
+ItemNota	-->	Produto
+Lote		-->	Produto
+Lote		-u->	Loja
 Movimentacao	-l->	Lote
 Movimentacao	-r->	ItemNota
-Nota		-->	Loja
-Usuario		-l->	Loja
-Saldo		-u->	Produto
-Saldo		-r->	Loja
+Nota		-l->	Loja
+Usuario		-r->	Loja
 @enduml
