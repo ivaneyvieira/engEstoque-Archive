@@ -4,6 +4,9 @@ import br.com.engecopi.estoque.model.finder.MovimentacaoFinder
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
+import javax.persistence.CascadeType.MERGE
+import javax.persistence.CascadeType.PERSIST
+import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.Table
@@ -13,9 +16,9 @@ import javax.persistence.Table
 @Index(unique=true, columnNames = ["lote_id", "item_nota_id"])
 class Movimentacao : BaseModel() {
   var quantidade: Int = 0
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var lote: Lote? = null
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var itemNota: ItemNota? = null
 
   companion object Find : MovimentacaoFinder()

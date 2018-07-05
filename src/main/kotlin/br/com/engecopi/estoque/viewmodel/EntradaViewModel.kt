@@ -75,7 +75,6 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   
   private fun deleteMovimentacoes(item: ItemNota) {
     item.movimentacoes?.forEach { mov ->
-      mov.lote?.delete()
       mov.delete()
     }
   }
@@ -110,6 +109,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     nota.apply {
       this.numero = bean.numeroNF ?: ""
       this.tipoMov = ENTRADA
+      this.loja = bean.lojaNF
       this.observacao = bean.observacaoNota ?: ""
     }
     
@@ -135,7 +135,6 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     
     bean.itemNota?.let { item ->
       item.movimentacoes?.forEach {
-        it.lote?.delete()
         it.delete()
       }
       item.delete()
@@ -240,7 +239,7 @@ class EntradaVo {
         val item = MovimentacaoVO().apply {
           this.sequencia = totalLote
           this.total = totalLote
-          this.quantidade = tamanhoLote
+          this.quantidade = restoLote
         }
         lista.add(item)
       }
@@ -254,7 +253,7 @@ class MovimentacaoVO {
   var total: Int? = 0
   var quantidade: Int? = 0
   
-  val descLote: String
+  val descLote: String?
     get() {
       sequencia ?: return ""
       total ?: return ""

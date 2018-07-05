@@ -10,6 +10,9 @@ import br.com.engecopi.saci.beans.ProdutoSaci
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import javax.persistence.CascadeType.ALL
+import javax.persistence.CascadeType.MERGE
+import javax.persistence.CascadeType.PERSIST
+import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -33,9 +36,9 @@ class Produto : BaseModel() {
   @Enumerated(EnumType.STRING)
   var tipo: TipoProduto = PECA
   var tamanhoLote: Int = 0
-  @OneToMany(mappedBy = "produto", cascade = [ALL])
+  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
-  @OneToMany(mappedBy = "produto", cascade = [ALL])
+  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val lotes: List<Lote>? = null
   
   fun produtoSaci(): ProdutoSaci? {
@@ -88,10 +91,6 @@ class Produto : BaseModel() {
     TODO()
   }
   
-  fun ultimoLoteLoja(loja: Loja?): Lote? {
-    loja ?: return null
-    return Lote.where().loja.id.eq(loja.id).produto.id.eq(this.id).orderBy().sequencia.desc().findList().firstOrNull()
-  }
 }
 
 enum class TipoProduto(val descricao: String) {
