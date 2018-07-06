@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.LoteFinder
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.annotation.Index
@@ -15,7 +17,7 @@ import javax.persistence.Table
 @Entity
 @Table(name = "lotes")
 class Lote : BaseModel() {
-  @Index(unique=true)
+  @Index(unique = true)
   var sequencia: Int = 0
   var total: Int = 0
   var saldo: Int = 0
@@ -27,4 +29,14 @@ class Lote : BaseModel() {
   val movimentacoes: List<Movimentacao>? = null
   
   companion object Find : LoteFinder()
+  
+  fun atualizaSaldo() {
+    refresh()
+    val movimentacoesTipo = movimentacoes?.groupBy { it.itemNota?.nota?.tipoMov }
+    val entradas: Int = movimentacoesTipo?.get(ENTRADA)?.sumBy { it.quantidade } ?: 0
+    val saidas: Int = movimentacoesTipo?.get(SAIDA)?.sumBy { it.quantidade } ?: 0
+    val total = entradas - saidas
+    this.saldo = total
+    save()
+  }
 }

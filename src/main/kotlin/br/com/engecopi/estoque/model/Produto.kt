@@ -88,9 +88,17 @@ class Produto : BaseModel() {
   }
   
   fun atualizaSaldo() {
-    TODO()
+    refresh()
+    lotes?.forEach { it.atualizaSaldo() }
   }
   
+  fun ultimoLoteLoja(loja: Loja?): Lote? {
+    loja ?: return null
+    return Lote.where().loja.id.eq(loja.id)
+            .produto.id.eq(this.id)
+            .orderBy().sequencia.desc()
+            .findList().firstOrNull()
+  }
 }
 
 enum class TipoProduto(val descricao: String) {

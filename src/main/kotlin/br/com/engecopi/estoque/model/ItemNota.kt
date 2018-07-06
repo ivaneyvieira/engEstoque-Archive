@@ -40,16 +40,21 @@ class ItemNota : BaseModel() {
   val grade: String?
     @Transient get() = produto?.grade
   
-  companion object Find : ItemNotaFinder()
+  companion object Find : ItemNotaFinder() {
+    fun find(nota: Nota?, produto: Produto?): ItemNota? {
+      return ItemNota.where().nota.id.eq(nota?.id)
+              .produto.id.eq(produto?.id)
+              .findOne()
+    }
+  }
   
   fun ultimoLote(): Lote? {
     val loja = this.nota?.loja
     val produto = this.produto
     return Lote.where().loja.id.eq(loja?.id)
             .produto.id.eq(produto?.id)
-            .movimentacoes.itemNota.id.ne(this)
+            .movimentacoes.itemNota.id.notIn(this.id)
             .orderBy().sequencia.desc()
             .findList().firstOrNull()
   }
-  
 }

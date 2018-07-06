@@ -50,7 +50,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     val produto = item.produto
     var saldo = bean.quantProduto
     val tamanho = bean.tamanho ?: 0
-    val ultimoLote = bean.lote
+    val ultimoLote = bean.ultimoLote
     var sequencia = ultimoLote?.sequencia ?: 0
     val total = ultimoLote?.total ?: 0+ceil(saldo * 1f / tamanho).toInt()
     while (saldo > 0) {
@@ -197,14 +197,17 @@ class EntradaVo {
   
   var tamanho: Int? = 0
   
-  val lote: Lote?
-    get() = produto(produtoSaci)?.ultimoLoteLoja(lojaNF)
+  val ultimoLote: Lote?
+    get() = if (itemNota == null)
+      produto(produtoSaci)?.ultimoLoteLoja(lojaNF)
+    else
+      itemNota?.ultimoLote()
   
   val sequencia: String
     get() {
+      val lote = ultimoLote
       lote?.sequencia ?: return ""
-      lote?.total ?: return ""
-      return "${lote?.sequencia}/${lote?.total}"
+      return "${lote.sequencia}/${lote.total}"
     }
   
   val saldo: Int
@@ -214,12 +217,11 @@ class EntradaVo {
     get() = Nota.findEntrada(numeroNF ?: "", lojaNF)
   
   val itemNota: ItemNota?
-    get() = ItemNota.where().nota.id.eq(nota?.id).produto.id
-            .eq(produto(produtoSaci)?.id).findOne()
+    get() = ItemNota.find(nota, produto(produtoSaci))
   
   val movimentacao: List<MovimentacaoVO>
     get() {
-      val sequencia = lote?.sequencia ?: 0
+      val sequencia = ultimoLote?.sequencia ?: 0
       val tamanhoLote = tamanho
       tamanhoLote ?: return emptyList()
       if (tamanhoLote == 0) return emptyList()
