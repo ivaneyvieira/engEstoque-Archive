@@ -1,11 +1,14 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.Nota.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.Nota.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
+import com.sun.deploy.util.SearchPath.findOne
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import java.time.LocalTime
@@ -39,7 +42,7 @@ class Nota : BaseModel() {
   val itensNota: List<ItemNota>? = null
   
   companion object Find : NotaFinder() {
-    fun findEntrada(numero: String?, loja : Loja?): Nota? {
+    fun findEntrada(numero: String?, loja: Loja?): Nota? {
       return Nota.where()
               .tipoMov.eq(ENTRADA)
               .numero.eq(numero)
@@ -47,11 +50,15 @@ class Nota : BaseModel() {
               .findOne()
     }
     
-    fun findSaida(numero: String): Nota? {
-      return Nota.where()
-              .tipoMov.eq(SAIDA)
-              .numero.eq(numero)
-              .findOne()
+    fun findSaida(numero: String?, loja: Loja?): Nota? {
+      return if (numero.isNullOrBlank() || loja == null)
+        null
+      else
+        Nota.where()
+                .tipoMov.eq(SAIDA)
+                .numero.eq(numero)
+                .loja.id.eq(loja.id)
+                .findOne()
     }
     
     fun findEntradas(loja: Int): List<Nota> {
@@ -79,6 +86,10 @@ class Nota : BaseModel() {
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       val nota = QuerySaci.querySaci.findNotaEntrada(lojaNF.numero, numero, serie)
       return nota
+    }
+  
+    fun findNotaSaidaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaidaSaci> {
+    
     }
   }
   

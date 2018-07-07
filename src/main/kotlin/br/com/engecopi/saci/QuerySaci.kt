@@ -32,6 +32,16 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
+  fun findNotaSaida(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
+    val sql = "/sqlSaci/findNotaSaida.sql"
+    return query(sql) { q ->
+      q.addParameter("storeno", "$storeno")
+              .addParameter("nfname", nfname)
+              .addParameter("invse", invse)
+              .executeAndFetch(NotaEntradaSaci::class.java)
+    }
+  }
+  
   fun findLojas(storeno: Int): List<LojaSaci> {
     val sql = "/sqlSaci/findLojas.sql"
     return query(sql) { q ->
