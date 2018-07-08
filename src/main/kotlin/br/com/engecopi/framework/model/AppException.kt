@@ -21,16 +21,5 @@ open class DevException(causa: Throwable?, menssagem: String) : AppException(cau
 
 open class UserException(causa: Throwable?, menssagem: String) : AppException(causa, menssagem)
 
-class TimeOutException(causa: Throwable?) : UserException(causa, "O banco de dados está demorando para responder")
-
-class DeleteException(causa: Throwable?) : UserException(causa, "Não foi possível apagar o registro")
-
-class InsertException(causa: Throwable?) : UserException(causa, "Não foi possível adicionar o registro")
-
-class UpdateException(causa: Throwable?) : UserException(causa, "Não foi possível atualizar o registro")
-
-class ViewException(menssagem: String) : UserException(null, menssagem)
-
-class BancoDadosException(menssagem: String, val entityJPA: BaseModel) : DevException(null, menssagem)
 
 

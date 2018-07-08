@@ -2,6 +2,7 @@ package br.com.engecopi.saci
 
 import br.com.engecopi.saci.beans.LojaSaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
+import br.com.engecopi.saci.beans.NotaSaidaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.utils.DB
@@ -32,13 +33,13 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
-  fun findNotaSaida(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
+  fun findNotaSaida(storeno: Int, nfno: String, nfse: String): List<NotaSaidaSaci> {
     val sql = "/sqlSaci/findNotaSaida.sql"
     return query(sql) { q ->
       q.addParameter("storeno", "$storeno")
-              .addParameter("nfname", nfname)
-              .addParameter("invse", invse)
-              .executeAndFetch(NotaEntradaSaci::class.java)
+              .addParameter("nfno", nfno)
+              .addParameter("nfse", nfse)
+              .executeAndFetch(NotaSaidaSaci::class.java)
     }
   }
   
@@ -65,8 +66,9 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     internal val username = db.username
     internal val password = db.password
     internal val sqldir = db.sqldir
-    val querySaci = QuerySaci()
     
     val ipServer = QuerySaci.db.url.split("/").getOrNull(2)
   }
 }
+
+val saci = QuerySaci()

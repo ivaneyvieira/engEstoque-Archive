@@ -6,8 +6,8 @@ import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.TipoProduto.PECA
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import br.com.engecopi.saci.saci
 
 class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(view) {
   var pesquisa: String = ""
@@ -25,7 +25,7 @@ class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(vi
   }
   
   fun updateGrades(codigo: String) = exec {
-    val produtos = QuerySaci.querySaci.findProduto(codigo)
+    val produtos = saci.findProduto(codigo)
     produtos.firstOrNull()?.let { produto ->
       produtoVo.codigoProduto = codigo.trim()
       produtoVo.descricaoProduto = produto.nome ?: "Produto não encontrado"

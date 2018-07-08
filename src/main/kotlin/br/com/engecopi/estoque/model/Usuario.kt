@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.QuerySaci
+import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
 import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
@@ -23,7 +24,7 @@ class Usuario : BaseModel() {
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
   
-  fun usuarioSaci() = QuerySaci.querySaci.findUser(loginName)
+  fun usuarioSaci() = saci.findUser(loginName)
   
   val nome: String?
     @Transient get() = usuarioSaci()?.name
@@ -34,7 +35,7 @@ class Usuario : BaseModel() {
     }
     
     fun nomeSaci(value: String): String {
-      return QuerySaci.querySaci.findUser(value)?.name ?: ""
+      return saci.findUser(value)?.name ?: ""
     }
   }
 }

@@ -6,14 +6,13 @@ import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Movimentacao
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.Produto.Find
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
-import br.com.engecopi.framework.model.ViewException
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.saci.QuerySaci
+import br.com.engecopi.framework.viewmodel.ViewModelException
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 import kotlin.math.ceil
@@ -95,7 +94,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   }
   
   private fun saveProduto(bean: EntradaVo): Produto {
-    bean.produtoSaci ?: ViewException("Produto não encontrado no saci")
+    bean.produtoSaci ?: throw ViewModelException("Produto não encontrado no saci")
     val produto = bean.produto(bean.produtoSaci) ?: Produto.createProduto(bean.produtoSaci)
     return produto.apply {
       tamanhoLote = bean.tamanho ?: 0
@@ -104,7 +103,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   }
   
   private fun saveNota(bean: EntradaVo): Nota {
-    bean.notaEntradaSaci.firstOrNull() ?: ViewException("Nota não encontrada no saci")
+    bean.notaEntradaSaci.firstOrNull() ?: throw ViewModelException("Nota não encontrada no saci")
     val nota: Nota = bean.nota ?: Nota()
     nota.apply {
       this.numero = bean.numeroNF ?: ""
@@ -132,8 +131,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   }
   
   override fun delete(bean: EntradaVo) {
-    
-    bean.itemNota?.let { item ->
+    bean.itemNota?.also { item ->
       item.movimentacoes?.forEach {
         it.delete()
       }
@@ -148,7 +146,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   fun findProdutoNota(entravaVo: EntradaVo?): List<ProdutoSaci> {
     return entravaVo?.notaEntradaSaci?.mapNotNull {
       val grade = it.grade ?: ""
-      QuerySaci.querySaci.findProduto(it.prdno ?: "")
+      saci.findProduto(it.prdno ?: "")
               .firstOrNull { it.grade == grade }
     }.orEmpty()
   }
@@ -186,6 +184,12 @@ class EntradaVo {
   
   val descricaoProduto: String
     get() = produtoSaci?.nome ?: ""
+  
+  val codigo: String
+    get() = produtoSaci?.codigo ?: ""
+  
+  val grade: String
+    get() = produtoSaci?.grade ?: ""
   
   val quantProduto: Int
     get() = itemNota?.quantidade
