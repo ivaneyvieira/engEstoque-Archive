@@ -55,6 +55,7 @@ class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
           w = 500.px
           h = szLabel.px
           expandRatio = 2f
+          addStyleName("mono")
           bind(binder).bind(LabelVo::layout)
           reloadBinderOnChange(binder)
         }
