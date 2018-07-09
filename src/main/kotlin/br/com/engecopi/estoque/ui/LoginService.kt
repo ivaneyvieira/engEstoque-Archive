@@ -1,8 +1,8 @@
 package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.framework.ui.Session
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.UserSaci
+import br.com.engecopi.saci.saci
 import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.expandRatio
@@ -91,7 +91,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   }
   
   private fun login() {
-    val user = QuerySaci.querySaci.findUser(username.value)
+    val user = saci.findUser(username.value)
     val pass = password.value
     if (user == null || user.senha != pass) {
       Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")

@@ -1,6 +1,7 @@
 package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.Transaction
+import br.com.engecopi.framework.model.UserException
 
 abstract class ViewModel(val view: IView) {
   private var inExcection = false
@@ -94,3 +95,5 @@ interface IView {
   
   fun showInfo(msg: String)
 }
+
+class ViewModelException(menssagem: String) : UserException(null, menssagem)

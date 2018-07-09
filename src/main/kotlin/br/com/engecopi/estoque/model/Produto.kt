@@ -1,15 +1,12 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.TipoMov.ENTRADA
-import br.com.engecopi.estoque.model.TipoMov.SAIDA
-import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.estoque.model.TipoProduto.PECA
+import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.ProdutoSaci
+import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
 import java.time.LocalDate
-import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
@@ -42,7 +39,7 @@ class Produto : BaseModel() {
   val lotes: List<Lote>? = null
   
   fun produtoSaci(): ProdutoSaci? {
-    return QuerySaci.querySaci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
+    return saci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
   }
   
   val descricao: String?
@@ -50,11 +47,13 @@ class Produto : BaseModel() {
     get() = produtoSaci()?.nome
   
   companion object Find : ProdutoFinder() {
-    fun findProduto(codigo: String, grade: String): Produto? {
-      return where().codigo.eq(codigo).grade.eq(grade).findOne()
+    fun findProduto(codigo: String?, grade: String?): Produto? {
+      codigo ?: return null
+      return where().codigo.eq(codigo).grade.eq(grade?: "").findOne()
     }
     
-    fun findProdutos(codigo: String): List<Produto> {
+    fun findProdutos(codigo: String?): List<Produto> {
+      codigo ?: return emptyList()
       return where().codigo.eq(codigo).findList()
     }
     
@@ -70,7 +69,7 @@ class Produto : BaseModel() {
     }
     
     fun createProduto(codigoProduto: String, gradeProduto: String): Produto {
-      val produtoSaci = QuerySaci.querySaci.findProduto(codigoProduto)
+      val produtoSaci = saci.findProduto(codigoProduto)
               .firstOrNull { it.grade == gradeProduto }
       return createProduto(produtoSaci)
     }
@@ -101,9 +100,65 @@ class Produto : BaseModel() {
   }
 }
 
-enum class TipoProduto(val descricao: String) {
-  NORMAL("Normal"),
-  PECA("Peça"),
-  BOBINA("Bobina"),
-  CAIXA("Piso")
+enum class TipoProduto(val descricao: String, val processaCodBar: ProcessaCodBar) {
+  NORMAL("Normal", ProcessaCodBarNormal()),
+  PECA("Peça", ProcessaCodBarFios()),
+  BOBINA("Bobina", ProcessaCodBarFios()),
+  CAIXA("Piso", ProcessaCodBarPiso())
+}
+
+class ProcessaCodBarPiso : ProcessaCodBar {
+  override fun processaCodBar(codbar: String): CodBarResult? {
+    val sep1 = " "
+    val sep2 = ";"
+    val prdno = codbar.split(sep1).getOrNull(0) ?: return null
+    val grade = codbar.split(sep1).getOrNull(1) ?: return null
+    val tamanhoLote = codbar.split(sep1).getOrNull(2)?.toIntOrNull() ?: return null
+    val chave = codbar.split(sep1).getOrNull(3) ?: return null
+    val sequencia = chave.split(sep2).getOrNull(0)?.toIntOrNull() ?: return null
+    val total = chave.split(sep2).getOrNull(1)?.toIntOrNull() ?: return null
+    return CodBarResult(prdno, grade, tamanhoLote, sequencia, total)
+  }
+}
+
+class ProcessaCodBarFios : ProcessaCodBar {
+  override fun processaCodBar(codbar: String): CodBarResult? {
+    val sep1 = " "
+    val sep2 = ";"
+    val prdno = codbar.split(sep1).getOrNull(0) ?: return null
+    val grade = codbar.split(sep1).getOrNull(1) ?: return null
+    val qtPecas = codbar.split(sep1).getOrNull(2)?.toIntOrNull() ?: return null
+    val tamanhoBobina = codbar.split(sep1).getOrNull(3)?.toIntOrNull() ?: return null
+    val tamanhoLote = if (tamanhoBobina == 0) qtPecas else tamanhoBobina
+    val chave = codbar.split(sep1).getOrNull(4) ?: return null
+    val sequencia = chave.split(sep2).getOrNull(0)?.toIntOrNull() ?: return null
+    val total = chave.split(sep2).getOrNull(1)?.toIntOrNull() ?: return null
+    return CodBarResult(prdno, grade, tamanhoLote, sequencia, total)
+  }
+}
+
+class ProcessaCodBarNormal : ProcessaCodBar {
+  override fun processaCodBar(codbar: String): CodBarResult? {
+    val sep1 = " "
+    val sep2 = ";"
+    val prdno = codbar.split(sep1).getOrNull(0) ?: return null
+    val grade = ""
+    val tamanhoLote = 1
+    val chave = codbar.split(sep1).getOrNull(1) ?: return null
+    val sequencia = chave.split(sep2).getOrNull(0)?.toIntOrNull() ?: return null
+    val total = chave.split(sep2).getOrNull(1)?.toIntOrNull() ?: return null
+    return CodBarResult(prdno, grade, tamanhoLote, sequencia, total)
+  }
+}
+
+data class CodBarResult(
+        val prdno: String = "",
+        val grade: String = "",
+        val tamanhoLote: Int? = 0,
+        val sequencia: Int = 0,
+        val total: Int = 0
+                       )
+
+interface ProcessaCodBar {
+  fun processaCodBar(codbar: String): CodBarResult?
 }

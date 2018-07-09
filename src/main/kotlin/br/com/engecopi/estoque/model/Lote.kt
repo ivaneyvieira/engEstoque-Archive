@@ -5,7 +5,6 @@ import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.LoteFinder
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.annotation.Index
-import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
@@ -16,6 +15,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "lotes")
+@Index(unique = true, columnNames = ["loja_id", "produto_id", "sequencia"])
 class Lote : BaseModel() {
   @Index(unique = true)
   var sequencia: Int = 0
@@ -28,7 +28,15 @@ class Lote : BaseModel() {
   @OneToMany(mappedBy = "lote", cascade = [PERSIST, MERGE, REFRESH])
   val movimentacoes: List<Movimentacao>? = null
   
-  companion object Find : LoteFinder()
+  companion object Find : LoteFinder() {
+    fun find(loja: Loja?, produto: Produto?, sequencia: Int): Lote? {
+      return where()
+              .loja.id.eq(loja?.id)
+              .produto.id.eq(produto?.id)
+              .sequencia.eq(sequencia)
+              .findOne()
+    }
+  }
   
   fun atualizaSaldo() {
     refresh()

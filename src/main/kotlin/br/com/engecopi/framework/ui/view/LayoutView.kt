@@ -4,7 +4,9 @@ import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.beans.ProdutoSaci
+import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
+import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.isMargin
 import com.vaadin.data.Binder
@@ -20,7 +22,13 @@ import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
+import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.LocalDateRenderer
+import com.vaadin.ui.renderers.NumberRenderer
+import java.text.DecimalFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty
 
 abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
@@ -95,4 +103,13 @@ fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(binder: Binder<
     if (event.isUserOriginated)
       binder.reload()
   }
+}
+
+fun <C> Column<C, LocalDate?>.dateFormat() {
+  this.setRenderer(LocalDateRenderer(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+}
+
+fun <C> Column<C, Int?>.intFormat() {
+  setRenderer(NumberRenderer(DecimalFormat("0")))
+  align = VAlign.Right
 }

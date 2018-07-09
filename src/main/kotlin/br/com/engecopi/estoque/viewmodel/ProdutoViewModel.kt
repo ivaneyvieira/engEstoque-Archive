@@ -1,83 +1,71 @@
 package br.com.engecopi.estoque.viewmodel
 
-import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
-import br.com.engecopi.estoque.model.TipoProduto.PECA
+import br.com.engecopi.estoque.model.TipoProduto.NORMAL
+import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.framework.viewmodel.ViewModel
-import br.com.engecopi.saci.QuerySaci
-import br.com.engecopi.saci.beans.ProdutoSaci
+import br.com.engecopi.saci.saci
 
-class ProdutoViewModel(private val lojaDefault: Int, view: IView) : ViewModel(view) {
-  var pesquisa: String = ""
-  val listaGrid: MutableList<Produto> = mutableListOf()
-  var grades: List<String> = emptyList()
-  val produtoVo = ProdutoVo()
-  val lojasSaldo: List<Loja> = execList { Loja.lojaSaldo(lojaDefault) }
-  
-  override fun execUpdate() = exec {
-    listaGrid.clear()
-    listaGrid.addAll(Produto.where().findList().filter { prd ->
-      val descricao = prd.descricao ?: ""
-      descricao.contains(pesquisa) || prd.codigo == pesquisa
-    })
+class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::class) {
+  override fun update(bean: ProdutoVo) {
+    Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
+      produto.codebar = bean.codebar ?: ""
+      produto.tipo = bean.tipo ?: NORMAL
+      produto.tamanhoLote = bean.tamanhoLote ?: 0
+      produto.update()
+    }
   }
   
-  fun updateGrades(codigo: String) = exec {
-    val produtos = QuerySaci.querySaci.findProduto(codigo)
-    produtos.firstOrNull()?.let { produto ->
-      produtoVo.codigoProduto = codigo.trim()
-      produtoVo.descricaoProduto = produto.nome ?: "Produto não encontrado"
-      produto.tipo?.let { tipo ->
-        produtoVo.tipo = TipoProduto.valueOf(tipo)
+  override fun add(bean: ProdutoVo) {
+    Produto().apply {
+      this.codigo = bean.codigoProduto ?: ""
+      this.grade = bean.gradeProduto ?: ""
+      this.codebar = bean.codebar ?: ""
+      this.tipo = bean.tipo ?: NORMAL
+      this.tamanhoLote = bean.tamanhoLote ?: 0
+      this.insert()
+    }
+  }
+  
+  override fun delete(bean: ProdutoVo) {
+    Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
+      produto.delete()
+    }
+  }
+  
+  override fun allBeans(): List<ProdutoVo> {
+    return Produto.all().map { produto ->
+      ProdutoVo().apply {
+        codigoProduto = produto.codigo
+        gradeProduto = produto.grade
+        codebar = produto.codebar
+        tipo = produto.tipo
+        tamanhoLote = produto.tamanhoLote
       }
     }
-    
-    val gradesSaci = produtos.mapNotNull { it.grade }.filter { it != "" }
-    grades = if (gradesSaci.isNotEmpty())
-      gradesSaci
-    else
-      listOf("")
   }
+}
+
+class ProdutoVo {
+  var codigoProduto: String? = ""
+    set(value) {
+      field = value
+      val produto = saci.findProduto(value ?: "")
+      produto.firstOrNull()?.let { prdSaci ->
+        tipo = TipoProduto.values().firstOrNull { it.toString() == prdSaci.tipo }
+        codebar = produtosSaci.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
+      }
+    }
+  var gradeProduto: String? = ""
+  val produtosSaci
+    get() = saci.findProduto(codigoProduto ?: "")
+  val descricaoProduto: String?
+    get() = produtosSaci.firstOrNull()?.nome ?: ""
+  val grades
+    get() = produtosSaci.mapNotNull { it.grade }
+  var tipo: TipoProduto? = null
+  var tamanhoLote: Int? = 0
   
-  fun saveUpdateProduto() = exec {
-    val produto = Produto.findProduto(produtoVo.codigoProduto, produtoVo.gradeProduto)
-                  ?: Produto.createProduto(produtoVo.codigoProduto, produtoVo.gradeProduto)
-    
-    produto.tipo = produtoVo.tipo
-    produto.tamanhoLote = produtoVo.tamanhoLote
-    
-    produto.save()
-  }
-  
-  fun saldoProduto(prd: Produto, loja: Loja) = execValue {
-    prd.saldoLoja(loja)
-  }
-  
-  fun validaDelete(produto: Produto): String = execValue {
-    if (produto.saldoTotal() > 0)
-      "Este produto tem saldo"
-    else ""
-  } ?: ""
-  
-  fun deleta(produto: Produto) = exec {
-    produto.delete()
-  }
-  
-  fun atualizaSaldo(produto: Produto) {
-    produto.atualizaSaldo()
-  }
-  
-  data class ProdutoVo(
-          var codigoProduto: String = "",
-          var gradeProduto: String = "",
-          var descricaoProduto: String = "",
-          var tipo: TipoProduto = PECA,
-          var tamanhoLote: Int = 0,
-          var produtos: List<ProdutoSaci> = emptyList()
-                      ) {
-    val codebar: String
-      get() = produtos.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
-  }
+  var codebar: String? = null
 }
