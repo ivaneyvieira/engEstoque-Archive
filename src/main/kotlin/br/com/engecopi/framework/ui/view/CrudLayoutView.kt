@@ -58,8 +58,8 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
     }
   }
   
-  fun <T> GridCrud<C>.column(property: KProperty1<C, T>, block: Column<C, T>.() -> Unit): Column<C, T> {
-    val column = grid.getColumnBy(property)
+  fun <T> GridCrud<C>.column(property: KProperty1<C, T>, block: Column<C, T?>.() -> Unit): Column<C, T?> {
+    val column: Column<C, T?> = grid.getColumnBy(property)
     column.block()
     return column
   }

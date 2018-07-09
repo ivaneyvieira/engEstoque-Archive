@@ -113,6 +113,14 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
               }
             }
   }
+  
+  fun findLojas(): List<Loja> = execList {
+    Loja.all()
+  }
+  
+  fun findProdutos(): List<Produto> = execList {
+    Produto.all()
+  }
 }
 
 class SaidaVo {

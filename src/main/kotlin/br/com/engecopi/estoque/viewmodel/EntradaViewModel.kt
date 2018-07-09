@@ -47,7 +47,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
           item: ItemNota
                                ) {
     val produto = item.produto
-    var saldo = bean.quantProduto
+    var saldo = bean.quantProduto ?: 0
     val tamanho = bean.tamanho ?: 0
     val ultimoLote = bean.ultimoLote
     var sequencia = ultimoLote?.sequencia ?: 0
@@ -86,7 +86,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     item.apply {
       this.nota = nota
       this.produto = produto
-      this.quantidade = bean.quantProduto
+      this.quantidade = bean.quantProduto ?: 0
       this.tamanhoLote = bean.tamanho ?: 0
     }
     item.save()
@@ -191,7 +191,7 @@ class EntradaVo {
   val grade: String
     get() = produtoSaci?.grade ?: ""
   
-  val quantProduto: Int
+  val quantProduto: Int?
     get() = itemNota?.quantidade
             ?: notaEntradaSaci.firstOrNull { neSaci ->
               (neSaci.prdno ?: "") == (produtoSaci?.codigo ?: "") &&
@@ -229,8 +229,8 @@ class EntradaVo {
       val tamanhoLote = tamanho
       tamanhoLote ?: return emptyList()
       if (tamanhoLote == 0) return emptyList()
-      val qtLote = quantProduto / tamanhoLote
-      val restoLote = quantProduto % tamanhoLote
+      val qtLote = quantProduto ?: 0/ tamanhoLote
+      val restoLote = quantProduto ?: 0 % tamanhoLote
       val totalLote = sequencia + qtLote + if (restoLote > 0) 1 else 0
       val lista = mutableListOf<MovimentacaoVO>()
       for (i in 1..qtLote) {

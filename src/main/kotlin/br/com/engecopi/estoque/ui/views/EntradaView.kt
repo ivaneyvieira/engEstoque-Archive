@@ -6,13 +6,17 @@ import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
+import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.reload
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.saci.beans.ProdutoSaci
 import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
+import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.comboBox
@@ -31,9 +35,15 @@ import com.vaadin.data.Binder
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.DateRenderer
+import com.vaadin.ui.renderers.LocalDateRenderer
+import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty
 
 @AutoView("")
@@ -166,10 +176,32 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
         column(EntradaVo::numeroNF) {
+          caption = "Número NF"
           //expandRatio = 1
         }
         column(EntradaVo::lojaNF) {
+          caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "Todas" }, TextRenderer())
+        }
+        column(EntradaVo::dataNota){
+          caption = "Data Nota"
+          dateFormat()
+        }
+        column(EntradaVo::fornecedor){
+          caption = "Fornecedor"
+        }
+        column(EntradaVo::codigo){
+          caption = "Código"
+        }
+        column(EntradaVo::descricaoProduto){
+          caption = "Descrição"
+        }
+        column(EntradaVo::grade){
+          caption = "Grade"
+        }
+        column(EntradaVo::quantProduto){
+          caption = "Quantidade"
+          intFormat()
         }
       }
     }
