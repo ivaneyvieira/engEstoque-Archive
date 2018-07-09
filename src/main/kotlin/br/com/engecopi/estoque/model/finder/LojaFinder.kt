@@ -6,6 +6,7 @@ import io.ebean.Finder
 import io.ebean.Model.db
 
 open class LojaFinder : Finder<Long, Loja>(Loja::class.java) {
+  
   /**
    * Start a new typed query.
    */

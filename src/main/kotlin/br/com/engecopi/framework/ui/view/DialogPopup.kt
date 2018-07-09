@@ -1,6 +1,8 @@
 package br.com.engecopi.framework.ui.view
 
+import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.shared.Registration
@@ -22,8 +24,6 @@ open class DialogPopup<BEAN : Any>(
   val form = VerticalLayout().apply {
     setSizeFull()
   }
-  
-
   
   private val btnOk: Button = Button("Confirma").apply {
     addStyleName(ValoTheme.BUTTON_PRIMARY)
@@ -81,11 +81,19 @@ open class DialogPopup<BEAN : Any>(
   }
 }
 
-fun VerticalLayout.row(block : HorizontalLayout.() -> Unit){
+fun VerticalLayout.grupo(caption: String = "", block: VerticalLayout.() -> Unit) {
+  cssLayout("Nota fiscal de entrada") {
+    w = 100.perc
+    addStyleName(ValoTheme.LAYOUT_CARD)
+    verticalLayout { this.block() }
+  }
+}
+
+fun VerticalLayout.row(block: HorizontalLayout.() -> Unit) {
   val horizontalLayout = HorizontalLayout()
   horizontalLayout.w = 100.perc
   horizontalLayout.block()
-  horizontalLayout.iterator().forEach {component ->
+  horizontalLayout.iterator().forEach { component ->
     component.w = 100.perc
   }
   addComponent(horizontalLayout)

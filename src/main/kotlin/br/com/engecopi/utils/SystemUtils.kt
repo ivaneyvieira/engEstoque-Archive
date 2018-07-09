@@ -1,19 +1,18 @@
 package br.com.engecopi.utils
 
 
+import org.imgscalr.Scalr
+import org.imgscalr.Scalr.Method
+import org.imgscalr.Scalr.Mode
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.URISyntaxException
 import java.nio.charset.Charset
-import javax.imageio.ImageIO
-import java.nio.file.Paths
 import java.nio.file.Files
-
-
+import java.nio.file.Paths
+import javax.imageio.ImageIO
 
 object SystemUtils {
   private val enviroment = System.getenv()
@@ -22,6 +21,21 @@ object SystemUtils {
     return if (envResult == null || envResult.trim { it <= ' ' } == "") {
       def
     } else envResult
+  }
+  
+  fun resize(
+          imagem: ByteArray?,
+          width: Int,
+          height: Int
+            ): ByteArray? {
+    return try {
+      if (imagem == null) return null
+      val bImagemIn = toBufferedImage(imagem) ?: return null
+      val bimage = Scalr.resize(bImagemIn, Method.QUALITY, Mode.FIT_TO_WIDTH, width, height)
+      toByteArray(bimage)
+    } catch (e: IOException) {
+      ByteArray(0)
+    }
   }
   
   @Throws(IOException::class)
@@ -82,3 +96,5 @@ object SystemUtils {
     return String(encoded, encoding)
   }
 }
+
+

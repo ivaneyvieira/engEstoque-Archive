@@ -2,6 +2,7 @@ package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.ViewModel
+import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.getColumnBy
 import com.github.vok.karibudsl.init
@@ -28,11 +29,11 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 
 abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
-  abstract fun fieldsRead(): List<KProperty<*>>
-  fun fieldsAdd(): List<KProperty<*>> = fieldsRead()
-  fun fieldsUpdate(): List<KProperty<*>> = fieldsRead()
-  fun fieldsDelete(): List<KProperty<*>> = fieldsRead()
-  fun fieldsColumn(): List<KProperty<*>> = fieldsRead()
+ // abstract fun fieldsRead(): List<KProperty<*>>
+ // fun fieldsAdd(): List<KProperty<*>> = fieldsRead()
+ // fun fieldsUpdate(): List<KProperty<*>> = fieldsRead()
+ // fun fieldsDelete(): List<KProperty<*>> = fieldsRead()
+ // fun fieldsColumn(): List<KProperty<*>> = fieldsRead()
   
   override fun updateView(viewModel: ViewModel) {}
   
@@ -58,8 +59,8 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
     }
   }
   
-  fun <T> GridCrud<C>.column(property: KProperty1<C, T>, block: Column<C, T?>.() -> Unit): Column<C, T?> {
-    val column: Column<C, T?> = grid.getColumnBy(property)
+  fun <T> GridCrud<C>.column(property: KProperty1<C, T>, block: Column<C, T?>.() -> Unit ={}): Column<C, T?> {
+    val column: Column<C, T?> = grid.addColumn(property)
     column.block()
     return column
   }
@@ -77,10 +78,10 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
   }
   
   private fun <T> CustomCrudFormFactory<T>.defaults() {
-    setVisibleProperties(READ, *fieldsRead().map { it.name }.toTypedArray())
-    setVisibleProperties(ADD, *fieldsAdd().map { it.name }.toTypedArray())
-    setVisibleProperties(UPDATE, *fieldsUpdate().map { it.name }.toTypedArray())
-    setVisibleProperties(DELETE, *fieldsDelete().map { it.name }.toTypedArray())
+   // setVisibleProperties(READ, *fieldsRead().map { it.name }.toTypedArray())
+   // setVisibleProperties(ADD, *fieldsAdd().map { it.name }.toTypedArray())
+   // setVisibleProperties(UPDATE, *fieldsUpdate().map { it.name }.toTypedArray())
+   // setVisibleProperties(DELETE, *fieldsDelete().map { it.name }.toTypedArray())
     
     setButtonCaption(READ, "Consulta")
     setButtonCaption(ADD, "Adiciona")
@@ -91,7 +92,8 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
   }
   
   private fun <T> GridCrud<T>.defaults() {
-    grid.setColumns(*fieldsColumn().map { it.name }.toTypedArray())
+    //grid.setColumns(*fieldsColumn().map { it.name }.toTypedArray())
+    grid.removeAllColumns()
     setRowCountCaption("%d registro(s) encontrados")
     addButton.description = "Adiciona"
     findAllButton.description = "Atualiza"

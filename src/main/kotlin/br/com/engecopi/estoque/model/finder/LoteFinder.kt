@@ -6,6 +6,7 @@ import io.ebean.Finder
 import io.ebean.Model.db
 
 open class LoteFinder : Finder<Long, Lote>(Lote::class.java) {
+  
   /**
    * Start a new typed query.
    */

@@ -14,6 +14,7 @@ class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::
       produto.tipo = bean.tipo ?: NORMAL
       produto.tamanhoLote = bean.tamanhoLote ?: 0
       produto.update()
+      produto.atualizaSaldo()
     }
   }
   

@@ -9,7 +9,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.framework.viewmodel.ViewModelException
+import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.saci
@@ -70,6 +70,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
       
       saldo -= tamanho
     }
+    produto?.atualizaSaldo()
   }
   
   private fun deleteMovimentacoes(item: ItemNota) {
@@ -94,7 +95,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   }
   
   private fun saveProduto(bean: EntradaVo): Produto {
-    bean.produtoSaci ?: throw ViewModelException("Produto não encontrado no saci")
+    bean.produtoSaci ?: throw EViewModel("Produto não encontrado no saci")
     val produto = bean.produto(bean.produtoSaci) ?: Produto.createProduto(bean.produtoSaci)
     return produto.apply {
       tamanhoLote = bean.tamanho ?: 0
@@ -103,7 +104,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   }
   
   private fun saveNota(bean: EntradaVo): Nota {
-    bean.notaEntradaSaci.firstOrNull() ?: throw ViewModelException("Nota não encontrada no saci")
+    bean.notaEntradaSaci.firstOrNull() ?: throw EViewModel("Nota não encontrada no saci")
     val nota: Nota = bean.nota ?: Nota()
     nota.apply {
       this.numero = bean.numeroNF ?: ""

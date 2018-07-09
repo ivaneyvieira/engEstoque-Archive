@@ -13,7 +13,7 @@ fun causaSqlException(causa: Throwable?): SQLException? {
   return exception
 }
 
-open class AppException(causa: Throwable?, val menssagem: String) : Exception(causa) {
+open class AppException(causa: Throwable?,  menssagem: String) : Exception(menssagem) {
   val causaSqlException = causaSqlException(causa)
 }
 
