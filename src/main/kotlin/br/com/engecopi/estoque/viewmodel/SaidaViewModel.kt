@@ -37,5 +37,5 @@ class SaidaVo {
   
   val notaSaida = Nota.findSaida(numeroNota, lojaNF)
   
-  val dataNF : LocalDate? = Nota?.
+  val dataNF : LocalDate? = Nota?.A
 }
