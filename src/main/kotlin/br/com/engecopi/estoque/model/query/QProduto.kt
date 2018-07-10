@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model.query
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
+import br.com.engecopi.estoque.model.query.assoc.QAssocLabel
 import br.com.engecopi.estoque.model.query.assoc.QAssocLote
 import io.ebean.EbeanServer
 import io.ebean.typequery.PEnum
@@ -42,6 +43,7 @@ class QProduto : TQRootBean<Produto, QProduto> {
   lateinit var tamanhoLote: PInteger<QProduto>
   lateinit var itensNota: QAssocItemNota<QProduto>
   lateinit var lotes: QAssocLote<QProduto>
+  lateinit var label: QAssocLabel<QProduto>
 
 
   /**

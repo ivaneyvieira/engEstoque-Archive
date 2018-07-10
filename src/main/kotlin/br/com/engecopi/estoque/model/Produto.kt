@@ -13,6 +13,7 @@ import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 import javax.persistence.Transient
@@ -37,6 +38,8 @@ class Produto : BaseModel() {
   val itensNota: List<ItemNota>? = null
   @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val lotes: List<Lote>? = null
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
+  var label: Label? = null
   
   fun produtoSaci(): ProdutoSaci? {
     return saci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
@@ -75,10 +78,10 @@ class Produto : BaseModel() {
     }
   }
   
-  fun saldoLoja(loja: Loja?): Int {
+  fun saldoLoja(loja: Loja?, sequencia : Int? = null): Int {
     loja ?: return 0
     refresh()
-    return lotes?.filter { it.loja == loja }?.sumBy { it.saldo } ?: 0
+    return lotes?.filter { it.loja == loja && (it.sequencia == sequencia || sequencia == null)}?.sumBy { it.saldo } ?: 0
   }
   
   fun saldoTotal(): Int {

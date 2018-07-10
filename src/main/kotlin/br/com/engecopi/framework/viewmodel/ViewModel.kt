@@ -96,4 +96,3 @@ interface IView {
   fun showInfo(msg: String)
 }
 
-class ViewModelException(menssagem: String) : UserException(null, menssagem)

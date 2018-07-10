@@ -10,7 +10,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.framework.viewmodel.ViewModelException
+import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
@@ -18,7 +18,7 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   override fun update(bean: SaidaVo) {
     val nota = saveNota(bean)
     
-    val produto = bean.produto ?: throw ViewModelException("Produto não encontrado no saci")
+    val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
     
     val item = saveItemNota(bean, nota, produto)
     
@@ -30,7 +30,7 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   override fun add(bean: SaidaVo) {
     val nota = saveNota(bean)
     
-    val produto = bean.produto ?: throw ViewModelException("Produto não encontrado no saci")
+    val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
     
     val item = saveItemNota(bean, nota, produto)
     
@@ -40,17 +40,19 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   }
   
   private fun geraMovimentacoes(bean: SaidaVo, item: ItemNota) {
-    val seq = bean.sequencia ?: throw  ViewModelException("Lote não encontrado")
-    val lote = Lote.find(item.nota?.loja, item.produto, seq) ?: throw  ViewModelException("Lote não encontrado")
-    val quantidade = bean.quantidade ?: throw  ViewModelException("Quantidade não informada")
+    val seq = bean.sequencia ?: throw  EViewModel("Lote não encontrado")
+    val lote = Lote.find(item.nota?.loja, item.produto, seq) ?: throw  EViewModel("Lote não encontrado")
+    val quantidade = bean.quantidade ?: throw  EViewModel("Quantidade não informada")
     if (quantidade > lote.saldo)
-      throw  ViewModelException("Saldo insuficiente no lote")
+      throw  EViewModel("Saldo insuficiente no lote")
     else
       Movimentacao().apply {
         this.itemNota = item
         this.lote = lote
         this.quantidade = quantidade
       }.save()
+  
+    lote.atualizaSaldo()
   }
   
   private fun deleteMovimentacoes(item: ItemNota) {
@@ -75,7 +77,6 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   }
   
   private fun saveNota(bean: SaidaVo): Nota {
-    bean.notaSaidaSaci.firstOrNull() ?: throw ViewModelException("Nota não encontrada no saci")
     val nota: Nota = bean.notaSaida ?: Nota()
     nota.apply {
       this.numero = if (bean.numeroNota.isNullOrBlank())
@@ -179,5 +180,5 @@ class SaidaVo {
     } ?: ""
   
   val saldo: Int
-    get() = produto?.saldoLoja(lojaNF) ?: 0
+    get() = produto?.saldoLoja(lojaNF, sequencia) ?: 0
 }

@@ -30,6 +30,9 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
   .v-caption-mystyle {
     font-weight: bold;
   }
+  .mono .v-textarea {
+    font-family: monospace;
+  }
   .right {
     text-align: right;
   }

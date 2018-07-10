@@ -23,18 +23,20 @@ import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import kotlin.reflect.KProperty
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
+  /*
   override fun fieldsRead(): List<KProperty<*>> {
     return listOf(SaidaVo::numeroNota, SaidaVo::lojaNF, SaidaVo::lojaTransf,
                   SaidaVo::codigo, SaidaVo::descricaoProduto, SaidaVo::grade,
                   SaidaVo::quantidade)
   }
-  
+  */
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
@@ -56,7 +58,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               expandRatio = 1f
               default { it.sigla }
               setItems(viewModel.findLojas())
-              bind(binder).bind(SaidaVo::lojaNF)
+              bind(binder).asRequired("A loja deve ser informada").bind(SaidaVo::lojaNF)
               reloadBinderOnChange(binder)
             }
             dateField("Data") {
@@ -147,6 +149,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         }
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
+          setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
         column(SaidaVo::lojaTransf) {
           caption = "Loja Tranf"

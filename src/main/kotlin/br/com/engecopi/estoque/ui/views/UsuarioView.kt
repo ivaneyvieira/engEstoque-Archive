@@ -18,9 +18,10 @@ import org.vaadin.crudui.crud.CrudOperation
 
 @AutoView
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
-  override val viewModel = UsuarioViewModel(this)
+  override val viewModel
+    get() = UsuarioViewModel(this)
   
-  override fun fieldsRead() = listOf(UsuarioCrudVo::loginName, UsuarioCrudVo::nome, UsuarioCrudVo::loja)
+  //override fun fieldsRead() = listOf(UsuarioCrudVo::loginName, UsuarioCrudVo::nome, UsuarioCrudVo::loja)
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -63,10 +64,17 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
-        column(UsuarioCrudVo::nome){
+        column(UsuarioCrudVo::loginName) {
           expandRatio = 1
+          caption = "Usuário"
+        }
+        column(UsuarioCrudVo::nome) {
+          expandRatio = 5
+          caption = "Nome"
         }
         column(UsuarioCrudVo::loja) {
+          expandRatio = 1
+          caption = "Loja"
           setRenderer({ loja -> loja?.sigla ?: "Todas" }, TextRenderer())
         }
       }

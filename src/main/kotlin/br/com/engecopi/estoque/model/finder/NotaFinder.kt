@@ -6,6 +6,7 @@ import io.ebean.Finder
 import io.ebean.Model.db
 
 open class NotaFinder : Finder<Long, Nota>(Nota::class.java) {
+  
   /**
    * Start a new typed query.
    */
