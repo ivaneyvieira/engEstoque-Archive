@@ -124,6 +124,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             }
             textField("Quantidade") {
               expandRatio = 2f
+              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
               this.bind(binder)
                       .withConverter(StringToIntegerConverter("Quantidade inválida"))
                       .bind(EntradaVo::quantProduto.name)
@@ -135,6 +136,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
               this.bind(binder)
                       .withConverter(StringToIntegerConverter("Tamanho inválido"))
                       .bind(EntradaVo::tamanho)
+              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
               reloadBinderOnChange(binder)
             }
             textField("Sequencia") {
@@ -145,6 +147,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             textField("Saldo") {
               expandRatio = 1f
               isReadOnly = true
+              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
               this.bind(binder)
                       .withConverter(StringToIntegerConverter(""))
                       .bind(EntradaVo::saldo.name)
@@ -159,13 +162,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         grid(MovimentacaoVO::class) {
           h = 150.px
           caption = "Lotes"
-          addStyleName(ValoTheme.TABLE_COMPACT)
           bindItens(binder) { entrada ->
             entrada.movimentacao
           }
           removeAllColumns()
           addColumnFor(MovimentacaoVO::descLote)
-          addColumnFor(MovimentacaoVO::quantidade)
+          addColumnFor(MovimentacaoVO::quantidade){
+            intFormat()
+          }
         }
       }
     }

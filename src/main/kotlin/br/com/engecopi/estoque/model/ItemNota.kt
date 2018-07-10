@@ -45,6 +45,9 @@ class ItemNota : BaseModel() {
   val tipoMov: TipoMov?
     @Transient get() = nota?.tipoMov
   
+  val dataNota: LocalDate?
+    @Transient get() = nota?.data
+  
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
       return ItemNota.where().nota.id.eq(nota?.id)

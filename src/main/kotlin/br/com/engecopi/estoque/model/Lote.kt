@@ -12,6 +12,7 @@ import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
+import javax.persistence.Transient
 
 @Entity
 @Table(name = "lotes")
@@ -27,6 +28,9 @@ class Lote : BaseModel() {
   var loja: Loja? = null
   @OneToMany(mappedBy = "lote", cascade = [PERSIST, MERGE, REFRESH])
   val movimentacoes: List<Movimentacao>? = null
+  
+  val sequenciaStr: String?
+    @Transient get() = "$sequencia/$total"
   
   companion object Find : LoteFinder() {
     fun find(loja: Loja?, produto: Produto?, sequencia: Int): Lote? {

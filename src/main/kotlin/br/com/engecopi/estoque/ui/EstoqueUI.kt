@@ -1,11 +1,14 @@
 package br.com.engecopi.estoque.ui
 
+import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.LabelView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
 import com.github.vok.karibudsl.autoViewProvider
+import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.onLeftClick
@@ -48,6 +51,13 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 @PushStateNavigation
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
+  val loja: Loja?
+    get() {
+      val user = LoginService.currentUser ?: return null
+      val login = user.login ?: return null
+      return Usuario.findUsuario(login)?.loja
+    }
+  
   override fun init(request: VaadinRequest?) {
     val user = LoginService.currentUser
     if (user == null) {
@@ -88,6 +98,11 @@ class EstoqueUI : UI() {
       }
     }
   }
+  
+  companion object {
+    val estoqueUI
+      get() = UI.getCurrent() as? EstoqueUI
+  }
 }
 
 @WebListener
@@ -100,7 +115,6 @@ class Bootstrap : ServletContextListener {
   
   override fun contextInitialized(sce: ServletContextEvent?) {
     log.info("Starting up")
-    //Inicia o banco
   }
 }
 

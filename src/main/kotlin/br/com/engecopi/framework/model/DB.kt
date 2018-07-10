@@ -6,7 +6,6 @@ import javax.persistence.PersistenceException
 import kotlin.reflect.full.isSubclassOf
 
 object DB {
-  
   fun <R> xa(lambda: () -> R): R {
     return try {
       lambda()

@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Lote
+import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
@@ -26,6 +27,7 @@ import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
@@ -34,11 +36,6 @@ import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
-  /*
-  override fun fieldsRead(): List<KProperty<*>> {
-    return listOf(ProdutoVo::codigoProduto, ProdutoVo::descricaoProduto, ProdutoVo::gradeProduto)
-  }
-  */
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
@@ -97,15 +94,8 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             grid(Lote::class, "Lotes") {
               expandRatio = 1f
               removeAllColumns()
-              addColumnFor(Lote::sequencia) {
+              addColumnFor(Lote::sequenciaStr) {
                 caption = "Sequencia"
-                setRenderer(NumberRenderer(DecimalFormat("0")))
-                align = VAlign.Right
-              }
-              addColumnFor(Lote::total) {
-                caption = "Total"
-                setRenderer(NumberRenderer(DecimalFormat("0")))
-                align = VAlign.Right
               }
               addColumnFor(Lote::saldo) {
                 caption = "Saldo"
@@ -117,10 +107,14 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               }
             }
             grid(ItemNota::class, "Notas") {
-              expandRatio = 1f
+              expandRatio = 2f
               removeAllColumns()
               addColumnFor(ItemNota::numeroNota) {
                 caption = "Nota"
+              }
+              addColumnFor(ItemNota::dataNota) {
+                caption = "Data"
+                setRenderer(LocalDateRenderer("dd/MM/yy"))
               }
               addColumnFor(ItemNota::tipoMov) {
                 caption = "Tipo"

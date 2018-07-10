@@ -2,11 +2,14 @@ package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.ViewModel
+import com.github.vok.karibudsl.KeyShortcut
+import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.getColumnBy
 import com.github.vok.karibudsl.init
 import com.vaadin.data.Binder
+import com.vaadin.event.ShortcutAction
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui.Component
@@ -92,8 +95,8 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
   }
   
   private fun <T> GridCrud<T>.defaults() {
-    //grid.setColumns(*fieldsColumn().map { it.name }.toTypedArray())
     grid.removeAllColumns()
+
     setRowCountCaption("%d registro(s) encontrados")
     addButton.description = "Adiciona"
     findAllButton.description = "Atualiza"

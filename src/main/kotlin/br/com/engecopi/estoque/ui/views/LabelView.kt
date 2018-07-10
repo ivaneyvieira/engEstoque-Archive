@@ -34,7 +34,7 @@ class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
           readOnly: Boolean
                          ) {
     formLayout.apply {
-      w = 800.px
+      w = 900.px
       val szLabel = 400
       row {
         comboBox<TipoProduto>("Tipo") {
@@ -52,16 +52,16 @@ class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
       }
       row {
         textArea("Layout Entrada") {
-          w = 500.px
           h = szLabel.px
           expandRatio = 2f
+          isWordWrap = false
           addStyleName("mono")
           bind(binder).bind(LabelVo::layoutEntrada)
         }
         textArea("Layout Saída") {
-          w = 500.px
           h = szLabel.px
           expandRatio = 2f
+          isWordWrap = false
           addStyleName("mono")
           bind(binder).bind(LabelVo::layoutSaida)
         }
