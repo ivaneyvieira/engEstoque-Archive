@@ -17,7 +17,9 @@ class Label : BaseModel() {
   @Enumerated(EnumType.STRING)
   var tipo: TipoProduto = NORMAL
   @Lob
-  var layout: String = ""
+  var layoutEntrada: String = ""
+  @Lob
+  var layoutSaida: String = ""
 
   companion object Find : LabelFinder() {
     fun find(tipoProduto: TipoProduto?): Label? {

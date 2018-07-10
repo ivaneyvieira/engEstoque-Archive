@@ -51,13 +51,19 @@ class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
         }
       }
       row {
-        textArea("Layout") {
+        textArea("Layout Entrada") {
           w = 500.px
           h = szLabel.px
           expandRatio = 2f
           addStyleName("mono")
-          bind(binder).bind(LabelVo::layout)
-          reloadBinderOnChange(binder)
+          bind(binder).bind(LabelVo::layoutEntrada)
+        }
+        textArea("Layout Saída") {
+          w = 500.px
+          h = szLabel.px
+          expandRatio = 2f
+          addStyleName("mono")
+          bind(binder).bind(LabelVo::layoutSaida)
         }
       }
     }

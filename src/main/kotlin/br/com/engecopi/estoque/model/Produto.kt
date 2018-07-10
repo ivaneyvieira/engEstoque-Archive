@@ -31,8 +31,6 @@ class Produto : BaseModel() {
   @Index(unique = false)
   var codebar: String = ""
   var dataCadastro: LocalDate = LocalDate.now()
-  @Enumerated(EnumType.STRING)
-  var tipo: TipoProduto = PECA
   var tamanhoLote: Int = 0
   @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
@@ -65,7 +63,8 @@ class Produto : BaseModel() {
         produtoSaci?.let { pSaci ->
           codigo = pSaci.codigo ?: codigo
           grade = pSaci.grade ?: grade
-          tipo = TipoProduto.valueOf(pSaci.tipo ?: "NORMAL")
+          val tipo = TipoProduto.valueOf(pSaci.tipo ?: "NORMAL")
+          label = Label.find(tipo)
           codebar = pSaci.codebar ?: codebar
         }
       }

@@ -32,7 +32,8 @@ class QLabel : TQRootBean<Label, QLabel> {
   lateinit var updatedAt: PLocalDateTime<QLabel>
   lateinit var version: PInteger<QLabel>
   lateinit var tipo: PEnum<QLabel,TipoProduto>
-  lateinit var layout: PString<QLabel>
+  lateinit var layoutEntrada: PString<QLabel>
+  lateinit var layoutSaida: PString<QLabel>
 
 
   /**

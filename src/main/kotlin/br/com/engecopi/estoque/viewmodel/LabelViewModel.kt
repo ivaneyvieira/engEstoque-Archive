@@ -9,7 +9,8 @@ import br.com.engecopi.framework.viewmodel.IView
 class LabelViewModel(view: IView) : CrudViewModel<LabelVo>(view, LabelVo::class) {
   override fun update(bean: LabelVo) {
     Label.find(bean.tipoProduto)?.let { label ->
-      label.layout = bean.layout ?: ""
+      label.layoutEntrada = bean.layoutEntrada ?: ""
+      label.layoutSaida = bean.layoutSaida ?: ""
       label.update()
     }
   }
@@ -17,7 +18,8 @@ class LabelViewModel(view: IView) : CrudViewModel<LabelVo>(view, LabelVo::class)
   override fun add(bean: LabelVo) {
     Label().apply {
       this.tipo = bean.tipoProduto ?: NORMAL
-      this.layout = bean.layout ?: ""
+      this.layoutEntrada = bean.layoutEntrada ?: ""
+      this.layoutSaida = bean.layoutSaida ?: ""
       this.insert()
     }
   }
@@ -32,7 +34,8 @@ class LabelViewModel(view: IView) : CrudViewModel<LabelVo>(view, LabelVo::class)
     return Label.all().map { label ->
       LabelVo().apply {
         this.tipoProduto = label.tipo
-        this.layout = label.layout
+        this.layoutEntrada = label.layoutEntrada
+        this.layoutSaida = label.layoutSaida
       }
     }
   }
@@ -40,8 +43,11 @@ class LabelViewModel(view: IView) : CrudViewModel<LabelVo>(view, LabelVo::class)
 
 class LabelVo {
   var tipoProduto: TipoProduto? = null
-  var layout: String? = null
+  var layoutEntrada: String? = null
+  var layoutSaida: String? = null
   
-  val image: ByteArray?
-    get() = ZPLPreview.createImage(layout ?: "")
+  val imageEntrada: ByteArray?
+    get() = ZPLPreview.createImage(layoutEntrada ?: "")
+  val imageSaida: ByteArray?
+    get() = ZPLPreview.createImage(layoutSaida ?: "")
 }

@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
@@ -9,10 +11,14 @@ import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.VAlign
+import com.github.vok.karibudsl.addColumnFor
+import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.expandRatio
+import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
@@ -20,9 +26,11 @@ import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.NumberRenderer
+import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
-import kotlin.reflect.KProperty
+import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
@@ -57,10 +65,11 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             comboBox<String> {
               expandRatio = 1f
               caption = "Grade"
-              default{it}
+              default { it }
               bindItens(binder) { produto -> produto.grades }
               
               bind(binder).bind(ProdutoVo::gradeProduto)
+              reloadBinderOnChange(binder)
             }
           }
           row {
@@ -82,7 +91,49 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               bind(binder)
                       .withConverter(StringToIntegerConverter("Valor inválido"))
                       .bind(ProdutoVo::tamanhoLote)
-              
+            }
+          }
+          row {
+            grid(Lote::class, "Lotes") {
+              expandRatio = 1f
+              removeAllColumns()
+              addColumnFor(Lote::sequencia) {
+                caption = "Sequencia"
+                setRenderer(NumberRenderer(DecimalFormat("0")))
+                align = VAlign.Right
+              }
+              addColumnFor(Lote::total) {
+                caption = "Total"
+                setRenderer(NumberRenderer(DecimalFormat("0")))
+                align = VAlign.Right
+              }
+              addColumnFor(Lote::saldo) {
+                caption = "Saldo"
+                setRenderer(NumberRenderer(DecimalFormat("0")))
+                align = VAlign.Right
+              }
+              bindItens(binder){
+                it.lotes
+              }
+            }
+            grid(ItemNota::class, "Notas") {
+              expandRatio = 1f
+              removeAllColumns()
+              addColumnFor(ItemNota::numeroNota) {
+                caption = "Nota"
+              }
+              addColumnFor(ItemNota::tipoMov) {
+                caption = "Tipo"
+                setRenderer({ it.toString() }, TextRenderer())
+              }
+              addColumnFor(ItemNota::quantidade) {
+                caption = "Quant."
+                setRenderer(NumberRenderer(DecimalFormat("0")))
+                align = VAlign.Right
+              }
+              bindItens(binder){
+                it.itensNota
+              }
             }
           }
         }

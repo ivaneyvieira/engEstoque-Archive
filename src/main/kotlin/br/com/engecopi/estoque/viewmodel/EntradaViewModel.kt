@@ -230,8 +230,8 @@ class EntradaVo {
       val tamanhoLote = tamanho
       tamanhoLote ?: return emptyList()
       if (tamanhoLote == 0) return emptyList()
-      val qtLote = quantProduto ?: 0/ tamanhoLote
-      val restoLote = quantProduto ?: 0 % tamanhoLote
+      val qtLote = (quantProduto ?: 0)/ tamanhoLote
+      val restoLote = (quantProduto ?: 0) % tamanhoLote
       val totalLote = sequencia + qtLote + if (restoLote > 0) 1 else 0
       val lista = mutableListOf<MovimentacaoVO>()
       for (i in 1..qtLote) {

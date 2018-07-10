@@ -147,7 +147,7 @@ class SaidaVo {
       field = value
       val prdno = value?.split(" ")?.getOrNull(0)
       val prdTipo = Produto.findProdutos(prdno).firstOrNull()
-      detalheBarra = prdTipo?.tipo?.processaCodBar?.processaCodBar(value ?: "")
+      detalheBarra = prdTipo?.label?.tipo?.processaCodBar?.processaCodBar(value ?: "")
       detalheBarra.also { detalhe ->
         produto = Produto.findProduto(detalhe?.prdno, detalhe?.grade)
         sequencia = detalhe?.sequencia

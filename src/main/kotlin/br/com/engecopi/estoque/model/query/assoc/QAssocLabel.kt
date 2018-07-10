@@ -25,7 +25,8 @@ class QAssocLabel<R>(name: String, root: R) : TQAssocBean<Label,R>(name, root) {
   lateinit var updatedAt: PLocalDateTime<R>
   lateinit var version: PInteger<R>
   lateinit var tipo: PEnum<R,TipoProduto>
-  lateinit var layout: PString<R>
+  lateinit var layoutEntrada: PString<R>
+  lateinit var layoutSaida: PString<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

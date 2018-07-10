@@ -14,6 +14,16 @@
             <column name="version" type="integer" notnull="true"/>
             <uniqueConstraint name="uq_itens_nota_nota_id_produto_id" columnNames="nota_id,produto_id" oneToOne="false" nullableColumns="nota_id,produto_id"/>
         </createTable>
+        <createTable name="labels" identityType="identity" pkName="pk_labels">
+            <column name="id" type="bigint" primaryKey="true"/>
+            <column name="tipo" type="varchar(6)" notnull="true" checkConstraint="check ( tipo in ('NORMAL','PECA','BOBINA','CAIXA'))" checkConstraintName="ck_labels_tipo"/>
+            <column name="layout_entrada" type="clob" notnull="true"/>
+            <column name="layout_saida" type="clob" notnull="true"/>
+            <column name="created_at" type="timestamp" notnull="true"/>
+            <column name="updated_at" type="timestamp" notnull="true"/>
+            <column name="version" type="integer" notnull="true"/>
+            <uniqueConstraint name="uq_labels_tipo" columnNames="tipo" oneToOne="false" nullableColumns=""/>
+        </createTable>
         <createTable name="lojas" identityType="identity" pkName="pk_lojas">
             <column name="id" type="bigint" primaryKey="true"/>
             <column name="numero" type="integer" notnull="true"/>
@@ -32,6 +42,7 @@
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>
+            <uniqueConstraint name="uq_lotes_loja_id_produto_id_sequencia" columnNames="loja_id,produto_id,sequencia" oneToOne="false" nullableColumns="loja_id,produto_id"/>
             <uniqueConstraint name="uq_lotes_sequencia" columnNames="sequencia" oneToOne="false" nullableColumns=""/>
         </createTable>
         <createTable name="movimentacoes" identityType="identity" pkName="pk_movimentacoes">
@@ -62,8 +73,8 @@
             <column name="grade" type="varchar(8)" notnull="true"/>
             <column name="codebar" type="varchar(16)" notnull="true"/>
             <column name="data_cadastro" type="date" notnull="true"/>
-            <column name="tipo" type="varchar(6)" notnull="true" checkConstraint="check ( tipo in ('NORMAL','PECA','BOBINA','CAIXA'))" checkConstraintName="ck_produtos_tipo"/>
             <column name="tamanho_lote" type="integer" notnull="true"/>
+            <column name="label_id" type="bigint" references="labels.id" foreignKeyName="fk_produtos_label_id" foreignKeyIndex="ix_produtos_label_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>

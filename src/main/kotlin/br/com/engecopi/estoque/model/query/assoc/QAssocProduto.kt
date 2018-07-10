@@ -1,9 +1,7 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.query.QProduto
-import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
@@ -29,7 +27,6 @@ class QAssocProduto<R>(name: String, root: R) : TQAssocBean<Produto,R>(name, roo
   lateinit var grade: PString<R>
   lateinit var codebar: PString<R>
   lateinit var dataCadastro: PLocalDate<R>
-  lateinit var tipo: PEnum<R,TipoProduto>
   lateinit var tamanhoLote: PInteger<R>
   lateinit var itensNota: QAssocItemNota<R>
   lateinit var lotes: QAssocLote<R>

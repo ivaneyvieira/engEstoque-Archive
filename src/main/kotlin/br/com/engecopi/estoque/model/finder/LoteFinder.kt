@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.query.QLote
 import io.ebean.Finder
-import io.ebean.Model.db
 
 open class LoteFinder : Finder<Long, Lote>(Lote::class.java) {
   

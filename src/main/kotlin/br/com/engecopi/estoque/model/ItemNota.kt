@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
-import io.ebean.Expr.ne
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import java.time.LocalTime
@@ -39,6 +38,12 @@ class ItemNota : BaseModel() {
   
   val grade: String?
     @Transient get() = produto?.grade
+  
+  val numeroNota: String?
+    @Transient get() = nota?.numero
+  
+  val tipoMov: TipoMov?
+    @Transient get() = nota?.tipoMov
   
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {

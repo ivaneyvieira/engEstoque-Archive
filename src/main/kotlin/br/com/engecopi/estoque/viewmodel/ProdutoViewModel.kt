@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.Label
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.TipoProduto.NORMAL
@@ -11,7 +12,7 @@ class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.codebar = bean.codebar ?: ""
-      produto.tipo = bean.tipo ?: NORMAL
+      produto.label = Label.find(bean.tipo ?: NORMAL)
       produto.tamanhoLote = bean.tamanhoLote ?: 0
       produto.update()
       produto.atualizaSaldo()
@@ -23,7 +24,7 @@ class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::
       this.codigo = bean.codigoProduto ?: ""
       this.grade = bean.gradeProduto ?: ""
       this.codebar = bean.codebar ?: ""
-      this.tipo = bean.tipo ?: NORMAL
+      this.label = Label.find(bean.tipo ?: NORMAL)
       this.tamanhoLote = bean.tamanhoLote ?: 0
       this.insert()
     }
@@ -41,7 +42,7 @@ class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::
         codigoProduto = produto.codigo
         gradeProduto = produto.grade
         codebar = produto.codebar
-        tipo = produto.tipo
+        tipo = produto.label?.tipo
         tamanhoLote = produto.tamanhoLote
       }
     }
@@ -69,4 +70,13 @@ class ProdutoVo {
   var tamanhoLote: Int? = 0
   
   var codebar: String? = null
+  
+  val produto: Produto?
+    get() = Produto.findProduto(codigoProduto, gradeProduto)
+  
+  val itensNota
+    get() = produto?.itensNota.orEmpty()
+  
+  val lotes
+    get() = produto?.lotes.orEmpty()
 }
