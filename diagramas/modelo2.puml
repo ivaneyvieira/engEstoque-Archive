@@ -43,6 +43,11 @@ class Usuario {
 	numero
 }
 
+class Label {
+	tipo
+	layout
+}
+
 
 ItemNota	-u->	Nota
 ItemNota	-->	Produto
@@ -52,4 +57,5 @@ Movimentacao	-l->	Lote
 Movimentacao	-r->	ItemNota
 Nota		-l->	Loja
 Usuario		-r->	Loja
+Produto		-l->	Label
 @enduml
