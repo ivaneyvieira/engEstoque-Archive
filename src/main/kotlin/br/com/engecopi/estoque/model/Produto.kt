@@ -102,11 +102,13 @@ class Produto : BaseModel() {
   }
 }
 
-enum class TipoProduto(val descricao: String, val processaCodBar: ProcessaCodBar) {
-  NORMAL("Normal", ProcessaCodBarNormal()),
-  PECA("Fio em Peça", ProcessaCodBarFios()),
-  BOBINA("Fio em Bobina", ProcessaCodBarFios()),
-  CAIXA("Ceramica", ProcessaCodBarPiso())
+enum class TipoProduto(val descricao: String, val processaCodBar: ProcessaCodBar,
+                        val controlePorLote : Boolean,
+                       val loteUnitario : Boolean) {
+  NORMAL("Normal", ProcessaCodBarNormal(), true, true),
+  PECA("Fio em Peça", ProcessaCodBarFios(), true, false),
+  BOBINA("Fio em Bobina", ProcessaCodBarFios(), true, false),
+  CAIXA("Ceramica", ProcessaCodBarPiso(), false, false)
 }
 
 class ProcessaCodBarPiso : ProcessaCodBar {

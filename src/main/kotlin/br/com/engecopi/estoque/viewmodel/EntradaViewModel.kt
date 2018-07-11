@@ -143,14 +143,6 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   fun findLojas(): List<Loja> {
     return Loja.all()
   }
-  
-  fun findProdutoNota(entravaVo: EntradaVo?): List<ProdutoSaci> {
-    return entravaVo?.notaEntradaSaci?.mapNotNull {
-      val grade = it.grade ?: ""
-      saci.findProduto(it.prdno ?: "")
-              .firstOrNull { it.grade == grade }
-    }.orEmpty()
-  }
 }
 
 class EntradaVo {
@@ -176,6 +168,15 @@ class EntradaVo {
       Produto.findProduto(it.codigo ?: "", it.grade ?: "")
     }
   }
+  
+  val produtoNota: List<ProdutoSaci>
+    get() {
+      return notaEntradaSaci.mapNotNull {
+        val grade = it.grade ?: ""
+        saci.findProduto(it.prdno ?: "")
+                .firstOrNull { it.grade == grade }
+      }
+    }
   
   var produtoSaci: ProdutoSaci? = null
     set(value) {
@@ -230,7 +231,7 @@ class EntradaVo {
       val tamanhoLote = tamanho
       tamanhoLote ?: return emptyList()
       if (tamanhoLote == 0) return emptyList()
-      val qtLote = (quantProduto ?: 0)/ tamanhoLote
+      val qtLote = (quantProduto ?: 0) / tamanhoLote
       val restoLote = (quantProduto ?: 0) % tamanhoLote
       val totalLote = sequencia + qtLote + if (restoLote > 0) 1 else 0
       val lista = mutableListOf<MovimentacaoVO>()

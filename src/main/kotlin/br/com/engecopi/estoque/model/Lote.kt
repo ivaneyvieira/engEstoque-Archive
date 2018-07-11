@@ -18,7 +18,6 @@ import javax.persistence.Transient
 @Table(name = "lotes")
 @Index(unique = true, columnNames = ["loja_id", "produto_id", "sequencia"])
 class Lote : BaseModel() {
-  @Index(unique = true)
   var sequencia: Int = 0
   var total: Int = 0
   var saldo: Int = 0
@@ -39,6 +38,16 @@ class Lote : BaseModel() {
               .produto.id.eq(produto?.id)
               .sequencia.eq(sequencia)
               .findOne()
+    }
+
+    fun findSequencia(loja: Loja?, produto: Produto?, sequencia: Int =0): List<Lote> {
+      return where()
+              .loja.id.eq(loja?.id)
+              .produto.id.eq(produto?.id)
+              .sequencia.ge(sequencia)
+              .saldo.gt(0)
+              .orderBy().sequencia.asc()
+              .findList()
     }
   }
   

@@ -113,7 +113,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             comboBox<ProdutoSaci>("Código") {
               expandRatio = 2f
               default { "${it.codigo} ${it.grade}".trim() }
-              bindItens(binder) { entrada -> viewModel.findProdutoNota(entrada) }
+              bindItens(binder, EntradaVo::produtoNota)
               bind(binder).bind(EntradaVo::produtoSaci)
               reloadBinderOnChange(binder)
             }
@@ -162,9 +162,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         grid(MovimentacaoVO::class) {
           h = 150.px
           caption = "Lotes"
-          bindItens(binder) { entrada ->
-            entrada.movimentacao
-          }
+          bindItens(binder, EntradaVo::movimentacao)
           removeAllColumns()
           addColumnFor(MovimentacaoVO::descLote)
           addColumnFor(MovimentacaoVO::quantidade){
