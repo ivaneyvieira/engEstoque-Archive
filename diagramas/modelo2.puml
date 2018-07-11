@@ -6,7 +6,6 @@ class Produto{
 	grade
 	codebar
 	data_cadastro
-	tipo [NORMAL, PECA, BOBINA, CAIXA]
 	tamanho_lote
 }
 
@@ -44,8 +43,9 @@ class Usuario {
 }
 
 class Label {
-	tipo
-	layout
+	tipo [NORMAL, PECA, BOBINA, CAIXA]
+	layoutEntrada
+	layoutSaida
 }
 
 
