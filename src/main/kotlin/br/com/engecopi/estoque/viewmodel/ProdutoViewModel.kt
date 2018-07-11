@@ -79,4 +79,7 @@ class ProdutoVo {
   
   val lotes
     get() = produto?.lotes.orEmpty()
+  
+  val tamanhoReadOnly: Boolean
+    get() = tipo?.loteUnitario ?: false
 }

@@ -40,8 +40,7 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   }
   
   private fun geraMovimentacoes(bean: SaidaVo, item: ItemNota) {
-    val seq = bean.sequencia ?: throw  EViewModel("Lote não encontrado")
-    val lote = Lote.find(item.nota?.loja, item.produto, seq) ?: throw  EViewModel("Lote não encontrado")
+    val lote = bean.loteInicial ?: throw  EViewModel("Lote não encontrado")
     val quantidade = bean.quantidade ?: throw  EViewModel("Quantidade não informada")
     if (quantidade > lote.saldo)
       throw  EViewModel("Saldo insuficiente no lote")
@@ -51,7 +50,7 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
         this.lote = lote
         this.quantidade = quantidade
       }.save()
-  
+    
     lote.atualizaSaldo()
   }
   
@@ -109,8 +108,7 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
                 this.observacaoNota = nota?.observacao
                 this.produto = itemNota.produto
                 this.quantidade = itemNota.quantidade
-                this.sequencia = itemNota.movimentacoes?.firstOrNull()?.lote?.sequencia
-                this.total = itemNota.movimentacoes?.firstOrNull()?.lote?.total
+                this.loteInicial = itemNota.loteInicial()
               }
             }
   }
@@ -150,8 +148,8 @@ class SaidaVo {
       detalheBarra = prdTipo?.label?.tipo?.processaCodBar?.processaCodBar(value ?: "")
       detalheBarra.also { detalhe ->
         produto = Produto.findProduto(detalhe?.prdno, detalhe?.grade)
-        sequencia = detalhe?.sequencia
-        total = detalhe?.total
+        val sequencia = detalhe?.sequencia
+        loteInicial = lotes.find { it.sequencia == sequencia }
       }
     }
   
@@ -170,15 +168,34 @@ class SaidaVo {
   
   var quantidade: Int? = 0
   
-  var sequencia: Int? = null
-  
-  var total: Int? = null
-  
-  val sequenciaStr
-    get() = detalheBarra?.let { detalhe ->
-      "${detalhe.sequencia}/${detalhe.total}"
-    } ?: ""
-  
   val saldo: Int
-    get() = produto?.saldoLoja(lojaNF, sequencia) ?: 0
+    get() = loteInicial?.saldo ?: 0
+  
+  val lotes: List<Lote>
+    get() = Lote.findSequencia(lojaNF, produto)
+  
+  var loteInicial: Lote? = null
+  
+  val lotesSaida: List<Lote>
+    get() {
+      val lotes = Lote.findSequencia(lojaNF, produto, loteInicial?.sequencia ?: 0)
+      val loteRetorno = mutableListOf<Lote>()
+      return if (controlePorLote) {
+        lotes.onE
+        if()
+      } else {
+      
+      }
+    }
+  
+  val controlePorLote
+    get() = produto?.label?.tipo?.controlePorLote ?: false
+  
+  val quantidadeCaption: String
+    get() {
+      return if (controlePorLote)
+        "Quantidade de Lote"
+      else
+        "Quantidade Unitária"
+    }
 }

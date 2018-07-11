@@ -2,12 +2,12 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Lote
-import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
+import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
@@ -64,7 +64,8 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               expandRatio = 1f
               caption = "Grade"
               default { it }
-              bindItens(binder) { produto -> produto.grades }
+              //bindItens(binder) { produto -> produto.grades }
+              bindItens(binder, ProdutoVo::grades)
               
               bind(binder).bind(ProdutoVo::gradeProduto)
               reloadBinderOnChange(binder)
@@ -80,12 +81,17 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               setItemCaptionGenerator { it.descricao }
               
               bind(binder).bind(ProdutoVo::tipo)
+              reloadBinderOnChange(binder)
             }
             
             textField {
               expandRatio = 1f
               caption = "Tamanho do Lote"
               addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+              bindReadOnly(binder, ProdutoVo::tamanhoReadOnly) { readOnly ->
+                if (readOnly)
+                  value = "1"
+              }
               bind(binder)
                       .withConverter(StringToIntegerConverter("Valor inválido"))
                       .bind(ProdutoVo::tamanhoLote)
@@ -103,9 +109,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
               }
-              bindItens(binder){
-                it.lotes
-              }
+              bindItens(binder, ProdutoVo::lotes)
             }
             grid(ItemNota::class, "Notas") {
               expandRatio = 2f
@@ -126,9 +130,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
               }
-              bindItens(binder){
-                it.itensNota
-              }
+              bindItens(binder, ProdutoVo::itensNota)
             }
           }
         }
@@ -147,7 +149,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           expandRatio = 5
           caption = "Descrição"
         }
-  
+        
         column(ProdutoVo::gradeProduto) {
           expandRatio = 1
           caption = "Grade"
@@ -155,7 +157,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         column(ProdutoVo::tipo) {
           expandRatio = 1
           caption = "Tipo"
-          setRenderer({tipo -> tipo?.descricao}, TextRenderer())
+          setRenderer({ tipo -> tipo?.descricao }, TextRenderer())
         }
         column(ProdutoVo::tamanhoLote) {
           expandRatio = 1

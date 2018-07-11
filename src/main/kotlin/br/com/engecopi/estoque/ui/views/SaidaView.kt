@@ -1,10 +1,13 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
+import br.com.engecopi.framework.ui.view.bindCaption
+import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
@@ -73,7 +76,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             }
           }
           row {
-            textField("Observação da nota fiscal"){
+            textField("Observação da nota fiscal") {
               expandRatio = 1f
               bind(binder).bind(SaidaVo::observacaoNota)
             }
@@ -85,7 +88,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         addStyleName(ValoTheme.LAYOUT_CARD)
         verticalLayout {
           row {
-            textField(){
+            textField() {
               expandRatio = 1f
               bind(binder).bind(SaidaVo::codigoBarra)
               reloadBinderOnChange(binder)
@@ -98,33 +101,37 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         addStyleName(ValoTheme.LAYOUT_CARD)
         verticalLayout {
           row {
-            comboBox<Produto>("Código"){
+            comboBox<Produto>("Código") {
               expandRatio = 1f
               default { "${it.codigo} ${it.grade}".trim() }
               setItems(viewModel.findProdutos())
               bind(binder).bind(SaidaVo::produto)
               reloadBinderOnChange(binder)
             }
-            textField("Descrição"){
+            textField("Descrição") {
               expandRatio = 2f
               isReadOnly = true
               bind(binder).bind(SaidaVo::descricaoProduto.name)
             }
-            textField("Quantidade"){
+            textField("Quantidade") {
               expandRatio = 1f
               addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+              bindCaption(binder, SaidaVo::quantidadeCaption)
               bind(binder)
                       .withConverter(StringToIntegerConverter("Quantidade inválida"))
                       .bind(SaidaVo::quantidade)
             }
           }
           row {
-            textField("Sequencia"){
+            comboBox<Lote>("Lote Inicial") {
               expandRatio = 1f
-              isReadOnly = true
-              bind(binder).bind(SaidaVo::sequenciaStr.name)
+              default { lote ->
+                lote.sequenciaStr ?: ""
+              }
+              bindItens(binder, SaidaVo::lotes)
+              bind(binder).bind(SaidaVo::loteInicial)
             }
-            textField("Saldo"){
+            textField("Saldo") {
               expandRatio = 1f
               isReadOnly = true
               addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)

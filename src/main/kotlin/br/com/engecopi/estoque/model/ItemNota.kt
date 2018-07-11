@@ -65,4 +65,9 @@ class ItemNota : BaseModel() {
             .orderBy().sequencia.desc()
             .findList().firstOrNull()
   }
+  
+  fun loteInicial(): Lote? {
+    refresh()
+    return movimentacoes?.mapNotNull { it.lote }.orEmpty().sortedBy { it.sequencia }.firstOrNull()
+  }
 }
