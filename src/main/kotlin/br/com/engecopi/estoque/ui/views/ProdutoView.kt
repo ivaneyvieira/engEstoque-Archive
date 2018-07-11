@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
@@ -139,14 +140,27 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
         column(ProdutoVo::codigoProduto) {
+          expandRatio = 1
           caption = "Código"
         }
         column(ProdutoVo::descricaoProduto) {
+          expandRatio = 5
           caption = "Descrição"
         }
-        
+  
         column(ProdutoVo::gradeProduto) {
+          expandRatio = 1
           caption = "Grade"
+        }
+        column(ProdutoVo::tipo) {
+          expandRatio = 1
+          caption = "Tipo"
+          setRenderer({tipo -> tipo?.descricao}, TextRenderer())
+        }
+        column(ProdutoVo::tamanhoLote) {
+          expandRatio = 1
+          caption = "Tamanho do Lote"
+          intFormat()
         }
       }
     }

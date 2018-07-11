@@ -104,9 +104,9 @@ class Produto : BaseModel() {
 
 enum class TipoProduto(val descricao: String, val processaCodBar: ProcessaCodBar) {
   NORMAL("Normal", ProcessaCodBarNormal()),
-  PECA("Peça", ProcessaCodBarFios()),
-  BOBINA("Bobina", ProcessaCodBarFios()),
-  CAIXA("Piso", ProcessaCodBarPiso())
+  PECA("Fio em Peça", ProcessaCodBarFios()),
+  BOBINA("Fio em Bobina", ProcessaCodBarFios()),
+  CAIXA("Ceramica", ProcessaCodBarPiso())
 }
 
 class ProcessaCodBarPiso : ProcessaCodBar {
