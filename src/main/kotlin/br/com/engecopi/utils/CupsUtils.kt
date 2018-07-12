@@ -2,6 +2,7 @@ package br.com.engecopi.utils
 
 import org.cups4j.CupsClient
 import org.cups4j.PrintJob
+import java.awt.PrintJob
 
 class CupsUtils {
 }
