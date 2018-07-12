@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.Movimentacao
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -202,6 +203,21 @@ class EntradaVo {
             ?: 0
   
   var tamanho: Int? = 0
+    get() {
+      val tipoProduto = TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
+      return if (tipoProduto.loteUnitario)
+        return 1
+      else
+        field
+    }
+  
+  val tamanhoReadOnly: Boolean
+    get() {
+      val tipoProduto = TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
+      if (tipoProduto.loteUnitario)
+        tamanho = 1
+      return tipoProduto.loteUnitario
+    }
   
   val ultimoLote: Lote?
     get() = if (itemNota == null)

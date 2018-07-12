@@ -100,7 +100,7 @@ class Nota : BaseModel() {
   }
 }
 
-enum class TipoMov {
-  ENTRADA,
-  SAIDA
+enum class TipoMov(val multiplicador: Int) {
+  ENTRADA(1),
+  SAIDA(-1)
 }

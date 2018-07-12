@@ -21,7 +21,9 @@ import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.grid
+import com.github.vok.karibudsl.h
 import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
@@ -44,6 +46,8 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           readOnly: Boolean
                          ) {
     formLayout.apply {
+      w = 800.px
+      h = 300.px
       cssLayout("Produtos") {
         w = 100.perc
         addStyleName(ValoTheme.LAYOUT_CARD)
@@ -125,8 +129,13 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
                 caption = "Tipo"
                 setRenderer({ it.toString() }, TextRenderer())
               }
-              addColumnFor(ItemNota::quantidade) {
+              addColumnFor(ItemNota::quantidadeUnitaria) {
                 caption = "Quant."
+                setRenderer(NumberRenderer(DecimalFormat("0")))
+                align = VAlign.Right
+              }
+              addColumnFor(ItemNota::saldoTransient) {
+                caption = "Saldo"
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
               }

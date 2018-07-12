@@ -120,6 +120,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               bind(binder)
                       .withConverter(StringToIntegerConverter("Quantidade inválida"))
                       .bind(SaidaVo::quantidade)
+              reloadBinderOnChange(binder)
             }
           }
           row {
@@ -130,6 +131,12 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               }
               bindItens(binder, SaidaVo::lotes)
               bind(binder).bind(SaidaVo::loteInicial)
+              reloadBinderOnChange(binder)
+            }
+            textField("Lote Final") {
+              expandRatio = 1f
+              isReadOnly = true
+              bind(binder).bind(SaidaVo::loteFinalStr, null)
             }
             textField("Saldo") {
               expandRatio = 1f
@@ -139,8 +146,13 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
                       .withConverter(StringToIntegerConverter(""))
                       .bind(SaidaVo::saldo.name)
             }
-            label {
-              expandRatio = 2f
+            textField("Quantidade Disponível") {
+              expandRatio = 1f
+              isReadOnly = true
+              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+              bind(binder)
+                      .withConverter(StringToIntegerConverter(""))
+                      .bind(SaidaVo::quantidadeDisponivel.name)
             }
           }
         }

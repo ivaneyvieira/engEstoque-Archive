@@ -48,6 +48,12 @@ class ItemNota : BaseModel() {
   val dataNota: LocalDate?
     @Transient get() = nota?.data
   
+  @Transient
+  var saldoTransient = 0
+  
+  val quantidadeUnitaria: Int
+    get() = (tipoMov?.multiplicador ?: 0) * (movimentacoes?.sumBy { it.quantidade } ?: 0)
+  
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
       return ItemNota.where().nota.id.eq(nota?.id)
