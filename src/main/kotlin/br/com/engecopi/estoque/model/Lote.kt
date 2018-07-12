@@ -29,7 +29,7 @@ class Lote : BaseModel() {
   val movimentacoes: List<Movimentacao>? = null
   
   val sequenciaStr: String?
-    @Transient get() = "$sequencia/$total"
+    @Transient get() = "$sequencia/$total | saldo: $saldo"
   
   companion object Find : LoteFinder() {
     fun find(loja: Loja?, produto: Produto?, sequencia: Int): Lote? {

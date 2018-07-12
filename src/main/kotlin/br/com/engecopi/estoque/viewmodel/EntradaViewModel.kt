@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.Movimentacao
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -51,7 +52,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     val tamanho = bean.tamanho ?: 0
     val ultimoLote = bean.ultimoLote
     var sequencia = ultimoLote?.sequencia ?: 0
-    val total = ultimoLote?.total ?: 0+ceil(saldo * 1f / tamanho).toInt()
+    val total = (ultimoLote?.total ?: 0) + ceil(saldo * 1f / tamanho).toInt()
     while (saldo > 0) {
       val quant = if (saldo > tamanho) tamanho else saldo
       val lote = Lote()
@@ -181,7 +182,8 @@ class EntradaVo {
   var produtoSaci: ProdutoSaci? = null
     set(value) {
       field = value
-      tamanho = produto(value)?.tamanhoLote
+      if (tamanho == null || tamanho == 0)
+        tamanho = produto(value)?.tamanhoLote
     }
   
   val descricaoProduto: String
@@ -201,7 +203,21 @@ class EntradaVo {
             }?.quant
             ?: 0
   
+  val tipoProduto
+    get() = produto(produtoSaci)?.label?.tipo ?: TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
+  
   var tamanho: Int? = 0
+    get() {
+      return if (tipoProduto.loteUnitario)
+        return 1
+      else
+        field
+    }
+  
+  val tamanhoReadOnly: Boolean
+    get() {
+      return tipoProduto.loteUnitario
+    }
   
   val ultimoLote: Lote?
     get() = if (itemNota == null)

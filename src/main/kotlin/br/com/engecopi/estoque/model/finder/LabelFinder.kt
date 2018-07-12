@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.Label
 import br.com.engecopi.estoque.model.query.QLabel
 import io.ebean.Finder
+import io.ebean.Model.db
 
 open class LabelFinder : Finder<Long, Label>(Label::class.java) {
   

@@ -31,6 +31,7 @@ class QUsuario : TQRootBean<Usuario, QUsuario> {
   lateinit var updatedAt: PLocalDateTime<QUsuario>
   lateinit var version: PInteger<QUsuario>
   lateinit var loginName: PString<QUsuario>
+  lateinit var impressora: PString<QUsuario>
   lateinit var loja: QAssocLoja<QUsuario>
 
 

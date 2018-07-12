@@ -6,9 +6,17 @@ from sqldados.inv AS N
   inner join sqldados.vend AS V
     ON V.no = N.vendno
 where N.storeno = :storeno
-      and nfname = :nfname
+      and (nfname = :nfname
+        OR nfname = CONCAT('0', :nfname)
+        OR nfname = CONCAT('00', :nfname)
+        OR nfname = CONCAT('000', :nfname)
+        OR nfname = CONCAT('0000', :nfname)
+        OR nfname = CONCAT('00000', :nfname)
+        OR nfname = CONCAT('000000', :nfname)
+        OR nfname = CONCAT('0000000', :nfname)
+      )
       and invse = :invse
-      AND N.date > DATE_SUB(current_date, INTERVAL 2 MONTH)
+      AND N.date > DATE_SUB(current_date, INTERVAL 12 MONTH)
       AND N.bits & POW(2, 4) = 0
       AND N.auxShort13 & pow(2, 15) = 0
       AND invse <> ''

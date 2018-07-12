@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Label
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
@@ -74,8 +75,16 @@ class ProdutoVo {
   val produto: Produto?
     get() = Produto.findProduto(codigoProduto, gradeProduto)
   
-  val itensNota
-    get() = produto?.itensNota.orEmpty()
+  val itensNota: List<ItemNota>
+    get() {
+      val itens = produto?.itensNota.orEmpty()
+      var saldo =0
+      itens.forEach {item->
+        saldo += item.quantidadeUnitaria
+        item.saldoTransient = saldo
+      }
+      return itens
+    }
   
   val lotes
     get() = produto?.lotes.orEmpty()

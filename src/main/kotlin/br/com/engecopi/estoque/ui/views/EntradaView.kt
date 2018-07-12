@@ -4,8 +4,10 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
+import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
+import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.grupo
@@ -131,8 +133,12 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             }
           }
           row {
-            textField("Tamanho") {
+            textField("Lote com") {
               expandRatio = 1f
+              bindReadOnly(binder, EntradaVo::tamanhoReadOnly) { readOnly ->
+                if (readOnly)
+                  value = "1"
+              }
               this.bind(binder)
                       .withConverter(StringToIntegerConverter("Tamanho inválido"))
                       .bind(EntradaVo::tamanho)

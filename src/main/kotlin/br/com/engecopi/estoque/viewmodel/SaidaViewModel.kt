@@ -40,18 +40,14 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   }
   
   private fun geraMovimentacoes(bean: SaidaVo, item: ItemNota) {
-    val lote = bean.loteInicial ?: throw  EViewModel("Lote não encontrado")
-    val quantidade = bean.quantidade ?: throw  EViewModel("Quantidade não informada")
-    if (quantidade > lote.saldo)
-      throw  EViewModel("Saldo insuficiente no lote")
-    else
+    bean.lotesQuant.forEach{loteQuant->
       Movimentacao().apply {
         this.itemNota = item
-        this.lote = lote
-        this.quantidade = quantidade
+        this.lote = loteQuant.lote
+        this.quantidade = loteQuant.quant
       }.save()
-    
-    lote.atualizaSaldo()
+      loteQuant.lote.atualizaSaldo()
+    }
   }
   
   private fun deleteMovimentacoes(item: ItemNota) {
@@ -169,12 +165,24 @@ class SaidaVo {
   var quantidade: Int? = 0
   
   val saldo: Int
-    get() = loteInicial?.saldo ?: 0
+    get() = lotesQuant.sumBy { it.quant }
   
   val lotes: List<Lote>
     get() = Lote.findSequencia(lojaNF, produto)
   
   var loteInicial: Lote? = null
+  
+  val loteFinal: Lote?
+    get() = lotesQuant.lastOrNull()?.lote
+  
+  val loteFinalStr: String?
+    get() = loteFinal?.sequenciaStr
+  
+  val quantidadeDisponivel: Int?
+    get() = if (controlePorLote)
+      lotesQuant.size
+    else
+      lotesQuant.sumBy { it.quant }
   
   val lotesQuant: List<LoteQuant>
     get() {

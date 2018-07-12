@@ -1,4 +1,4 @@
-package br.com.engecopi.estoque.viewmodel
+package br.com.engecopi.framework.printer
 
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature

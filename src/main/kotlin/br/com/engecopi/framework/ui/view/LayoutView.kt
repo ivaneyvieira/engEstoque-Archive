@@ -167,8 +167,9 @@ fun Binder<*>.reload() {
 
 fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(binder: Binder<BEAN>) {
   addValueChangeListener { event ->
-    if (event.isUserOriginated)
+    if (event.isUserOriginated) {
       binder.reload()
+    }
   }
 }
 
