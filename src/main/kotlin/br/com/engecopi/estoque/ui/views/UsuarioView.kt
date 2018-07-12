@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
+import br.com.engecopi.framework.printer.printerSaci
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
@@ -57,6 +58,15 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItemCaptionGenerator { it.sigla }
           bind(binder).bind(UsuarioCrudVo::loja)
         }
+        comboBox<String> {
+          expandRatio = 1f
+          caption = "Impressora"
+          isEmptySelectionAllowed = false
+          isTextInputAllowed = false
+          setItems(printerSaci.printers.map { it.name })
+          setItemCaptionGenerator { it }
+          bind(binder).bind(UsuarioCrudVo::impressora)
+        }
       }
     }
   }
@@ -76,6 +86,10 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           expandRatio = 1
           caption = "Loja"
           setRenderer({ loja -> loja?.sigla ?: "Todas" }, TextRenderer())
+        }
+        column(UsuarioCrudVo::impressora) {
+          expandRatio = 1
+          caption = "Impressora"
         }
       }
     }

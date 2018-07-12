@@ -106,9 +106,11 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               expandRatio = 1f
               removeAllColumns()
               addColumnFor(Lote::sequenciaStr) {
+                this.isSortable= false
                 caption = "Sequencia"
               }
               addColumnFor(Lote::saldo) {
+                this.isSortable= false
                 caption = "Saldo"
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
@@ -119,22 +121,27 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               expandRatio = 2f
               removeAllColumns()
               addColumnFor(ItemNota::numeroNota) {
+                this.isSortable= false
                 caption = "Nota"
               }
               addColumnFor(ItemNota::dataNota) {
+                this.isSortable= false
                 caption = "Data"
                 setRenderer(LocalDateRenderer("dd/MM/yy"))
               }
               addColumnFor(ItemNota::tipoMov) {
+                this.isSortable= false
                 caption = "Tipo"
                 setRenderer({ it.toString() }, TextRenderer())
               }
               addColumnFor(ItemNota::quantidadeUnitaria) {
+                this.isSortable= false
                 caption = "Quant."
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
               }
               addColumnFor(ItemNota::saldoTransient) {
+                this.isSortable= false
                 caption = "Saldo"
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right

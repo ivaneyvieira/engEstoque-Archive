@@ -9,6 +9,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
   override fun update(bean: UsuarioCrudVo) {
     Usuario.findUsuario(bean.loginName ?: "")?.let { usuario ->
       usuario.loja = bean.loja
+      usuario.impressora = bean.impressora ?: ""
       usuario.update()
     }
   }
@@ -17,6 +18,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
     val usuario = Usuario().apply {
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
+      this.impressora = bean.impressora ?: ""
     }
     usuario.insert()
   }
@@ -26,6 +28,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
       UsuarioCrudVo().apply {
         this.loginName = usuario.loginName
         this.loja = usuario.loja
+        this.impressora = usuario.impressora
       }
     }
   }
@@ -39,6 +42,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
 
 class UsuarioCrudVo {
   var loginName: String? = ""
+  var impressora: String? = ""
   
   var loja: Loja? = null
   

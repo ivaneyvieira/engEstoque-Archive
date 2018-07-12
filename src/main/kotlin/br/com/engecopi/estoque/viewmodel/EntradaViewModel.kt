@@ -52,7 +52,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     val tamanho = bean.tamanho ?: 0
     val ultimoLote = bean.ultimoLote
     var sequencia = ultimoLote?.sequencia ?: 0
-    val total = ultimoLote?.total ?: 0+ceil(saldo * 1f / tamanho).toInt()
+    val total = (ultimoLote?.total ?: 0) + ceil(saldo * 1f / tamanho).toInt()
     while (saldo > 0) {
       val quant = if (saldo > tamanho) tamanho else saldo
       val lote = Lote()
@@ -204,7 +204,8 @@ class EntradaVo {
   
   var tamanho: Int? = 0
     get() {
-      val tipoProduto = TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
+      val tipoSaci = produtoSaci?.tipo ?: "NORMAL"
+      val tipoProduto = TipoProduto.valueOf(tipoSaci)
       return if (tipoProduto.loteUnitario)
         return 1
       else
