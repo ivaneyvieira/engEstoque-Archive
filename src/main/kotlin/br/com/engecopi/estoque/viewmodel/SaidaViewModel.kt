@@ -9,8 +9,8 @@ import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.framework.viewmodel.CrudViewModel
-import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.EViewModel
+import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
@@ -176,15 +176,27 @@ class SaidaVo {
   
   var loteInicial: Lote? = null
   
-  val lotesSaida: List<Lote>
+  val lotesQuant: List<LoteQuant>
     get() {
       val lotes = Lote.findSequencia(lojaNF, produto, loteInicial?.sequencia ?: 0)
-      val loteRetorno = mutableListOf<Lote>()
+      val quant = quantidade ?: 0
       return if (controlePorLote) {
-        lotes.onE
-        if()
+        lotes.take(quant).map { LoteQuant(it, it.saldo) }
       } else {
-      
+        var saldo = quant
+        val list = mutableListOf<LoteQuant>()
+        lotes.forEach { lote ->
+          if (saldo > 0) {
+            if (saldo >= lote.saldo) {
+              list.add(LoteQuant(lote, lote.saldo))
+              saldo -= lote.saldo
+            } else {
+              list.add(LoteQuant(lote, saldo))
+              saldo = 0
+            }
+          }
+        }
+        list
       }
     }
   
@@ -199,3 +211,5 @@ class SaidaVo {
         "Quantidade Unitária"
     }
 }
+
+data class LoteQuant(val lote: Lote, val quant: Int)
