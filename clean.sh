@@ -14,7 +14,7 @@ then
   git add .
   git commit -m"pull"
   git pull
-  ./gradlew --console=rich  buid
+  ./gradlew --console=rich  build
 else
   git add .
   git commit -m"$COMMENT"
