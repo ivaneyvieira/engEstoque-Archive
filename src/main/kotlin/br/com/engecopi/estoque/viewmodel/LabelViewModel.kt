@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.Label
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.TipoProduto.NORMAL
+import br.com.engecopi.framework.printer.ZPLPreview
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 

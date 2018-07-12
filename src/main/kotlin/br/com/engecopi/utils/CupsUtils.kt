@@ -1,21 +1,21 @@
 package br.com.engecopi.utils
 
+import br.com.engecopi.framework.printer.PrinterCups
+import br.com.engecopi.framework.printer.print
 import org.cups4j.CupsClient
 import org.cups4j.PrintJob
-import java.awt.PrintJob
 
 class CupsUtils {
 }
 
 fun main(args: Array<String>) {
-  val cupsClient = CupsClient("192.168.1.14", 631)
+  val cupsClient = PrinterCups("192.168.1.14")
   println("Inicio")
   cupsClient.printers.forEach { printer ->
     println("impressora")
-    
+    printer.print(etiqueta)
     println(printer.name)
   }
-  
   
   
   val printer = cupsClient.printers.firstOrNull()
