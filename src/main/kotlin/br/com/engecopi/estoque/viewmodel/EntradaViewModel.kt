@@ -182,7 +182,8 @@ class EntradaVo {
   var produtoSaci: ProdutoSaci? = null
     set(value) {
       field = value
-      tamanho = produto(value)?.tamanhoLote
+      if (tamanho == null || tamanho == 0)
+        tamanho = produto(value)?.tamanhoLote
     }
   
   val descricaoProduto: String
@@ -202,10 +203,11 @@ class EntradaVo {
             }?.quant
             ?: 0
   
+  val tipoProduto
+    get() = produto(produtoSaci)?.label?.tipo ?: TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
+  
   var tamanho: Int? = 0
     get() {
-      val tipoSaci = produtoSaci?.tipo ?: "NORMAL"
-      val tipoProduto = TipoProduto.valueOf(tipoSaci)
       return if (tipoProduto.loteUnitario)
         return 1
       else
@@ -214,9 +216,6 @@ class EntradaVo {
   
   val tamanhoReadOnly: Boolean
     get() {
-      val tipoProduto = TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
-      if (tipoProduto.loteUnitario)
-        tamanho = 1
       return tipoProduto.loteUnitario
     }
   

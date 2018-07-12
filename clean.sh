@@ -14,8 +14,7 @@ then
   git add .
   git commit -m"pull"
   git pull
-  ./gradlew --console=rich  vaadinCompile
-  ./gradlew --console=rich  vaadinThemeCompile
+  ./gradlew --console=rich  buid
 else
   git add .
   git commit -m"$COMMENT"
