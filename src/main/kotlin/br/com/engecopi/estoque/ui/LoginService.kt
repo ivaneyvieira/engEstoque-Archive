@@ -48,7 +48,9 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   
   init {
     setSizeFull()
+    isResponsive=true
     panel {
+      isResponsive=true
       w = 500.px
       alignment = Alignment.MIDDLE_CENTER
       verticalLayout {
@@ -68,19 +70,23 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
         }
         horizontalLayout {
           w = fillParent
+          isResponsive=true
           username = textField("Usuário") {
+            isResponsive=true
             expandRatio = 1f
             w = fillParent
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
           }
           password = passwordField("Senha") {
+            isResponsive=true
             expandRatio = 1f
             w = fillParent
             icon = VaadinIcons.LOCK
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
           }
           button("Login") {
+            isResponsive=true
             alignment = Alignment.BOTTOM_RIGHT
             setPrimary()
             onLeftClick { login() }
