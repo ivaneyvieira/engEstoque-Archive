@@ -29,6 +29,7 @@ import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
 
 abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   abstract val viewModel: V
@@ -131,44 +132,39 @@ fun <BEAN> Component.bindCaption(
   }
 }
 
-
 private fun <BEAN, FIELDVALUE> bind(
         binder: Binder<BEAN>,
         property: KProperty1<BEAN, FIELDVALUE>,
         blockBinder: (FIELDVALUE) -> Unit
                                    ): Binding<BEAN, FIELDVALUE> {
   val field = ReadOnlyHasValue<FIELDVALUE> { itens -> blockBinder(itens) }
-  return field.bind(binder).bind(property, null)
-}
-
-/*
-fun <V, T> Grid<T>.bindItens(
-        binder: Binder<V>,
-        getter: (V) -> List<T>
-                            ): Binding<V, List<T>> {
-  val field = ReadOnlyHasValue<List<T>> { itens -> setItems(itens) }
-  return field.bind(binder).bind(getter, null)
-}
-*/
-fun <V> Label.bindResource(
-        binder: Binder<V>,
-        getter: (V) -> Resource?
-                          ): Binding<V, Resource?> {
-  val field = ReadOnlyHasValue<Resource?> { resource ->
-    this.icon = resource
-    this.setHeight("200px")
-  }
-  return field.bind(binder).bind(getter, null)
+  return field.bind(binder).bind(property.name)
 }
 
 fun Binder<*>.reload() {
   bean = bean
 }
 
-fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(binder: Binder<BEAN>) {
+inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(
+        binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
+                                                                                     ) {
   addValueChangeListener { event ->
     if (event.isUserOriginated) {
-      binder.reload()
+      val bean = binder.bean
+      if (propertys.isEmpty()) {
+        BEAN::class.declaredMemberProperties.forEach { prop ->
+          binder.getBinding(prop.name).ifPresent { binding ->
+            if (binding.field != this)
+              binding.read(bean)
+          }
+        }
+      } else {
+        propertys.forEach { prop ->
+          binder.getBinding(prop.name).ifPresent { binding ->
+            binding.read(bean)
+          }
+        }
+      }
     }
   }
 }

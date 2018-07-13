@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.model.Movimentacao
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -115,6 +116,8 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
       this.tipoMov = ENTRADA
       this.loja = bean.lojaNF
       this.observacao = bean.observacaoNota ?: ""
+      this.tipoNota = bean.tipoNota
+      this.rota = bean.rota ?: ""
     }
     
     nota.save()
@@ -132,6 +135,8 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
                 this.produtoSaci = itemNota.produto?.produtoSaci()
                 this.tamanho = itemNota.produto?.tamanhoLote
                 this.tipoProduto = itemNota.produto?.label?.tipo
+                this.tipoNota = itemNota?.nota?.tipoNota
+                this.rota = itemNota?.nota?.rota
               }
             }
   }
@@ -153,6 +158,15 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
 class EntradaVo {
   var numeroNF: String? = ""
   var lojaNF: Loja? = null
+  var tipoNota: TipoNota? = null
+  var rota: String? = ""
+    get() = if (rotaReadOnly)
+      ""
+    else
+      field
+  
+  val rotaReadOnly
+    get() = !(tipoNota?.temRota ?: false)
   
   val notaEntradaSaci: List<NotaEntradaSaci>
     get() = Nota.findNotaEntradaSaci(numeroNF, lojaNF)
