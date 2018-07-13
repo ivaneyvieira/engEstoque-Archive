@@ -1,12 +1,11 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
-import br.com.engecopi.estoque.viewmodel.LabelVo
 import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
-import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindReadOnly
@@ -14,53 +13,29 @@ import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
-import br.com.engecopi.framework.ui.view.reload
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.saci.beans.ProdutoSaci
 import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
-import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.label
-import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.verticalLayout
-import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.converter.StringToIntegerConverter
-import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.renderers.DateRenderer
-import com.vaadin.ui.renderers.LocalDateRenderer
-import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
-import java.text.DecimalFormat
-import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
-import kotlin.reflect.KProperty
+import kotlin.reflect.full.declaredMemberProperties
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
-  /*
-  override fun fieldsRead(): List<KProperty<*>> {
-    return listOf(EntradaVo::numeroNF, EntradaVo::lojaNF,
-                  EntradaVo::dataNota, EntradaVo::fornecedor,
-                  EntradaVo::codigo, EntradaVo::descricaoProduto, EntradaVo::grade,
-                  EntradaVo::quantProduto)
-  }
-  */
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
@@ -73,7 +48,15 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           textField("Nota Fiscal") {
             expandRatio = 1f
             bind(binder).bind(EntradaVo::numeroNF)
+            EntradaVo::class.declaredMemberProperties
             reloadBinderOnChange(binder)
+          }
+          comboBox<TipoNota>("Tipo") {
+            expandRatio = 1f
+            default { it.descricao }
+            setItems(TipoNota.valuesEntrada())
+            bind(binder).bind(EntradaVo::tipoNota)
+            reloadBinderOnChange(binder, EntradaVo::rotaReadOnly, EntradaVo::rota)
           }
           comboBox<Loja>("Loja") {
             expandRatio = 1f
@@ -82,6 +65,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             bind(binder).bind(EntradaVo::lojaNF)
             reloadBinderOnChange(binder)
           }
+          textField("Rota") {
+            expandRatio = 1f
+            bind(binder).bind(EntradaVo::rota)
+            bindReadOnly(binder, EntradaVo::rotaReadOnly)
+          }
+          
+        }
+        row {
           textField("Observação") {
             expandRatio = 2f
             bind(binder).bind(EntradaVo::observacaoNota)
@@ -109,70 +100,64 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
       }
       
-      cssLayout("Produto") {
-        w = 100.perc
-        addStyleName(ValoTheme.LAYOUT_CARD)
-        verticalLayout {
-          row {
-            comboBox<ProdutoSaci>("Código") {
-              expandRatio = 2f
-              default { "${it.codigo} ${it.grade}".trim() }
-              bind(binder).bind(EntradaVo::produtoSaci)
-              bindItens(binder, EntradaVo::produtoNota)
-              reloadBinderOnChange(binder)
-            }
-            textField("Descrição") {
-              expandRatio = 5f
-              isReadOnly = true
-              bind(binder).bind(EntradaVo::descricaoProduto.name)
-            }
-            textField("Quantidade") {
-              expandRatio = 2f
-              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-              this.bind(binder)
-                      .withConverter(StringToIntegerConverter("Quantidade inválida"))
-                      .bind(EntradaVo::quantProduto.name)
-            }
+      grupo("Produto") {
+        row {
+          comboBox<ProdutoSaci>("Código") {
+            expandRatio = 1f
+            default { "${it.codigo} ${it.grade}".trim() }
+            bind(binder).bind(EntradaVo::produtoSaci)
+            bindItens(binder, EntradaVo::produtoNota)
+            reloadBinderOnChange(binder)
           }
-          row {
-            comboBox<TipoProduto>("Tipo do Produto") {
-              expandRatio = 1f
-              isEmptySelectionAllowed = false
-              isTextInputAllowed = false
-              setItems(TipoProduto.values().toList())
-              setItemCaptionGenerator { it.descricao }
-  
-              bind(binder).bind(EntradaVo::tipoProduto)
-              reloadBinderOnChange(binder)
+          textField("Descrição") {
+            expandRatio = 4f
+            isReadOnly = true
+            bind(binder).bind(EntradaVo::descricaoProduto.name)
+          }
+          textField("Grade") {
+            expandRatio = 1f
+            isReadOnly = true
+            bind(binder).bind(EntradaVo::grade.name)
+          }
+        }
+        row {
+          comboBox<TipoProduto>("Tipo do Produto") {
+            expandRatio = 1f
+            isEmptySelectionAllowed = false
+            isTextInputAllowed = false
+            setItems(TipoProduto.values().toList())
+            setItemCaptionGenerator { it.descricao }
+            
+            bind(binder).bind(EntradaVo::tipoProduto)
+            reloadBinderOnChange(binder)
+          }
+          textField("Lote com") {
+            expandRatio = 1f
+            bindReadOnly(binder, EntradaVo::tamanhoReadOnly) { readOnly ->
+              if (readOnly)
+                value = "1"
             }
-            textField("Lote com") {
-              expandRatio = 1f
-              bindReadOnly(binder, EntradaVo::tamanhoReadOnly) { readOnly ->
-                if (readOnly)
-                  value = "1"
-              }
-              this.bind(binder)
-                      .withConverter(StringToIntegerConverter("Tamanho inválido"))
-                      .bind(EntradaVo::tamanho)
-              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-              reloadBinderOnChange(binder)
-            }
-            textField("Sequencia") {
-              expandRatio = 1f
-              isReadOnly = true
-              bind(binder).bind(EntradaVo::sequencia.name)
-            }
-            textField("Saldo") {
-              expandRatio = 1f
-              isReadOnly = true
-              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-              this.bind(binder)
-                      .withConverter(StringToIntegerConverter(""))
-                      .bind(EntradaVo::saldo.name)
-            }
+            this.bind(binder)
+                    .withConverter(StringToIntegerConverter("Tamanho inválido"))
+                    .bind(EntradaVo::tamanho)
+            addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+            reloadBinderOnChange(binder)
+          }
+          textField("Seq Inicial") {
+            expandRatio = 1f
+            isReadOnly = true
+            bind(binder).bind(EntradaVo::sequencia.name)
+          }
+          textField("Qtd Entrada") {
+            expandRatio = 1f
+            addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+            this.bind(binder)
+                    .withConverter(StringToIntegerConverter("Quantidade inválida"))
+                    .bind(EntradaVo::quantProduto.name)
           }
         }
       }
+      
       row {
         grid(MovimentacaoVO::class) {
           h = 150.px
@@ -180,7 +165,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           bindItens(binder, EntradaVo::movimentacao)
           removeAllColumns()
           addColumnFor(MovimentacaoVO::descLote)
-          addColumnFor(MovimentacaoVO::quantidade){
+          addColumnFor(MovimentacaoVO::quantidade) {
             intFormat()
           }
         }

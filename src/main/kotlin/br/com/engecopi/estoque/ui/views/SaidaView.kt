@@ -33,13 +33,6 @@ import kotlin.reflect.KProperty
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
-  /*
-  override fun fieldsRead(): List<KProperty<*>> {
-    return listOf(SaidaVo::numeroNota, SaidaVo::lojaNF, SaidaVo::lojaTransf,
-                  SaidaVo::codigo, SaidaVo::descricaoProduto, SaidaVo::grade,
-                  SaidaVo::quantidade)
-  }
-  */
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
@@ -136,7 +129,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             textField("Lote Final") {
               expandRatio = 1f
               isReadOnly = true
-              bind(binder).bind(SaidaVo::loteFinalStr, null)
+              bind(binder).bind(SaidaVo::loteFinalStr.name)
             }
             textField("Saldo") {
               expandRatio = 1f

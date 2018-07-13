@@ -4,7 +4,6 @@ import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
 import br.com.engecopi.framework.model.BaseModel
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.NotaSaidaSaci
 import br.com.engecopi.saci.saci
@@ -14,6 +13,7 @@ import java.time.LocalTime
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -30,13 +30,17 @@ class Nota : BaseModel() {
   var numero: String = ""
   @Enumerated(EnumType.STRING)
   var tipoMov: TipoMov = ENTRADA
+  @Enumerated(EnumType.STRING)
+  var tipoNota: TipoNota? = null
+  @Size(max = 6)
+  var rota: String = ""
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   @Size(max = 100)
   var observacao: String = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
-  @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val itensNota: List<ItemNota>? = null
   
   companion object Find : NotaFinder() {
@@ -103,4 +107,27 @@ class Nota : BaseModel() {
 enum class TipoMov(val multiplicador: Int) {
   ENTRADA(1),
   SAIDA(-1)
+}
+
+enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val temRota : Boolean = false) {
+  COMPRA(ENTRADA, "Compra"),
+  TRANSFERENCIA_E(ENTRADA, "Transferência", true),
+  DEV_CLI(ENTRADA, "Devolução de Cliente"),
+  ACERTO_E(ENTRADA, "Acerto"),
+  VENDA(SAIDA, "Venda"),
+  DEV_FOR(SAIDA, "Devolução para Fornecedor"),
+  TRANSFERENCIA_S(SAIDA, "Transferência", true),
+  ACERTO_S(SAIDA, "Acerto"),
+  OUTROS(SAIDA, "Outros");
+  
+  companion object {
+    
+    fun valuesEntrada(): List<TipoNota> {
+      return values().filter { it.tipoMov == ENTRADA }
+    }
+    
+    fun valuesSaida(): List<TipoNota> {
+      return values().filter { it.tipoMov == SAIDA }
+    }
+  }
 }

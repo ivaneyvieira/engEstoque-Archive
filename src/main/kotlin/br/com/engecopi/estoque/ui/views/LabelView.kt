@@ -4,17 +4,12 @@ import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.viewmodel.LabelViewModel
 import br.com.engecopi.estoque.viewmodel.LabelVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.bindResource
-import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import br.com.engecopi.utils.SystemUtils
-import br.com.engecopi.utils.makeResource
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.image
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textArea
@@ -22,7 +17,6 @@ import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 
 @AutoView

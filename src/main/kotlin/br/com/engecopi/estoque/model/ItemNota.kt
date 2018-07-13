@@ -9,6 +9,7 @@ import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
@@ -27,7 +28,7 @@ class ItemNota : BaseModel() {
   var produto: Produto? = null
   @ManyToOne(cascade = [ALL])
   var nota: Nota? = null
-  @OneToMany(mappedBy = "itemNota", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "itemNota", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   var movimentacoes: List<Movimentacao>? = null
   
   val descricao: String?

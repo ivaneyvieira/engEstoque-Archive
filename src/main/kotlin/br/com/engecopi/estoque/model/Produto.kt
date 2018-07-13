@@ -7,9 +7,11 @@ import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
 import java.time.LocalDate
+import javax.persistence.CascadeType.DETACH
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -32,9 +34,9 @@ class Produto : BaseModel() {
   var codebar: String = ""
   var dataCadastro: LocalDate = LocalDate.now()
   var tamanhoLote: Int = 0
-  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val itensNota: List<ItemNota>? = null
-  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val lotes: List<Lote>? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var label: Label? = null
