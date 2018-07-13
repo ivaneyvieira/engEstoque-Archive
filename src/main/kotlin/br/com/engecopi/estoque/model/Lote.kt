@@ -8,6 +8,7 @@ import io.ebean.annotation.Index
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
@@ -25,7 +26,7 @@ class Lote : BaseModel() {
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
-  @OneToMany(mappedBy = "lote", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "lote", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val movimentacoes: List<Movimentacao>? = null
   
   val sequenciaStr: String?

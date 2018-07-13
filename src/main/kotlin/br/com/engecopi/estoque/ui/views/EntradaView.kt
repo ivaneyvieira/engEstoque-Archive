@@ -53,14 +53,6 @@ import kotlin.reflect.KProperty
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
-  /*
-  override fun fieldsRead(): List<KProperty<*>> {
-    return listOf(EntradaVo::numeroNF, EntradaVo::lojaNF,
-                  EntradaVo::dataNota, EntradaVo::fornecedor,
-                  EntradaVo::codigo, EntradaVo::descricaoProduto, EntradaVo::grade,
-                  EntradaVo::quantProduto)
-  }
-  */
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
