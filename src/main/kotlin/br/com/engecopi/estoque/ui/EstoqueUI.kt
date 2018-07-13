@@ -7,8 +7,8 @@ import br.com.engecopi.estoque.ui.views.LabelView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
+import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.autoViewProvider
-import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.onLeftClick
@@ -51,6 +51,7 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 @PushStateNavigation
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
+  val versao = SystemUtils.readFile("/versao.txt")
   val loja: Loja?
     get() {
       val user = LoginService.currentUser ?: return null
@@ -61,7 +62,7 @@ class EstoqueUI : UI() {
   override fun init(request: VaadinRequest?) {
     val user = LoginService.currentUser
     if (user == null) {
-      content = LoginForm(title)
+      content = LoginForm("$title <p align=\"right\">$versao</p>")
     } else {
       val content = valoMenu {
         this.appTitle = title

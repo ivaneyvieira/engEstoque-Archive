@@ -129,8 +129,8 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               default { lote ->
                 lote.sequenciaStr ?: ""
               }
-              bindItens(binder, SaidaVo::lotes)
               bind(binder).bind(SaidaVo::loteInicial)
+              bindItens(binder, SaidaVo::lotes)
               reloadBinderOnChange(binder)
             }
             textField("Lote Final") {

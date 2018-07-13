@@ -1,8 +1,10 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
+import br.com.engecopi.estoque.viewmodel.LabelVo
 import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -115,8 +117,8 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             comboBox<ProdutoSaci>("Código") {
               expandRatio = 2f
               default { "${it.codigo} ${it.grade}".trim() }
-              bindItens(binder, EntradaVo::produtoNota)
               bind(binder).bind(EntradaVo::produtoSaci)
+              bindItens(binder, EntradaVo::produtoNota)
               reloadBinderOnChange(binder)
             }
             textField("Descrição") {
@@ -133,6 +135,16 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             }
           }
           row {
+            comboBox<TipoProduto>("Tipo do Produto") {
+              expandRatio = 1f
+              isEmptySelectionAllowed = false
+              isTextInputAllowed = false
+              setItems(TipoProduto.values().toList())
+              setItemCaptionGenerator { it.descricao }
+  
+              bind(binder).bind(EntradaVo::tipoProduto)
+              reloadBinderOnChange(binder)
+            }
             textField("Lote com") {
               expandRatio = 1f
               bindReadOnly(binder, EntradaVo::tamanhoReadOnly) { readOnly ->
@@ -157,9 +169,6 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
               this.bind(binder)
                       .withConverter(StringToIntegerConverter(""))
                       .bind(EntradaVo::saldo.name)
-            }
-            label {
-              expandRatio = 2f
             }
           }
         }

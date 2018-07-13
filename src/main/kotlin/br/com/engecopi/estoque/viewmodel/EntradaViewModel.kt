@@ -1,6 +1,8 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Label
+import br.com.engecopi.estoque.model.Label.Find
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Movimentacao
@@ -9,8 +11,8 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
-import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.EViewModel
+import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.saci
@@ -100,6 +102,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     val produto = bean.produto(bean.produtoSaci) ?: Produto.createProduto(bean.produtoSaci)
     return produto.apply {
       tamanhoLote = bean.tamanho ?: 0
+      label = Label.find(bean.tipoProduto)
       save()
     }
   }
@@ -128,6 +131,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
                 this.observacaoNota = nota?.observacao
                 this.produtoSaci = itemNota.produto?.produtoSaci()
                 this.tamanho = itemNota.produto?.tamanhoLote
+                this.tipoProduto = itemNota.produto?.label?.tipo
               }
             }
   }
@@ -181,9 +185,12 @@ class EntradaVo {
   
   var produtoSaci: ProdutoSaci? = null
     set(value) {
+      val mudou = field != value
       field = value
-      if (tamanho == null || tamanho == 0)
+      if (tamanho == null || tamanho == 0 || mudou)
         tamanho = produto(value)?.tamanhoLote
+      if (tipoProduto == null || mudou)
+        tipoProduto = produto(produtoSaci)?.label?.tipo ?: TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
     }
   
   val descricaoProduto: String
@@ -203,12 +210,11 @@ class EntradaVo {
             }?.quant
             ?: 0
   
-  val tipoProduto
-    get() = produto(produtoSaci)?.label?.tipo ?: TipoProduto.valueOf(produtoSaci?.tipo ?: "NORMAL")
+  var tipoProduto: TipoProduto? = null
   
   var tamanho: Int? = 0
     get() {
-      return if (tipoProduto.loteUnitario)
+      return if (tipoProduto?.loteUnitario != false)
         return 1
       else
         field
@@ -216,7 +222,7 @@ class EntradaVo {
   
   val tamanhoReadOnly: Boolean
     get() {
-      return tipoProduto.loteUnitario
+      return tipoProduto?.loteUnitario ?: true
     }
   
   val ultimoLote: Lote?

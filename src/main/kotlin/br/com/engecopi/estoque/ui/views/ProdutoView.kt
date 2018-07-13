@@ -68,10 +68,8 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               expandRatio = 1f
               caption = "Grade"
               default { it }
-              //bindItens(binder) { produto -> produto.grades }
-              bindItens(binder, ProdutoVo::grades)
-              
               bind(binder).bind(ProdutoVo::gradeProduto)
+              bindItens(binder, ProdutoVo::grades)
               reloadBinderOnChange(binder)
             }
           }
