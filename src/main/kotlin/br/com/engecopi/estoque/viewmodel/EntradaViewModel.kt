@@ -27,7 +27,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     
     val produto = saveProduto(bean)
     
-    val item = saveItemNota(bean, nota, produto)
+    val item = updateItemNota(bean, nota, produto)
     
     deleteMovimentacoes(item)
     
@@ -39,7 +39,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     
     val produto = saveProduto(bean)
     
-    val item = saveItemNota(bean, nota, produto)
+    val item = insertItemNota(bean, nota, produto)
     
     deleteMovimentacoes(item)
     
@@ -83,7 +83,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     }
   }
   
-  private fun saveItemNota(
+  private fun insertItemNota(
           bean: EntradaVo, nota: Nota,
           produto: Produto
                           ): ItemNota {
@@ -94,7 +94,22 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
       this.quantidade = bean.quantProduto ?: 0
       this.tamanhoLote = bean.tamanho ?: 0
     }
-    item.save()
+    item.insert()
+    return item
+  }
+  
+  private fun updateItemNota(
+          bean: EntradaVo, nota: Nota,
+          produto: Produto
+                          ): ItemNota {
+    val item = bean.itemNota ?: ItemNota()
+    item.apply {
+      this.nota = nota
+      this.produto = produto
+      this.quantidade = bean.quantProduto ?: 0
+      this.tamanhoLote = bean.tamanho ?: 0
+    }
+    item.update()
     return item
   }
   
@@ -248,8 +263,8 @@ class EntradaVo {
   val sequencia: String
     get() {
       val lote = ultimoLote
-      lote?.sequencia ?: return ""
-      return "${lote.sequencia}/${lote.total}"
+      lote?.sequencia ?: return "1"
+      return "${lote.sequencia + 1}"
     }
   
   val saldo: Int

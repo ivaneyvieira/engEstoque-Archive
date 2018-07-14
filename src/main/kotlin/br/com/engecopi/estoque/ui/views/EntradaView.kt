@@ -28,7 +28,6 @@ import com.github.vok.karibudsl.h
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
-import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
@@ -104,8 +103,8 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           comboBox<ProdutoSaci>("Código") {
             expandRatio = 2f
             default { "${it.codigo} ${it.grade}".trim() }
-            bind(binder).bind(EntradaVo::produtoSaci)
             bindItens(binder, EntradaVo::produtoNota)
+            val binding = bind(binder).bind(EntradaVo::produtoSaci)
             reloadBinderOnChange(binder)
           }
           textField("Descrição") {

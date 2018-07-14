@@ -15,6 +15,7 @@ import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
 import com.vaadin.data.HasValue
 import com.vaadin.data.ReadOnlyHasValue
+import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.server.Resource
@@ -91,35 +92,28 @@ fun <T> ComboBox<T>.default(
   setItemCaptionGenerator(captionGenerator)
 }
 
-/*
 fun <V, T> HasItems<T>.bindItens(
         binder: Binder<V>,
-        property: KProperty1<V, List<T>>
-                                ): Binding<V, List<T>> {
-  val field = ReadOnlyHasValue<List<T>> { itens ->
-    val hasValue = (this as? HasValue<*>)
-    val oldValue = hasValue?.value
-    setItems(itens)
-    hasValue?.value = if (oldValue == null)
-      itens.firstOrNull()
-    else
-      itens.find { it == oldValue }
-  }
-  return field.bind(binder).bind(property, null)
-}*/
-
-fun <V, T> HasItems<T>.bindItens(
-        binder: Binder<V>,
-        property: KProperty1<V, List<T>>
+        propertyList: KProperty1<V, List<T>>,
+        binding: Binding<V, T>? = null
                                 ) {
   val hasValue = (this as? HasValue<*>)
-  bind(binder, property) { itens ->
-    val oldValue = hasValue?.value
-    setItems(itens)
-    hasValue?.value = if (oldValue == null)
-      itens.firstOrNull()
+  
+  val itensOld: List<T>? = (this.dataProvider as? ListDataProvider)?.items?.toList()
+  
+  bind(binder, propertyList) { itens ->
+    //  val oldValue = hasValue?.value
+    if (itensOld == null)
+      setItems(itens)
     else
-      itens.find { it == oldValue }
+      if (itensOld != itens)
+        setItems(itens)
+    //  val value = if (oldValue == null)
+    //    itens.firstOrNull()
+    //  else
+    //    itens.find { it == oldValue }
+    //  binding?.setter?.accept(binder.bean, value)
+    //  binding?.read(binder.bean)
   }
 }
 
@@ -162,7 +156,7 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
         binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
                                                                                      ) {
   addValueChangeListener { event ->
-    if (event.isUserOriginated) {
+    if (event.isUserOriginated && (event.oldValue != event.value)) {
       val bean = binder.bean
       if (propertys.isEmpty()) {
         BEAN::class.declaredMemberProperties.forEach { prop ->
@@ -204,26 +198,26 @@ fun HasComponents.emailField(caption: String = "", block: EmailField.() -> Unit 
 fun HasComponents.clearableTextField(caption: String = "", block: ClearableTextField.() -> Unit = {}) =
         init(ClearableTextField(caption), block)
 
-fun <T>HasComponents.headerField(caption: String = "", block: HeaderField<T>.() -> Unit = {}) =
+fun <T> HasComponents.headerField(caption: String = "", block: HeaderField<T>.() -> Unit = {}) =
         init(HeaderField(caption), block)
 
 fun HasComponents.integerSliderField(captionPar: String = "", block: IntegerSliderField.() -> Unit = {}) =
-        init(IntegerSliderField(), block).apply{
+        init(IntegerSliderField(), block).apply {
           this.caption = captionPar
         }
 
 fun HasComponents.mCheckBox(captionPar: String = "", block: MCheckBox.() -> Unit = {}) =
-        init(MCheckBox(), block).apply{
+        init(MCheckBox(), block).apply {
           this.caption = captionPar
         }
 
 fun HasComponents.mTextField(captionPar: String = "", block: MTextField.() -> Unit = {}) =
-        init(MTextField(), block).apply{
+        init(MTextField(), block).apply {
           this.caption = captionPar
         }
 
-fun <T>HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
+fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
         init(LabelField(caption), block)
 
-inline fun <reified T : Enum<*>>HasComponents.enumSelect(caption: String = "", block: EnumSelect<T>.() -> Unit = {}) =
-        init(EnumSelect<T>(caption,T::class.java))
+inline fun <reified T : Enum<*>> HasComponents.enumSelect(caption: String = "", block: EnumSelect<T>.() -> Unit = {}) =
+        init(EnumSelect<T>(caption, T::class.java))
