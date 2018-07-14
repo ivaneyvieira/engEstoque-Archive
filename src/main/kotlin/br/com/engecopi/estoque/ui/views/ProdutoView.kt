@@ -10,6 +10,7 @@ import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.intFormat
+import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
@@ -86,16 +87,12 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               reloadBinderOnChange(binder)
             }
             
-            textField {
+            integerField {
               expandRatio = 1f
               caption = "Tamanho do Lote"
               addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-              bindReadOnly(binder, ProdutoVo::tamanhoReadOnly) { readOnly ->
-                if (readOnly)
-                  value = "1"
-              }
+              bindReadOnly(binder, ProdutoVo::tamanhoReadOnly)
               bind(binder)
-                      .withConverter(StringToIntegerConverter("Valor inválido"))
                       .bind(ProdutoVo::tamanhoLote)
             }
           }
@@ -131,6 +128,10 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
                 this.isSortable= false
                 caption = "Tipo"
                 setRenderer({ it.toString() }, TextRenderer())
+              }
+              addColumnFor(ItemNota::rota){
+                this.isSortable= false
+                caption = "Rota"
               }
               addColumnFor(ItemNota::quantidadeUnitaria) {
                 this.isSortable= false

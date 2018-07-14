@@ -7,6 +7,7 @@ import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import com.vaadin.data.Binder
@@ -21,10 +22,22 @@ import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
+import com.vaadin.ui.HasComponents
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
+import com.vaadin.ui.themes.ValoTheme
+import org.vaadin.viritin.fields.ClearableTextField
+import org.vaadin.viritin.fields.DoubleField
+import org.vaadin.viritin.fields.EmailField
+import org.vaadin.viritin.fields.EnumSelect
+import org.vaadin.viritin.fields.HeaderField
+import org.vaadin.viritin.fields.IntegerField
+import org.vaadin.viritin.fields.IntegerSliderField
+import org.vaadin.viritin.fields.LabelField
+import org.vaadin.viritin.fields.MCheckBox
+import org.vaadin.viritin.fields.MTextField
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -177,3 +190,40 @@ fun <C> Column<C, Int?>.intFormat() {
   setRenderer(NumberRenderer(DecimalFormat("0")))
   align = VAlign.Right
 }
+
+fun HasComponents.integerField(caption: String = "", block: IntegerField.() -> Unit = {}) =
+        init(IntegerField(caption), block).apply {
+          addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
+        }
+
+fun HasComponents.doubleField(caption: String = "", block: DoubleField.() -> Unit = {}) =
+        init(DoubleField(caption), block)
+
+fun HasComponents.emailField(caption: String = "", block: EmailField.() -> Unit = {}) = init(EmailField(caption), block)
+
+fun HasComponents.clearableTextField(caption: String = "", block: ClearableTextField.() -> Unit = {}) =
+        init(ClearableTextField(caption), block)
+
+fun <T>HasComponents.headerField(caption: String = "", block: HeaderField<T>.() -> Unit = {}) =
+        init(HeaderField(caption), block)
+
+fun HasComponents.integerSliderField(captionPar: String = "", block: IntegerSliderField.() -> Unit = {}) =
+        init(IntegerSliderField(), block).apply{
+          this.caption = captionPar
+        }
+
+fun HasComponents.mCheckBox(captionPar: String = "", block: MCheckBox.() -> Unit = {}) =
+        init(MCheckBox(), block).apply{
+          this.caption = captionPar
+        }
+
+fun HasComponents.mTextField(captionPar: String = "", block: MTextField.() -> Unit = {}) =
+        init(MTextField(), block).apply{
+          this.caption = captionPar
+        }
+
+fun <T>HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
+        init(LabelField(caption), block)
+
+inline fun <reified T : Enum<*>>HasComponents.enumSelect(caption: String = "", block: EnumSelect<T>.() -> Unit = {}) =
+        init(EnumSelect<T>(caption,T::class.java))

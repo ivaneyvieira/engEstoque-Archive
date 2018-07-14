@@ -8,6 +8,7 @@ import br.com.engecopi.estoque.model.Movimentacao
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -121,15 +122,21 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
 class SaidaVo {
   var numeroNota: String? = ""
   var lojaNF: Loja? = null
+  var tipoNota: TipoNota? = null
+  var rota: String? = ""
+    get() = if (rotaReadOnly)
+      ""
+    else
+      field
+  
+  val rotaReadOnly
+    get() = !(tipoNota?.temRota ?: false)
   
   val notaSaidaSaci
     get() = Nota.findNotaSaidaSaci(numeroNota, lojaNF)
   
   val dataNF: LocalDate?
     get() = notaSaidaSaci.firstOrNull()?.date?.localDate()
-  
-  val lojaTransf: Loja?
-    get() = Loja.findLoja(notaSaidaSaci.firstOrNull()?.storenoT)
   
   val notaSaida: Nota?
     get() = Nota.findSaida(numeroNota, lojaNF)
@@ -214,9 +221,9 @@ class SaidaVo {
   val quantidadeCaption: String
     get() {
       return if (controlePorLote)
-        "Quantidade de Lote"
+        "Qtd Saída"
       else
-        "Quantidade Unitária"
+        "Qtd Saída"
     }
 }
 

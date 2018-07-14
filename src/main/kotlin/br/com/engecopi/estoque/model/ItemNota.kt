@@ -43,6 +43,9 @@ class ItemNota : BaseModel() {
   val numeroNota: String?
     @Transient get() = nota?.numero
   
+  val rota: String?
+    @Transient get() = nota?.rota
+  
   val tipoMov: TipoMov?
     @Transient get() = nota?.tipoMov
   

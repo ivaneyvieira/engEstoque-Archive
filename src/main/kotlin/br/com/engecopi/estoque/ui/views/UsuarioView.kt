@@ -22,7 +22,6 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
   
-  //override fun fieldsRead() = listOf(UsuarioCrudVo::loginName, UsuarioCrudVo::nome, UsuarioCrudVo::loja)
   
   override fun layoutForm(
           formLayout: VerticalLayout,

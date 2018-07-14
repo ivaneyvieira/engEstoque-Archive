@@ -19,6 +19,7 @@ import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
+import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
@@ -32,9 +33,11 @@ import com.vaadin.ui.HasComponents
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
+import com.vaadin.ui.Window
 import com.vaadin.ui.themes.ValoTheme
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import java.awt.SystemColor.window
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
@@ -85,6 +88,7 @@ class EstoqueUI : UI() {
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl
       navigator = Navigator(this, content as ViewDisplay)
       navigator.addProvider(autoViewProvider)
+      
       setErrorHandler { e ->
         log.error("Erro não identificado ${e.throwable}", e.throwable)
         // when the exception occurs, show a nice notification

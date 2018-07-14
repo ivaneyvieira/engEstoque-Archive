@@ -2,9 +2,12 @@ package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.ViewModel
+import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.init
 import com.vaadin.data.Binder
+import com.vaadin.event.ShortcutAction.KeyCode
+import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui.Component
@@ -27,12 +30,6 @@ import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout
 import kotlin.reflect.KProperty1
 
 abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
-  // abstract fun fieldsRead(): List<KProperty<*>>
-  // fun fieldsAdd(): List<KProperty<*>> = fieldsRead()
-  // fun fieldsUpdate(): List<KProperty<*>> = fieldsRead()
-  // fun fieldsDelete(): List<KProperty<*>> = fieldsRead()
-  // fun fieldsColumn(): List<KProperty<*>> = fieldsRead()
-  
   override fun updateView(viewModel: ViewModel) {}
   
   override fun updateModel() {}
@@ -159,11 +156,12 @@ class WindowsCrud : WindowBasedCrudLayout() {
     
     formWindow = Window(caption, windowLayout)
     //formWindow.setWidth(formWindowWidth)
-    formWindow.isClosable = false
+    formWindow.isClosable = true
     formWindow.isResizable = false
     formWindow.isModal = true
     formWindow.styleName = "modal"
     formWindow.center()
+    formWindow.addCloseShortcut(KeyCode.ESCAPE)
     UI.getCurrent().addWindow(formWindow)
   }
 }
@@ -174,5 +172,15 @@ class GridCrudFlex<T>(
         crudFormFactory: CrudFormFactory<T>,
         crudListener: CrudListener<T>
                      ) : GridCrud<T>(domainType, crudLayout, crudFormFactory, crudListener) {
-  
+  init {
+    grid.addGlobalShortcutListener(ENTER) {
+      if (!grid.selectedItems.isEmpty())
+        updateButtonClicked()
+    }
+    grid.addItemClickListener { e ->
+      if (e.mouseEventDetails.isDoubleClick)
+        if (!grid.selectedItems.isEmpty())
+          updateButtonClicked()
+    }
+  }
 }
