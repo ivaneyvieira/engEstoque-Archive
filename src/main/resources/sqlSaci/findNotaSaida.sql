@@ -1,5 +1,5 @@
-select I.storeno as storenoT, IFNULL(X.xrouteno, '') as rota, N.storeno, N.nfno,
-  N.nfse, N.issuedate as date,TRIM(P.prdno) as prdno, P.grade, P.qtty as quant,
+select I.storeno as storenoT, CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
+  N.nfno, N.nfse, N.issuedate as date,TRIM(P.prdno) as prdno, P.grade, P.qtty as quant,
   C.name as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
