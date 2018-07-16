@@ -90,7 +90,7 @@ dependencies {
   //Dependências do ebean
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
   compile "io.ebean:ebean:11.18.4"
-  compile "io.ebean:kotlin-querybean-generator:11.4.1"
+ // compile "io.ebean:kotlin-querybean-generator:11.4.1"
   compile "io.ebean:querybean-generator:11.4.1"
   compile "io.ebean:ebean-annotation:4.1"
   compile "io.ebean.tools:finder-generator:11.1.1"

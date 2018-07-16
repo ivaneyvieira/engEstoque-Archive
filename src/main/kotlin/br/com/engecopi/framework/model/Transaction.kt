@@ -40,7 +40,3 @@ object Transaction {
     Ebean.beginTransaction()
   }
 }
-
-
-
-
