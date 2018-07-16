@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
@@ -32,16 +33,22 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
+import org.vaadin.crudui.crud.CrudOperation.ADD
 import kotlin.reflect.full.declaredMemberProperties
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
+  val lojaDefault
+    get() = EstoqueUI.loja
+  
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
           binder: Binder<EntradaVo>,
           readOnly: Boolean
                          ) {
+    if(operation == ADD)
+      binder.bean.lojaNF = lojaDefault
     formLayout.apply {
       grupo("Nota fiscal de entrada") {
         row {
@@ -51,26 +58,25 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             EntradaVo::class.declaredMemberProperties
             reloadBinderOnChange(binder)
           }
+          comboBox<Loja>("Loja") {
+            expandRatio = 1f
+            default { it.sigla }
+            
+            setItems(viewModel.findLojas(lojaDefault))
+            
+            bind(binder).bind(EntradaVo::lojaNF)
+            reloadBinderOnChange(binder)
+          }
           comboBox<TipoNota>("Tipo") {
             expandRatio = 1f
             default { it.descricao }
             setItems(TipoNota.valuesEntrada())
             bind(binder).bind(EntradaVo::tipoNota)
-            reloadBinderOnChange(binder, EntradaVo::rotaReadOnly, EntradaVo::rota)
-          }
-          comboBox<Loja>("Loja") {
-            expandRatio = 1f
-            default { it.sigla }
-            setItems(viewModel.findLojas())
-            bind(binder).bind(EntradaVo::lojaNF)
-            reloadBinderOnChange(binder)
           }
           textField("Rota") {
             expandRatio = 1f
             bind(binder).bind(EntradaVo::rota)
-            bindReadOnly(binder, EntradaVo::rotaReadOnly)
           }
-          
         }
         row {
           textField("Observação") {
@@ -103,8 +109,9 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           comboBox<ProdutoSaci>("Código") {
             expandRatio = 2f
             default { "${it.codigo} ${it.grade}".trim() }
+            
             bindItens(binder, EntradaVo::produtoNota)
-            val binding = bind(binder).bind(EntradaVo::produtoSaci)
+            bind(binder).bind(EntradaVo::produtoSaci)
             reloadBinderOnChange(binder)
           }
           textField("Descrição") {
@@ -156,11 +163,11 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           caption = "Lotes"
           bindItens(binder, EntradaVo::movimentacao)
           removeAllColumns()
-          addColumnFor(MovimentacaoVO::descLote){
-            caption="Seq. do Lote"
+          addColumnFor(MovimentacaoVO::descLote) {
+            caption = "Seq. do Lote"
           }
           addColumnFor(MovimentacaoVO::quantidade) {
-            caption= "Qtd. por Lote"
+            caption = "Qtd. por Lote"
             intFormat()
           }
         }
@@ -173,7 +180,6 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
       gridCrud(viewModel.crudClass.java) {
         column(EntradaVo::numeroNF) {
           caption = "Número NF"
-          //expandRatio = 1
         }
         column(EntradaVo::lojaNF) {
           caption = "Loja NF"
@@ -204,7 +210,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   }
   
   override val viewModel: EntradaViewModel
-    get() = EntradaViewModel(this)
+    get() = EntradaViewModel(this, lojaDefault)
 }
 
 

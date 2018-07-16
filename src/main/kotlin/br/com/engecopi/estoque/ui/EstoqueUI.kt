@@ -55,12 +55,7 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
   val versao = SystemUtils.readFile("/versao.txt")
-  val loja: Loja?
-    get() {
-      val user = LoginService.currentUser ?: return null
-      val login = user.login ?: return null
-      return Usuario.findUsuario(login)?.loja
-    }
+
   
   override fun init(request: VaadinRequest?) {
     val user = LoginService.currentUser
@@ -107,6 +102,12 @@ class EstoqueUI : UI() {
   companion object {
     val estoqueUI
       get() = UI.getCurrent() as? EstoqueUI
+    val loja: Loja?
+      get() {
+        val user = LoginService.currentUser ?: return null
+        val login = user.login ?: return null
+        return Usuario.findUsuario(login)?.loja
+      }
   }
 }
 

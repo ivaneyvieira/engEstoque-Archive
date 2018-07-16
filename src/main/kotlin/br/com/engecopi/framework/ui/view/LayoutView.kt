@@ -9,7 +9,6 @@ import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
-import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
@@ -18,13 +17,11 @@ import com.vaadin.data.ReadOnlyHasValue
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
-import com.vaadin.server.Resource
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
-import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
@@ -44,6 +41,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.streams.toList
 
 abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   abstract val viewModel: V
@@ -94,26 +92,25 @@ fun <T> ComboBox<T>.default(
 
 fun <V, T> HasItems<T>.bindItens(
         binder: Binder<V>,
-        propertyList: KProperty1<V, List<T>>,
-        binding: Binding<V, T>? = null
+        propertyList: KProperty1<V, List<T>>
                                 ) {
   val hasValue = (this as? HasValue<*>)
   
   val itensOld: List<T>? = (this.dataProvider as? ListDataProvider)?.items?.toList()
   
   bind(binder, propertyList) { itens ->
-    //  val oldValue = hasValue?.value
+    val oldValue = hasValue?.value
     if (itensOld == null)
       setItems(itens)
     else
       if (itensOld != itens)
         setItems(itens)
-    //  val value = if (oldValue == null)
-    //    itens.firstOrNull()
-    //  else
-    //    itens.find { it == oldValue }
-    //  binding?.setter?.accept(binder.bean, value)
-    //  binding?.read(binder.bean)
+    val value = if (oldValue == null)
+      itens.firstOrNull()
+    else
+      itens.find { it == oldValue }
+    hasValue?.value = value
+    //reloadPropertys(binder, *propertys)
   }
 }
 
@@ -157,21 +154,32 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
                                                                                      ) {
   addValueChangeListener { event ->
     if (event.isUserOriginated && (event.oldValue != event.value)) {
+      
       val bean = binder.bean
       if (propertys.isEmpty()) {
-        BEAN::class.declaredMemberProperties.forEach { prop ->
-          binder.getBinding(prop.name).ifPresent { binding ->
-            if (binding.field != this)
-              binding.read(bean)
+        val bindings = BEAN::class.declaredMemberProperties
+                .mapNotNull { prop -> binder.getBinding(prop.name).orElse(null) }
+        binder.fields.toList().mapNotNull{field ->
+          bindings.find {binding->
+            binding.field == field && binding.field != this
           }
+        }.forEach {binding->
+          binding.read(bean)
         }
       } else {
-        propertys.forEach { prop ->
-          binder.getBinding(prop.name).ifPresent { binding ->
-            binding.read(bean)
-          }
-        }
+        reloadPropertys(binder, *propertys)
       }
+    }
+  }
+}
+
+fun <BEAN> reloadPropertys(
+        binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
+                                ) {
+  val bean = binder.bean
+  propertys.forEach { prop ->
+    binder.getBinding(prop.name).ifPresent { binding ->
+      binding.read(bean)
     }
   }
 }

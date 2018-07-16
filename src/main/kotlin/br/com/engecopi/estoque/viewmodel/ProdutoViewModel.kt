@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Label
+import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.model.TipoProduto.NORMAL
@@ -9,7 +10,7 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.saci
 
-class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::class) {
+class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ProdutoVo>(view, ProdutoVo::class) {
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.codebar = bean.codebar ?: ""
@@ -38,7 +39,10 @@ class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::
   }
   
   override fun allBeans(): List<ProdutoVo> {
-    return Produto.all().map { produto ->
+    val query = Produto.where()
+
+    return query.findList()
+            .map { produto ->
       ProdutoVo().apply {
         codigoProduto = produto.codigo
         gradeProduto = produto.grade
@@ -51,6 +55,7 @@ class ProdutoViewModel(view: IView) : CrudViewModel<ProdutoVo>(view, ProdutoVo::
 }
 
 class ProdutoVo {
+  var lojaDefault : Loja? = null
   var codigoProduto: String? = ""
     set(value) {
       field = value
@@ -77,7 +82,11 @@ class ProdutoVo {
   
   val itensNota: List<ItemNota>
     get() {
-      val itens = produto?.itensNota.orEmpty()
+      val itens = produto?.itensNota.orEmpty().filter {
+        lojaDefault?.let { lDef ->
+          it.nota?.loja?.id == lDef.id
+        }?: true
+      }
       var saldo =0
       itens.forEach {item->
         saldo += item.quantidadeUnitaria
@@ -87,7 +96,11 @@ class ProdutoVo {
     }
   
   val lotes
-    get() = produto?.lotes.orEmpty()
+    get() = produto?.lotes.orEmpty().filter {
+      lojaDefault?.let { lDef ->
+        it.loja?.id == lDef.id
+      }?: true
+    }
   
   val tamanhoReadOnly: Boolean
     get() = tipo?.loteUnitario ?: false

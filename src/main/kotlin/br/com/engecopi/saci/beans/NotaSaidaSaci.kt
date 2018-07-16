@@ -2,6 +2,7 @@ package br.com.engecopi.saci.beans
 
 class NotaSaidaSaci(
         val storenoT : Int?,
+        val rota : String?,
         val storeno : Int?,
         val nfno : String?,
         val nfse : String?,
@@ -9,5 +10,6 @@ class NotaSaidaSaci(
         val prdno : String?,
         val grade : String?,
         val quant : Int?,
-        val clienteName : String?
+        val clienteName : String?,
+        val tipo: String?
                    )

@@ -1,10 +1,20 @@
-select P.invno, N.storeno, N.date, TRIM(P.prdno) as prdno,
-  P.grade, P.qtty/1000 as quant, P.cost/10000 as custo, V.name as vendName
+select P.invno, N.storeno, nfname as codigo, invse as serie,
+  IFNULL(X.xrouteno, '') as rota, N.date, TRIM(P.prdno) as prdno,
+  P.grade, P.qtty/1000 as quant, P.cost/10000 as custo, V.name as vendName,
+  CASE
+    WHEN invse = '66' then 'ACERTO_E'
+    WHEN type = 0 then "COMPRA"
+    WHEN type = 1 then "TRANSFERENCIA_E"
+    WHEN type = 2 then "DEV_CLI"
+    ELSE "OUTROS_E"
+  END AS tipo
 from sqldados.inv AS N
   inner join sqldados.iprd AS P
   USING(invno)
   inner join sqldados.vend AS V
     ON V.no = N.vendno
+  left join sqldados.xfr AS X
+    ON X.no = N.xfrno
 where N.storeno = :storeno
       and (nfname = :nfname
         OR nfname = CONCAT('0', :nfname)

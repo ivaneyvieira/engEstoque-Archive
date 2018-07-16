@@ -49,6 +49,9 @@ class ItemNota : BaseModel() {
   val tipoMov: TipoMov?
     @Transient get() = nota?.tipoMov
   
+  val tipoNota: TipoNota?
+    @Transient get() = nota?.tipoNota
+  
   val dataNota: LocalDate?
     @Transient get() = nota?.data
   

@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -29,7 +30,6 @@ import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
-import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
@@ -40,12 +40,15 @@ import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
+  val lojaDefault
+    get() = EstoqueUI.loja
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
           binder: Binder<ProdutoVo>,
           readOnly: Boolean
                          ) {
+    binder.bean.lojaDefault = lojaDefault
     formLayout.apply {
       w = 800.px
       h = 300.px
@@ -100,12 +103,12 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             grid(Lote::class, "Lotes") {
               expandRatio = 1f
               removeAllColumns()
-              addColumnFor(Lote::sequenciaStr) {
-                this.isSortable= false
+              addColumnFor(Lote::sequenciaTotal) {
+                this.isSortable = false
                 caption = "Sequencia"
               }
               addColumnFor(Lote::saldo) {
-                this.isSortable= false
+                this.isSortable = false
                 caption = "Saldo"
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
@@ -116,31 +119,31 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               expandRatio = 2f
               removeAllColumns()
               addColumnFor(ItemNota::numeroNota) {
-                this.isSortable= false
+                this.isSortable = false
                 caption = "Nota"
               }
               addColumnFor(ItemNota::dataNota) {
-                this.isSortable= false
+                this.isSortable = false
                 caption = "Data"
                 setRenderer(LocalDateRenderer("dd/MM/yy"))
               }
-              addColumnFor(ItemNota::tipoMov) {
-                this.isSortable= false
+              addColumnFor(ItemNota::tipoNota) {
+                this.isSortable = false
                 caption = "Tipo"
-                setRenderer({ it.toString() }, TextRenderer())
+                setRenderer({ it?.descricao ?: "" }, TextRenderer())
               }
-              addColumnFor(ItemNota::rota){
-                this.isSortable= false
+              addColumnFor(ItemNota::rota) {
+                this.isSortable = false
                 caption = "Rota"
               }
               addColumnFor(ItemNota::quantidadeUnitaria) {
-                this.isSortable= false
+                this.isSortable = false
                 caption = "Quant."
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
               }
               addColumnFor(ItemNota::saldoTransient) {
-                this.isSortable= false
+                this.isSortable = false
                 caption = "Saldo"
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
@@ -184,7 +187,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   }
   
   override val viewModel: ProdutoViewModel
-    get() = ProdutoViewModel(this)
+    get() = ProdutoViewModel(this, lojaDefault)
 }
 
 

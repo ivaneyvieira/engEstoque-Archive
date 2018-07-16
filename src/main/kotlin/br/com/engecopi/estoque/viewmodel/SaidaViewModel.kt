@@ -15,7 +15,7 @@ import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class) {
+class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaVo>(view, SaidaVo::class) {
   override fun update(bean: SaidaVo) {
     val nota = saveNota(bean)
     
@@ -41,7 +41,7 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   }
   
   private fun geraMovimentacoes(bean: SaidaVo, item: ItemNota) {
-    bean.lotesQuant.forEach{loteQuant->
+    bean.lotesQuant.forEach { loteQuant ->
       Movimentacao().apply {
         this.itemNota = item
         this.lote = loteQuant.lote
@@ -96,7 +96,11 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
   }
   
   override fun allBeans(): List<SaidaVo> {
-    return ItemNota.where().nota.tipoMov.eq(SAIDA)
+    val query = ItemNota.where().nota.tipoMov.eq(SAIDA)
+    val qyeryLoja = lojaDefault?.let { loja ->
+      query.nota.loja.id.eq(loja.id)
+    } ?: query
+    return qyeryLoja
             .findList().map { itemNota ->
               SaidaVo().apply {
                 val nota = itemNota.nota
@@ -110,8 +114,8 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
             }
   }
   
-  fun findLojas(): List<Loja> = execList {
-    Loja.all()
+  fun findLojas(loja: Loja?): List<Loja> = execList {
+    loja?.let { listOf(it) } ?: Loja.all()
   }
   
   fun findProdutos(): List<Produto> = execList {
@@ -121,16 +125,28 @@ class SaidaViewModel(view: IView) : CrudViewModel<SaidaVo>(view, SaidaVo::class)
 
 class SaidaVo {
   var numeroNota: String? = ""
+    set(value) {
+      if (field != value) {
+        field = value
+        atualizaNota()
+      }
+    }
   var lojaNF: Loja? = null
+    set(value) {
+      if (field != value) {
+        field = value
+        atualizaNota()
+      }
+    }
   var tipoNota: TipoNota? = null
   var rota: String? = ""
-    get() = if (rotaReadOnly)
-      ""
-    else
-      field
   
-  val rotaReadOnly
-    get() = !(tipoNota?.temRota ?: false)
+  fun atualizaNota() {
+    notaSaidaSaci.firstOrNull()?.let { nota ->
+      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }
+      rota = nota.rota
+    }
+  }
   
   val notaSaidaSaci
     get() = Nota.findNotaSaidaSaci(numeroNota, lojaNF)

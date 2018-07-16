@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
@@ -33,16 +34,22 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
+import org.vaadin.crudui.crud.CrudOperation.ADD
 import kotlin.reflect.KProperty
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
+  val lojaDefault
+    get() = EstoqueUI.loja
+  
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
           binder: Binder<SaidaVo>,
           readOnly: Boolean
                          ) {
+    if(operation == ADD)
+      binder.bean.lojaNF = lojaDefault
     formLayout.apply {
       cssLayout("Nota fiscal de saída") {
         w = 100.perc
@@ -54,19 +61,18 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               bind(binder).bind(SaidaVo::numeroNota)
               reloadBinderOnChange(binder)
             }
+            comboBox<Loja>("Loja") {
+              expandRatio = 1f
+              default { it.sigla }
+              setItems(viewModel.findLojas(lojaDefault))
+              bind(binder).asRequired("A loja deve ser informada").bind(SaidaVo::lojaNF)
+              reloadBinderOnChange(binder)
+            }
             comboBox<TipoNota>("Tipo") {
               expandRatio = 1f
               default { it.descricao }
               setItems(TipoNota.valuesSaida())
               bind(binder).bind(SaidaVo::tipoNota)
-              reloadBinderOnChange(binder, SaidaVo::rotaReadOnly, SaidaVo::rota)
-            }
-            comboBox<Loja>("Loja") {
-              expandRatio = 1f
-              default { it.sigla }
-              setItems(viewModel.findLojas())
-              bind(binder).asRequired("A loja deve ser informada").bind(SaidaVo::lojaNF)
-              reloadBinderOnChange(binder)
             }
             dateField("Data") {
               expandRatio = 1f
@@ -75,7 +81,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             }
             textField("Rota") {
               expandRatio = 1f
-              bindReadOnly(binder, SaidaVo::rotaReadOnly)
               bind(binder).bind(SaidaVo::rota)
             }
           }
@@ -108,6 +113,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             comboBox<Produto>("Código") {
               expandRatio = 2f
               default { "${it.codigo} ${it.grade}".trim() }
+              isTextInputAllowed = true
               setItems(viewModel.findProdutos())
               bind(binder).bind(SaidaVo::produto)
               reloadBinderOnChange(binder)
@@ -188,6 +194,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
     }
   }
   
-  override val viewModel get() = SaidaViewModel(this)
+  override val viewModel get() = SaidaViewModel(this, lojaDefault)
 }
 

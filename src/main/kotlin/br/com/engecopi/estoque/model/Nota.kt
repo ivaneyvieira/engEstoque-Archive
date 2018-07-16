@@ -110,15 +110,18 @@ enum class TipoMov(val multiplicador: Int) {
 }
 
 enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val temRota : Boolean = false) {
+  //Entrada
   COMPRA(ENTRADA, "Compra"),
   TRANSFERENCIA_E(ENTRADA, "Transferência", true),
   DEV_CLI(ENTRADA, "Devolução de Cliente"),
   ACERTO_E(ENTRADA, "Acerto"),
+  OUTROS_E(ENTRADA, "Outros"),
+  //Saída
   VENDA(SAIDA, "Venda"),
-  DEV_FOR(SAIDA, "Devolução para Fornecedor"),
   TRANSFERENCIA_S(SAIDA, "Transferência", true),
+  DEV_FOR(SAIDA, "Devolução para Fornecedor"),
   ACERTO_S(SAIDA, "Acerto"),
-  OUTROS(SAIDA, "Outros");
+  OUTROS_S(SAIDA, "Outros");
   
   companion object {
     

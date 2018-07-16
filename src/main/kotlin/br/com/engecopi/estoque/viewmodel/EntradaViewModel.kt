@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Label
-import br.com.engecopi.estoque.model.Label.Find
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Movimentacao
@@ -11,6 +10,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -21,7 +21,7 @@ import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 import kotlin.math.ceil
 
-class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::class) {
+class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<EntradaVo>(view, EntradaVo::class) {
   override fun update(bean: EntradaVo) {
     val nota = saveNota(bean)
     
@@ -86,7 +86,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   private fun insertItemNota(
           bean: EntradaVo, nota: Nota,
           produto: Produto
-                          ): ItemNota {
+                            ): ItemNota {
     val item = bean.itemNota ?: ItemNota()
     item.apply {
       this.nota = nota
@@ -101,7 +101,7 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   private fun updateItemNota(
           bean: EntradaVo, nota: Nota,
           produto: Produto
-                          ): ItemNota {
+                            ): ItemNota {
     val item = bean.itemNota ?: ItemNota()
     item.apply {
       this.nota = nota
@@ -140,7 +140,12 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
   }
   
   override fun allBeans(): List<EntradaVo> {
-    return ItemNota.where().nota.tipoMov.eq(ENTRADA)
+    val query = ItemNota.where()
+            .nota.tipoMov.eq(ENTRADA)
+    val qyeryLoja = lojaDefault?.let { loja->
+      query.nota.loja.id.eq(loja.id)
+    }?: query
+    return  qyeryLoja
             .findList().map { itemNota ->
               EntradaVo().apply {
                 val nota = itemNota.nota
@@ -165,26 +170,38 @@ class EntradaViewModel(view: IView) : CrudViewModel<EntradaVo>(view, EntradaVo::
     }
   }
   
-  fun findLojas(): List<Loja> {
-    return Loja.all()
+  fun findLojas(loja: Loja?): List<Loja> = execList {
+    loja?.let { listOf(it) } ?: Loja.all()
   }
 }
 
 class EntradaVo {
   var numeroNF: String? = ""
+    set(value) {
+      if (field != value) {
+        field = value
+        atualizaNota()
+      }
+    }
   var lojaNF: Loja? = null
+    set(value) {
+      if (field != value) {
+        field = value
+        atualizaNota()
+      }
+    }
   var tipoNota: TipoNota? = null
   var rota: String? = ""
-    get() = if (rotaReadOnly)
-      ""
-    else
-      field
-  
-  val rotaReadOnly
-    get() = !(tipoNota?.temRota ?: false)
   
   val notaEntradaSaci: List<NotaEntradaSaci>
     get() = Nota.findNotaEntradaSaci(numeroNF, lojaNF)
+  
+  fun atualizaNota() {
+    notaEntradaSaci.firstOrNull()?.let { nota ->
+      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }
+      rota = nota.rota
+    }
+  }
   
   val dataNota: LocalDate?
     get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
