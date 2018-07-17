@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -23,9 +24,9 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
     
     val item = saveItemNota(bean, nota, produto)
     
-    deleteMovimentacoes(item)
+    //deleteMovimentacoes(item)
     
-    geraMovimentacoes(bean, item)
+    //geraMovimentacoes(bean, item)
   }
   
   override fun add(bean: SaidaVo) {
@@ -78,6 +79,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
       this.numero = if (bean.numeroNota.isNullOrBlank())
         "${Nota.novoNumero()}" else bean.numeroNota ?: ""
       this.tipoMov = SAIDA
+      this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
       this.observacao = bean.observacaoNota ?: ""
     }
@@ -110,6 +112,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
                 this.produto = itemNota.produto
                 this.quantidade = itemNota.quantidade
                 this.loteInicial = itemNota.loteInicial()
+                this.tipoNota = itemNota?.nota?.tipoNota ?: OUTROS_S
               }
             }
   }
@@ -138,12 +141,12 @@ class SaidaVo {
         atualizaNota()
       }
     }
-  var tipoNota: TipoNota? = null
+  var tipoNota: TipoNota = OUTROS_S
   var rota: String? = ""
   
   fun atualizaNota() {
     notaSaidaSaci.firstOrNull()?.let { nota ->
-      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }
+      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }?: OUTROS_S
       rota = nota.rota
     }
   }
@@ -151,8 +154,8 @@ class SaidaVo {
   val notaSaidaSaci
     get() = Nota.findNotaSaidaSaci(numeroNota, lojaNF)
   
-  val dataNF: LocalDate?
-    get() = notaSaidaSaci.firstOrNull()?.date?.localDate()
+  val dataNF: LocalDate
+    get() = notaSaidaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
   
   val notaSaida: Nota?
     get() = Nota.findSaida(numeroNota, lojaNF)

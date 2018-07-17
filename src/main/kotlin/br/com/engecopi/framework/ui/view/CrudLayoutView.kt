@@ -104,6 +104,8 @@ class CustomCrudFormFactory<T>(
     val layout = VerticalLayout()
     binder.bean = domainObject
     layoutForm(layout, operation, binder, readOnly)
+    if (operation == DELETE)
+      binder.setReadOnly(true)
     
     val footerLayout = buildFooter(operation, domainObject, cancelButtonClickListener, operationButtonClickListener)
     

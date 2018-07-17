@@ -13,4 +13,7 @@ class NotaEntradaSaci(
         val custo: Double?,
         val vendName: String?,
         val tipo: String?
-                     )
+                     ){
+  val invalida = (tipo == null) || (tipo == "INVALIDA")
+
+}

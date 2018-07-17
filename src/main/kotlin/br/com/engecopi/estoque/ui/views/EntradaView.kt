@@ -54,12 +54,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         row {
           textField("Nota Fiscal") {
             expandRatio = 1f
+            isReadOnly = operation != ADD
             bind(binder).bind(EntradaVo::numeroNF)
             EntradaVo::class.declaredMemberProperties
             reloadBinderOnChange(binder)
           }
           comboBox<Loja>("Loja") {
             expandRatio = 1f
+            isReadOnly = operation != ADD
             default { it.sigla }
             
             setItems(viewModel.findLojas(lojaDefault))
@@ -70,11 +72,13 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           comboBox<TipoNota>("Tipo") {
             expandRatio = 1f
             default { it.descricao }
+            isReadOnly = true
             setItems(TipoNota.valuesEntrada())
             bind(binder).bind(EntradaVo::tipoNota)
           }
           textField("Rota") {
             expandRatio = 1f
+            isReadOnly = true
             bind(binder).bind(EntradaVo::rota)
           }
         }
@@ -108,6 +112,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         row {
           comboBox<ProdutoSaci>("Código") {
             expandRatio = 2f
+            isReadOnly = operation != ADD
             default { "${it.codigo} ${it.grade}".trim() }
             
             bindItens(binder, EntradaVo::produtoNota)
@@ -128,6 +133,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         row {
           comboBox<TipoProduto>("Tipo do Produto") {
             expandRatio = 1f
+            isReadOnly = operation != ADD
             isEmptySelectionAllowed = false
             isTextInputAllowed = false
             setItems(TipoProduto.values().toList())
@@ -138,7 +144,9 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           }
           integerField("Lote com") {
             expandRatio = 1f
-            bindReadOnly(binder, EntradaVo::tamanhoReadOnly)
+            bindReadOnly(binder, EntradaVo::tamanhoReadOnly){
+              isReadOnly = operation != ADD
+            }
             this.bind(binder)
                     .bind(EntradaVo::tamanho)
             addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
@@ -151,6 +159,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           }
           integerField("Qtd Entrada") {
             expandRatio = 1f
+            isReadOnly = operation != ADD
             this.bind(binder)
                     .bind(EntradaVo::quantProduto.name)
           }

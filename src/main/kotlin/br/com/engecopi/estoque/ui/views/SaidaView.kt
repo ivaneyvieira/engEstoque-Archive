@@ -58,12 +58,14 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           row {
             textField("Nota fiscal") {
               expandRatio = 1f
+              isReadOnly = operation != ADD
               bind(binder).bind(SaidaVo::numeroNota)
               reloadBinderOnChange(binder)
             }
             comboBox<Loja>("Loja") {
               expandRatio = 1f
               default { it.sigla }
+              isReadOnly = operation != ADD
               setItems(viewModel.findLojas(lojaDefault))
               bind(binder).asRequired("A loja deve ser informada").bind(SaidaVo::lojaNF)
               reloadBinderOnChange(binder)
@@ -71,6 +73,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             comboBox<TipoNota>("Tipo") {
               expandRatio = 1f
               default { it.descricao }
+              isReadOnly = true
               setItems(TipoNota.valuesSaida())
               bind(binder).bind(SaidaVo::tipoNota)
             }
@@ -81,6 +84,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             }
             textField("Rota") {
               expandRatio = 1f
+              isReadOnly = true
               bind(binder).bind(SaidaVo::rota)
             }
           }
@@ -99,6 +103,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           row {
             textField() {
               expandRatio = 1f
+              isReadOnly = operation != ADD
               bind(binder).bind(SaidaVo::codigoBarra)
               reloadBinderOnChange(binder)
             }
@@ -113,6 +118,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             comboBox<Produto>("Código") {
               expandRatio = 2f
               default { "${it.codigo} ${it.grade}".trim() }
+              isReadOnly = operation != ADD
               isTextInputAllowed = true
               setItems(viewModel.findProdutos())
               bind(binder).bind(SaidaVo::produto)
@@ -132,7 +138,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           row {
             integerField("Qtd. Saída") {
               expandRatio = 1f
-              //
+              isReadOnly = operation != ADD
               bindCaption(binder, SaidaVo::quantidadeCaption)
               bind(binder)
                       .bind(SaidaVo::quantidade)
@@ -140,6 +146,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             }
             comboBox<Lote>("Lote Inicial") {
               expandRatio = 1f
+              isReadOnly = true
               default { lote ->
                 lote.sequenciaStr ?: ""
               }
