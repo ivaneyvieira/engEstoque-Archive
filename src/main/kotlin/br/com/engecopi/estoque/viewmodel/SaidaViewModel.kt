@@ -237,7 +237,7 @@ class SaidaVo {
   val quantidadeCaption: String
     get() {
       return if (controlePorLote)
-        "Qtd Saída"
+        "Qtd Saída (lote)"
       else
         "Qtd Saída"
     }
