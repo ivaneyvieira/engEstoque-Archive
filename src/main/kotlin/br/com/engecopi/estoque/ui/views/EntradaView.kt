@@ -145,7 +145,8 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           integerField("Lote com") {
             expandRatio = 1f
             bindReadOnly(binder, EntradaVo::tamanhoReadOnly){
-              isReadOnly = operation != ADD
+              if(operation != ADD)
+                this.isReadOnly = true
             }
             
             this.bind(binder)

@@ -74,6 +74,12 @@ class ProdutoVo {
     get() = produtosSaci.mapNotNull { it.grade }
   var tipo: TipoProduto? = null
   var tamanhoLote: Int? = 0
+  get() {
+    return if(tipo?.loteUnitario == true)
+      1
+    else
+      field
+  }
   
   var codebar: String? = null
   
