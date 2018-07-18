@@ -82,6 +82,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
       this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
       this.observacao = bean.observacaoNota ?: ""
+      this.rota = bean.rota ?: ""
     }
     
     nota.save()
@@ -146,7 +147,7 @@ class SaidaVo {
   
   fun atualizaNota() {
     notaSaidaSaci.firstOrNull()?.let { nota ->
-      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }?: OUTROS_S
+      tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_S
       rota = nota.rota
     }
   }

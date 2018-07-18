@@ -187,6 +187,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
+        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
         column(EntradaVo::numeroNF) {
           caption = "Número NF"
         }

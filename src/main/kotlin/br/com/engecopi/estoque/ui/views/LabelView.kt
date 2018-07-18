@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.LabelViewModel
 import br.com.engecopi.estoque.viewmodel.LabelVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -66,6 +67,7 @@ class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
+        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
         column(LabelVo::tipoProduto) {
           caption = "Tipo de Produto"
           setRenderer({ it?.descricao ?: "" }, TextRenderer())

@@ -19,7 +19,6 @@ import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
-import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
@@ -33,11 +32,9 @@ import com.vaadin.ui.HasComponents
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
-import com.vaadin.ui.Window
 import com.vaadin.ui.themes.ValoTheme
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
-import java.awt.SystemColor.window
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
@@ -55,29 +52,30 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
   val versao = SystemUtils.readFile("/versao.txt")
-
   
   override fun init(request: VaadinRequest?) {
-    val user = LoginService.currentUser
+    val user = EstoqueUI.user
     if (user == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")
     } else {
       val content = valoMenu {
         this.appTitle = title
         
-        section("Usuário: " + user.login)
+        section("Usuário: " + user.loginName)
         menuButton("Sair", icon = VaadinIcons.OUT) {
           onLeftClick {
             LoginService.logout()
           }
         }
-        section("Movimentacao")
+        section("Movimentação")
         menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
         menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
-        section("Consulta")
-        menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
-        menuButton("Usuário", VaadinIcons.USER, view = UsuarioView::class.java)
-        menuButton("Etiquetas", VaadinIcons.TICKET, view = LabelView::class.java)
+        if (user.isAdmin) {
+          section("Consulta")
+          menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
+          menuButton("Usuário", VaadinIcons.USER, view = UsuarioView::class.java)
+          menuButton("Etiquetas", VaadinIcons.TICKET, view = LabelView::class.java)
+        }
       }
       
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl
@@ -102,12 +100,14 @@ class EstoqueUI : UI() {
   companion object {
     val estoqueUI
       get() = UI.getCurrent() as? EstoqueUI
-    val loja: Loja?
+    val user: Usuario?
       get() {
         val user = LoginService.currentUser ?: return null
         val login = user.login ?: return null
-        return Usuario.findUsuario(login)?.loja
+        return Usuario.findUsuario(login)
       }
+    val loja: Loja?
+      get() = user?.loja
   }
 }
 

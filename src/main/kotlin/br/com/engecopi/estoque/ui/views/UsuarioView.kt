@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.printer.printerSaci
@@ -73,6 +74,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
+        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
         column(UsuarioCrudVo::loginName) {
           expandRatio = 1
           caption = "Usuário"

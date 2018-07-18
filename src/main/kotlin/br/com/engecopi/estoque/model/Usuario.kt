@@ -31,7 +31,10 @@ class Usuario : BaseModel() {
   val nome: String?
     @Transient get() = usuarioSaci()?.name
   
-  companion object Find : UsuarioFinder() {
+  val isAdmin
+    @Transient get() = loginName == "ADM"
+    
+      companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String): Usuario? {
       return where().loginName.eq(loginName).findOne()
     }

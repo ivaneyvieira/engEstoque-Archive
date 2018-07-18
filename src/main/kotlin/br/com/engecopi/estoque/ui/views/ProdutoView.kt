@@ -159,6 +159,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
+        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
         column(ProdutoVo::codigoProduto) {
           expandRatio = 1
           caption = "Código"

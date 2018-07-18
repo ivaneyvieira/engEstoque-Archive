@@ -174,6 +174,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
   init {
     form("Expedição") {
       gridCrud(viewModel.crudClass.java) {
+        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
         column(SaidaVo::numeroNota) {
           caption = "Número NF"
         }
