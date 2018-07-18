@@ -59,7 +59,15 @@ class ItemNota : BaseModel() {
   var saldoTransient = 0
   
   val quantidadeUnitaria: Int
-    get() = (tipoMov?.multiplicador ?: 0) * (movimentacoes?.sumBy { it.quantidade } ?: 0)
+    @Transient get() = (tipoMov?.multiplicador ?: 0) * (movimentacoes?.sumBy { it.quantidade } ?: 0)
+  
+  val ultimoLoteMov
+    @Transient get() = movimentacoes?.mapNotNull { it.lote }?.sortedBy { it.sequencia }?.lastOrNull()
+  val ultimoLotePrd
+    @Transient get() = produto?.lotes?.sortedBy { it.sequencia }?.lastOrNull()
+  
+  val ultilmaMovimentacao
+    get() = (ultimoLoteMov?.sequencia ?: 0) == (ultimoLotePrd?.sequencia ?: 0)
   
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {

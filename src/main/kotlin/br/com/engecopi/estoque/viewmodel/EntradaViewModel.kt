@@ -143,10 +143,10 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
   override fun allBeans(): List<EntradaVo> {
     val query = ItemNota.where()
             .nota.tipoMov.eq(ENTRADA)
-    val qyeryLoja = lojaDefault?.let { loja->
+    val qyeryLoja = lojaDefault?.let { loja ->
       query.nota.loja.id.eq(loja.id)
-    }?: query
-    return  qyeryLoja
+    } ?: query
+    return qyeryLoja
             .findList().map { itemNota ->
               EntradaVo().apply {
                 val nota = itemNota.nota
@@ -164,10 +164,13 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
   
   override fun delete(bean: EntradaVo) {
     bean.itemNota?.also { item ->
-      item.movimentacoes?.forEach {
-        it.delete()
-      }
-      item.delete()
+      if (item.ultilmaMovimentacao) {
+        item.movimentacoes?.forEach {
+          it.delete()
+        }
+        item.delete()
+      } else
+        throw EViewModel("Não pode ser removido, por que essa não é a última movimentação do produto.")
     }
   }
   
@@ -199,7 +202,7 @@ class EntradaVo {
   
   fun atualizaNota() {
     notaEntradaSaci.firstOrNull()?.let { nota ->
-      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }?: OUTROS_E
+      tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
       rota = nota.rota
     }
   }

@@ -90,11 +90,15 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
   }
   
   override fun delete(bean: SaidaVo) {
+    
     ItemNota.find(bean.notaSaida, bean.produto)?.also { item ->
-      item.movimentacoes?.forEach {
-        it.delete()
-      }
-      item.delete()
+      if (item.ultilmaMovimentacao) {
+        item.movimentacoes?.forEach {
+          it.delete()
+        }
+        item.delete()
+      } else
+        throw EViewModel("Não pode ser removido, por que essa não é a última movimentação do produto.")
     }
   }
   
