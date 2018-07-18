@@ -1,12 +1,12 @@
 select P.invno, N.storeno, nfname as codigo, invse as serie,
-  IFNULL(X.xrouteno, '') as rota, N.date, TRIM(P.prdno) as prdno,
+  CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.date, TRIM(P.prdno) as prdno,
   P.grade, P.qtty/1000 as quant, P.cost/10000 as custo, V.name as vendName,
   CASE
     WHEN invse = '66' then 'ACERTO_E'
     WHEN type = 0 then "COMPRA"
     WHEN type = 1 then "TRANSFERENCIA_E"
     WHEN type = 2 then "DEV_CLI"
-    ELSE "OUTROS_E"
+    ELSE "INVALIDA"
   END AS tipo
 from sqldados.inv AS N
   inner join sqldados.iprd AS P

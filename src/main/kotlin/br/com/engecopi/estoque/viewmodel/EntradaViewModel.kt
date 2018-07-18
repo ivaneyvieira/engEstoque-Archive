@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -29,9 +30,9 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
     
     val item = updateItemNota(bean, nota, produto)
     
-    deleteMovimentacoes(item)
+    //deleteMovimentacoes(item)
     
-    geraMovimentacoes(bean, item)
+    //geraMovimentacoes(bean, item)
   }
   
   override fun add(bean: EntradaVo) {
@@ -155,7 +156,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
                 this.produtoSaci = itemNota.produto?.produtoSaci()
                 this.tamanho = itemNota.produto?.tamanhoLote
                 this.tipoProduto = itemNota.produto?.label?.tipo
-                this.tipoNota = itemNota?.nota?.tipoNota
+                this.tipoNota = itemNota?.nota?.tipoNota ?: OUTROS_E
                 this.rota = itemNota?.nota?.rota
               }
             }
@@ -190,7 +191,7 @@ class EntradaVo {
         atualizaNota()
       }
     }
-  var tipoNota: TipoNota? = null
+  var tipoNota: TipoNota = OUTROS_E
   var rota: String? = ""
   
   val notaEntradaSaci: List<NotaEntradaSaci>
@@ -198,7 +199,7 @@ class EntradaVo {
   
   fun atualizaNota() {
     notaEntradaSaci.firstOrNull()?.let { nota ->
-      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }
+      tipoNota = TipoNota.values().find { it.toString() == nota.tipo }?: OUTROS_E
       rota = nota.rota
     }
   }

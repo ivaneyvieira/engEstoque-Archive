@@ -1,12 +1,12 @@
-select I.storeno as storenoT, IFNULL(X.xrouteno, '') as rota, N.storeno, N.nfno,
-  N.nfse, N.issuedate as date,TRIM(P.prdno) as prdno, P.grade, P.qtty as quant,
+select I.storeno as storenoT, CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
+  N.nfno, N.nfse, N.issuedate as date,TRIM(P.prdno) as prdno, P.grade, P.qtty as quant,
   C.name as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
     WHEN tipo = 0 then 'VENDA'
     WHEN tipo = 1 then 'TRANSFERENCIA_S'
     WHEN tipo = 2 then 'DEV_FOR'
-    ELSE 'OUTROS_S'
+    ELSE 'INVALIDA'
   END AS tipo
 from sqldados.nf AS N
   inner join sqldados.xaprd AS P

@@ -97,7 +97,7 @@ class ProdutoVo {
   
   val lotes
     get() = produto?.lotes.orEmpty().filter {
-      lojaDefault?.let { lDef ->
+      it.saldo != 0 && lojaDefault?.let { lDef ->
         it.loja?.id == lDef.id
       }?: true
     }
