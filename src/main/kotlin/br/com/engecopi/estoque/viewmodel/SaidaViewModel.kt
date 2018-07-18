@@ -15,6 +15,7 @@ import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
+import kotlin.math.roundToInt
 
 class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaVo>(view, SaidaVo::class) {
   override fun update(bean: SaidaVo) {
@@ -183,6 +184,20 @@ class SaidaVo {
   var detalheBarra: CodBarResult? = null
   
   var produto: Produto? = null
+    set(value) {
+      if (field != value && value != null) {
+        quantidade = notaSaidaSaci
+                .find { it.prdno == value.codigo && it.grade == value.grade }
+                ?.let { nota ->
+                  val controlePorLote = value.controlePorLote
+                  if (controlePorLote) {
+                    val quant = (nota.quant ?: 0) * 1.0 / value.tamanhoLote
+                    quant.roundToInt()
+                  } else nota.quant
+                } ?: 0
+      }
+      field = value
+    }
   
   val descricaoProduto: String?
     get() = produto?.descricao
@@ -240,12 +255,12 @@ class SaidaVo {
     }
   
   val controlePorLote
-    get() = produto?.label?.tipo?.controlePorLote ?: false
+    get() = produto?.controlePorLote ?: false
   
   val quantidadeCaption: String
     get() {
       return if (controlePorLote)
-        "Qtd Saída (lote)"
+        "Qtd Saída (lote c/ ${produto?.tamanhoLote ?: 0})"
       else
         "Qtd Saída"
     }

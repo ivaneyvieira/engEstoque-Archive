@@ -61,13 +61,13 @@ class ItemNota : BaseModel() {
   val quantidadeUnitaria: Int
     @Transient get() = (tipoMov?.multiplicador ?: 0) * (movimentacoes?.sumBy { it.quantidade } ?: 0)
   
-  val ultimoLoteMov
-    @Transient get() = movimentacoes?.mapNotNull { it.lote }?.sortedBy { it.sequencia }?.lastOrNull()
-  val ultimoLotePrd
-    @Transient get() = produto?.lotes?.sortedBy { it.sequencia }?.lastOrNull()
   
-  val ultilmaMovimentacao
-    get() = (ultimoLoteMov?.sequencia ?: 0) == (ultimoLotePrd?.sequencia ?: 0)
+  val ultilmaMovimentacao: Boolean
+    get() {
+      return produto?.ultimaNota()?.let {
+        it.id == this.id
+      }?: true
+    }
   
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {

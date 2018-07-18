@@ -48,11 +48,14 @@ class Produto : BaseModel() {
   val descricao: String?
     @Transient
     get() = produtoSaci()?.nome
+  val controlePorLote: Boolean
+    @Transient
+    get() = label?.tipo?.controlePorLote ?: false
   
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
       codigo ?: return null
-      return where().codigo.eq(codigo).grade.eq(grade?: "").findOne()
+      return where().codigo.eq(codigo).grade.eq(grade ?: "").findOne()
     }
     
     fun findProdutos(codigo: String?): List<Produto> {
@@ -79,10 +82,11 @@ class Produto : BaseModel() {
     }
   }
   
-  fun saldoLoja(loja: Loja?, sequencia : Int? = null): Int {
+  fun saldoLoja(loja: Loja?, sequencia: Int? = null): Int {
     loja ?: return 0
     refresh()
-    return lotes?.filter { it.loja == loja && (it.sequencia == sequencia || sequencia == null)}?.sumBy { it.saldo } ?: 0
+    return lotes?.filter { it.loja == loja && (it.sequencia == sequencia || sequencia == null) }?.sumBy { it.saldo }
+           ?: 0
   }
   
   fun saldoTotal(): Int {
@@ -102,11 +106,18 @@ class Produto : BaseModel() {
             .orderBy().sequencia.desc()
             .findList().firstOrNull()
   }
+  
+  fun ultimaNota(): ItemNota? {
+    refresh()
+    return itensNota?.sortedBy { it.id }?.lastOrNull()
+  }
 }
 
-enum class TipoProduto(val descricao: String, val processaCodBar: ProcessaCodBar,
-                        val controlePorLote : Boolean,
-                       val loteUnitario : Boolean) {
+enum class TipoProduto(
+        val descricao: String, val processaCodBar: ProcessaCodBar,
+        val controlePorLote: Boolean,
+        val loteUnitario: Boolean
+                      ) {
   NORMAL("Normal", ProcessaCodBarNormal(), true, true),
   PECA("Fio em Peça", ProcessaCodBarFios(), true, false),
   BOBINA("Fio em Bobina", ProcessaCodBarFios(), true, false),
