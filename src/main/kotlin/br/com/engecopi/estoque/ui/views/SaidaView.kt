@@ -194,6 +194,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
     }
   }
   
-  override val viewModel get() = SaidaViewModel(this, lojaDefault)
+  override val viewModel
+    get() = SaidaViewModel(this, lojaDefault)
 }
 
