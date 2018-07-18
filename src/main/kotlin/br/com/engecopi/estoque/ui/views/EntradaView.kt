@@ -147,6 +147,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             bindReadOnly(binder, EntradaVo::tamanhoReadOnly){
               isReadOnly = operation != ADD
             }
+            
             this.bind(binder)
                     .bind(EntradaVo::tamanho)
             addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
