@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
   
   val printer = cupsClient.printers.firstOrNull()
   
-  printer?.let { printer ->
+  printer?.let {
     println("imprimindo job")
     val job = PrintJob.Builder(etiqueta.toByteArray()).build()
     printer.print(job)

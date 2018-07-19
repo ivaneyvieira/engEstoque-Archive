@@ -82,7 +82,7 @@ open class DialogPopup<BEAN : Any>(
 }
 
 fun VerticalLayout.grupo(caption: String = "", block: VerticalLayout.() -> Unit) {
-  cssLayout("Nota fiscal de entrada") {
+  cssLayout(caption) {
     w = 100.perc
     addStyleName(ValoTheme.LAYOUT_CARD)
     verticalLayout { this.block() }

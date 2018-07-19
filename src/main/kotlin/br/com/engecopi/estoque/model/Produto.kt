@@ -48,9 +48,9 @@ class Produto : BaseModel() {
   val descricao: String?
     @Transient
     get() = produtoSaci()?.nome
-  val controlePorLote: Boolean
+  val controlePorLote: Boolean?
     @Transient
-    get() = label?.tipo?.controlePorLote ?: false
+    get() = label?.tipo?.controlePorLote
   
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {

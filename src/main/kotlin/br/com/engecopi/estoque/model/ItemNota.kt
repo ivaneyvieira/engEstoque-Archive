@@ -63,6 +63,7 @@ class ItemNota : BaseModel() {
   
   
   val ultilmaMovimentacao: Boolean
+    @Transient
     get() {
       return produto?.ultimaNota()?.let {
         it.id == this.id
@@ -89,6 +90,7 @@ class ItemNota : BaseModel() {
   
   fun loteInicial(): Lote? {
     refresh()
-    return movimentacoes?.mapNotNull { it.lote }.orEmpty().sortedBy { it.sequencia }.firstOrNull()
+    return movimentacoes?.mapNotNull { it.lote }
+            .orEmpty().sortedBy { it.sequencia }.firstOrNull()
   }
 }

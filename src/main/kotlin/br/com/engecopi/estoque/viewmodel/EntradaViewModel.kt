@@ -28,11 +28,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
     
     val produto = saveProduto(bean)
     
-    val item = updateItemNota(bean, nota, produto)
-    
-    //deleteMovimentacoes(item)
-    
-    //geraMovimentacoes(bean, item)
+    updateItemNota(bean, nota, produto)
   }
   
   override fun add(bean: EntradaVo) {
@@ -102,16 +98,16 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
   private fun updateItemNota(
           bean: EntradaVo, nota: Nota,
           produto: Produto
-                            ): ItemNota {
-    val item = bean.itemNota ?: ItemNota()
-    item.apply {
-      this.nota = nota
-      this.produto = produto
-      this.quantidade = bean.quantProduto ?: 0
-      this.tamanhoLote = bean.tamanho ?: 0
+                            ) {
+    bean.itemNota?.let { item ->
+      item.apply {
+        this.nota = nota
+        this.produto = produto
+        this.quantidade = bean.quantProduto ?: 0
+        this.tamanhoLote = bean.tamanho ?: 0
+      }
+      item.update()
     }
-    item.update()
-    return item
   }
   
   private fun saveProduto(bean: EntradaVo): Produto {

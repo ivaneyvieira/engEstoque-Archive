@@ -227,5 +227,5 @@ fun HasComponents.mTextField(captionPar: String = "", block: MTextField.() -> Un
 fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
         init(LabelField(caption), block)
 
-inline fun <reified T : Enum<*>> HasComponents.enumSelect(caption: String = "", block: EnumSelect<T>.() -> Unit = {}) =
-        init(EnumSelect<T>(caption, T::class.java))
+inline fun <reified T : Enum<*>> HasComponents.enumSelect(caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}) =
+        init(EnumSelect<T>(caption, T::class.java), block)
