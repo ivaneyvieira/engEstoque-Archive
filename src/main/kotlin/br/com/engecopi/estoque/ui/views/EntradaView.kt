@@ -34,12 +34,15 @@ import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
+import org.vaadin.crudui.crud.CrudOperation.UPDATE
 import kotlin.reflect.full.declaredMemberProperties
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
+  val isAdmin
+    get() = EstoqueUI.user?.isAdmin ?: false
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -47,7 +50,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           binder: Binder<EntradaVo>,
           readOnly: Boolean
                          ) {
-    if(operation == ADD)
+    if (operation == ADD)
       binder.bean.lojaNF = lojaDefault
     formLayout.apply {
       grupo("Nota fiscal de entrada") {
@@ -106,6 +109,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             bind(binder).bind(EntradaVo::fornecedor.name)
           }
         }
+        
       }
       
       grupo("Produto") {
@@ -144,8 +148,8 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           }
           integerField("Lote com") {
             expandRatio = 1f
-            bindReadOnly(binder, EntradaVo::tamanhoReadOnly){
-              if(operation != ADD)
+            bindReadOnly(binder, EntradaVo::tamanhoReadOnly) {
+              if (operation != ADD)
                 this.isReadOnly = true
             }
             
@@ -184,12 +188,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
       }
     }
+    if(!isAdmin && operation == UPDATE)
+      binder.setReadOnly(true)
   }
   
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
+        setDeleteOperationVisible(isAdmin)
         column(EntradaVo::numeroNF) {
           caption = "Número NF"
         }

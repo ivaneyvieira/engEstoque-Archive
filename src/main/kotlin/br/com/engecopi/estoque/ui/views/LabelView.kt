@@ -19,9 +19,12 @@ import com.vaadin.data.Binder
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
+import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView
 class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
+  val isAdmin
+    get() = EstoqueUI.user?.isAdmin ?: false
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
@@ -62,6 +65,8 @@ class LabelView : CrudLayoutView<LabelVo, LabelViewModel>() {
         }
       }
     }
+    if(!isAdmin && operation == UPDATE)
+      binder.setReadOnly(true)
   }
   
   init {

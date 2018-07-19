@@ -230,6 +230,9 @@ class SaidaVo {
     else
       lotesQuant.sumBy { it.quant }
   
+  val quantiadeUnidade: Int
+    get() = lotesQuant.sumBy { it.quant }
+  
   val lotesQuant: List<LoteQuant>
     get() {
       val lotes = Lote.findSequencia(lojaNF, produto, loteInicial?.sequencia ?: 0)

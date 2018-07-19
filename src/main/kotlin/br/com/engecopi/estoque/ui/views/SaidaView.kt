@@ -35,12 +35,15 @@ import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
+import org.vaadin.crudui.crud.CrudOperation.UPDATE
 import kotlin.reflect.KProperty
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
+  val isAdmin
+    get() = EstoqueUI.user?.isAdmin ?: false
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -159,16 +162,18 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               isReadOnly = true
               bind(binder).bind(SaidaVo::loteFinalStr.name)
             }
-            integerField("Saldo Disponível") {
+            integerField("Quantidade de Unidade") {
               expandRatio = 1f
               isReadOnly = true
               bind(binder)
-                      .bind(SaidaVo::quantidadeDisponivel.name)
+                      .bind(SaidaVo::quantiadeUnidade.name)
             }
           }
         }
       }
     }
+    if(!isAdmin && operation == UPDATE)
+      binder.setReadOnly(true)
   }
   
   init {

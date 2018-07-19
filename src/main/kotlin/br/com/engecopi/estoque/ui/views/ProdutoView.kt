@@ -36,12 +36,15 @@ import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
+import org.vaadin.crudui.crud.CrudOperation.UPDATE
 import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
+  val isAdmin
+    get() = EstoqueUI.user?.isAdmin ?: false
   override fun layoutForm(
           formLayout: VerticalLayout,
           operation: CrudOperation?,
@@ -154,6 +157,8 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
       }
     }
+    if(!isAdmin && operation == UPDATE)
+      binder.setReadOnly(true)
   }
   
   init {

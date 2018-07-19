@@ -17,12 +17,14 @@ import com.vaadin.data.BinderValidationStatus
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
+import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
-  
+  val isAdmin
+    get() = EstoqueUI.user?.isAdmin ?: false
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -69,6 +71,8 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         }
       }
     }
+    if(!isAdmin && operation == UPDATE)
+      binder.setReadOnly(true)
   }
   
   init {
