@@ -13,6 +13,7 @@ object MessageDialog {
             .open()
   }
   
+ 
   fun warning(caption: String = "Aviso", message: String) {
     MessageBox.createWarning()
             .withCaption(caption)

@@ -65,7 +65,7 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
     if (msg.isNotBlank())
       MessageDialog.warning(message = msg)
   }
-  
+
   override fun showError(msg: String) {
     if (msg.isNotBlank())
       MessageDialog.error(message = msg)

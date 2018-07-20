@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoProduto
@@ -8,6 +9,7 @@ import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
+import br.com.engecopi.framework.ui.view.MessageDialog
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.dateFormat
@@ -29,13 +31,13 @@ import com.github.vok.karibudsl.h
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
+import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
-import kotlin.reflect.full.declaredMemberProperties
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
@@ -222,7 +224,34 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           caption = "Quantidade"
           intFormat()
         }
+        grid.addComponentColumn { entrada ->
+          val button = Button("Imprimir")
+          button.addClickListener { click ->
+            MessageDialog.question(message = "Imprimir etiquetas agrupadas?",
+                                   execYes = {
+                                     imprimirAgrupado(entrada.itemNota)
+                                   },
+                                   execNo = {
+                                     imprimirSeparado(entrada.itemNota)
+                                   })
+          }
+          button
+        }
       }
+    }
+  }
+  
+  private fun imprimirSeparado(itemNota: ItemNota?) {
+    itemNota?.let {
+      val text = viewModel.imprimirSeparado(itemNota)
+      DialogEtiqueta("Etiqueta", text).show()
+    }
+  }
+  
+  private fun imprimirAgrupado(itemNota: ItemNota?) {
+    itemNota?.let {
+      val text = viewModel.imprimirAgrupado(itemNota)
+      DialogEtiqueta("Etiqueta", text).show()
     }
   }
   

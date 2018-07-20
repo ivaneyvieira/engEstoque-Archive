@@ -173,6 +173,20 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
   fun findLojas(loja: Loja?): List<Loja> = execList {
     loja?.let { listOf(it) } ?: Loja.all()
   }
+  
+  fun imprimirSeparado(itemNota: ItemNota) = execString {
+    val template = itemNota.produto?.label?.layoutEntrada ?: ""
+    val print = itemNota.printEtiqueta()
+    val etiqueta = EtiquetaPrinter(template, print)
+    etiqueta.printSeparado()
+  }
+  
+  fun imprimirAgrupado(itemNota: ItemNota) = execString {
+    val template = itemNota.produto?.label?.layoutEntrada ?: ""
+    val print = itemNota.printEtiqueta()
+    val etiqueta = EtiquetaPrinter(template, print)
+    etiqueta.printAgrupado()
+  }
 }
 
 class EntradaVo {
