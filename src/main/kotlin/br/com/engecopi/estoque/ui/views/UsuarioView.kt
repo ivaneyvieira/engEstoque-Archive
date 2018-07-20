@@ -13,7 +13,6 @@ import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
-import com.vaadin.data.BinderValidationStatus
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
