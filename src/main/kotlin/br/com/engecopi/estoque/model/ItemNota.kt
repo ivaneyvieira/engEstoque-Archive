@@ -94,3 +94,9 @@ class ItemNota : BaseModel() {
             .orEmpty().sortedBy { it.sequencia }.firstOrNull()
   }
 }
+
+
+class NotaPrint(val item : ItemNota){
+
+
+}
