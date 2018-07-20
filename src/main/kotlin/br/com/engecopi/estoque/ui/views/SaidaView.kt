@@ -123,7 +123,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               default { "${it.codigo} ${it.grade}".trim() }
               isReadOnly = operation != ADD
               isTextInputAllowed = true
-              setItems(viewModel.findProdutos())
+              bindItens(binder, SaidaVo::listaProdutos)
               bind(binder).bind(SaidaVo::produto)
               reloadBinderOnChange(binder)
             }
@@ -162,7 +162,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               isReadOnly = true
               bind(binder).bind(SaidaVo::loteFinalStr.name)
             }
-            integerField("Quantidade de Unidade") {
+            integerField("Qts Saída de Unidade") {
               expandRatio = 1f
               isReadOnly = true
               bind(binder)

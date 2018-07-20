@@ -23,7 +23,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
     
     val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
     
-    val item = saveItemNota(bean, nota, produto)
+    updateItemNota(bean, nota, produto)
     
     //deleteMovimentacoes(item)
     
@@ -35,7 +35,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
     
     val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
     
-    val item = saveItemNota(bean, nota, produto)
+    val item = addItemNota(bean, nota, produto)
     
     deleteMovimentacoes(item)
     
@@ -59,19 +59,33 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
     }
   }
   
-  private fun saveItemNota(
+  private fun addItemNota(
           bean: SaidaVo, nota: Nota,
           produto: Produto
-                          ): ItemNota {
-    val item = ItemNota.find(nota, produto) ?: ItemNota()
-    item.apply {
+                         ): ItemNota {
+    val item = ItemNota().apply {
       this.nota = nota
       this.produto = produto
       this.quantidade = bean.quantidade ?: 0
       this.tamanhoLote = bean.quantidade ?: 0
     }
-    item.save()
+    item.insert()
     return item
+  }
+  
+  private fun updateItemNota(
+          bean: SaidaVo, nota: Nota,
+          produto: Produto
+                            ) {
+    ItemNota.find(nota, produto)?.let { item ->
+      item.apply {
+        this.nota = nota
+        this.produto = produto
+        this.quantidade = bean.quantidade ?: 0
+        this.tamanhoLote = bean.quantidade ?: 0
+      }
+      item.save()
+    }
   }
   
   private fun saveNota(bean: SaidaVo): Nota {
@@ -126,10 +140,6 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
   fun findLojas(loja: Loja?): List<Loja> = execList {
     loja?.let { listOf(it) } ?: Loja.all()
   }
-  
-  fun findProdutos(): List<Produto> = execList {
-    Produto.all()
-  }
 }
 
 class SaidaVo {
@@ -156,6 +166,15 @@ class SaidaVo {
       rota = nota.rota
     }
   }
+  
+  val listaProdutos: List<Produto>
+    get() {
+      val notaSaci = notaSaidaSaci
+      return if (notaSaci.isEmpty())
+        Produto.all()
+      else
+        notaSaci.mapNotNull { Produto.findProduto(it.prdno, it.grade) }
+    }
   
   val notaSaidaSaci
     get() = Nota.findNotaSaidaSaci(numeroNota, lojaNF)
@@ -189,11 +208,12 @@ class SaidaVo {
         quantidade = notaSaidaSaci
                 .find { it.prdno == value.codigo && it.grade == value.grade }
                 ?.let { nota ->
-                  val controlePorLote = value.controlePorLote
-                  if (controlePorLote) {
-                    val quant = (nota.quant ?: 0) * 1.0 / value.tamanhoLote
-                    quant.roundToInt()
-                  } else nota.quant
+                  value.controlePorLote?.let { controlePorLote ->
+                    if (controlePorLote) {
+                      val quant = (nota.quant ?: 0) * 1.0 / value.tamanhoLote
+                      quant.roundToInt()
+                    } else nota.quant
+                  } ?: 0
                 } ?: 0
       }
       field = value
@@ -224,20 +244,24 @@ class SaidaVo {
   val loteFinalStr: String?
     get() = loteFinal?.sequenciaStr
   
-  val quantidadeDisponivel: Int?
-    get() = if (controlePorLote)
-      lotesQuant.size
-    else
-      lotesQuant.sumBy { it.quant }
+  val quantidadeDisponivel
+    get() = controlePorLote?.let { controlePorLote ->
+      if (controlePorLote)
+        lotesQuant.size
+      else
+        lotesQuant.sumBy { it.quant }
+    } ?: 0
   
   val quantiadeUnidade: Int
     get() = lotesQuant.sumBy { it.quant }
   
   val lotesQuant: List<LoteQuant>
     get() {
+      val cpl = controlePorLote
+      cpl ?: return emptyList()
       val lotes = Lote.findSequencia(lojaNF, produto, loteInicial?.sequencia ?: 0)
       val quant = quantidade ?: 0
-      return if (controlePorLote) {
+      return if (cpl) {
         lotes.take(quant).map { LoteQuant(it, it.saldo) }
       } else {
         var saldo = quant
@@ -258,14 +282,16 @@ class SaidaVo {
     }
   
   val controlePorLote
-    get() = produto?.controlePorLote ?: false
+    get() = produto?.controlePorLote
   
   val quantidadeCaption: String
     get() {
-      return if (controlePorLote)
-        "Qtd Saída (lote c/ ${produto?.tamanhoLote ?: 0})"
-      else
-        "Qtd Saída"
+      return controlePorLote?.let { cpl ->
+        if (cpl)
+          "Qtd Saída (lote c/ ${produto?.tamanhoLote ?: 0})"
+        else
+          "Qtd Saída"
+      } ?: ""
     }
 }
 

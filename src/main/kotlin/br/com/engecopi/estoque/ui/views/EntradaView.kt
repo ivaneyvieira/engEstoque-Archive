@@ -59,7 +59,6 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             expandRatio = 1f
             isReadOnly = operation != ADD
             bind(binder).bind(EntradaVo::numeroNF)
-            EntradaVo::class.declaredMemberProperties
             reloadBinderOnChange(binder)
           }
           comboBox<Loja>("Loja") {
@@ -188,7 +187,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
       }
     }
-    if(!isAdmin && operation == UPDATE)
+    if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
   
