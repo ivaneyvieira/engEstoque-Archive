@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
@@ -12,6 +13,7 @@ import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
+import com.github.vok.karibudsl.twinColSelect
 import com.vaadin.data.Binder
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -47,8 +49,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           isReadOnly = true
           bind(binder).bind(UsuarioCrudVo::nome.name)
         }
-      }
-      row {
+        
         comboBox<Loja> {
           expandRatio = 1f
           caption = "Loja"
@@ -67,10 +68,18 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItems(printerSaci.printers.map { it.name })
           setItemCaptionGenerator { it }
           bind(binder).bind(UsuarioCrudVo::impressora)
+          
+        }
+      }
+      row {
+        twinColSelect<Produto>("Produtos") {
+          setItems(viewModel.produtos)
+          setItemCaptionGenerator { "${it.codigo} ${it.grade} - ${it.descricao}".trim() }
+          bind(binder).bind(UsuarioCrudVo::produtos)
         }
       }
     }
-    if(!isAdmin && operation == UPDATE)
+    if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
   

@@ -1,7 +1,7 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.query.assoc.QAssocMovimentacao
+import br.com.engecopi.estoque.model.query.assoc.QAssocEtiqueta
 import br.com.engecopi.estoque.model.query.assoc.QAssocNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocProduto
 import io.ebean.EbeanServer
@@ -36,10 +36,9 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var data: PLocalDate<QItemNota>
   lateinit var hora: PLocalTime<QItemNota>
   lateinit var quantidade: PInteger<QItemNota>
-  lateinit var tamanhoLote: PInteger<QItemNota>
   lateinit var produto: QAssocProduto<QItemNota>
   lateinit var nota: QAssocNota<QItemNota>
-  lateinit var movimentacoes: QAssocMovimentacao<QItemNota>
+  lateinit var etiqueta: QAssocEtiqueta<QItemNota>
 
 
   /**

@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.TipoMov
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.QNota
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
@@ -28,6 +29,8 @@ class QAssocNota<R>(name: String, root: R) : TQAssocBean<Nota,R>(name, root) {
   lateinit var version: PInteger<R>
   lateinit var numero: PString<R>
   lateinit var tipoMov: PEnum<R,TipoMov>
+  lateinit var tipoNota: PEnum<R,TipoNota>
+  lateinit var rota: PString<R>
   lateinit var data: PLocalDate<R>
   lateinit var hora: PLocalTime<R>
   lateinit var observacao: PString<R>

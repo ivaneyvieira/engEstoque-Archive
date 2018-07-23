@@ -4,7 +4,6 @@ create table itens_nota (
   data                          date not null,
   hora                          time not null,
   quantidade                    integer not null,
-  tamanho_lote                  integer not null,
   produto_id                    bigint,
   nota_id                       bigint,
   created_at                    datetime(6) not null,
@@ -12,19 +11,6 @@ create table itens_nota (
   version                       integer not null,
   constraint uq_itens_nota_nota_id_produto_id unique (nota_id,produto_id),
   constraint pk_itens_nota primary key (id)
-);
-
-create table labels (
-  id                            bigint auto_increment not null,
-  tipo                          varchar(6) not null,
-  layout_entrada                longtext not null,
-  layout_saida                  longtext not null,
-  created_at                    datetime(6) not null,
-  updated_at                    datetime(6) not null,
-  version                       integer not null,
-  constraint ck_labels_tipo check ( tipo in ('NORMAL','PECA','BOBINA','CAIXA')),
-  constraint uq_labels_tipo unique (tipo),
-  constraint pk_labels primary key (id)
 );
 
 create table lojas (
@@ -37,37 +23,12 @@ create table lojas (
   constraint pk_lojas primary key (id)
 );
 
-create table lotes (
-  id                            bigint auto_increment not null,
-  sequencia                     integer not null,
-  total                         integer not null,
-  saldo                         integer not null,
-  produto_id                    bigint,
-  loja_id                       bigint,
-  created_at                    datetime(6) not null,
-  updated_at                    datetime(6) not null,
-  version                       integer not null,
-  constraint uq_lotes_loja_id_produto_id_sequencia unique (loja_id,produto_id,sequencia),
-  constraint uq_lotes_sequencia unique (sequencia),
-  constraint pk_lotes primary key (id)
-);
-
-create table movimentacoes (
-  id                            bigint auto_increment not null,
-  quantidade                    integer not null,
-  lote_id                       bigint,
-  item_nota_id                  bigint,
-  created_at                    datetime(6) not null,
-  updated_at                    datetime(6) not null,
-  version                       integer not null,
-  constraint uq_movimentacoes_lote_id_item_nota_id unique (lote_id,item_nota_id),
-  constraint pk_movimentacoes primary key (id)
-);
-
 create table notas (
   id                            bigint auto_increment not null,
   numero                        varchar(15) not null,
   tipo_mov                      varchar(7) not null,
+  tipo_nota                     varchar(15),
+  rota                          varchar(6) not null,
   data                          date not null,
   hora                          time not null,
   observacao                    varchar(100) not null,
@@ -76,6 +37,7 @@ create table notas (
   updated_at                    datetime(6) not null,
   version                       integer not null,
   constraint ck_notas_tipo_mov check ( tipo_mov in ('ENTRADA','SAIDA')),
+  constraint ck_notas_tipo_nota check ( tipo_nota in ('COMPRA','TRANSFERENCIA_E','DEV_CLI','ACERTO_E','OUTROS_E','VENDA','TRANSFERENCIA_S','DEV_FOR','ACERTO_S','OUTROS_S')),
   constraint pk_notas primary key (id)
 );
 
@@ -85,8 +47,6 @@ create table produtos (
   grade                         varchar(8) not null,
   codebar                       varchar(16) not null,
   data_cadastro                 date not null,
-  tamanho_lote                  integer not null,
-  label_id                      bigint,
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
@@ -94,15 +54,34 @@ create table produtos (
   constraint pk_produtos primary key (id)
 );
 
+create table saldo (
+  id                            bigint auto_increment not null,
+  quantidade                    integer not null,
+  loja_id                       bigint,
+  produto_id                    bigint,
+  created_at                    datetime(6) not null,
+  updated_at                    datetime(6) not null,
+  version                       integer not null,
+  constraint uq_saldo_loja_id_produto_id unique (loja_id,produto_id),
+  constraint pk_saldo primary key (id)
+);
+
 create table usuarios (
   id                            bigint auto_increment not null,
   login_name                    varchar(8) not null,
+  impressora                    varchar(30) not null,
   loja_id                       bigint,
   created_at                    datetime(6) not null,
   updated_at                    datetime(6) not null,
   version                       integer not null,
   constraint uq_usuarios_login_name unique (login_name),
   constraint pk_usuarios primary key (id)
+);
+
+create table usuarios_produtos (
+  usuarios_id                   bigint not null,
+  produtos_id                   bigint not null,
+  constraint pk_usuarios_produtos primary key (usuarios_id,produtos_id)
 );
 
 create index ix_notas_numero on notas (numero);
@@ -113,24 +92,21 @@ alter table itens_nota add constraint fk_itens_nota_produto_id foreign key (prod
 create index ix_itens_nota_nota_id on itens_nota (nota_id);
 alter table itens_nota add constraint fk_itens_nota_nota_id foreign key (nota_id) references notas (id) on delete restrict on update restrict;
 
-create index ix_lotes_produto_id on lotes (produto_id);
-alter table lotes add constraint fk_lotes_produto_id foreign key (produto_id) references produtos (id) on delete restrict on update restrict;
-
-create index ix_lotes_loja_id on lotes (loja_id);
-alter table lotes add constraint fk_lotes_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
-
-create index ix_movimentacoes_lote_id on movimentacoes (lote_id);
-alter table movimentacoes add constraint fk_movimentacoes_lote_id foreign key (lote_id) references lotes (id) on delete restrict on update restrict;
-
-create index ix_movimentacoes_item_nota_id on movimentacoes (item_nota_id);
-alter table movimentacoes add constraint fk_movimentacoes_item_nota_id foreign key (item_nota_id) references itens_nota (id) on delete restrict on update restrict;
-
 create index ix_notas_loja_id on notas (loja_id);
 alter table notas add constraint fk_notas_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
 
-create index ix_produtos_label_id on produtos (label_id);
-alter table produtos add constraint fk_produtos_label_id foreign key (label_id) references labels (id) on delete restrict on update restrict;
+create index ix_saldo_loja_id on saldo (loja_id);
+alter table saldo add constraint fk_saldo_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
+
+create index ix_saldo_produto_id on saldo (produto_id);
+alter table saldo add constraint fk_saldo_produto_id foreign key (produto_id) references produtos (id) on delete restrict on update restrict;
 
 create index ix_usuarios_loja_id on usuarios (loja_id);
 alter table usuarios add constraint fk_usuarios_loja_id foreign key (loja_id) references lojas (id) on delete restrict on update restrict;
+
+create index ix_usuarios_produtos_usuarios on usuarios_produtos (usuarios_id);
+alter table usuarios_produtos add constraint fk_usuarios_produtos_usuarios foreign key (usuarios_id) references usuarios (id) on delete restrict on update restrict;
+
+create index ix_usuarios_produtos_produtos on usuarios_produtos (produtos_id);
+alter table usuarios_produtos add constraint fk_usuarios_produtos_produtos foreign key (produtos_id) references produtos (id) on delete restrict on update restrict;
 

@@ -1,17 +1,13 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Lote
-import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
-import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.default
-import br.com.engecopi.framework.ui.view.intFormat
-import br.com.engecopi.framework.ui.view.integerField
+import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
@@ -20,11 +16,9 @@ import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
@@ -34,7 +28,6 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 import java.text.DecimalFormat
@@ -55,9 +48,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
     formLayout.apply {
       w = 800.px
       h = 300.px
-      cssLayout("Produtos") {
-        w = 100.perc
-        addStyleName(ValoTheme.LAYOUT_CARD)
+      grupo("Produtos") {
         verticalLayout {
           row {
             textField {
@@ -81,43 +72,6 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             }
           }
           row {
-            comboBox<TipoProduto> {
-              expandRatio = 1f
-              caption = "Tipo"
-              isEmptySelectionAllowed = false
-              isTextInputAllowed = false
-              setItems(TipoProduto.values().toList())
-              setItemCaptionGenerator { it.descricao }
-              
-              bind(binder).bind(ProdutoVo::tipo)
-              reloadBinderOnChange(binder)
-            }
-            
-            integerField {
-              expandRatio = 1f
-              caption = "Tamanho do Lote"
-              addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-              bindReadOnly(binder, ProdutoVo::tamanhoReadOnly)
-              bind(binder)
-                      .bind(ProdutoVo::tamanhoLote)
-            }
-          }
-          row {
-            grid(Lote::class, "Lotes") {
-              expandRatio = 1f
-              removeAllColumns()
-              addColumnFor(Lote::sequenciaTotal) {
-                this.isSortable = false
-                caption = "Sequencia"
-              }
-              addColumnFor(Lote::saldo) {
-                this.isSortable = false
-                caption = "Saldo"
-                setRenderer(NumberRenderer(DecimalFormat("0")))
-                align = VAlign.Right
-              }
-              bindItens(binder, ProdutoVo::lotes)
-            }
             grid(ItemNota::class, "Notas") {
               expandRatio = 2f
               removeAllColumns()
@@ -139,9 +93,9 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
                 this.isSortable = false
                 caption = "Rota"
               }
-              addColumnFor(ItemNota::quantidadeUnitaria) {
+              addColumnFor(ItemNota::quantidadeSaldo) {
                 this.isSortable = false
-                caption = "Quant."
+                caption = "Quantidade"
                 setRenderer(NumberRenderer(DecimalFormat("0")))
                 align = VAlign.Right
               }
@@ -177,16 +131,6 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         column(ProdutoVo::gradeProduto) {
           expandRatio = 1
           caption = "Grade"
-        }
-        column(ProdutoVo::tipo) {
-          expandRatio = 1
-          caption = "Tipo"
-          setRenderer({ tipo -> tipo?.descricao }, TextRenderer())
-        }
-        column(ProdutoVo::tamanhoLote) {
-          expandRatio = 1
-          caption = "Tamanho do Lote"
-          intFormat()
         }
       }
     }

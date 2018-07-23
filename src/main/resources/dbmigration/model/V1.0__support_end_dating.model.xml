@@ -6,23 +6,12 @@
             <column name="data" type="date" notnull="true"/>
             <column name="hora" type="time" notnull="true"/>
             <column name="quantidade" type="integer" notnull="true"/>
-            <column name="tamanho_lote" type="integer" notnull="true"/>
             <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_itens_nota_produto_id" foreignKeyIndex="ix_itens_nota_produto_id"/>
             <column name="nota_id" type="bigint" references="notas.id" foreignKeyName="fk_itens_nota_nota_id" foreignKeyIndex="ix_itens_nota_nota_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>
             <uniqueConstraint name="uq_itens_nota_nota_id_produto_id" columnNames="nota_id,produto_id" oneToOne="false" nullableColumns="nota_id,produto_id"/>
-        </createTable>
-        <createTable name="labels" identityType="identity" pkName="pk_labels">
-            <column name="id" type="bigint" primaryKey="true"/>
-            <column name="tipo" type="varchar(6)" notnull="true" checkConstraint="check ( tipo in ('NORMAL','PECA','BOBINA','CAIXA'))" checkConstraintName="ck_labels_tipo"/>
-            <column name="layout_entrada" type="clob" notnull="true"/>
-            <column name="layout_saida" type="clob" notnull="true"/>
-            <column name="created_at" type="timestamp" notnull="true"/>
-            <column name="updated_at" type="timestamp" notnull="true"/>
-            <column name="version" type="integer" notnull="true"/>
-            <uniqueConstraint name="uq_labels_tipo" columnNames="tipo" oneToOne="false" nullableColumns=""/>
         </createTable>
         <createTable name="lojas" identityType="identity" pkName="pk_lojas">
             <column name="id" type="bigint" primaryKey="true"/>
@@ -32,33 +21,12 @@
             <column name="version" type="integer" notnull="true"/>
             <uniqueConstraint name="uq_lojas_numero" columnNames="numero" oneToOne="false" nullableColumns=""/>
         </createTable>
-        <createTable name="lotes" identityType="identity" pkName="pk_lotes">
-            <column name="id" type="bigint" primaryKey="true"/>
-            <column name="sequencia" type="integer" notnull="true"/>
-            <column name="total" type="integer" notnull="true"/>
-            <column name="saldo" type="integer" notnull="true"/>
-            <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_lotes_produto_id" foreignKeyIndex="ix_lotes_produto_id"/>
-            <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_lotes_loja_id" foreignKeyIndex="ix_lotes_loja_id"/>
-            <column name="created_at" type="timestamp" notnull="true"/>
-            <column name="updated_at" type="timestamp" notnull="true"/>
-            <column name="version" type="integer" notnull="true"/>
-            <uniqueConstraint name="uq_lotes_loja_id_produto_id_sequencia" columnNames="loja_id,produto_id,sequencia" oneToOne="false" nullableColumns="loja_id,produto_id"/>
-            <uniqueConstraint name="uq_lotes_sequencia" columnNames="sequencia" oneToOne="false" nullableColumns=""/>
-        </createTable>
-        <createTable name="movimentacoes" identityType="identity" pkName="pk_movimentacoes">
-            <column name="id" type="bigint" primaryKey="true"/>
-            <column name="quantidade" type="integer" notnull="true"/>
-            <column name="lote_id" type="bigint" references="lotes.id" foreignKeyName="fk_movimentacoes_lote_id" foreignKeyIndex="ix_movimentacoes_lote_id"/>
-            <column name="item_nota_id" type="bigint" references="itens_nota.id" foreignKeyName="fk_movimentacoes_item_nota_id" foreignKeyIndex="ix_movimentacoes_item_nota_id"/>
-            <column name="created_at" type="timestamp" notnull="true"/>
-            <column name="updated_at" type="timestamp" notnull="true"/>
-            <column name="version" type="integer" notnull="true"/>
-            <uniqueConstraint name="uq_movimentacoes_lote_id_item_nota_id" columnNames="lote_id,item_nota_id" oneToOne="false" nullableColumns="lote_id,item_nota_id"/>
-        </createTable>
         <createTable name="notas" identityType="identity" pkName="pk_notas">
             <column name="id" type="bigint" primaryKey="true"/>
             <column name="numero" type="varchar(15)" notnull="true"/>
             <column name="tipo_mov" type="varchar(7)" notnull="true" checkConstraint="check ( tipo_mov in ('ENTRADA','SAIDA'))" checkConstraintName="ck_notas_tipo_mov"/>
+            <column name="tipo_nota" type="varchar(15)" checkConstraint="check ( tipo_nota in ('COMPRA','TRANSFERENCIA_E','DEV_CLI','ACERTO_E','OUTROS_E','VENDA','TRANSFERENCIA_S','DEV_FOR','ACERTO_S','OUTROS_S'))" checkConstraintName="ck_notas_tipo_nota"/>
+            <column name="rota" type="varchar(6)" notnull="true"/>
             <column name="data" type="date" notnull="true"/>
             <column name="hora" type="time" notnull="true"/>
             <column name="observacao" type="varchar(100)" notnull="true"/>
@@ -73,21 +41,36 @@
             <column name="grade" type="varchar(8)" notnull="true"/>
             <column name="codebar" type="varchar(16)" notnull="true"/>
             <column name="data_cadastro" type="date" notnull="true"/>
-            <column name="tamanho_lote" type="integer" notnull="true"/>
-            <column name="label_id" type="bigint" references="labels.id" foreignKeyName="fk_produtos_label_id" foreignKeyIndex="ix_produtos_label_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>
             <uniqueConstraint name="uq_produtos_codigo_grade" columnNames="codigo,grade" oneToOne="false" nullableColumns=""/>
         </createTable>
+        <createTable name="saldo" identityType="identity" pkName="pk_saldo">
+            <column name="id" type="bigint" primaryKey="true"/>
+            <column name="quantidade" type="integer" notnull="true"/>
+            <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_saldo_loja_id" foreignKeyIndex="ix_saldo_loja_id"/>
+            <column name="produto_id" type="bigint" references="produtos.id" foreignKeyName="fk_saldo_produto_id" foreignKeyIndex="ix_saldo_produto_id"/>
+            <column name="created_at" type="timestamp" notnull="true"/>
+            <column name="updated_at" type="timestamp" notnull="true"/>
+            <column name="version" type="integer" notnull="true"/>
+            <uniqueConstraint name="uq_saldo_loja_id_produto_id" columnNames="loja_id,produto_id" oneToOne="false" nullableColumns="loja_id,produto_id"/>
+        </createTable>
         <createTable name="usuarios" identityType="identity" pkName="pk_usuarios">
             <column name="id" type="bigint" primaryKey="true"/>
             <column name="login_name" type="varchar(8)" notnull="true"/>
+            <column name="impressora" type="varchar(30)" notnull="true"/>
             <column name="loja_id" type="bigint" references="lojas.id" foreignKeyName="fk_usuarios_loja_id" foreignKeyIndex="ix_usuarios_loja_id"/>
             <column name="created_at" type="timestamp" notnull="true"/>
             <column name="updated_at" type="timestamp" notnull="true"/>
             <column name="version" type="integer" notnull="true"/>
             <uniqueConstraint name="uq_usuarios_login_name" columnNames="login_name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="usuarios_produtos" pkName="pk_usuarios_produtos">
+            <column name="usuarios_id" type="bigint" notnull="true" primaryKey="true"/>
+            <column name="produtos_id" type="bigint" notnull="true" primaryKey="true"/>
+            <foreignKey name="fk_usuarios_produtos_usuarios" columnNames="usuarios_id" refColumnNames="id" refTableName="usuarios" indexName="ix_usuarios_produtos_usuarios"/>
+            <foreignKey name="fk_usuarios_produtos_produtos" columnNames="produtos_id" refColumnNames="id" refTableName="produtos" indexName="ix_usuarios_produtos_produtos"/>
         </createTable>
         <createIndex indexName="ix_notas_numero" tableName="notas" columns="numero"/>
         <createIndex indexName="ix_produtos_codebar" tableName="produtos" columns="codebar"/>

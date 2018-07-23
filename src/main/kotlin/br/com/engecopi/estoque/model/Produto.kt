@@ -1,21 +1,17 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.TipoProduto.PECA
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
 import java.time.LocalDate
-import javax.persistence.CascadeType.DETACH
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.ManyToOne
+import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
 import javax.persistence.Table
 import javax.persistence.Transient
@@ -33,13 +29,10 @@ class Produto : BaseModel() {
   @Index(unique = false)
   var codebar: String = ""
   var dataCadastro: LocalDate = LocalDate.now()
-  var tamanhoLote: Int = 0
+  @ManyToMany(mappedBy = "produtos", cascade = [PERSIST, MERGE, REFRESH])
+  val usuarios: List<Usuario>? = null
   @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val itensNota: List<ItemNota>? = null
-  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
-  val lotes: List<Lote>? = null
-  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  var label: Label? = null
   
   fun produtoSaci(): ProdutoSaci? {
     return saci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
@@ -48,9 +41,6 @@ class Produto : BaseModel() {
   val descricao: String?
     @Transient
     get() = produtoSaci()?.nome
-  val controlePorLote: Boolean?
-    @Transient
-    get() = label?.tipo?.controlePorLote
   
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
@@ -68,8 +58,6 @@ class Produto : BaseModel() {
         produtoSaci?.let { pSaci ->
           codigo = pSaci.codigo ?: codigo
           grade = pSaci.grade ?: grade
-          val tipo = TipoProduto.valueOf(pSaci.tipo ?: "NORMAL")
-          label = Label.find(tipo)
           codebar = pSaci.codebar ?: codebar
         }
       }
@@ -82,29 +70,21 @@ class Produto : BaseModel() {
     }
   }
   
-  fun saldoLoja(loja: Loja?, sequencia: Int? = null): Int {
+  fun saldoLoja(loja: Loja?): Int {
     loja ?: return 0
     refresh()
-    return lotes?.filter { it.loja == loja && (it.sequencia == sequencia || sequencia == null) }?.sumBy { it.saldo }
-           ?: 0
+    return itensNota.orEmpty().filter { it.nota?.loja?.id == loja.id }.sumBy { item ->
+      val multiplicador = item.nota?.tipoMov?.multiplicador ?: 0
+      multiplicador * item.quantidade
+    }
   }
   
   fun saldoTotal(): Int {
     refresh()
-    return lotes?.sumBy { it.saldo } ?: 0
-  }
-  
-  fun atualizaSaldo() {
-    refresh()
-    lotes?.forEach { it.atualizaSaldo() }
-  }
-  
-  fun ultimoLoteLoja(loja: Loja?): Lote? {
-    loja ?: return null
-    return Lote.where().loja.id.eq(loja.id)
-            .produto.id.eq(this.id)
-            .orderBy().sequencia.desc()
-            .findList().firstOrNull()
+    return itensNota.orEmpty().sumBy { item ->
+      val multiplicador = item.nota?.tipoMov?.multiplicador ?: 0
+      multiplicador * item.quantidade
+    }
   }
   
   fun ultimaNota(): ItemNota? {
@@ -113,69 +93,3 @@ class Produto : BaseModel() {
   }
 }
 
-enum class TipoProduto(
-        val descricao: String, val processaCodBar: ProcessaCodBar,
-        val controlePorLote: Boolean,
-        val loteUnitario: Boolean
-                      ) {
-  NORMAL("Normal", ProcessaCodBarNormal(), true, true),
-  PECA("Fio em Peça", ProcessaCodBarFios(), true, false),
-  BOBINA("Fio em Bobina", ProcessaCodBarFios(), true, false),
-  CAIXA("Ceramica", ProcessaCodBarPiso(), false, false)
-}
-
-class ProcessaCodBarPiso : ProcessaCodBar {
-  override fun processaCodBar(codbar: String): CodBarResult? {
-    val sep1 = " "
-    val sep2 = ";"
-    val prdno = codbar.split(sep1).getOrNull(0) ?: return null
-    val grade = codbar.split(sep1).getOrNull(1) ?: return null
-    val tamanhoLote = codbar.split(sep1).getOrNull(2)?.toIntOrNull() ?: return null
-    val chave = codbar.split(sep1).getOrNull(3) ?: return null
-    val sequencia = chave.split(sep2).getOrNull(0)?.toIntOrNull() ?: return null
-    val total = chave.split(sep2).getOrNull(1)?.toIntOrNull() ?: return null
-    return CodBarResult(prdno, grade, tamanhoLote, sequencia, total)
-  }
-}
-
-class ProcessaCodBarFios : ProcessaCodBar {
-  override fun processaCodBar(codbar: String): CodBarResult? {
-    val sep1 = " "
-    val sep2 = ";"
-    val prdno = codbar.split(sep1).getOrNull(0) ?: return null
-    val grade = codbar.split(sep1).getOrNull(1) ?: return null
-    val qtPecas = codbar.split(sep1).getOrNull(2)?.toIntOrNull() ?: return null
-    val tamanhoBobina = codbar.split(sep1).getOrNull(3)?.toIntOrNull() ?: return null
-    val tamanhoLote = if (tamanhoBobina == 0) qtPecas else tamanhoBobina
-    val chave = codbar.split(sep1).getOrNull(4) ?: return null
-    val sequencia = chave.split(sep2).getOrNull(0)?.toIntOrNull() ?: return null
-    val total = chave.split(sep2).getOrNull(1)?.toIntOrNull() ?: return null
-    return CodBarResult(prdno, grade, tamanhoLote, sequencia, total)
-  }
-}
-
-class ProcessaCodBarNormal : ProcessaCodBar {
-  override fun processaCodBar(codbar: String): CodBarResult? {
-    val sep1 = " "
-    val sep2 = ";"
-    val prdno = codbar.split(sep1).getOrNull(0) ?: return null
-    val grade = ""
-    val tamanhoLote = 1
-    val chave = codbar.split(sep1).getOrNull(1) ?: return null
-    val sequencia = chave.split(sep2).getOrNull(0)?.toIntOrNull() ?: return null
-    val total = chave.split(sep2).getOrNull(1)?.toIntOrNull() ?: return null
-    return CodBarResult(prdno, grade, tamanhoLote, sequencia, total)
-  }
-}
-
-data class CodBarResult(
-        val prdno: String = "",
-        val grade: String = "",
-        val tamanhoLote: Int? = 0,
-        val sequencia: Int = 0,
-        val total: Int = 0
-                       )
-
-interface ProcessaCodBar {
-  fun processaCodBar(codbar: String): CodBarResult?
-}

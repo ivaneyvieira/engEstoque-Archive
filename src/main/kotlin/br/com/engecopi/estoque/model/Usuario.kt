@@ -9,7 +9,10 @@ import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.Transient
@@ -25,6 +28,9 @@ class Usuario : BaseModel() {
   var impressora: String= ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
+  @ManyToMany(cascade = [PERSIST, MERGE, REFRESH, REMOVE])
+  @JoinTable(name = "usuarios_produtos")
+  var produtos: MutableList<Produto>? = null
   
   fun usuarioSaci() = saci.findUser(loginName)
   

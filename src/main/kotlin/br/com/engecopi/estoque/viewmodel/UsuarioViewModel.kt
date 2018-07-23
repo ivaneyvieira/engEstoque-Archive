@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -10,6 +11,10 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
     Usuario.findUsuario(bean.loginName ?: "")?.let { usuario ->
       usuario.loja = bean.loja
       usuario.impressora = bean.impressora ?: ""
+      
+      val list = mutableListOf<Produto>()
+      list.addAll(bean.produtos.orEmpty())
+      usuario.produtos = list
       usuario.update()
     }
   }
@@ -19,6 +24,10 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
       this.impressora = bean.impressora ?: ""
+      
+      val list = mutableListOf<Produto>()
+      list.addAll(bean.produtos.orEmpty())
+      this.produtos = list
     }
     usuario.insert()
   }
@@ -29,6 +38,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
         this.loginName = usuario.loginName
         this.loja = usuario.loja
         this.impressora = usuario.impressora
+        this.produtos = usuario.produtos.orEmpty().toSet()
       }
     }
   }
@@ -38,6 +48,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
   }
   
   val lojas = execList { Loja.all() }
+  val produtos: List<Produto>
+    get() = Produto.all()
 }
 
 class UsuarioCrudVo {
@@ -48,4 +60,6 @@ class UsuarioCrudVo {
   
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
+  
+  var produtos: Set<Produto>? = null
 }

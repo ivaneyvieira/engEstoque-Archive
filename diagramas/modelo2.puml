@@ -6,14 +6,12 @@ class Produto{
 	grade
 	codebar
 	data_cadastro
-	tamanho_lote
 }
 
 class ItemNota{
 	data
 	hora
 	quantidade
-	tamanhoLote
 }
 
 class Nota {
@@ -22,16 +20,6 @@ class Nota {
 	data
 	hora
 	observacao
-}
-
-class Lote {
-	sequencia
-	total
-	saldo
-}
-
-class Movimentacao {
-	quantidade
 }
 
 class Loja {
@@ -43,20 +31,22 @@ class Usuario {
 	impressora
 }
 
-class Label {
-	tipo [NORMAL, PECA, BOBINA, CAIXA]
-	layoutEntrada
-	layoutSaida
+class Saldo {
+	quantidade
+}
+
+class Etiqueta {
+	titulo
+	template
 }
 
 
 ItemNota	-u->	Nota
-ItemNota	-->	Produto
-Lote		-->	Produto
-Lote		-u->	Loja
-Movimentacao	-l->	Lote
-Movimentacao	-r->	ItemNota
+ItemNota	-l->	Produto
 Nota		-l->	Loja
-Usuario		-r->	Loja
-Produto		-l->	Label
+Usuario		-u->	Loja
+Usuario		<-d->	Produto
+Saldo		-u->	Loja
+Saldo		-d->	Produto
+ItemNota	-r->	Etiqueta
 @enduml

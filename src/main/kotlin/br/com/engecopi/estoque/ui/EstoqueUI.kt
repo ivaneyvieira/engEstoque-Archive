@@ -3,17 +3,14 @@ package br.com.engecopi.estoque.ui
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.ui.views.EntradaView
-import br.com.engecopi.estoque.ui.views.LabelView
+import br.com.engecopi.estoque.ui.views.EtiquetaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
 import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.autoViewProvider
-import com.github.vok.karibudsl.fillParent
-import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.onLeftClick
 import com.github.vok.karibudsl.valoMenu
-import com.github.vok.karibudsl.w
 import com.vaadin.annotations.JavaScript
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
@@ -28,7 +25,6 @@ import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
 import com.vaadin.shared.Position
-import com.vaadin.ui.HasComponents
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
@@ -40,6 +36,7 @@ import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.Cookie
+import javax.swing.text.LabelView
 
 private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 
@@ -73,8 +70,8 @@ class EstoqueUI : UI() {
         if (user.isAdmin) {
           section("Consulta")
           menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
-          menuButton("Usuário", VaadinIcons.USER, view = UsuarioView::class.java)
-          menuButton("Etiquetas", VaadinIcons.TICKET, view = LabelView::class.java)
+          menuButton("Usuários", VaadinIcons.USER, view = UsuarioView::class.java)
+          menuButton("Etiquetas", VaadinIcons.PAPERCLIP, view = EtiquetaView::class.java)
         }
       }
       
@@ -136,10 +133,7 @@ class MyUIServlet : VaadinServlet() {
   }
 }
 
-fun HasComponents.title(title: String) = label(title) {
-  w = fillParent
-  addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
-}
+
 
 fun UI.setCookie(nome: String, valor: String) {
   // Create a new cookie

@@ -1,9 +1,7 @@
 package br.com.engecopi.estoque.model.query
 
-import br.com.engecopi.estoque.model.Label
-import br.com.engecopi.estoque.model.TipoProduto
+import br.com.engecopi.estoque.model.Etiqueta
 import io.ebean.EbeanServer
-import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
@@ -12,39 +10,38 @@ import io.ebean.typequery.TQRootBean
 import io.ebean.typequery.TypeQueryBean
 
 /**
- * Query bean for Label.
+ * Query bean for Etiqueta.
  * 
  * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.
  */
 @TypeQueryBean
-class QLabel : TQRootBean<Label, QLabel> {
+class QEtiqueta : TQRootBean<Etiqueta, QEtiqueta> {
 
   companion object {
     /**
      * shared 'Alias' instance used to provide
      * properties to select and fetch clauses
      */
-    val _alias = QLabel(true)
+    val _alias = QEtiqueta(true)
   }
 
-  lateinit var id: PLong<QLabel>
-  lateinit var createdAt: PLocalDateTime<QLabel>
-  lateinit var updatedAt: PLocalDateTime<QLabel>
-  lateinit var version: PInteger<QLabel>
-  lateinit var tipo: PEnum<QLabel,TipoProduto>
-  lateinit var layoutEntrada: PString<QLabel>
-  lateinit var layoutSaida: PString<QLabel>
+  lateinit var id: PLong<QEtiqueta>
+  lateinit var createdAt: PLocalDateTime<QEtiqueta>
+  lateinit var updatedAt: PLocalDateTime<QEtiqueta>
+  lateinit var version: PInteger<QEtiqueta>
+  lateinit var titulo: PString<QEtiqueta>
+  lateinit var template: PString<QEtiqueta>
 
 
   /**
    * Construct with a given EbeanServer.
    */
-  constructor(server: EbeanServer) : super(Label::class.java, server)
+  constructor(server: EbeanServer) : super(Etiqueta::class.java, server)
 
   /**
    * Construct using the default EbeanServer.
    */
-  constructor() : super(Label::class.java)
+  constructor() : super(Etiqueta::class.java)
 
   /**
    * Construct for Alias.

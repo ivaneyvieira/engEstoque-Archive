@@ -1,11 +1,8 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Label
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.TipoProduto
-import br.com.engecopi.estoque.model.TipoProduto.NORMAL
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.saci
@@ -14,10 +11,7 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Prod
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.codebar = bean.codebar ?: ""
-      produto.label = Label.find(bean.tipo ?: NORMAL)
-      produto.tamanhoLote = bean.tamanhoLote ?: 0
       produto.update()
-      produto.atualizaSaldo()
     }
   }
   
@@ -26,8 +20,6 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Prod
       this.codigo = bean.codigoProduto ?: ""
       this.grade = bean.gradeProduto ?: ""
       this.codebar = bean.codebar ?: ""
-      this.label = Label.find(bean.tipo ?: NORMAL)
-      this.tamanhoLote = bean.tamanhoLote ?: 0
       this.insert()
     }
   }
@@ -47,8 +39,6 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Prod
         codigoProduto = produto.codigo
         gradeProduto = produto.grade
         codebar = produto.codebar
-        tipo = produto.label?.tipo
-        tamanhoLote = produto.tamanhoLote
       }
     }
   }
@@ -61,7 +51,6 @@ class ProdutoVo {
       field = value
       val produto = saci.findProduto(value ?: "")
       produto.firstOrNull()?.let { prdSaci ->
-        tipo = TipoProduto.values().firstOrNull { it.toString() == prdSaci.tipo }
         codebar = produtosSaci.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
       }
     }
@@ -72,14 +61,6 @@ class ProdutoVo {
     get() = produtosSaci.firstOrNull()?.nome ?: ""
   val grades
     get() = produtosSaci.mapNotNull { it.grade }
-  var tipo: TipoProduto? = null
-  var tamanhoLote: Int? = 0
-  get() {
-    return if(tipo?.loteUnitario == true)
-      1
-    else
-      field
-  }
   
   var codebar: String? = null
   
@@ -95,19 +76,9 @@ class ProdutoVo {
       }
       var saldo =0
       itens.forEach {item->
-        saldo += item.quantidadeUnitaria
+        saldo += item.quantidadeSaldo
         item.saldoTransient = saldo
       }
       return itens
     }
-  
-  val lotes
-    get() = produto?.lotes.orEmpty().filter {
-      it.saldo != 0 && lojaDefault?.let { lDef ->
-        it.loja?.id == lDef.id
-      }?: true
-    }
-  
-  val tamanhoReadOnly: Boolean
-    get() = tipo?.loteUnitario ?: false
 }

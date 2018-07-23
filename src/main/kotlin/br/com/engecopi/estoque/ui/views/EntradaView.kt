@@ -3,15 +3,11 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.TipoProduto
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
-import br.com.engecopi.estoque.viewmodel.MovimentacaoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.MessageDialog
 import br.com.engecopi.framework.ui.view.bindItens
-import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.grupo
@@ -21,20 +17,15 @@ import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.saci.beans.ProdutoSaci
 import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.grid
-import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
 import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
@@ -58,13 +49,13 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
       grupo("Nota fiscal de entrada") {
         row {
           textField("Nota Fiscal") {
-            expandRatio = 1f
+            expandRatio = 2f
             isReadOnly = operation != ADD
             bind(binder).bind(EntradaVo::numeroNF)
             reloadBinderOnChange(binder)
           }
           comboBox<Loja>("Loja") {
-            expandRatio = 1f
+            expandRatio = 2f
             isReadOnly = operation != ADD
             default { it.sigla }
             
@@ -74,7 +65,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             reloadBinderOnChange(binder)
           }
           comboBox<TipoNota>("Tipo") {
-            expandRatio = 1f
+            expandRatio = 2f
             default { it.descricao }
             isReadOnly = true
             setItems(TipoNota.valuesEntrada())
@@ -134,57 +125,11 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             isReadOnly = true
             bind(binder).bind(EntradaVo::grade.name)
           }
-        }
-        row {
-          comboBox<TipoProduto>("Tipo do Produto") {
-            expandRatio = 1f
-            isReadOnly = operation != ADD
-            isEmptySelectionAllowed = false
-            isTextInputAllowed = false
-            setItems(TipoProduto.values().toList())
-            setItemCaptionGenerator { it.descricao }
-            
-            bind(binder).bind(EntradaVo::tipoProduto)
-            reloadBinderOnChange(binder)
-          }
-          integerField("Lote com") {
-            expandRatio = 1f
-            bindReadOnly(binder, EntradaVo::tamanhoReadOnly) {
-              if (operation != ADD)
-                this.isReadOnly = true
-            }
-            
-            this.bind(binder)
-                    .bind(EntradaVo::tamanho)
-            addStyleName(ValoTheme.TEXTFIELD_ALIGN_RIGHT)
-            reloadBinderOnChange(binder)
-          }
-          textField("Seq Inicial") {
-            expandRatio = 1f
-            isReadOnly = true
-            bind(binder).bind(EntradaVo::sequencia.name)
-          }
           integerField("Qtd Entrada") {
             expandRatio = 1f
             isReadOnly = operation != ADD
             this.bind(binder)
                     .bind(EntradaVo::quantProduto.name)
-          }
-        }
-      }
-      
-      row {
-        grid(MovimentacaoVO::class) {
-          h = 150.px
-          caption = "Lotes"
-          bindItens(binder, EntradaVo::movimentacao)
-          removeAllColumns()
-          addColumnFor(MovimentacaoVO::descLote) {
-            caption = "Seq. do Lote"
-          }
-          addColumnFor(MovimentacaoVO::quantidade) {
-            caption = "Qtd. por Lote"
-            intFormat()
           }
         }
       }
@@ -227,13 +172,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         grid.addComponentColumn { entrada ->
           val button = Button("Imprimir")
           button.addClickListener { click ->
-            MessageDialog.question(message = "Imprimir etiquetas agrupadas?",
-                                   execYes = {
-                                     imprimirAgrupado(entrada.itemNota)
-                                   },
-                                   execNo = {
-                                     imprimirSeparado(entrada.itemNota)
-                                   })
+            imprimir(entrada.itemNota)
           }
           button
         }
@@ -241,16 +180,9 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
     }
   }
   
-  private fun imprimirSeparado(itemNota: ItemNota?) {
+  private fun imprimir(itemNota: ItemNota?) {
     itemNota?.let {
-      val text = viewModel.imprimirSeparado(itemNota)
-      DialogEtiqueta("Etiqueta", text).show()
-    }
-  }
-  
-  private fun imprimirAgrupado(itemNota: ItemNota?) {
-    itemNota?.let {
-      val text = viewModel.imprimirAgrupado(itemNota)
+      val text = viewModel.imprimir(itemNota)
       DialogEtiqueta("Etiqueta", text).show()
     }
   }

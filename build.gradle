@@ -89,12 +89,13 @@ dependencies {
   testCompile "com.github.mvysny.dynatest:dynatest:0.8"
   //Dependências do ebean
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
-  compile "io.ebean:ebean:11.18.4"
- // compile "io.ebean:kotlin-querybean-generator:11.4.1"
-  compile "io.ebean:querybean-generator:11.4.1"
+  compile "io.ebean:ebean:11.19.1"
+//  compile "io.ebean:kotlin-querybean-generator:11.19.1"
+  compile "io.ebean:querybean-generator:11.19.1"
+  compile "io.ebean:ebean-querybean:11.19.1"
   compile "io.ebean:ebean-annotation:4.1"
-  compile "io.ebean.tools:finder-generator:11.1.1"
-  compile 'io.ebean:ebean-docker-run:1.5.1'
+  compile "io.ebean.tools:finder-generator:11.1.2"
+  //compile 'io.ebean:ebean-docker-run:1.5.1'
 
   // workaround until https://youtrack.jetbrains.com/issue/IDEA-178071 is fixed
   compile "com.vaadin:vaadin-themes:${vaadin.version}"

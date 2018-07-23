@@ -1,14 +1,16 @@
 package br.com.engecopi.framework.ui.view
 
-import br.com.engecopi.estoque.ui.title
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
+import com.github.vok.karibudsl.label
+import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
@@ -96,7 +98,7 @@ fun <V, T> HasItems<T>.bindItens(
                                 ) {
   val hasValue = (this as? HasValue<*>)
   
-  val itensOld: List<T>? = (this.dataProvider as? ListDataProvider)?.items?.toList()
+  val itensOld: List<T>? = (this.dataProvider as? ListDataProvider<T>)?.items?.toList()
   
   bind(binder, propertyList) { itens ->
     val oldValue = hasValue?.value
@@ -105,7 +107,7 @@ fun <V, T> HasItems<T>.bindItens(
     else
       if (itensOld != itens)
         setItems(itens)
-    val value = if (oldValue == null)
+    val value = if (oldValue == null || !itens.contains(oldValue as? T))
       itens.firstOrNull()
     else
       itens.find { it == oldValue }
@@ -229,3 +231,7 @@ fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -
 
 inline fun <reified T : Enum<*>> HasComponents.enumSelect(caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}) =
         init(EnumSelect<T>(caption, T::class.java), block)
+fun HasComponents.title(title: String) = label(title) {
+  w = fillParent
+  addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
+}

@@ -26,10 +26,9 @@ class QAssocItemNota<R>(name: String, root: R) : TQAssocBean<ItemNota,R>(name, r
   lateinit var data: PLocalDate<R>
   lateinit var hora: PLocalTime<R>
   lateinit var quantidade: PInteger<R>
-  lateinit var tamanhoLote: PInteger<R>
   lateinit var produto: QAssocProduto<R>
   lateinit var nota: QAssocNota<R>
-  lateinit var movimentacoes: QAssocMovimentacao<R>
+  lateinit var etiqueta: QAssocEtiqueta<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

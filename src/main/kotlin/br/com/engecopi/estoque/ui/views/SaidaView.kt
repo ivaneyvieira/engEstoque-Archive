@@ -1,18 +1,16 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.Lote
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
-import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.bindCaption
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
@@ -20,23 +18,16 @@ import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.label
-import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
-import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
-import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
-import kotlin.reflect.KProperty
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
@@ -51,22 +42,20 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           binder: Binder<SaidaVo>,
           readOnly: Boolean
                          ) {
-    if(operation == ADD)
+    if (operation == ADD)
       binder.bean.lojaNF = lojaDefault
     formLayout.apply {
-      cssLayout("Nota fiscal de saída") {
-        w = 100.perc
-        addStyleName(ValoTheme.LAYOUT_CARD)
+      grupo("Nota fiscal de saída") {
         verticalLayout {
           row {
             textField("Nota fiscal") {
-              expandRatio = 1f
+              expandRatio = 2f
               isReadOnly = operation != ADD
               bind(binder).bind(SaidaVo::numeroNota)
               reloadBinderOnChange(binder)
             }
             comboBox<Loja>("Loja") {
-              expandRatio = 1f
+              expandRatio = 2f
               default { it.sigla }
               isReadOnly = operation != ADD
               setItems(viewModel.findLojas(lojaDefault))
@@ -74,7 +63,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               reloadBinderOnChange(binder)
             }
             comboBox<TipoNota>("Tipo") {
-              expandRatio = 1f
+              expandRatio = 2f
               default { it.descricao }
               isReadOnly = true
               setItems(TipoNota.valuesSaida())
@@ -99,9 +88,8 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           }
         }
       }
-      cssLayout("Código de Barras") {
-        w = 100.perc
-        addStyleName(ValoTheme.LAYOUT_CARD)
+      /*
+      grupo("Código de Barras") {
         verticalLayout {
           row {
             textField() {
@@ -113,9 +101,8 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           }
         }
       }
-      cssLayout("Produto") {
-        w = 100.perc
-        addStyleName(ValoTheme.LAYOUT_CARD)
+      */
+      grupo("Produto") {
         verticalLayout {
           row {
             comboBox<Produto>("Código") {
@@ -124,6 +111,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               isReadOnly = operation != ADD
               isTextInputAllowed = true
               bindItens(binder, SaidaVo::listaProdutos)
+              
               bind(binder).bind(SaidaVo::produto)
               reloadBinderOnChange(binder)
             }
@@ -137,42 +125,21 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
               isReadOnly = true
               bind(binder).bind(SaidaVo::grade.name)
             }
-          }
-          row {
             integerField("Qtd. Saída") {
               expandRatio = 1f
-              isReadOnly = operation != ADD
-              bindCaption(binder, SaidaVo::quantidadeCaption)
+              
+              bindReadOnly(binder, SaidaVo::quantidadeReadOnly) { quantidadeReadOnly ->
+                isReadOnly = if (operation == ADD) quantidadeReadOnly else true
+              }
               bind(binder)
                       .bind(SaidaVo::quantidade)
               reloadBinderOnChange(binder)
-            }
-            comboBox<Lote>("Lote Inicial") {
-              expandRatio = 1f
-              isReadOnly = true
-              default { lote ->
-                lote.sequenciaStr ?: ""
-              }
-              bind(binder).bind(SaidaVo::loteInicial)
-              bindItens(binder, SaidaVo::lotes)
-              reloadBinderOnChange(binder)
-            }
-            textField("Lote Final") {
-              expandRatio = 1f
-              isReadOnly = true
-              bind(binder).bind(SaidaVo::loteFinalStr.name)
-            }
-            integerField("Qts Saída de Unidade") {
-              expandRatio = 1f
-              isReadOnly = true
-              bind(binder)
-                      .bind(SaidaVo::quantiadeUnidade.name)
             }
           }
         }
       }
     }
-    if(!isAdmin && operation == UPDATE)
+    if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
   
@@ -194,6 +161,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           caption = "Código"
         }
         column(SaidaVo::descricaoProduto) {
+          expandRatio = 1
           caption = "Descrição"
         }
         column(SaidaVo::grade) {

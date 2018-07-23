@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.TipoMov
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
 import io.ebean.EbeanServer
@@ -37,6 +38,8 @@ class QNota : TQRootBean<Nota, QNota> {
   lateinit var version: PInteger<QNota>
   lateinit var numero: PString<QNota>
   lateinit var tipoMov: PEnum<QNota,TipoMov>
+  lateinit var tipoNota: PEnum<QNota,TipoNota>
+  lateinit var rota: PString<QNota>
   lateinit var data: PLocalDate<QNota>
   lateinit var hora: PLocalTime<QNota>
   lateinit var observacao: PString<QNota>

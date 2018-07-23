@@ -1,8 +1,5 @@
 package br.com.engecopi.framework.model
 
-import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.Loja.Find
-import io.ebean.Ebean
 import io.ebean.annotation.Platform
 import io.ebean.dbmigration.DbMigration
 import java.io.IOException
