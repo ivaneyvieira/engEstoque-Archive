@@ -29,7 +29,7 @@ class Produto : BaseModel() {
   @Index(unique = false)
   var codebar: String = ""
   var dataCadastro: LocalDate = LocalDate.now()
-  @ManyToMany(mappedBy = "produtos", cascade = [PERSIST, MERGE, REFRESH])
+  @ManyToMany(mappedBy = "produtos", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val usuarios: List<Usuario>? = null
   @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
   val itensNota: List<ItemNota>? = null
