@@ -2,10 +2,8 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
-import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
@@ -22,10 +20,10 @@ import javax.validation.constraints.Size
 @Table(name = "usuarios")
 class Usuario : BaseModel() {
   @Size(max = 8)
-  @Index(unique=true)
+  @Index(unique = true)
   var loginName: String = ""
   @Size(max = 30)
-  var impressora: String= ""
+  var impressora: String = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
   @ManyToMany(cascade = [PERSIST, MERGE, REFRESH, REMOVE])
@@ -38,9 +36,9 @@ class Usuario : BaseModel() {
     @Transient get() = usuarioSaci()?.name
   
   val isAdmin
-    @Transient get() = loginName == "ADM"
-    
-      companion object Find : UsuarioFinder() {
+    @Transient get() = loginName == "ADM" || loginName == "YASMINE"
+  
+  companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String): Usuario? {
       return where().loginName.eq(loginName).findOne()
     }
