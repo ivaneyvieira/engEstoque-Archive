@@ -157,10 +157,8 @@ class SaidaVo {
   
   var produto: Produto? = null
     set(value) {
-      if (field != value) {
-        val prd = notaSaidaSaci.find { it.prdno == value?.codigo && it.grade == value?.grade }
-        quantidade = prd?.quant
-      }
+      val prd = notaSaidaSaci.find { it.prdno == value?.codigo && it.grade == value?.grade }
+      quantidade = prd?.quant
       field = value
     }
   
