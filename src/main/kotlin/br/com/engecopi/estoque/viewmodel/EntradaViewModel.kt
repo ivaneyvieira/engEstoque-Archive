@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
@@ -70,14 +71,14 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
   }
   
   private fun saveNota(bean: EntradaVo): Nota {
-    bean.notaEntradaSaci.firstOrNull() ?: throw EViewModel("Nota não encontrada no saci")
-    val nota: Nota = bean.nota ?: Nota()
+    val nota: Nota = bean.notaEntrada ?: Nota()
     nota.apply {
-      this.numero = bean.numeroNF ?: ""
-      this.tipoMov = ENTRADA
+      this.numero = if (bean.numeroNF.isNullOrBlank())
+        "${Nota.novoNumero()}" else bean.numeroNF ?: ""
+      this.tipoMov = TipoMov.ENTRADA
+      this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
       this.observacao = bean.observacaoNota ?: ""
-      this.tipoNota = bean.tipoNota
       this.rota = bean.rota ?: ""
     }
     
@@ -144,6 +145,9 @@ class EntradaVo {
   val notaEntradaSaci: List<NotaEntradaSaci>
     get() = Nota.findNotaEntradaSaci(numeroNF, lojaNF)
   
+  val notaEntrada: Nota?
+    get() = Nota.findEntrada(numeroNF, lojaNF)
+  
   fun atualizaNota() {
     notaEntradaSaci.firstOrNull()?.let { nota ->
       tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
@@ -152,7 +156,7 @@ class EntradaVo {
   }
   
   val dataNota: LocalDate?
-    get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
+    get() = notaEntradaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
   
   val numeroInterno: Int
     get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
@@ -170,15 +174,28 @@ class EntradaVo {
   
   val produtoNota: List<ProdutoSaci>
     get() {
-      return notaEntradaSaci.mapNotNull {
-        val grade = it.grade ?: ""
-        val prdSaci = saci.findProduto(it.prdno ?: "")
-                .firstOrNull { it.grade == grade }
-        produto(prdSaci)?.let { prdSaci }
-      }
+      val nota = notaEntrada
+      return if (nota != null)
+        notaEntradaSaci.mapNotNull {
+          val grade = it.grade ?: ""
+          val prdSaci = saci.findProduto(it.prdno ?: "")
+                  .firstOrNull { it.grade == grade }
+          produto(prdSaci)?.let { prdSaci }
+        }
+      else
+        Produto.all().mapNotNull { it.produtoSaci() }
     }
   
   var produtoSaci: ProdutoSaci? = null
+  set(value) {
+    field = value
+    quantProduto = itemNota?.quantidade
+      ?: notaEntradaSaci.firstOrNull { neSaci ->
+        (neSaci.prdno ?: "") == (value?.codigo ?: "") &&
+        (neSaci.grade ?: "") == (value?.grade ?: "")
+      }?.quant
+      ?: 0
+  }
   
   val descricaoProduto: String
     get() = produtoSaci?.nome ?: ""
@@ -189,13 +206,7 @@ class EntradaVo {
   val grade: String
     get() = produtoSaci?.grade ?: ""
   
-  val quantProduto: Int?
-    get() = itemNota?.quantidade
-            ?: notaEntradaSaci.firstOrNull { neSaci ->
-              (neSaci.prdno ?: "") == (produtoSaci?.codigo ?: "") &&
-              (neSaci.grade ?: "") == (produtoSaci?.grade ?: "")
-            }?.quant
-            ?: 0
+  var quantProduto: Int? = 0
   
   val saldo: Int
     get() = produto(produtoSaci)?.saldoLoja(lojaNF) ?: 0

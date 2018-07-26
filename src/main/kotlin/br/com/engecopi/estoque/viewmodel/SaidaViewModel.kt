@@ -120,6 +120,8 @@ class SaidaVo {
     }
   var tipoNota: TipoNota = OUTROS_S
   var rota: String? = ""
+  val clienteName
+    get() = notaSaidaSaci.firstOrNull()?.clienteName ?: observacaoNota
   
   fun atualizaNota() {
     notaSaidaSaci.firstOrNull()?.let { nota ->

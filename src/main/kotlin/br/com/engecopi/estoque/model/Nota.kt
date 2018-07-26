@@ -76,7 +76,11 @@ class Nota : BaseModel() {
     
     fun novoNumero(): Int {
       val regex = "[0-9]+".toRegex()
-      val max = where().findList().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
+      val max = where()
+                        .findList()
+                        .map { it.numero }
+                        .filter { regex.matches(it) }
+                        .max() ?: "0"
       val numMax = max.toIntOrNull() ?: 0
       return numMax + 1
     }
@@ -109,7 +113,7 @@ enum class TipoMov(val multiplicador: Int) {
   SAIDA(-1)
 }
 
-enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val isFree : Boolean = false) {
+enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val isFree: Boolean = false) {
   //Entrada
   COMPRA(ENTRADA, "Compra"),
   TRANSFERENCIA_E(ENTRADA, "Transferência"),

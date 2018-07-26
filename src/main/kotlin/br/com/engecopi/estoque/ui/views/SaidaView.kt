@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindReadOnly
+import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
@@ -24,10 +25,12 @@ import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.vaadin.data.Binder
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
+import java.text.SimpleDateFormat
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
@@ -153,6 +156,13 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
+        }
+        column(SaidaVo::dataNF) {
+          caption = "Data"
+          dateFormat()
+        }
+        column(SaidaVo::clienteName) {
+          caption = "Cliente"
         }
         column(SaidaVo::rota) {
           caption = "Rota"
