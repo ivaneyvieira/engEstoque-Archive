@@ -3,6 +3,7 @@ select I.storeno as storenoT, CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.st
   C.name as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
+    WHEN N.nfse = '3' then 'ENT_RET'
     WHEN tipo = 0 then 'VENDA'
     WHEN tipo = 1 then 'TRANSFERENCIA_S'
     WHEN tipo = 2 then 'DEV_FOR'

@@ -119,6 +119,7 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val isFree : Bo
   //Saída
   VENDA(SAIDA, "Venda"),
   TRANSFERENCIA_S(SAIDA, "Transferência"),
+  ENT_RET(SAIDA, "Ent/Ret"),
   DEV_FOR(SAIDA, "Dev Fornecedor"),
   ACERTO_S(SAIDA, "Acerto"),
   OUTROS_S(SAIDA, "Outros", true);
