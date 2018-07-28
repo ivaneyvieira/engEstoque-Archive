@@ -66,7 +66,6 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
       q.addParameter("storeno", storeno ?: 0)
               .addParameter("localizacao", localizacao ?: "")
               .executeAndFetch(PrdLoc::class.java)
-      
     }
   }
   
