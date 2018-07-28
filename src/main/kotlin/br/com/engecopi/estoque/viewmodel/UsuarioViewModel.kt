@@ -5,16 +5,18 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
+import br.com.engecopi.saci.saci
 
 class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, UsuarioCrudVo::class) {
   override fun update(bean: UsuarioCrudVo) {
     Usuario.findUsuario(bean.loginName ?: "")?.let { usuario ->
       usuario.loja = bean.loja
       usuario.impressora = bean.impressora ?: ""
+      usuario.localizacao = bean.local
       
       val list = mutableListOf<Produto>()
       list.addAll(bean.produtos.orEmpty())
-      usuario.produtos = list
+      usuario.produtos = list.union(usuario.produtosLoc).toMutableList()
       usuario.update()
     }
   }
@@ -24,10 +26,11 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
       this.impressora = bean.impressora ?: ""
-      
+      this.localizacao = bean.local
+
       val list = mutableListOf<Produto>()
       list.addAll(bean.produtos.orEmpty())
-      this.produtos = list
+      this.produtos = list.union(this.produtosLoc).toMutableList()
     }
     usuario.insert()
   }
@@ -38,6 +41,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
         this.loginName = usuario.loginName
         this.loja = usuario.loja
         this.impressora = usuario.impressora
+        this.local = usuario.localizacao
         this.produtos = usuario.produtos.orEmpty().toSet()
       }
     }
@@ -62,4 +66,8 @@ class UsuarioCrudVo {
     get() = Usuario.nomeSaci(loginName ?: "")
   
   var produtos: Set<Produto>? = null
+  
+  var local: String? = null
+  val locaisLoja
+    get() = saci.findLocais(loja?.numero)
 }

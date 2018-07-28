@@ -24,6 +24,8 @@ class Usuario : BaseModel() {
   var loginName: String = ""
   @Size(max = 30)
   var impressora: String = ""
+  @Size(max = 60)
+  var localizacao: String? = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
   @ManyToMany(cascade = [PERSIST, MERGE, REFRESH, REMOVE])
@@ -37,6 +39,11 @@ class Usuario : BaseModel() {
   
   val isAdmin
     @Transient get() = loginName == "ADM" || loginName == "YASMINE"
+  
+  val produtosLoc: List<Produto>
+    get() = saci.findLoc(loja?.numero, localizacao).mapNotNull {
+      Produto.findProduto(it.codigo , it.grade) ?: Produto.createProduto(it.codigo ?: "", it.grade ?: "")
+    }
   
   companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String): Usuario? {

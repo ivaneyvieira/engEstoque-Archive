@@ -7,6 +7,8 @@ import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.printer.printerSaci
 import br.com.engecopi.framework.ui.view.CrudLayoutView
+import br.com.engecopi.framework.ui.view.bindItens
+import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
@@ -49,7 +51,8 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           isReadOnly = true
           bind(binder).bind(UsuarioCrudVo::nome.name)
         }
-        
+      }
+      row {
         comboBox<Loja> {
           expandRatio = 1f
           caption = "Loja"
@@ -59,6 +62,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItems(viewModel.lojas)
           setItemCaptionGenerator { it.sigla }
           bind(binder).bind(UsuarioCrudVo::loja)
+          reloadBinderOnChange(binder)
         }
         comboBox<String> {
           expandRatio = 1f
@@ -68,7 +72,14 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItems(printerSaci.printers.map { it.name })
           setItemCaptionGenerator { it }
           bind(binder).bind(UsuarioCrudVo::impressora)
-          
+        }
+        comboBox<String>("Localização") {
+          expandRatio = 1f
+          isEmptySelectionAllowed = true
+          isTextInputAllowed = false
+          emptySelectionCaption = "NENHUM"
+          bindItens(binder, UsuarioCrudVo::locaisLoja)
+          bind(binder).bind(UsuarioCrudVo::local)
         }
       }
       row {
@@ -99,6 +110,10 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           expandRatio = 1
           caption = "Loja"
           setRenderer({ loja -> loja?.sigla ?: "Todas" }, TextRenderer())
+        }
+        column(UsuarioCrudVo::local) {
+          expandRatio = 1
+          caption = "Localização"
         }
         column(UsuarioCrudVo::impressora) {
           expandRatio = 1

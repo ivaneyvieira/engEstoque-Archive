@@ -53,9 +53,10 @@ class Produto : BaseModel() {
       return where().codigo.eq(codigo).findList()
     }
     
-    fun createProduto(produtoSaci: ProdutoSaci?): Produto {
+    fun createProduto(produtoSaci: ProdutoSaci?): Produto? {
+      produtoSaci ?: return null
       return Produto().apply {
-        produtoSaci?.let { pSaci ->
+        produtoSaci.let { pSaci ->
           codigo = pSaci.codigo ?: codigo
           grade = pSaci.grade ?: grade
           codebar = pSaci.codebar ?: codebar
@@ -63,7 +64,7 @@ class Produto : BaseModel() {
       }
     }
     
-    fun createProduto(codigoProduto: String, gradeProduto: String): Produto {
+    fun createProduto(codigoProduto: String, gradeProduto: String): Produto? {
       val produtoSaci = saci.findProduto(codigoProduto)
               .firstOrNull { it.grade == gradeProduto }
       return createProduto(produtoSaci)

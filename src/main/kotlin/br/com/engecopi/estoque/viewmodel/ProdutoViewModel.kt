@@ -30,22 +30,31 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Prod
     }
   }
   
+  val query get() = Produto.where()
+  
   override fun allBeans(): List<ProdutoVo> {
-    val query = Produto.where()
-
-    return query.findList()
-            .map { produto ->
-      ProdutoVo().apply {
-        codigoProduto = produto.codigo
-        gradeProduto = produto.grade
-        codebar = produto.codebar
-      }
+    return query.findList().map (this::produto)
+  }
+  
+  fun produto(produto: Produto): ProdutoVo {
+    return ProdutoVo().apply {
+      codigoProduto = produto.codigo
+      gradeProduto = produto.grade
+      codebar = produto.codebar
     }
+  }
+  
+  override fun findQuery(offset: Int, limit: Int, filter: String): List<ProdutoVo> {
+    return query.setFirstRow(offset).setMaxRows(limit).findList().map (this::produto)
+  }
+  
+  override fun countQuery(filter: String): Int {
+    return query.findCount()
   }
 }
 
 class ProdutoVo {
-  var lojaDefault : Loja? = null
+  var lojaDefault: Loja? = null
   var codigoProduto: String? = ""
     set(value) {
       field = value
@@ -72,10 +81,10 @@ class ProdutoVo {
       val itens = produto?.itensNota.orEmpty().filter {
         lojaDefault?.let { lDef ->
           it.nota?.loja?.id == lDef.id
-        }?: true
+        } ?: true
       }
-      var saldo =0
-      itens.forEach {item->
+      var saldo = 0
+      itens.forEach { item ->
         saldo += item.quantidadeSaldo
         item.saldoTransient = saldo
       }

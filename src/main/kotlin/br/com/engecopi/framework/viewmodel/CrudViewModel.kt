@@ -26,4 +26,12 @@ abstract class CrudViewModel<C : Any>(view: IView, val crudClass: KClass<C>) : V
   fun delete() = exec {
     crudBean?.let { bean -> delete(bean) }
   }
+  
+  open fun findQuery(offset: Int, limit: Int, filter: String): List<C> = execList{
+    allBeans()
+  }
+  
+  open fun countQuery(filter: String): Int = execInt {
+    allBeans().size
+  }
 }
