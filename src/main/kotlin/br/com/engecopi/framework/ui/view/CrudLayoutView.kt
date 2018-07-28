@@ -148,9 +148,9 @@ class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<T>) : Crud
 
 class WindowsCrud : WindowBasedCrudLayout() {
   override fun showForm(operation: CrudOperation, form: Component) {
-   // if (operation != CrudOperation.READ) {
-      showWindow(windowCaptions[operation], form)
-  //  }
+    // if (operation != CrudOperation.READ) {
+    showWindow(windowCaptions[operation], form)
+    //  }
   }
   
   private fun showWindow(caption: String?, form: Component) {
@@ -179,47 +179,6 @@ class GridCrudFlex<T>(
                      ) : GridCrud<T>(domainType, crudLayout, crudFormFactory, crudListener) {
   protected var readButton: Button? = null
   
-  override fun initLayout() {
-    findAllButton = Button("") { e -> findAllButtonClicked() }
-    findAllButton.description = "Refresh list"
-    findAllButton.icon = VaadinIcons.REFRESH
-    crudLayout.addToolbarComponent(findAllButton)
-  
-    addButton = Button("") { e -> addButtonClicked() }
-    addButton.description = "Add"
-    addButton.icon = VaadinIcons.PLUS
-    crudLayout.addToolbarComponent(addButton)
-  
-    updateButton = Button("") { e -> updateButtonClicked() }
-    updateButton.description = "Update"
-    updateButton.icon = VaadinIcons.PENCIL
-    crudLayout.addToolbarComponent(updateButton)
-  
-    readButton = Button("") { e -> readButtonClicked() }
-    readButton?.description = "Read"
-    readButton?.icon = VaadinIcons.SEARCH
-    crudLayout?.addToolbarComponent(readButton)
-  
-    deleteButton = Button("") { e -> deleteButtonClicked() }
-    deleteButton.description = "Delete"
-    deleteButton.icon = VaadinIcons.TRASH
-    crudLayout.addToolbarComponent(deleteButton)
-  
-    grid = Grid<T>(domainType)
-    grid.setSizeFull()
-    grid.addSelectionListener { e -> gridSelectionChanged() }
-    crudLayout.setMainComponent(grid)
-  
-    updateButtons()
-  }
-  
-  protected override fun updateButtons() {
-    val rowSelected = !grid.asSingleSelect().isEmpty
-    updateButton.isEnabled = rowSelected
-    deleteButton.isEnabled = rowSelected
-    readButton?.isEnabled = rowSelected
-  }
-  
   init {
     grid.addGlobalShortcutListener(ENTER) {
       if (!grid.selectedItems.isEmpty())
@@ -230,6 +189,59 @@ class GridCrudFlex<T>(
         if (!grid.asSingleSelect().isEmpty)
           updateButtonClicked()
     }
+  }
+  
+  override fun initLayout() {
+    findAllButton = Button("") { e -> findAllButtonClicked() }
+    findAllButton.description = "Refresh list"
+    findAllButton.icon = VaadinIcons.REFRESH
+    crudLayout.addToolbarComponent(findAllButton)
+    
+    addButton = Button("") { e -> addButtonClicked() }
+    addButton.description = "Add"
+    addButton.icon = VaadinIcons.PLUS
+    crudLayout.addToolbarComponent(addButton)
+    
+    updateButton = Button("") { e -> updateButtonClicked() }
+    updateButton.description = "Update"
+    updateButton.icon = VaadinIcons.PENCIL
+    crudLayout.addToolbarComponent(updateButton)
+    
+    readButton = Button("") { e -> readButtonClicked() }
+    readButton?.description = "Read"
+    readButton?.icon = VaadinIcons.SEARCH
+    crudLayout?.addToolbarComponent(readButton)
+    
+    deleteButton = Button("") { e -> deleteButtonClicked() }
+    deleteButton.description = "Delete"
+    deleteButton.icon = VaadinIcons.TRASH
+    crudLayout.addToolbarComponent(deleteButton)
+    
+    grid = Grid<T>(domainType)
+    grid.setSizeFull()
+    grid.addSelectionListener { e -> gridSelectionChanged() }
+    crudLayout.setMainComponent(grid)
+    
+    updateButtons()
+    queryOnly = false
+  }
+  
+  var queryOnly: Boolean = false
+    set(value) {
+      field = value
+      
+      findAllButton.isVisible = !value
+      addButton.isVisible = !value
+      updateButton.isVisible = !value
+      readButton?.isVisible = value
+      deleteButton.isVisible = !value
+    }
+  
+  protected override fun updateButtons() {
+    val rowSelected = !grid.asSingleSelect().isEmpty
+    updateButton.isEnabled = rowSelected
+    deleteButton.isEnabled = rowSelected
+    readButton?.isEnabled = rowSelected
   }
   
   protected fun readButtonClicked() {
