@@ -230,7 +230,7 @@ class GridCrudFlex<T>(
     set(value) {
       field = value
       
-      findAllButton.isVisible = !value
+      findAllButton.isVisible = true
       addButton.isVisible = !value
       updateButton.isVisible = !value
       readButton?.isVisible = value

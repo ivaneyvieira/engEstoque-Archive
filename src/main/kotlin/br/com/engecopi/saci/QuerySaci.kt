@@ -3,6 +3,7 @@ package br.com.engecopi.saci
 import br.com.engecopi.saci.beans.LojaSaci
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.NotaSaidaSaci
+import br.com.engecopi.saci.beans.PrdLoc
 import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.utils.DB
@@ -57,6 +58,20 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
               .executeAndFetch(UserSaci::class.java)
               .firstOrNull()
     }
+  }
+  
+  fun findLoc(storeno: Int?, localizacao: String?): List<PrdLoc> {
+    val sql = "/sqlSaci/findLoc.sql"
+    return query(sql) { q ->
+      q.addParameter("storeno", storeno ?: 0)
+              .addParameter("localizacao", localizacao ?: "")
+              .executeAndFetch(PrdLoc::class.java)
+      
+    }
+  }
+  
+  fun findLocais(storeno: Int): List<String>{
+    return findLoc(storeno, "").mapNotNull{it.localizacao}.distinct()
   }
   
   companion object {
