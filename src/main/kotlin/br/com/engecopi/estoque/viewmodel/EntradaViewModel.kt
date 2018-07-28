@@ -8,6 +8,7 @@ import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
+import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -43,6 +44,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
       this.nota = nota
       this.produto = produto
       this.quantidade = bean.quantProduto ?: 0
+      this.usuario = bean.usuario
     }
     item.insert()
     return item
@@ -125,6 +127,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
 }
 
 class EntradaVo {
+  var usuario : Usuario? = null
   var numeroNF: String? = ""
     set(value) {
       if (field != value) {

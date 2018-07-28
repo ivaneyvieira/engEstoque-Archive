@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
+import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -38,6 +39,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
       this.nota = nota
       this.produto = produto
       this.quantidade = bean.quantidade ?: 0
+      this.usuario = bean.usuario
     }
     item.insert()
     return item
@@ -104,6 +106,8 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
 }
 
 class SaidaVo {
+  var usuario : Usuario? = null
+  
   var numeroNota: String? = ""
     set(value) {
       if (field != value) {

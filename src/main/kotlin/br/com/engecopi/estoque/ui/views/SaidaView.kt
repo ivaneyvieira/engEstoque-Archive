@@ -47,6 +47,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
                          ) {
     if (operation == ADD)
       binder.bean.lojaNF = lojaDefault
+    binder.bean.usuario = EstoqueUI.user
     formLayout.apply {
       grupo("Nota fiscal de saída") {
         verticalLayout {

@@ -28,6 +28,8 @@ class ItemNota : BaseModel() {
   var nota: Nota? = null
   @ManyToOne(cascade = [ALL])
   var etiqueta: Etiqueta? = null
+  @ManyToOne(cascade = [ALL])
+  var usuario: Usuario? = null
   
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade

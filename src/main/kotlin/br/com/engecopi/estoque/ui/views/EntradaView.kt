@@ -45,6 +45,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
                          ) {
     if (operation == ADD)
       binder.bean.lojaNF = lojaDefault
+    binder.bean.usuario = EstoqueUI.user
     formLayout.apply {
       grupo("Nota fiscal de entrada") {
         row {
