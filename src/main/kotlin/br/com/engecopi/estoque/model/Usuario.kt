@@ -39,6 +39,7 @@ class Usuario : BaseModel() {
     if(isAdmin || this.localizacao.isNullOrBlank()) return true
     produto?: return false
     return saci.findLoc(storeno = loja?.numero,
+                        localizacao = localizacao,
                         prdno = produto.codigo,
                         grade = produto.grade)
             .isNotEmpty()
