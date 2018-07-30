@@ -3,12 +3,13 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.saci
 
-class ProdutoViewModel(view: IView, val lojaDefault: Loja?) :
+class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
@@ -32,15 +33,24 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) :
     }
   }
   
+  fun QProduto.filtroUsuario() : QProduto {
+    return usuario?.let { u ->
+      if (u.isAdmin || u.localizacao.isNullOrBlank())
+        this
+      else {
+        usuarios.id.eq(u.id)
+      }
+    } ?: this
+  }
+  
   override val query: QProduto
-    get() = Produto.where()
+    get() = Produto.where().filtroUsuario()
   
   override fun Produto.toVO(): ProdutoVo {
     val produto = this
     return ProdutoVo().apply {
       codigoProduto = produto.codigo
       gradeProduto = produto.grade
-      codebar = produto.codebar
     }
   }
   
@@ -53,13 +63,6 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) :
 class ProdutoVo {
   var lojaDefault: Loja? = null
   var codigoProduto: String? = ""
-    set(value) {
-      field = value
-      val produto = saci.findProduto(value ?: "")
-      produto.firstOrNull()?.let { prdSaci ->
-        codebar = produtosSaci.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
-      }
-    }
   var gradeProduto: String? = ""
   val produtosSaci
     get() = saci.findProduto(codigoProduto ?: "")
@@ -68,7 +71,8 @@ class ProdutoVo {
   val grades
     get() = produtosSaci.mapNotNull { it.grade }
   
-  var codebar: String? = null
+  val codebar: String?
+    get() = produtosSaci.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
   
   val produto: Produto?
     get() = Produto.findProduto(codigoProduto, gradeProduto)

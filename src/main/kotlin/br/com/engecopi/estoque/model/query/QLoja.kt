@@ -34,6 +34,7 @@ class QLoja : TQRootBean<Loja, QLoja> {
   lateinit var notas: QAssocNota<QLoja>
   lateinit var usuarios: QAssocUsuario<QLoja>
 
+
   /**
    * Construct with a given EbeanServer.
    */

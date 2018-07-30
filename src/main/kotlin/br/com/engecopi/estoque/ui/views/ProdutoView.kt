@@ -137,7 +137,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   }
   
   override val viewModel: ProdutoViewModel
-    get() = ProdutoViewModel(this, lojaDefault)
+    get() = ProdutoViewModel(this, EstoqueUI.user)
 }
 
 

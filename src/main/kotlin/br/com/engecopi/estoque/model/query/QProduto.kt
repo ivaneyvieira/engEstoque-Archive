@@ -39,6 +39,7 @@ class QProduto : TQRootBean<Produto, QProduto> {
   lateinit var usuarios: QAssocUsuario<QProduto>
   lateinit var itensNota: QAssocItemNota<QProduto>
 
+
   /**
    * Construct with a given EbeanServer.
    */

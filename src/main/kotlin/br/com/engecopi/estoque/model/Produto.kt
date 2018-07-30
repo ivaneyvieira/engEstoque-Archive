@@ -64,7 +64,9 @@ class Produto : BaseModel() {
       }
     }
     
-    fun createProduto(codigoProduto: String, gradeProduto: String): Produto? {
+    fun createProduto(codigoProduto: String?, gradeProduto: String?): Produto? {
+      codigoProduto ?: return null
+      gradeProduto ?: return null
       val produtoSaci = saci.findProduto(codigoProduto)
               .firstOrNull { it.grade == gradeProduto }
       return createProduto(produtoSaci)

@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QUsuario
+import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
@@ -24,8 +25,10 @@ class QAssocUsuario<R>(name: String, root: R) : TQAssocBean<Usuario,R>(name, roo
   lateinit var version: PInteger<R>
   lateinit var loginName: PString<R>
   lateinit var impressora: PString<R>
+  lateinit var localizacao: PString<R>
   lateinit var loja: QAssocLoja<R>
   lateinit var produtos: QAssocProduto<R>
+  lateinit var isAdmin: PBoolean<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

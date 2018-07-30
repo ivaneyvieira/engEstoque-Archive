@@ -2,7 +2,9 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
+import br.com.engecopi.saci.beans.PrdLoc
 import br.com.engecopi.saci.saci
+import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
@@ -37,18 +39,34 @@ class Usuario : BaseModel() {
   val nome: String?
     @Transient get() = usuarioSaci()?.name
   
-  val isAdmin
-    @Transient get() = loginName == "ADM" || loginName == "YASMINE"
+  @Formula(select = "(login_name = 'ADM' OR login_name = 'YASMINE')")
+  var isAdmin: Boolean = false
   
   fun temProduto(codigo: String?, grade: String?, localizacao: String? = null): Boolean {
     return if (codigo.isNullOrEmpty() || grade.isNullOrEmpty())
       false
     else {
       isAdmin
-      || (this.localizacao == localizacao && !localizacao.isNullOrEmpty())
+      || this.localizacao.isNullOrBlank()
+      || this.localizacao == localizacao
       || produtos.orEmpty().any { it.codigo == codigo && it.grade == grade }
     }
   }
+  
+  fun temProduto(produto: Produto?): Boolean {
+    if(isAdmin || this.localizacao.isNullOrBlank()) return true
+    return produtos.orEmpty().contains(produto)
+  }
+  
+  val produtoLoc: List<Produto>
+    get() {
+      loja ?: return emptyList()
+      localizacao ?: return emptyList()
+      return saci.findLoc(loja?.numero, localizacao)
+              .mapNotNull { prdloc ->
+                Produto.findProduto(prdloc.codigo, prdloc.grade) ?: Produto.createProduto(prdloc.codigo, prdloc.grade)
+              }
+    }
   
   companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String): Usuario? {
@@ -60,3 +78,4 @@ class Usuario : BaseModel() {
     }
   }
 }
+

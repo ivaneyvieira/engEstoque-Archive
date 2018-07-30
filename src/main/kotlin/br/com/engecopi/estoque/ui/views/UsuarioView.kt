@@ -90,13 +90,13 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           bind(binder).bind(UsuarioCrudVo::local)
         }
       }
-      row {
+/*      row {
         twinColSelect<Produto>("Produtos") {
           dataProvider = produtoDataProvider
           setItemCaptionGenerator { "${it.codigo} ${it.grade} - ${it.descricao}".trim() }
           bind(binder).bind(UsuarioCrudVo::produtos)
         }
-      }
+      }*/
     }
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)

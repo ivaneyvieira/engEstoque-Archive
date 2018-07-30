@@ -114,8 +114,8 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) :
     }
   }
   
-  override fun QItemNota.filterString(filter: String): QItemNota {
-    return nota.numero.eq(filter)
+  override fun QItemNota.filterString(text: String): QItemNota {
+    return nota.numero.eq(text)
   }
   
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {
