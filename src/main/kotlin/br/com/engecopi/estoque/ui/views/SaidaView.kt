@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
+import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -45,9 +46,10 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           binder: Binder<SaidaVo>,
           readOnly: Boolean
                          ) {
-    if (operation == ADD)
+    if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
-    binder.bean.usuario = EstoqueUI.user
+      binder.bean.usuario = EstoqueUI.user
+    }
     formLayout.apply {
       grupo("Nota fiscal de saída") {
         verticalLayout {
@@ -161,6 +163,10 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::dataNF) {
           caption = "Data"
           dateFormat()
+        }
+        column(SaidaVo::usuario) {
+          caption = "Usuário"
+          setRenderer({ it?.loginName ?: "" }, TextRenderer())
         }
         column(SaidaVo::clienteName) {
           caption = "Cliente"

@@ -100,6 +100,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ItemNo
       this.produto = itemNota.produto
       this.quantidade = itemNota.quantidade
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_S
+      this.usuario = itemNota.usuario
     }
   }
   

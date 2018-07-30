@@ -111,6 +111,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) :
       this.produtoSaci = itemNota.produto?.produtoSaci()
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = itemNota.nota?.rota
+      this.usuario = itemNota.usuario
     }
   }
   

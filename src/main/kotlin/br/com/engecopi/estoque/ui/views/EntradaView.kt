@@ -43,9 +43,10 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           binder: Binder<EntradaVo>,
           readOnly: Boolean
                          ) {
-    if (operation == ADD)
+    if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
-    binder.bean.usuario = EstoqueUI.user
+      binder.bean.usuario = EstoqueUI.user
+    }
     formLayout.apply {
       grupo("Nota fiscal de entrada") {
         row {
@@ -153,6 +154,10 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
           dateFormat()
+        }
+        column(EntradaVo::usuario) {
+          caption = "Usuário"
+          setRenderer({ it?.loginName ?: "" }, TextRenderer())
         }
         column(EntradaVo::fornecedor) {
           caption = "Fornecedor"
