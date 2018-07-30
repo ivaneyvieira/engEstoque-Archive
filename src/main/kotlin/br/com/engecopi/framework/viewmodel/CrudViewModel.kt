@@ -46,7 +46,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     return this
   }
   
-  private fun Q.filterBlank(filter: String): Q {
+  fun Q.filterBlank(filter: String): Q {
     return if (filter.isBlank()) this
     else {
       val date = parserDate(filter)
@@ -67,7 +67,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     }
   }
   
-  fun findQuery(offset: Int, limit: Int, filter: String): List<VO> = execList {
+  open fun findQuery(offset: Int, limit: Int, filter: String): List<VO> = execList {
     query.filterBlank(filter)
             .setFirstRow(offset)
             .setMaxRows(limit)
@@ -75,7 +75,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
             .map { it.toVO() }
   }
   
-  fun countQuery(filter: String): Int = execInt {
+  open fun countQuery(filter: String): Int = execInt {
     query.filterBlank(filter)
             .findCount()
   }

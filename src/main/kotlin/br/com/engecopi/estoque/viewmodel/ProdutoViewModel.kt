@@ -8,6 +8,8 @@ import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.saci
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
@@ -40,6 +42,22 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
       else
         itensNota.usuario.id.eq(u.id)
     } ?: this
+  }
+  
+  override fun countQuery(filter: String): Int = execInt {
+    query.filterBlank(filter)
+            .findList()
+            .filter { usuario?.temProduto(it) ?: false }
+            .size
+  }
+  
+  override fun findQuery(offset: Int, limit: Int, filter: String): List<ProdutoVo> = execList {
+    query.filterBlank(filter)
+            .setFirstRow(offset)
+            .setMaxRows(limit)
+            .findList()
+            .filter { usuario?.temProduto(it) ?: false }
+            .map { it.toVO() }
   }
   
   override val query: QProduto

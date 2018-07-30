@@ -3,4 +3,4 @@ from sqldados.prdloc
 WHERE (storeno = :storeno)
   AND (localizacao = :localizacao OR :localizacao = '')
   AND (prdno = :prdno OR :prdno = '')
-  AND (grade = : grade OR :grade = '')
+  AND (grade = :grade OR :grade = '')
