@@ -33,12 +33,13 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
-  fun QProduto.filtroUsuario() : QProduto {
+  fun QProduto.filtroUsuario(): QProduto {
     return usuario?.let { u ->
       if (u.isAdmin || u.localizacao.isNullOrBlank())
         this
       else {
         usuarios.id.eq(u.id)
+                .itensNota.usuario.id.eq(u.id)
       }
     } ?: this
   }
