@@ -120,6 +120,7 @@ dependencies {
   compile "org.vaadin.patrik:GridFastNavigation:2.3.2"
   compile "org.vaadin:viritin:2.6"
   compile 'org.vaadin.crudui:crudui:2.3.0'
+  compile 'org.vaadin.addons:filtering-grid:0.1.1'
   // heroku app runner
   testCompile "junit:junit:4.11"
 }
