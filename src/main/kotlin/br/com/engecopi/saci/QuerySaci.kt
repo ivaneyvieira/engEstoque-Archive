@@ -59,18 +59,20 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
-  fun findLoc(storeno: Int?, localizacao: String?): List<PrdLoc> {
+  fun findLoc(storeno: Int?, localizacao: String? = "", prdno: String? = "", grade: String? = ""): List<PrdLoc> {
     val sql = "/sqlSaci/findLoc.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno ?: 0)
               .addParameter("localizacao", localizacao ?: "")
+              .addParameter("prdno", prdno?.lpad(16, " ") ?: "")
+              .addParameter("grade", grade ?: "")
               .executeAndFetch(PrdLoc::class.java)
     }
   }
   
   fun findLocais(storeno: Int?): List<String> {
     storeno ?: return emptyList()
-    return findLoc(storeno, "").mapNotNull { it.localizacao }.distinct()
+    return findLoc(storeno).mapNotNull { it.localizacao }.distinct()
   }
   
   companion object {

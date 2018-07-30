@@ -37,10 +37,8 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
     return usuario?.let { u ->
       if (u.isAdmin || u.localizacao.isNullOrBlank())
         this
-      else {
-        usuarios.id.eq(u.id)
-                .itensNota.usuario.id.eq(u.id)
-      }
+      else
+        itensNota.usuario.id.eq(u.id)
     } ?: this
   }
   

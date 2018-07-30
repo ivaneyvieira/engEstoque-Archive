@@ -196,7 +196,9 @@ class EntradaVo {
       return if (nota != null)
         notaEntradaSaci
                 .filter { notaSaci ->
-                  usuario?.temProduto(notaSaci.codigo, notaSaci.grade, notaSaci.localizacao) ?: true
+                  Produto.findProduto(notaSaci.codigo, notaSaci.grade)?.let { produto ->
+                    usuario?.temProduto(produto)?: false
+                  } ?: false
                 }.mapNotNull { it: NotaEntradaSaci ->
                   val grade = it.grade ?: ""
                   saci.findProduto(it.prdno).firstOrNull { it.grade == grade }

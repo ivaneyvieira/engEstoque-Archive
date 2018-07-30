@@ -27,10 +27,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       usuario.loja = bean.loja
       usuario.impressora = bean.impressora ?: ""
       usuario.localizacao = bean.local
-      
-      val list = mutableListOf<Produto>()
-//      list.addAll(bean.produtos.orEmpty())
-      usuario.produtos = usuario.produtoLoc.toMutableList()
       usuario.update()
     }
   }
@@ -41,10 +37,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loja = bean.loja
       this.impressora = bean.impressora ?: ""
       this.localizacao = bean.local
-
-      //val list = mutableListOf<Produto>()
-//      list.addAll(bean.produtos.orEmpty())
-      this.produtos  = this.produtoLoc.toMutableList()
     }
     usuario.insert()
   }
