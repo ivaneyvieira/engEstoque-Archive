@@ -12,8 +12,6 @@ class NotaEntradaSaci(
         val quant: Int?,
         val custo: Double?,
         val vendName: String?,
-        val tipo: String?
-                     ){
-  val invalida = (tipo == null) || (tipo == "INVALIDA")
-
-}
+        val tipo: String?,
+        val localizacao : String?
+                     )

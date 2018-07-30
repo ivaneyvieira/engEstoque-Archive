@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.ui.EstoqueUI
+import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.printer.printerSaci
@@ -17,6 +18,8 @@ import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.twinColSelect
 import com.vaadin.data.Binder
+import com.vaadin.data.provider.CallbackDataProvider
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
@@ -28,6 +31,11 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
     get() = UsuarioViewModel(this)
   val isAdmin
     get() = EstoqueUI.user?.isAdmin ?: false
+  
+  val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
+          {query ->  viewModel.findProduto(query.offset, query.limit).stream()},
+          {_ -> viewModel.countProduto()}
+                                                      )
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -84,7 +92,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
       }
       row {
         twinColSelect<Produto>("Produtos") {
-          setItems(viewModel.produtos)
+          dataProvider = produtoDataProvider
           setItemCaptionGenerator { "${it.codigo} ${it.grade} - ${it.descricao}".trim() }
           bind(binder).bind(UsuarioCrudVo::produtos)
         }

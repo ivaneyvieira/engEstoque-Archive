@@ -8,13 +8,14 @@ import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaVo>(view, SaidaVo::class) {
+class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ItemNota, QItemNota, SaidaVo>(view, SaidaVo::class) {
   override fun update(bean: SaidaVo) {
     val nota = saveNota(bean)
     
@@ -81,23 +82,33 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<SaidaV
     }
   }
   
-  override fun allBeans(): List<SaidaVo> {
-    val query = ItemNota.where().nota.tipoMov.eq(SAIDA)
-    val qyeryLoja = lojaDefault?.let { loja ->
-      query.nota.loja.id.eq(loja.id)
-    } ?: query
-    return qyeryLoja
-            .findList().map { itemNota ->
-              SaidaVo().apply {
-                val nota = itemNota.nota
-                this.numeroNota = nota?.numero
-                this.lojaNF = nota?.loja
-                this.observacaoNota = nota?.observacao
-                this.produto = itemNota.produto
-                this.quantidade = itemNota.quantidade
-                this.tipoNota = itemNota?.nota?.tipoNota ?: OUTROS_S
-              }
-            }
+  override val query: QItemNota
+    get() {
+      val query = ItemNota.where().nota.tipoMov.eq(SAIDA)
+      return lojaDefault?.let { loja ->
+        query.nota.loja.id.eq(loja.id)
+      } ?: query
+    }
+  
+  override fun ItemNota.toVO(): SaidaVo {
+    val itemNota = this
+    return SaidaVo().apply {
+      val nota = itemNota.nota
+      this.numeroNota = nota?.numero
+      this.lojaNF = nota?.loja
+      this.observacaoNota = nota?.observacao
+      this.produto = itemNota.produto
+      this.quantidade = itemNota.quantidade
+      this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_S
+    }
+  }
+  
+  override fun QItemNota.filterString(filter: String): QItemNota {
+    return nota.numero.eq(filter)
+  }
+  
+  override fun QItemNota.filterDate(date: LocalDate): QItemNota {
+    return nota.data.eq(date)
   }
   
   fun findLojas(loja: Loja?): List<Loja> = execList {

@@ -3,11 +3,25 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.query.QUsuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.saci
 
-class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, UsuarioCrudVo::class) {
+class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCrudVo>(view, UsuarioCrudVo::class) {
+  val queryProduto get() = Produto.where()
+  
+  fun findProduto(offset: Int, limit: Int) : List<Produto>{
+    return queryProduto
+            .setFirstRow(offset)
+            .setMaxRows(limit)
+            .findList()
+  }
+  
+  fun countProduto() : Int {
+    return queryProduto.findCount()
+  }
+  
   override fun update(bean: UsuarioCrudVo) {
     Usuario.findUsuario(bean.loginName ?: "")?.let { usuario ->
       usuario.loja = bean.loja
@@ -16,7 +30,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
       
       val list = mutableListOf<Produto>()
       list.addAll(bean.produtos.orEmpty())
-      usuario.produtos = list.union(usuario.produtosLoc).toMutableList()
+      usuario.produtos = list
       usuario.update()
     }
   }
@@ -30,23 +44,28 @@ class UsuarioViewModel(view: IView) : CrudViewModel<UsuarioCrudVo>(view, Usuario
 
       val list = mutableListOf<Produto>()
       list.addAll(bean.produtos.orEmpty())
-      this.produtos = list.union(this.produtosLoc).toMutableList()
+      this.produtos = list
     }
     usuario.insert()
   }
   
-  override fun allBeans(): List<UsuarioCrudVo> {
-    return Usuario.all().map { usuario ->
-      UsuarioCrudVo().apply {
-        this.loginName = usuario.loginName
-        this.loja = usuario.loja
-        this.impressora = usuario.impressora
-        this.local = usuario.localizacao
-        this.produtos = usuario.produtos.orEmpty().toSet()
-      }
+  override val query: QUsuario
+    get() = Usuario.where()
+  
+  override fun Usuario.toVO(): UsuarioCrudVo {
+    val usuario = this
+    return UsuarioCrudVo().apply {
+      this.loginName = usuario.loginName
+      this.loja = usuario.loja
+      this.impressora = usuario.impressora
+      this.local = usuario.localizacao
+      this.produtos = usuario.produtos.orEmpty().toSet()
     }
   }
   
+  override fun QUsuario.filterString(text: String): QUsuario {
+    return loginName.contains(text)
+  }
   override fun delete(bean: UsuarioCrudVo) {
     Usuario.findUsuario(bean.loginName ?: "")?.delete()
   }

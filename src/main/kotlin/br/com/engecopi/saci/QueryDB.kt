@@ -1,6 +1,7 @@
 package br.com.engecopi.saci
 
 import br.com.engecopi.utils.SystemUtils
+import com.jolbox.bonecp.BoneCPDataSource
 import org.sql2o.Connection
 import org.sql2o.Query
 import org.sql2o.Sql2o
@@ -13,7 +14,14 @@ open class QueryDB(
   
   init {
     registerDriver(driver)
-    this.sql2o = Sql2o(url, username, password)
+    val ds = BoneCPDataSource()
+    ds.jdbcUrl =url
+    ds.username=username
+    ds.password=password
+    ds.minConnectionsPerPartition = 5
+    ds.maxConnectionsPerPartition = 10
+    ds.partitionCount = 1
+    this.sql2o = Sql2o(ds)
   }
   
   private fun registerDriver(driver: String) {
@@ -65,30 +73,6 @@ open class QueryDB(
     this.sql2o.open().trywr { con ->
       val query = con.createQuery(sql)
       return proc(con, query)
-    }
-  }
-}
-
-class Cache<P, T>(val exec: (P) -> T) {
-  var millisecond = System.currentTimeMillis()
-  var mapValue=  mutableMapOf<P, T>()
-  
-  fun execValue(par : P, delay: Long = 0): T {
-    println("cache $delay")
-    return exec(par)
-  }
-  
-  fun value(par : P): T {
-    val currentTimeMillis = System.currentTimeMillis()
-    val delay = currentTimeMillis - millisecond
-    millisecond = System.currentTimeMillis()
-
-    if (delay > 30000) {
-      mapValue.clear()
-    }
-
-    return mapValue.getOrPut(par){
-      execValue(par, delay)
     }
   }
 }

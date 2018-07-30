@@ -67,9 +67,9 @@ class EstoqueUI : UI() {
         section("Movimentação")
         menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
         menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
+        section("Consulta")
+        menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
         if (user.isAdmin) {
-          section("Consulta")
-          menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
           menuButton("Usuários", VaadinIcons.USER, view = UsuarioView::class.java)
           menuButton("Etiquetas", VaadinIcons.PAPERCLIP, view = EtiquetaView::class.java)
         }

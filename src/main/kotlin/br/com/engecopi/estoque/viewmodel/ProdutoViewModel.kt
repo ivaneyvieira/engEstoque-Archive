@@ -3,11 +3,13 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.saci
 
-class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ProdutoVo>(view, ProdutoVo::class) {
+class ProdutoViewModel(view: IView, val lojaDefault: Loja?) :
+        CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.codebar = bean.codebar ?: ""
@@ -30,13 +32,11 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Prod
     }
   }
   
-  val query get() = Produto.where()
+  override val query: QProduto
+    get() = Produto.where()
   
-  override fun allBeans(): List<ProdutoVo> {
-    return query.findList().map (this::produto)
-  }
-  
-  fun produto(produto: Produto): ProdutoVo {
+  override fun Produto.toVO(): ProdutoVo {
+    val produto = this
     return ProdutoVo().apply {
       codigoProduto = produto.codigo
       gradeProduto = produto.grade
@@ -44,12 +44,9 @@ class ProdutoViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Prod
     }
   }
   
-  override fun findQuery(offset: Int, limit: Int, filter: String): List<ProdutoVo> {
-    return query.setFirstRow(offset).setMaxRows(limit).findList().map (this::produto)
-  }
-  
-  override fun countQuery(filter: String): Int {
-    return query.findCount()
+  override fun QProduto.filterString(text: String): QProduto {
+    return codigo.eq(text)
+            .codebar.eq(text)
   }
 }
 

@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -18,7 +19,8 @@ import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<EntradaVo>(view, EntradaVo::class) {
+class EntradaViewModel(view: IView, val lojaDefault: Loja?) :
+        CrudViewModel<ItemNota, QItemNota, EntradaVo>(view, EntradaVo::class) {
   override fun update(bean: EntradaVo) {
     val nota = saveNota(bean)
     
@@ -67,6 +69,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
   private fun saveProduto(bean: EntradaVo): Produto? {
     bean.produtoSaci ?: throw EViewModel("Produto não encontrado no saci")
     val produto = bean.produto(bean.produtoSaci)
+                  ?: Produto.createProduto(bean.produtoSaci)
     return produto?.apply {
       save()
     }
@@ -80,6 +83,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
       this.tipoMov = TipoMov.ENTRADA
       this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
+      this.data = bean.dataNota
       this.observacao = bean.observacaoNota ?: ""
       this.rota = bean.rota ?: ""
     }
@@ -88,24 +92,34 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
     return nota
   }
   
-  override fun allBeans(): List<EntradaVo> {
-    val query = ItemNota.where()
-            .nota.tipoMov.eq(ENTRADA)
-    val qyeryLoja = lojaDefault?.let { loja ->
-      query.nota.loja.id.eq(loja.id)
-    } ?: query
-    return qyeryLoja
-            .findList().map { itemNota ->
-              EntradaVo().apply {
-                val nota = itemNota.nota
-                this.numeroNF = nota?.numero
-                this.lojaNF = nota?.loja
-                this.observacaoNota = nota?.observacao
-                this.produtoSaci = itemNota.produto?.produtoSaci()
-                this.tipoNota = itemNota?.nota?.tipoNota ?: OUTROS_E
-                this.rota = itemNota?.nota?.rota
-              }
-            }
+  override val query: QItemNota
+    get() {
+      val query = ItemNota.where()
+              .nota.tipoMov.eq(ENTRADA)
+      return lojaDefault?.let { loja ->
+        query.nota.loja.id.eq(loja.id)
+      } ?: query
+    }
+  
+  override fun ItemNota.toVO(): EntradaVo {
+    val itemNota = this
+    return EntradaVo().apply {
+      val nota = itemNota.nota
+      this.numeroNF = nota?.numero
+      this.lojaNF = nota?.loja
+      this.observacaoNota = nota?.observacao
+      this.produtoSaci = itemNota.produto?.produtoSaci()
+      this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
+      this.rota = itemNota.nota?.rota
+    }
+  }
+  
+  override fun QItemNota.filterString(filter: String): QItemNota {
+    return nota.numero.eq(filter)
+  }
+  
+  override fun QItemNota.filterDate(date: LocalDate): QItemNota {
+    return nota.data.eq(date)
   }
   
   override fun delete(bean: EntradaVo) {
@@ -127,7 +141,7 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<Entr
 }
 
 class EntradaVo {
-  var usuario : Usuario? = null
+  var usuario: Usuario? = null
   var numeroNF: String? = ""
     set(value) {
       if (field != value) {
@@ -158,7 +172,7 @@ class EntradaVo {
     }
   }
   
-  val dataNota: LocalDate?
+  val dataNota: LocalDate
     get() = notaEntradaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
   
   val numeroInterno: Int
@@ -179,26 +193,26 @@ class EntradaVo {
     get() {
       val nota = notaEntrada
       return if (nota != null)
-        notaEntradaSaci.mapNotNull {
-          val grade = it.grade ?: ""
-          val prdSaci = saci.findProduto(it.prdno ?: "")
-                  .firstOrNull { it.grade == grade }
-          produto(prdSaci)?.let { prdSaci }
-        }
+        notaEntradaSaci
+                .filter { notaSaci ->
+                  usuario?.temProduto(notaSaci.codigo, notaSaci.grade, notaSaci.localizacao) ?: true
+                }.mapNotNull { it: NotaEntradaSaci ->
+                  val grade = it.grade ?: ""
+                  saci.findProduto(it.prdno).firstOrNull { it.grade == grade }
+                }
       else
         Produto.all().mapNotNull { it.produtoSaci() }
     }
   
   var produtoSaci: ProdutoSaci? = null
-  set(value) {
-    field = value
-    quantProduto = itemNota?.quantidade
-      ?: notaEntradaSaci.firstOrNull { neSaci ->
+    set(value) {
+      field = value
+      quantProduto = itemNota?.quantidade
+              ?: notaEntradaSaci.firstOrNull { neSaci ->
         (neSaci.prdno ?: "") == (value?.codigo ?: "") &&
         (neSaci.grade ?: "") == (value?.grade ?: "")
-      }?.quant
-      ?: 0
-  }
+      }?.quant ?: 0
+    }
   
   val descricaoProduto: String
     get() = produtoSaci?.nome ?: ""

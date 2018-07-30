@@ -11,17 +11,16 @@ import br.com.engecopi.utils.lpad
 
 class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   
-  val findProduto = Cache<String, List<ProdutoSaci>> { prdno ->
-    val sql = "/sqlSaci/findProdutos.sql"
-    query(sql) { q ->
-      val codigo = prdno.lpad(16, " ")
-      q.addParameter("prdno", codigo)
-      q.executeAndFetch(ProdutoSaci::class.java)
+  fun findProduto(prdno: String?): List<ProdutoSaci> {
+    return if (prdno.isNullOrBlank()) emptyList()
+    else {
+      val sql = "/sqlSaci/findProdutos.sql"
+      query(sql) { q ->
+        val codigo = prdno.lpad(16, " ")
+        q.addParameter("prdno", codigo)
+        q.executeAndFetch(ProdutoSaci::class.java)
+      }
     }
-  }
-  
-  fun findProduto(prdno: String): List<ProdutoSaci> {
-    return findProduto.value(prdno.lpad(16, " "))
   }
   
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaEntradaSaci> {
@@ -69,9 +68,9 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
-  fun findLocais(storeno: Int?): List<String>{
+  fun findLocais(storeno: Int?): List<String> {
     storeno ?: return emptyList()
-    return findLoc(storeno, "").mapNotNull{it.localizacao}.distinct()
+    return findLoc(storeno, "").mapNotNull { it.localizacao }.distinct()
   }
   
   companion object {

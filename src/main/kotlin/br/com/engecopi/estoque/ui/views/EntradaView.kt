@@ -142,7 +142,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(isAdmin)
+        addOnly = !isAdmin
         column(EntradaVo::numeroNF) {
           caption = "Número NF"
         }
@@ -172,7 +172,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
         grid.addComponentColumn { entrada ->
           val button = Button("Imprimir")
-          button.addClickListener { click ->
+          button.addClickListener { _ ->
             imprimir(entrada.itemNota)
           }
           button

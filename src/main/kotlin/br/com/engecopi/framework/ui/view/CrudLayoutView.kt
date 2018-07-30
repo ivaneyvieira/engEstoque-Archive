@@ -18,6 +18,7 @@ import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
+import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
@@ -36,7 +37,7 @@ import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout
 import java.util.stream.*
 import kotlin.reflect.KProperty1
 
-abstract class CrudLayoutView<C : Any, V : CrudViewModel<C>> : LayoutView<V>() {
+abstract class CrudLayoutView<C : Any, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
   override fun updateView(viewModel: ViewModel) {}
   
   override fun updateModel() {}
@@ -126,7 +127,7 @@ class CustomCrudFormFactory<T>(
   }
 }
 
-class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<T>) : CrudListener<T> {
+class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<*, *, T>) : CrudListener<T> {
   override fun update(domainObjectToUpdate: T): T {
     crudViewModel.crudBean = domainObjectToUpdate
     crudViewModel.update()
@@ -140,7 +141,7 @@ class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<T>) : Crud
   }
   
   override fun findAll(): List<T> {
-    return crudViewModel.findAll()
+    return emptyList()
   }
   
   override fun delete(domainObjectToDelete: T) {
@@ -194,20 +195,34 @@ open class GridCrudFlex<T : Any>(
     countQuery(query)
   }
   private val dataProvider = CallbackDataProvider(find, count)
-  
-  protected var readButton: Button? = null
+  val search = dataProvider.withConfigurableFilter()
+  var readButton: Button? = null
+  val filtroEdt = TextField {
+    val value = if (it.value.isNullOrBlank()) null else it.value
+    search.setFilter(value)
+    dataProvider.refreshAll()
+  }
   
   init {
+    items = emptyList()
     grid.addGlobalShortcutListener(ENTER) {
       if (!grid.selectedItems.isEmpty())
-        updateButtonClicked()
+        if (updateButton.isVisible)
+          updateButtonClicked()
+        else
+          readButtonClicked()
     }
     grid.addItemClickListener { e ->
       if (e.mouseEventDetails.isDoubleClick)
         if (!grid.asSingleSelect().isEmpty)
-          updateButtonClicked()
+          if (updateButton.isVisible)
+            updateButtonClicked()
+          else
+            readButtonClicked()
     }
-    grid.dataProvider = dataProvider
+    
+    grid.dataProvider = search
+    crudLayout.addFilterComponent(filtroEdt)
   }
   
   override fun initLayout() {
@@ -256,7 +271,18 @@ open class GridCrudFlex<T : Any>(
       deleteButton.isVisible = !value
     }
   
-  protected override fun updateButtons() {
+  var addOnly: Boolean = false
+    set(value) {
+      field = value
+      
+      findAllButton.isVisible = true
+      addButton.isVisible = true
+      updateButton.isVisible = !value
+      readButton?.isVisible = value
+      deleteButton.isVisible = !value
+    }
+  
+  override fun updateButtons() {
     val rowSelected = !grid.asSingleSelect().isEmpty
     updateButton.isEnabled = rowSelected
     deleteButton.isEnabled = rowSelected

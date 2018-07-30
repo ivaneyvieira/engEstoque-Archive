@@ -7,7 +7,7 @@ select P.invno, N.storeno, nfname as codigo, invse as serie,
     WHEN type = 1 then "TRANSFERENCIA_E"
     WHEN type = 2 then "DEV_CLI"
     ELSE "INVALIDA"
-  END AS tipo
+  END AS tipo, IFNULL(L.localizacao, '') AS localizacao
 from sqldados.inv AS N
   inner join sqldados.iprd AS P
   USING(invno)
@@ -15,6 +15,10 @@ from sqldados.inv AS N
     ON V.no = N.vendno
   left join sqldados.xfr AS X
     ON X.no = N.xfrno
+  left join sqldados.prdloc AS L
+    ON N.storeno = L.storeno
+    AND P.prdno = L.prdno
+    AND P.grade = L.grade
 where N.storeno = :storeno
       and (nfname = :nfname
         OR nfname = CONCAT('0', :nfname)

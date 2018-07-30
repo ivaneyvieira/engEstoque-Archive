@@ -6,6 +6,8 @@
         </encoder>
     </appender>
     <logger name="org.test" level="DEBUG"/>
+    <!-- SQL and bind values -->
+    <logger name="io.ebean.SQL" level="TRACE"/>
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>

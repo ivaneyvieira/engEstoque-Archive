@@ -40,10 +40,15 @@ class Usuario : BaseModel() {
   val isAdmin
     @Transient get() = loginName == "ADM" || loginName == "YASMINE"
   
-  val produtosLoc: List<Produto>
-    get() = saci.findLoc(loja?.numero, localizacao).mapNotNull {
-      Produto.findProduto(it.codigo , it.grade) ?: Produto.createProduto(it.codigo ?: "", it.grade ?: "")
+  fun temProduto(codigo: String?, grade: String?, localizacao: String? = null): Boolean {
+    return if (codigo.isNullOrEmpty() || grade.isNullOrEmpty())
+      false
+    else {
+      isAdmin
+      || (this.localizacao == localizacao && !localizacao.isNullOrEmpty())
+      || produtos.orEmpty().any { it.codigo == codigo && it.grade == grade }
     }
+  }
   
   companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String): Usuario? {
