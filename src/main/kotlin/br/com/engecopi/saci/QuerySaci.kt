@@ -70,6 +70,14 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
+  fun findLocStr(storeno: Int?, prdno: String? = "", grade: String? = ""): String{
+    val loja = storeno ?: 0
+    prdno ?: return ""
+    grade ?: return ""
+    val listLoc = findLoc(storeno = loja, prdno = prdno, grade = grade).mapNotNull { it.localizacao }.filter { it.isNotBlank() }
+    return listLoc.joinToString()
+  }
+  
   fun findLocais(storeno: Int?): List<String> {
     storeno ?: return emptyList()
     return findLoc(storeno).mapNotNull { it.localizacao }.distinct()

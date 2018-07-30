@@ -9,13 +9,16 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
+import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ItemNota, QItemNota, SaidaVo>(view, SaidaVo::class) {
+class SaidaViewModel(view: IView, val usuario: Usuario?) :
+        CrudViewModel<ItemNota, QItemNota, SaidaVo>(view, SaidaVo::class) {
   override fun update(bean: SaidaVo) {
     val nota = saveNota(bean)
     
@@ -85,8 +88,15 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ItemNo
   override val query: QItemNota
     get() {
       val query = ItemNota.where().nota.tipoMov.eq(SAIDA)
-      return lojaDefault?.let { loja ->
-        query.nota.loja.id.eq(loja.id)
+      return usuario?.let { u ->
+        query.let { q ->
+          val loja = u.loja
+          if (loja == null) q
+          else q.nota.loja.id.eq(loja.id)
+        }.let { q ->
+          if (u.isAdmin) q
+          else q.usuario.id.eq(usuario.id)
+        }
       } ?: query
     }
   
@@ -104,8 +114,8 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ItemNo
     }
   }
   
-  override fun QItemNota.filterString(filter: String): QItemNota {
-    return nota.numero.eq(filter)
+  override fun QItemNota.filterString(text: String): QItemNota {
+    return nota.numero.eq(text)
   }
   
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {
@@ -118,7 +128,7 @@ class SaidaViewModel(view: IView, val lojaDefault: Loja?) : CrudViewModel<ItemNo
 }
 
 class SaidaVo {
-  var usuario : Usuario? = null
+  var usuario: Usuario? = null
   
   var numeroNota: String? = ""
     set(value) {
@@ -170,6 +180,10 @@ class SaidaVo {
     set(value) {
       field = value
     }
+  
+  val localizacao
+    get() = saci.findLocStr(lojaNF?.numero, produto?.codigo, produto?.grade)
+  
   
   var produto: Produto? = null
     set(value) {

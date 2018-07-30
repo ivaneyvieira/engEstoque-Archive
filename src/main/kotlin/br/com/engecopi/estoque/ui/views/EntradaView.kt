@@ -171,6 +171,9 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::grade) {
           caption = "Grade"
         }
+        column(EntradaVo::localizacao) {
+          caption = "Local"
+        }
         column(EntradaVo::quantProduto) {
           caption = "Quantidade"
           intFormat()
@@ -194,7 +197,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   }
   
   override val viewModel: EntradaViewModel
-    get() = EntradaViewModel(this, lojaDefault)
+    get() = EntradaViewModel(this, EstoqueUI.user)
 }
 
 

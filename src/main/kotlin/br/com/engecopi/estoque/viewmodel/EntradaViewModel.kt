@@ -19,7 +19,7 @@ import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class EntradaViewModel(view: IView, val lojaDefault: Loja?) :
+class EntradaViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<ItemNota, QItemNota, EntradaVo>(view, EntradaVo::class) {
   override fun update(bean: EntradaVo) {
     val nota = saveNota(bean)
@@ -94,10 +94,16 @@ class EntradaViewModel(view: IView, val lojaDefault: Loja?) :
   
   override val query: QItemNota
     get() {
-      val query = ItemNota.where()
-              .nota.tipoMov.eq(ENTRADA)
-      return lojaDefault?.let { loja ->
-        query.nota.loja.id.eq(loja.id)
+      val query = ItemNota.where().nota.tipoMov.eq(ENTRADA)
+      return usuario?.let { u ->
+        query.let { q ->
+          val loja = u.loja
+          if (loja == null) q
+          else q.nota.loja.id.eq(loja.id)
+        }.let { q ->
+          if (u.isAdmin) q
+          else q.usuario.id.eq(usuario.id)
+        }
       } ?: query
     }
   
@@ -197,7 +203,7 @@ class EntradaVo {
         notaEntradaSaci
                 .filter { notaSaci ->
                   Produto.findProduto(notaSaci.codigo, notaSaci.grade)?.let { produto ->
-                    usuario?.temProduto(produto)?: false
+                    usuario?.temProduto(produto) ?: false
                   } ?: false
                 }.mapNotNull { it: NotaEntradaSaci ->
                   val grade = it.grade ?: ""
@@ -230,6 +236,9 @@ class EntradaVo {
   
   val saldo: Int
     get() = produto(produtoSaci)?.saldoLoja(lojaNF) ?: 0
+  
+  val localizacao
+    get() = saci.findLocStr(lojaNF?.numero, produtoSaci?.codigo, produtoSaci?.grade)
   
   val nota: Nota?
     get() = Nota.findEntrada(numeroNF ?: "", lojaNF)

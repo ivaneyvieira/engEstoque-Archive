@@ -68,6 +68,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
     return ProdutoVo().apply {
       codigoProduto = produto.codigo
       gradeProduto = produto.grade
+      lojaDefault = usuario?.loja
     }
   }
   
@@ -90,6 +91,10 @@ class ProdutoVo {
   
   val codebar: String?
     get() = produtosSaci.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
+  
+  val localizacao
+    get() = saci.findLocStr(lojaDefault?.numero, produto?.codigo, produto?.grade)
+  
   
   val produto: Produto?
     get() = Produto.findProduto(codigoProduto, gradeProduto)

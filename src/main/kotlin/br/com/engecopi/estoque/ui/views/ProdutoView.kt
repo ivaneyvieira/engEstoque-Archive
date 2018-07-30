@@ -127,10 +127,13 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           expandRatio = 5
           caption = "Descrição"
         }
-        
         column(ProdutoVo::gradeProduto) {
           expandRatio = 1
           caption = "Grade"
+        }
+        column(ProdutoVo::localizacao) {
+          expandRatio = 1
+          caption = "Local"
         }
       }
     }

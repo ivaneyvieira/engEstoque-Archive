@@ -184,6 +184,9 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::grade) {
           caption = "Grade"
         }
+        column(SaidaVo::localizacao) {
+          caption = "Local"
+        }
         column(SaidaVo::quantidade) {
           caption = "Quantidade"
           intFormat()
@@ -193,6 +196,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
   }
   
   override val viewModel
-    get() = SaidaViewModel(this, lojaDefault)
+    get() = SaidaViewModel(this, EstoqueUI.user)
 }
 

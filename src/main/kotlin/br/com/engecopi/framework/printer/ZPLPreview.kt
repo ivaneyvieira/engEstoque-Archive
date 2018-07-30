@@ -13,7 +13,7 @@ object ZPLPreview {
     val request = target.request()
     val response = request.post(Entity.entity(zpl, MediaType.APPLICATION_FORM_URLENCODED))
     
-    return if (response.status === 200) {
+    return if (response.status == 200) {
       response.readEntity(ByteArray::class.java)
     } else {
       null
