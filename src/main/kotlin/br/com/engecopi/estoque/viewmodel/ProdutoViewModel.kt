@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -99,12 +100,30 @@ class ProdutoVo {
   val produto: Produto?
     get() = Produto.findProduto(codigoProduto, gradeProduto)
   
+  var filtroDI: LocalDate? = null
+  var filtroDF: LocalDate? = null
+  var filtroTipo: TipoNota? = null
+  
   val itensNota: List<ItemNota>
     get() {
       val itens = produto?.itensNota.orEmpty().filter {
-        lojaDefault?.let { lDef ->
+        (lojaDefault?.let { lDef ->
           it.nota?.loja?.id == lDef.id
-        } ?: true
+        } ?: true)
+        &&
+        (filtroDI?.let {di->
+          (it.nota?.data?.isAfter(di) ?: true) ||
+          (it.nota?.data?.isEqual(di)?: true)
+        }?: true)
+        &&
+        (filtroDF?.let {df->
+          (it.nota?.data?.isBefore(df) ?: true) ||
+          (it.nota?.data?.isEqual(df)?: true)
+        }?: true)
+        &&
+        (filtroTipo?.let {t->
+          it.nota?.tipoNota == t ?: true
+        }?: true)
       }
       var saldo = 0
       itens.forEach { item ->

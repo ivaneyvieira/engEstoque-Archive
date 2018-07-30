@@ -113,7 +113,12 @@ class CustomCrudFormFactory<T>(
     binder.bean = domainObject
     layoutForm(layout, operation, binder, readOnly)
     if (operation == DELETE || operation == READ)
-      binder.setReadOnly(true)
+      binder.fields.forEach {
+        val com = it as? Component
+        it.isReadOnly = com?.let {
+          it.id != "filtro"
+        } ?: true
+      }
     
     val footerLayout = buildFooter(operation, domainObject, cancelButtonClickListener, operationButtonClickListener)
     

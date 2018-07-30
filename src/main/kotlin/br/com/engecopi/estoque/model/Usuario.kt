@@ -5,11 +5,14 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
+import javax.persistence.CascadeType
 import javax.persistence.CascadeType.MERGE
+import javax.persistence.CascadeType.REMOVE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.persistence.Table
 import javax.persistence.Transient
 import javax.validation.constraints.Size
@@ -26,6 +29,10 @@ class Usuario : BaseModel() {
   var localizacao: String? = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
+  @OneToMany(mappedBy = "usuario",
+             cascade = [PERSIST, MERGE, REFRESH, REMOVE])
+  val itensNota: List<ItemNota>? = null
+  
   
   fun usuarioSaci() = saci.findUser(loginName)
   

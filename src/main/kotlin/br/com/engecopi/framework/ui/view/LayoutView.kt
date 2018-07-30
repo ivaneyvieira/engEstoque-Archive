@@ -16,6 +16,7 @@ import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
 import com.vaadin.data.HasValue
 import com.vaadin.data.ReadOnlyHasValue
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
@@ -28,6 +29,7 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
+import org.vaadin.addons.filteringgrid.FilterGrid
 import org.vaadin.viritin.fields.ClearableTextField
 import org.vaadin.viritin.fields.DoubleField
 import org.vaadin.viritin.fields.EmailField
@@ -41,6 +43,7 @@ import org.vaadin.viritin.fields.MTextField
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.streams.toList
@@ -67,7 +70,7 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
     if (msg.isNotBlank())
       MessageDialog.warning(message = msg)
   }
-
+  
   override fun showError(msg: String) {
     if (msg.isNotBlank())
       MessageDialog.error(message = msg)
@@ -162,11 +165,11 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
       if (propertys.isEmpty()) {
         val bindings = BEAN::class.declaredMemberProperties
                 .mapNotNull { prop -> binder.getBinding(prop.name).orElse(null) }
-        binder.fields.toList().mapNotNull{field ->
-          bindings.find {binding->
+        binder.fields.toList().mapNotNull { field ->
+          bindings.find { binding ->
             binding.field == field && binding.field != this
           }
-        }.forEach {binding->
+        }.forEach { binding ->
           binding.read(bean)
         }
       } else {
@@ -178,7 +181,7 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
 
 fun <BEAN> reloadPropertys(
         binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
-                                ) {
+                          ) {
   val bean = binder.bean
   propertys.forEach { prop ->
     binder.getBinding(prop.name).ifPresent { binding ->
@@ -230,9 +233,23 @@ fun HasComponents.mTextField(captionPar: String = "", block: MTextField.() -> Un
 fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
         init(LabelField(caption), block)
 
-inline fun <reified T : Enum<*>> HasComponents.enumSelect(caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}) =
+inline fun <reified T : Enum<*>> HasComponents.enumSelect(
+        caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}
+                                                         ) =
         init(EnumSelect<T>(caption, T::class.java), block)
+
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
   addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
 }
+
+//FilterGrid
+fun <T : Any> (@VaadinDsl HasComponents).filterGrid(
+        itemClass: KClass<T>? = null, caption: String? = null, dataProvider: DataProvider<T, *>? = null,
+        block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}
+                                                   ) =
+        init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
+          this.caption = caption
+          if (dataProvider != null) this.dataProvider = dataProvider
+          block()
+        }
