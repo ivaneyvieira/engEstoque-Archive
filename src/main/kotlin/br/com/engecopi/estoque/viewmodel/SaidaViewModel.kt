@@ -9,7 +9,6 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
-import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -46,6 +45,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
       this.usuario = bean.usuario
     }
     item.insert()
+    item.produto?.recalculaSaldos()
     return item
   }
   
@@ -60,6 +60,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
         this.quantidade = bean.quantidade ?: 0
       }
       item.save()
+      item.produto?.recalculaSaldos()
     }
   }
   

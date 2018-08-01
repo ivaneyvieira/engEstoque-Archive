@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
@@ -49,6 +50,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
       this.usuario = bean.usuario
     }
     item.insert()
+    item.produto?.recalculaSaldos()
     return item
   }
   
@@ -63,6 +65,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
         this.quantidade = bean.quantProduto ?: 0
       }
       item.update()
+      item.produto?.recalculaSaldos()
     }
   }
   
@@ -140,10 +143,9 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   fun imprimir(itemNota: ItemNota) = execString {
-    val template = itemNota.template
+    val template = Etiqueta.where().tipoMov.eq(itemNota.tipoMov).findOne()?.template
     val print = itemNota.printEtiqueta()
-    val etiqueta = EtiquetaPrinter(template, print)
-    etiqueta.print()
+    print.print(template?:"")
   }
 }
 

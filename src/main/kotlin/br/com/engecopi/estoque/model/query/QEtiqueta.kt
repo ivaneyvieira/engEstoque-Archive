@@ -1,7 +1,10 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.Etiqueta
+import br.com.engecopi.estoque.model.TipoMov
+import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import io.ebean.EbeanServer
+import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
@@ -30,7 +33,9 @@ class QEtiqueta : TQRootBean<Etiqueta, QEtiqueta> {
   lateinit var updatedAt: PLocalDateTime<QEtiqueta>
   lateinit var version: PInteger<QEtiqueta>
   lateinit var titulo: PString<QEtiqueta>
+  lateinit var tipoMov: PEnum<QEtiqueta,TipoMov>
   lateinit var template: PString<QEtiqueta>
+  lateinit var itensNota: QAssocItemNota<QEtiqueta>
 
 
   /**

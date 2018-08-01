@@ -14,6 +14,7 @@ import javax.persistence.Entity
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.Transient
+import kotlin.reflect.full.memberProperties
 
 @Entity
 @Table(name = "itens_nota")
@@ -30,6 +31,7 @@ class ItemNota : BaseModel() {
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [ALL])
   var usuario: Usuario? = null
+  var saldo: Int? = 0
   
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
@@ -58,9 +60,6 @@ class ItemNota : BaseModel() {
   val dataNota: LocalDate?
     @Transient get() = nota?.data
   
-  @Transient
-  var saldoTransient = 0
-  
   val ultilmaMovimentacao: Boolean
     @Transient
     get() {
@@ -69,7 +68,7 @@ class ItemNota : BaseModel() {
       } ?: true
     }
   val template: String
-    @Transient get() = etiqueta?.template ?: ""
+    @Transient get() = Etiqueta.where().tipoMov.eq(tipoMov).findOne()?.template ?: ""
   
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
@@ -86,14 +85,19 @@ class NotaPrint(item: ItemNota) {
   private val notaSaci = item.nota
   val rota = notaSaci?.rota ?: ""
   val nota = notaSaci?.numero ?: ""
-  val tipoNota = notaSaci?.tipoNota?.descricao ?: ""
+  val tipoNota = notaSaci?.tipoNota?.descricao2 ?: ""
   val data = notaSaci?.data?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
   val produto = item.produto
+  val saldo = item.saldo ?: 0
   val prdno = produto?.codigo ?: ""
   val grade = produto?.grade ?: ""
   val name = produto?.descricao ?: ""
   val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"
   
-  val barras = "$prdnoGrade quantidadeMov saldoNovo loja numeroNota"
+  fun print(template: String): String {
+    return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->
+      reduce.replace("[${prop.name}]", "${prop.get(this)}")
+    }
+  }
 }
 

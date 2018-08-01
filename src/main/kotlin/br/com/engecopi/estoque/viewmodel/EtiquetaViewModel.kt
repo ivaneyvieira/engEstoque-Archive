@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Etiqueta
+import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.query.QEtiqueta
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -11,6 +12,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
     Etiqueta.byId(bean.id)?.apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
+      this.tipoMov = bean.tipoMov ?: throw EViewModel("O tipo está vazio")
       update()
     }
   }
@@ -19,6 +21,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
     Etiqueta().apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
+      this.tipoMov = bean.tipoMov ?: throw EViewModel("O tipo está vazio")
       insert()
     }
   }
@@ -36,6 +39,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.id = etiqueta.id
       this.titulo = etiqueta.titulo
       this.template = etiqueta.template
+      this.tipoMov = etiqueta.tipoMov
     }
   }
   
@@ -48,4 +52,5 @@ class EtiquetaVo {
   var id: Long = 0
   var titulo: String? = ""
   var template: String? = ""
+  var tipoMov : TipoMov? = null
 }

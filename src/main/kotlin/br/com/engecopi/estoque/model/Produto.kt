@@ -39,6 +39,16 @@ class Produto : BaseModel() {
     @Transient
     get() = produtoSaci()?.nome
   
+  fun recalculaSaldos() {
+    var saldo = 0
+    refresh()
+    itensNota?.sortedWith(compareBy(ItemNota::data, ItemNota::id))?.forEach { item ->
+      saldo += item.quantidadeSaldo
+      item.saldo = saldo
+      item.update()
+    }
+  }
+  
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
       codigo ?: return null

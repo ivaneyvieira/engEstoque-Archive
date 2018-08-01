@@ -1,7 +1,9 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Etiqueta
+import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.query.QEtiqueta
+import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
@@ -23,7 +25,9 @@ class QAssocEtiqueta<R>(name: String, root: R) : TQAssocBean<Etiqueta,R>(name, r
   lateinit var updatedAt: PLocalDateTime<R>
   lateinit var version: PInteger<R>
   lateinit var titulo: PString<R>
+  lateinit var tipoMov: PEnum<R,TipoMov>
   lateinit var template: PString<R>
+  lateinit var itensNota: QAssocItemNota<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

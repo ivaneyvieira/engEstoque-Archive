@@ -132,7 +132,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               setRenderer(NumberRenderer(DecimalFormat("0")))
               align = VAlign.Right
             }
-            addColumnFor(ItemNota::saldoTransient) {
+            addColumnFor(ItemNota::saldo) {
               this.isSortable = false
               caption = "Saldo"
               setRenderer(NumberRenderer(DecimalFormat("0")))

@@ -106,6 +106,7 @@ class ProdutoVo {
   
   val itensNota: List<ItemNota>
     get() {
+      produto?.recalculaSaldos()
       val itens = produto?.itensNota.orEmpty().filter {
         (lojaDefault?.let { lDef ->
           it.nota?.loja?.id == lDef.id
@@ -122,14 +123,10 @@ class ProdutoVo {
         }?: true)
         &&
         (filtroTipo?.let {t->
-          it.nota?.tipoNota == t ?: true
+          it.nota?.tipoNota == t
         }?: true)
       }
-      var saldo = 0
-      itens.forEach { item ->
-        saldo += item.quantidadeSaldo
-        item.saldoTransient = saldo
-      }
+
       return itens
     }
 }
