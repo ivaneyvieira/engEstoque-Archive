@@ -3,35 +3,33 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.framework.printer.ZPLPreview
 import br.com.engecopi.utils.SystemUtils
 import br.com.engecopi.utils.makeResource
-import com.github.vok.karibudsl.h
+import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.label
-import com.github.vok.karibudsl.panel
 import com.github.vok.karibudsl.perc
-import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.textArea
 import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
+import com.vaadin.server.VaadinRequest
+import com.vaadin.server.VaadinSession
+import com.vaadin.shared.ui.ContentMode
+import com.vaadin.ui.JavaScript
 import com.vaadin.ui.UI
-import com.vaadin.ui.Window
-import com.vaadin.ui.themes.ValoTheme
 
-class DialogEtiqueta(caption: String, val text: String) : Window(caption) {
-  val zpls = (0..5).mapNotNull {  SystemUtils.resize(ZPLPreview.createImage(text, it),
-                               600, 600)}
-  
-  init {
-    isResizable = false
-    isModal = true
-    w = 50.perc
-    h = 80.perc
-    verticalLayout {
-      textArea("Layout") {
-        w = 100.perc
-        h = 300.px
-        isReadOnly = true
-        value = text
+class DialogEtiqueta : UI() {
+  override fun init(request: VaadinRequest?) {
+    
+    val text = request?.getParameter("textLayout")
+    content = verticalLayout {
+      button("Imprimir") {
+        addClickListener {
+          JavaScript.getCurrent().execute("print();")
+        }
       }
-      zpls.forEach {zpl->
+      label {
+        w = 100.perc
+        value = text ?: ""
+        contentMode = ContentMode.PREFORMATTED
+      }
+      zpls(text).forEach { zpl ->
         label {
           icon = zpl.makeResource()
         }
@@ -39,8 +37,8 @@ class DialogEtiqueta(caption: String, val text: String) : Window(caption) {
     }
   }
   
-  fun show() {
-    center()
-    UI.getCurrent().addWindow(this)
+  fun zpls(text: String?) = (0..5).mapNotNull {
+    SystemUtils.resize(ZPLPreview.createImage(text ?: "", it),
+                       600, 600)
   }
 }

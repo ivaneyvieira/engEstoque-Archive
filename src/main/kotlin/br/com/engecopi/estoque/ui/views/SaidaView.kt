@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
@@ -25,6 +24,8 @@ import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.vaadin.data.Binder
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.BrowserWindowOpener
 import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -191,20 +192,16 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           intFormat()
         }
         grid.addComponentColumn { saida ->
-          val button = Button("Imprimir")
-          button.addClickListener { _ ->
-            imprimir(saida.itemNota)
-          }
+          val button = Button()
+          val opener = BrowserWindowOpener(DialogEtiqueta::class.java)
+          opener.features = "height=200,width=400,resizable"
+          opener.extend(button)
+          val text = viewModel.imprimir(saida.itemNota)
+          opener.setParameter("textLayout", text)
+          button.icon = VaadinIcons.PRINT
           button
         }
       }
-    }
-  }
-  
-  private fun imprimir(itemNota: ItemNota?) {
-    itemNota?.let {
-      val text = viewModel.imprimir(itemNota)
-      DialogEtiqueta("Etiqueta", text).show()
     }
   }
   

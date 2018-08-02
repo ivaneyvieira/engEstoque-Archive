@@ -142,10 +142,10 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
     loja?.let { listOf(it) } ?: Loja.all()
   }
   
-  fun imprimir(itemNota: ItemNota) = execString {
-    val template = Etiqueta.where().tipoMov.eq(itemNota.tipoMov).findOne()?.template
-    val print = itemNota.printEtiqueta()
-    print.print(template?:"")
+  fun imprimir(itemNota: ItemNota?) = execString {
+    val template = Etiqueta.where().tipoMov.eq(itemNota?.tipoMov).findOne()?.template
+    val print = itemNota?.printEtiqueta()
+    print?.print(template?:"") ?: ""
   }
 }
 

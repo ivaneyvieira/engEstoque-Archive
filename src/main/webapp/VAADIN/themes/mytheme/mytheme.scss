@@ -152,4 +152,10 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
     filter: grayscale(1);
   }
 
+  @media print {
+    .noprint {
+      visibility: hidden;
+    }
+  }
+
 }

@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
@@ -16,6 +15,7 @@ import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.saci.beans.ProdutoSaci
+
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
@@ -23,15 +23,14 @@ import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.BrowserWindowOpener
 import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
-import org.vaadin.addon.ewopener.EnhancedBrowserWindowOpener
-
-
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
@@ -182,24 +181,15 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           intFormat()
         }
         grid.addComponentColumn { entrada ->
-          val button = Button("Imprimir")
-          button.addClickListener { _ ->
-            imprimir(entrada.itemNota)
-          }
+          val button = Button()
+          val opener = BrowserWindowOpener(DialogEtiqueta::class.java)
+          opener.features = "height=600,width=800,resizable"
+          opener.extend(button)
+          val text = viewModel.imprimir(entrada.itemNota)
+          opener.setParameter("textLayout", text)
+          button.icon = VaadinIcons.PRINT
           button
         }
-      }
-    }
-  }
-  
-  val opener = EnhancedBrowserWindowOpener()
-          .popupBlockerWorkaround(true)
-  private fun imprimir(itemNota: ItemNota?) {
-    itemNota?.let {
-      val text = viewModel.imprimir(itemNota)
-     //val dialogo = DialogEtiqueta("Etiqueta", text)
-      opener.open{
-        text
       }
     }
   }

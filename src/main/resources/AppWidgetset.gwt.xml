@@ -4,6 +4,7 @@
 <module>
         <inherits name="com.vaadin.DefaultWidgetSet" />
         <inherits name="org.vaadin.patrik.GridFastNavigationWidgetSet" />
+        <inherits name="org.vaadin.addon.ewopener.WidgetSet" />
         <set-configuration-property name="devModeRedirectEnabled" value="true" />
         <set-property name="user.agent" value="gecko1_8,safari,ie10" />
         <source path="client" />
