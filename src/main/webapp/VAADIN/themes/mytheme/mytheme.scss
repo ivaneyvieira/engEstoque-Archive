@@ -154,10 +154,10 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
 
   @media print {
     .v-button.noprint {
-      visibility: hidden;
+      display: none;
     }
     .v-label.noprint {
-      visibility: hidden;
+      display: none;
     }
   }
 

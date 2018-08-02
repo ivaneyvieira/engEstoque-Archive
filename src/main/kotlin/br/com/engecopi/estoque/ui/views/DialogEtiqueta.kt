@@ -33,7 +33,7 @@ class DialogEtiqueta : UI() {
       zpls(text).forEach { zpl ->
         label {
           icon = zpl.makeResource()
-          addStyleName("noprint")
+          addStyleName(".noprint")
         }
       }
     }
