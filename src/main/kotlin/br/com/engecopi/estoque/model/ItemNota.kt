@@ -82,17 +82,19 @@ class ItemNota : BaseModel() {
 }
 
 class NotaPrint(item: ItemNota) {
-  private val notaSaci = item.nota
+  val notaSaci = item.nota
   val rota = notaSaci?.rota ?: ""
   val nota = notaSaci?.numero ?: ""
   val tipoNota = notaSaci?.tipoNota?.descricao2 ?: ""
   val data = notaSaci?.data?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
   val produto = item.produto
-  val saldo = item.saldo ?: 0
+  val sd = item.saldo ?: 0
+  val quant = item.quantidade
   val prdno = produto?.codigo ?: ""
   val grade = produto?.grade ?: ""
   val name = produto?.descricao ?: ""
   val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"
+  val un = produto?.produtoSaci()?.unidade ?: "UN"
   
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

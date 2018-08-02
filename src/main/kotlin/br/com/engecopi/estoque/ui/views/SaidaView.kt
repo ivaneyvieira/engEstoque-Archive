@@ -1,10 +1,10 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
-import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -25,13 +25,12 @@ import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.vaadin.data.Binder
+import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
-import java.text.SimpleDateFormat
 
 @AutoView
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
@@ -191,7 +190,21 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           caption = "Quantidade"
           intFormat()
         }
+        grid.addComponentColumn { saida ->
+          val button = Button("Imprimir")
+          button.addClickListener { _ ->
+            imprimir(saida.itemNota)
+          }
+          button
+        }
       }
+    }
+  }
+  
+  private fun imprimir(itemNota: ItemNota?) {
+    itemNota?.let {
+      val text = viewModel.imprimir(itemNota)
+      DialogEtiqueta("Etiqueta", text).show()
     }
   }
   

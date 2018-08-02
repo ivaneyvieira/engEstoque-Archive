@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
@@ -126,6 +127,12 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   fun findLojas(loja: Loja?): List<Loja> = execList {
     loja?.let { listOf(it) } ?: Loja.all()
   }
+  
+  fun imprimir(itemNota: ItemNota) = execString {
+    val template = Etiqueta.where().tipoMov.eq(itemNota.tipoMov).findOne()?.template
+    val print = itemNota.printEtiqueta()
+    print.print(template ?: "")
+  }
 }
 
 class SaidaVo {
@@ -185,7 +192,6 @@ class SaidaVo {
   val localizacao
     get() = saci.findLocStr(lojaNF?.numero, produto?.codigo, produto?.grade)
   
-  
   var produto: Produto? = null
     set(value) {
       notaSaidaSaci
@@ -212,4 +218,7 @@ class SaidaVo {
     get() = !notaSaidaSaci.isEmpty()
   
   var quantidade: Int? = 0
+  
+  val itemNota: ItemNota?
+    get() = ItemNota.find(notaSaida, produto)
 }

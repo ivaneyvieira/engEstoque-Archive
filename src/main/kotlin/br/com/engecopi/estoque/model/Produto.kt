@@ -43,6 +43,7 @@ class Produto : BaseModel() {
     var saldo = 0
     refresh()
     itensNota?.sortedWith(compareBy(ItemNota::data, ItemNota::id))?.forEach { item ->
+      item.refresh()
       saldo += item.quantidadeSaldo
       item.saldo = saldo
       item.update()
