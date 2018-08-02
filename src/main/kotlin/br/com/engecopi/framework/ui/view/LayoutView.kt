@@ -2,6 +2,7 @@ package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
+import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.align
@@ -20,6 +21,8 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
+import com.vaadin.server.BrowserWindowOpener
+import com.vaadin.server.StreamResource
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
@@ -29,6 +32,7 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
+import org.apache.commons.io.IOUtils
 import org.vaadin.addons.filteringgrid.FilterGrid
 import org.vaadin.viritin.fields.ClearableTextField
 import org.vaadin.viritin.fields.DoubleField
@@ -79,6 +83,12 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   override fun showInfo(msg: String) {
     if (msg.isNotBlank())
       MessageDialog.info(message = msg)
+  }
+  
+  open fun print(text : String?) : BrowserWindowOpener {
+    val resource = StreamResource({ IOUtils.toInputStream(text) }, "${SystemUtils.md5(text?: "")}.txt")
+    resource.mimeType = "text/plain"
+    return BrowserWindowOpener(resource)
   }
 }
 

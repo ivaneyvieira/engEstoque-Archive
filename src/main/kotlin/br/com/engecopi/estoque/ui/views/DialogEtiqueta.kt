@@ -5,6 +5,7 @@ import br.com.engecopi.utils.SystemUtils
 import br.com.engecopi.utils.makeResource
 import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.label
+import com.github.vok.karibudsl.link
 import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
@@ -15,19 +16,20 @@ import com.vaadin.shared.ui.ContentMode
 import com.vaadin.ui.Button
 import com.vaadin.ui.JavaScript
 import com.vaadin.ui.Label
+import com.vaadin.ui.Link
 import com.vaadin.ui.UI
 import java.util.concurrent.*
 
-@Theme("mytheme")
+@Theme("xxx")
 class DialogEtiqueta : UI() {
-  var button : Button? = null
+  var button : Link? = null
   var codeZpl : Label? = null
   var imgZpl : Label? = null
   override fun init(request: VaadinRequest?) {
     
     val text = request?.getParameter("textLayout")
     content = verticalLayout {
-     button = button("Imprimir") {
+     button = link("Imprimir") {
         addClickListener {
           button?.isVisible = false
           codeZpl?.isVisible = true

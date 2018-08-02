@@ -192,12 +192,10 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           intFormat()
         }
         grid.addComponentColumn { saida ->
-          val button = Button()
-          val opener = BrowserWindowOpener(DialogEtiqueta::class.java)
-          opener.features = "height=200,width=400,resizable"
-          opener.extend(button)
+          saida.itemNota?.produto?.recalculaSaldos()
           val text = viewModel.imprimir(saida.itemNota)
-          opener.setParameter("textLayout", text)
+          val button = Button()
+          print(text).extend(button)
           button.icon = VaadinIcons.PRINT
           button
         }

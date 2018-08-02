@@ -15,7 +15,7 @@ import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.saci.beans.ProdutoSaci
-
+import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
@@ -25,9 +25,11 @@ import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.BrowserWindowOpener
+import com.vaadin.server.StreamResource
 import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
+import org.apache.commons.io.IOUtils
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
@@ -180,13 +182,11 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           caption = "Quantidade"
           intFormat()
         }
-        grid.addComponentColumn { entrada ->
+        grid.addComponentColumn { item ->
+          item.itemNota?.produto?.recalculaSaldos()
+          val text = viewModel.imprimir(item.itemNota)
           val button = Button()
-          val opener = BrowserWindowOpener(DialogEtiqueta::class.java)
-          opener.features = "height=600,width=800,resizable"
-          opener.extend(button)
-          val text = viewModel.imprimir(entrada.itemNota)
-          opener.setParameter("textLayout", text)
+          print(text).extend(button)
           button.icon = VaadinIcons.PRINT
           button
         }
