@@ -22,6 +22,7 @@ abstract class BaseModel(
         var updatedAt: LocalDateTime= LocalDateTime.now(),
         @Version
         var version: Int = 0
-                        ) : Model()
+                        ) : Model(){
+}
 
 

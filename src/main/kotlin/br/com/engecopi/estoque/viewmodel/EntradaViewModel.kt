@@ -145,7 +145,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   fun imprimir(itemNota: ItemNota?) = execString {
     val template = Etiqueta.where().tipoMov.eq(itemNota?.tipoMov).findOne()?.template
     val print = itemNota?.printEtiqueta()
-    print?.print(template?:"") ?: ""
+    print?.print(template ?: "") ?: ""
   }
 }
 
@@ -200,19 +200,18 @@ class EntradaVo {
   
   val produtoNota: List<ProdutoSaci>
     get() {
-      val nota = notaEntrada
-      return if (nota != null)
-        notaEntradaSaci
-                .filter { notaSaci ->
-                  Produto.findProduto(notaSaci.codigo, notaSaci.grade)?.let { produto ->
-                    usuario?.temProduto(produto) ?: false
-                  } ?: false
-                }.mapNotNull { it: NotaEntradaSaci ->
-                  val grade = it.grade ?: ""
-                  saci.findProduto(it.prdno).firstOrNull { it.grade == grade }
-                }
+      val nota = notaEntradaSaci
+      return if (nota.isNotEmpty())
+        nota.filter { notaSaci ->
+          Produto.findProduto(notaSaci.codigo, notaSaci.grade)?.let { produto ->
+            usuario?.temProduto(produto) ?: false
+          } ?: false
+        }.mapNotNull { it: NotaEntradaSaci ->
+          val grade = it.grade ?: ""
+          saci.findProduto(it.prdno).firstOrNull { it.grade == grade }
+        }
       else
-        Produto.all().mapNotNull { it.produtoSaci() }
+        Produto.all().filter { usuario?.temProduto(it) ?: false }.mapNotNull { it.produtoSaci() }
     }
   
   var produtoSaci: ProdutoSaci? = null

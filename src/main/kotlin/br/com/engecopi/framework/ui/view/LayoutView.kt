@@ -121,7 +121,8 @@ fun <V, T> HasItems<T>.bindItens(
       if (itensOld != itens)
         setItems(itens)
     @Suppress("UNCHECKED_CAST")
-    val value = if (oldValue == null || !itens.contains(oldValue as? T))
+    val contains = itens.contains(oldValue as? T)
+    val value = if (oldValue == null || !contains)
       itens.firstOrNull()
     else
       itens.find { it == oldValue }

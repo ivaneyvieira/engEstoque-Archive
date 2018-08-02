@@ -116,7 +116,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
             expandRatio = 2f
             isReadOnly = operation != ADD
             default { "${it.codigo} ${it.grade}".trim() }
-            
+            isTextInputAllowed = true
             bindItens(binder, EntradaVo::produtoNota)
             bind(binder).bind(EntradaVo::produtoSaci)
             reloadBinderOnChange(binder)
