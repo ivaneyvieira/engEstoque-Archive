@@ -23,6 +23,7 @@ class DialogEtiqueta : UI() {
         addClickListener {
           JavaScript.getCurrent().execute("print();")
         }
+        addStyleName("noprint")
       }
       label {
         w = 100.perc
@@ -32,6 +33,7 @@ class DialogEtiqueta : UI() {
       zpls(text).forEach { zpl ->
         label {
           icon = zpl.makeResource()
+          addStyleName("noprint")
         }
       }
     }

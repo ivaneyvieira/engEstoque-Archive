@@ -153,7 +153,10 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
   }
 
   @media print {
-    .noprint {
+    .v-button.noprint {
+      visibility: hidden;
+    }
+    .v-label.noprint {
       visibility: hidden;
     }
   }
