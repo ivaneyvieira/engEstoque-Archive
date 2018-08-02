@@ -1,7 +1,7 @@
 buildscript {
   ext.kotlin_version = '1.2.51'
   ext.karibu_version = '0.4.3'
-  ext.vaadin_version = '8.4.5'
+  ext.vaadin_version = '8.5.1'
   repositories {
     mavenCentral()
   }
@@ -51,7 +51,7 @@ gretty {
 }
 
 vaadin {
-  version "8.4.5"
+  version "8.5.1"
 
   manageDependencies true
 

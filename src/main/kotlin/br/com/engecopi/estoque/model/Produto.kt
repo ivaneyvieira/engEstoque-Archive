@@ -32,7 +32,7 @@ class Produto : BaseModel() {
   val itensNota: List<ItemNota>? = null
   
   fun produtoSaci(): ProdutoSaci? {
-    return saci.findProduto(codigo).filter { it.grade == grade }.firstOrNull()
+    return saci.findProduto(codigo).firstOrNull { it.grade == grade }
   }
   
   val descricao: String?
