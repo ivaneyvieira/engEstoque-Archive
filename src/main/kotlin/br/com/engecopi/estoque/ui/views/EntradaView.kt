@@ -29,6 +29,9 @@ import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
+import org.vaadin.addon.ewopener.EnhancedBrowserWindowOpener
+
+
 
 @AutoView("")
 class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
@@ -189,10 +192,15 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
     }
   }
   
+  val opener = EnhancedBrowserWindowOpener()
+          .popupBlockerWorkaround(true)
   private fun imprimir(itemNota: ItemNota?) {
     itemNota?.let {
       val text = viewModel.imprimir(itemNota)
-      DialogEtiqueta("Etiqueta", text).show()
+     //val dialogo = DialogEtiqueta("Etiqueta", text)
+      opener.open{
+        text
+      }
     }
   }
   
