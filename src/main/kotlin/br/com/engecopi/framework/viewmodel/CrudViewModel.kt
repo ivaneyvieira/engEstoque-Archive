@@ -58,6 +58,15 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     }
   }
   
+  fun Q.makeSort(sorts :List<Sort>): Q{
+    return if(sorts.isEmpty())
+    this
+    else{
+      val orderByClause = sorts.joinToString { "${it.propertyName} ${if(it.descending) "DESC" else "ASC"}" }
+      orderBy(orderByClause)
+    }
+  }
+  
   private fun parserDate(filter: String): LocalDate? {
     val frm = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     return try {
@@ -67,10 +76,11 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     }
   }
   
-  open fun findQuery(offset: Int, limit: Int, filter: String): List<VO> = execList {
+  open fun findQuery(offset: Int, limit: Int, filter: String, sorts :List<Sort>): List<VO> = execList {
     query.filterBlank(filter)
             .setFirstRow(offset)
             .setMaxRows(limit)
+            .makeSort(sorts)
             .findList()
             .map { it.toVO() }
   }
@@ -80,3 +90,5 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
             .findCount()
   }
 }
+
+data class Sort(val propertyName : String, val descending : Boolean = false)

@@ -149,25 +149,31 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
       gridCrud(viewModel.crudClass.java) {
         addOnly = !isAdmin
         column(EntradaVo::numeroNF) {
+          //isSortable = true
           caption = "Número NF"
+          setSortProperty("nota.numero")
         }
         column(EntradaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
+          setSortProperty("nota.loja.sigla")
         }
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
           dateFormat()
+          setSortProperty("data", "hora")
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
+          setSortProperty("usuario.loginName")
         }
         column(EntradaVo::fornecedor) {
           caption = "Fornecedor"
         }
         column(EntradaVo::codigo) {
           caption = "Código"
+          setSortProperty("produto.codigo")
         }
         column(EntradaVo::descricaoProduto) {
           caption = "Descrição"
