@@ -202,7 +202,7 @@ fun <BEAN> reloadPropertys(
 }
 
 fun <C> Column<C, LocalDate?>.dateFormat() {
-  this.setRenderer(LocalDateRenderer(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+  this.setRenderer(LocalDateRenderer {DateTimeFormatter.ofPattern("dd/MM/yyyy")})
 }
 
 fun <C> Column<C, Int?>.intFormat() {

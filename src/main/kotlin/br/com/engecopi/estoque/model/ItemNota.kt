@@ -85,8 +85,21 @@ class NotaPrint(item: ItemNota) {
   val notaSaci = item.nota
   val rota = notaSaci?.rota ?: ""
   val nota = notaSaci?.numero ?: ""
-  val tipoNota = notaSaci?.tipoNota?.descricao2 ?: ""
-  val data = notaSaci?.data?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
+  val tipoObservacao = notaSaci?.observacao?.split(" ")?.get(0) ?: ""
+  val isNotaSaci = when (notaSaci?.tipoNota) {
+    TipoNota.OUTROS_E -> false
+    TipoNota.OUTROS_S -> false
+    null              -> false
+    else              -> true
+  }
+  val tipoNota = if (isNotaSaci)
+    notaSaci?.tipoNota?.descricao ?: ""
+  else tipoObservacao
+  val dataLocal = if (isNotaSaci)
+    notaSaci?.data
+  else item.data
+  
+  val data = dataLocal?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
   val produto = item.produto
   val sd = item.saldo ?: 0
   val quant = item.quantidade

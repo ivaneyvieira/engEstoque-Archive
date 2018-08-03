@@ -182,7 +182,9 @@ class EntradaVo {
   }
   
   val dataNota: LocalDate
-    get() = notaEntradaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
+    get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
+            ?: itemNota?.data
+            ?: LocalDate.now()
   
   val numeroInterno: Int
     get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
