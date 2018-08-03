@@ -25,11 +25,11 @@ class ItemNota : BaseModel() {
   var quantidade: Int = 0
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var nota: Nota? = null
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var etiqueta: Etiqueta? = null
-  @ManyToOne(cascade = [ALL])
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var usuario: Usuario? = null
   var saldo: Int? = 0
   

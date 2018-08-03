@@ -28,7 +28,7 @@ class Produto : BaseModel() {
   @Index(unique = false)
   var codebar: String = ""
   var dataCadastro: LocalDate = LocalDate.now()
-  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
+  @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   
   fun produtoSaci(): ProdutoSaci? {

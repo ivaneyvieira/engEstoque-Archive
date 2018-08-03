@@ -30,7 +30,7 @@ class Usuario : BaseModel() {
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
   @OneToMany(mappedBy = "usuario",
-             cascade = [PERSIST, MERGE, REFRESH, REMOVE])
+             cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   
   
