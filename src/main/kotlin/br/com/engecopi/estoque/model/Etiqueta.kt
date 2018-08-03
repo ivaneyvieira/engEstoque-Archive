@@ -23,7 +23,7 @@ class Etiqueta : BaseModel() {
   var tipoMov: TipoMov? = null
   @Lob
   var template: String = ""
-  @OneToMany(mappedBy = "etiqueta", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
+  @OneToMany(mappedBy = "etiqueta", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   
   companion object Find : EtiquetaFinder()

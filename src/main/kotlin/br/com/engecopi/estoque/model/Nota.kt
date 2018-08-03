@@ -40,7 +40,7 @@ class Nota : BaseModel() {
   var observacao: String = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
-  @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH, REMOVE])
+  @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   
   companion object Find : NotaFinder() {

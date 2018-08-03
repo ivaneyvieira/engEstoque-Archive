@@ -45,23 +45,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         itensNota.usuario.id.eq(u.id)
     } ?: this
   }
-  
-  override fun countQuery(filter: String): Int = execInt {
-    query.filterBlank(filter)
-            .findList()
-            .filter { usuario?.temProduto(it) ?: false }
-            .size
-  }
-  
-  override fun findQuery(offset: Int, limit: Int, filter: String, sorts :List<Sort>): List<ProdutoVo> = execList {
-    query.filterBlank(filter)
-            .setFirstRow(offset)
-            .setMaxRows(limit)
-            .makeSort(sorts)
-            .findList()
-            .map { it.toVO() }
-  }
-  
+ 
   override val query: QProduto
     get() = Produto.where().filtroUsuario()
   

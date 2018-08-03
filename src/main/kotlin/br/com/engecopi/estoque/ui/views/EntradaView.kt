@@ -156,7 +156,6 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
-          setSortProperty("nota.loja.sigla")
         }
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
