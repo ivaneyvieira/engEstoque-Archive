@@ -10,6 +10,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
         view: IView, val crudClass: KClass<VO>
                                                                                    ) : ViewModel(view) {
   var crudBean: VO? = null
+  var filter: String? = null
   override fun execUpdate() {}
   
   abstract fun update(bean: VO)
@@ -67,16 +68,15 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     }
   }
   
-  open fun findQuery(offset: Int, limit: Int, filter: String): List<VO> = execList {
+  open fun findQuery(filter: String): List<VO> = execList {
     query.filterBlank(filter)
-            .setFirstRow(offset)
-            .setMaxRows(limit)
             .findList()
             .map { it.toVO() }
   }
   
-  open fun countQuery(filter: String): Int = execInt {
-    query.filterBlank(filter)
-            .findCount()
+  fun findAll(): List<VO> {
+    return findQuery(filter ?: "")
   }
 }
+
+data class Sort(val propertyName: String, val descending: Boolean = false)
