@@ -42,7 +42,7 @@ select null as storenoT, '' as rota, N.storeno,
 from sqlpdv.pxa AS N
   inner join sqlpdv.pxaprd AS P
   USING(storeno, pdvno, xano)
-  inner join sqldados.nf as X
+  left join sqldados.nf as X
   USING(storeno, pdvno, xano)
   inner join sqldados.custp AS C
     ON C.no = N.custno
