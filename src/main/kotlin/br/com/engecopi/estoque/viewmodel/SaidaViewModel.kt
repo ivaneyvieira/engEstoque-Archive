@@ -30,22 +30,35 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   override fun add(bean: SaidaVo) {
     val nota = saveNota(bean)
     
-    val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
-    
-    addItemNota(bean, nota, produto)
+    val notasSaida = bean.notaSaidaSaci
+    val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
+    if (notasSaida.isEmpty()) {
+      val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
+      addItemNota(nota, produto, bean.quantidade ?: 0, usuario)
+    }
+    else {
+      notasSaida.forEach { notaSaida ->
+        val produto = Produto.findProduto(notaSaida.prdno, notaSaida.grade)
+        if (produto != null && usuario.temProduto(produto))
+          addItemNota(nota, produto, notaSaida.quant ?: 0, usuario)
+      }
+    }
   }
   
   private fun addItemNota(
-          bean: SaidaVo, nota: Nota,
-          produto: Produto
+          nota: Nota,
+          produto: Produto,
+          quantidade: Int,
+          usuario: Usuario
                          ): ItemNota {
-    val item = ItemNota().apply {
+    val item = ItemNota.find(nota, produto)?: ItemNota()
+    item.apply {
       this.nota = nota
       this.produto = produto
-      this.quantidade = bean.quantidade ?: 0
-      this.usuario = bean.usuario
+      this.quantidade = quantidade
+      this.usuario = usuario
     }
-    item.insert()
+    item.save()
     item.produto?.recalculaSaldos()
     return item
   }

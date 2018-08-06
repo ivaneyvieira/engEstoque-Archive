@@ -24,33 +24,50 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   override fun update(bean: EntradaVo) {
     val nota = saveNota(bean)
     
-    val produto = saveProduto(bean)
+    val produto = saveProduto(bean.produto)
     
     updateItemNota(bean, nota, produto)
   }
   
   override fun add(bean: EntradaVo) {
     val nota = saveNota(bean)
-    
-    val produto = saveProduto(bean)
-    
-    insertItemNota(bean, nota, produto)
+    val notasSaci = bean.notaEntradaSaci
+    val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
+    if (notasSaci.isEmpty()) {
+      val produto = saveProduto(bean.produto)
+      insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario)
+    }
+    else {
+      notasSaci.forEach { notaSaci ->
+        val produto = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+        produto?.let {
+          if (usuario.temProduto(produto))
+            insertItemNota(nota, produto, notaSaci.quant ?: 0, usuario)
+        }
+      }
+    }
   }
   
   private fun insertItemNota(
-          bean: EntradaVo, nota: Nota,
-          produto: Produto?
-                            ): ItemNota {
-    val item = bean.itemNota ?: ItemNota()
-    item.apply {
-      this.nota = nota
-      this.produto = produto
-      this.quantidade = bean.quantProduto ?: 0
-      this.usuario = bean.usuario
+          nota: Nota,
+          produto: Produto,
+          quantProduto: Int,
+          usuario: Usuario
+                            ): ItemNota? {
+    return if (quantProduto != 0) {
+      val item = ItemNota.find(nota, produto) ?: ItemNota()
+      item.apply {
+        this.nota = nota
+        this.produto = produto
+        this.quantidade = quantProduto
+        this.usuario = usuario
+      }
+      item.save()
+      item.produto?.recalculaSaldos()
+      item
     }
-    item.insert()
-    item.produto?.recalculaSaldos()
-    return item
+    else
+      null
   }
   
   private fun updateItemNota(
@@ -68,9 +85,9 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
-  private fun saveProduto(bean: EntradaVo): Produto? {
-    val produto =  bean.produto ?: throw EViewModel("Produto não encontrado no saci")
-   
+  private fun saveProduto(produto: Produto?): Produto {
+    produto ?: throw EViewModel("Produto não encontrado no saci")
+    
     return produto.apply {
       save()
     }

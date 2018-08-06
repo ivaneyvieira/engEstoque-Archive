@@ -43,8 +43,8 @@ class Usuario : BaseModel() {
   var isAdmin: Boolean = false
   
   fun temProduto(produto: Produto?): Boolean {
-    if(isAdmin || this.localizacao.isNullOrBlank()) return true
     produto?: return false
+    if(isAdmin || this.localizacao.isNullOrBlank()) return true
     return saci.findLoc(storeno = loja?.numero,
                         localizacao = localizacao,
                         prdno = produto.codigo,

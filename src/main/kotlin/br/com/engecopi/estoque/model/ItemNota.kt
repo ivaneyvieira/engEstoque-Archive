@@ -72,8 +72,10 @@ class ItemNota : BaseModel() {
   
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
-      return ItemNota.where().nota.id.eq(nota?.id)
-              .produto.id.eq(produto?.id)
+      nota ?: return null
+      produto ?: return null
+      return ItemNota.where().nota.id.eq(nota.id)
+              .produto.id.eq(produto.id)
               .findOne()
     }
   }
@@ -103,7 +105,7 @@ class NotaPrint(item: ItemNota) {
   val produto = item.produto
   val sd = item.saldo ?: 0
   val quant = item.quantidade
-  val prdno = produto?.codigo ?: ""
+  val prdno = produto?.codigo?.trim() ?: ""
   val grade = produto?.grade ?: ""
   val name = produto?.descricao ?: ""
   val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"

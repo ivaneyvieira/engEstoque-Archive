@@ -60,7 +60,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun QProduto.filterString(text: String): QProduto {
-    return codigo.eq(text)
+    return codigo.contains(text)
             .codebar.eq(text)
   }
 }
