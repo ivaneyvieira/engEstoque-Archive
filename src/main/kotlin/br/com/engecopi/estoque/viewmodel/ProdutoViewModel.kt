@@ -69,22 +69,27 @@ class ProdutoVo {
   var lojaDefault: Loja? = null
   var codigoProduto: String? = ""
   var gradeProduto: String? = ""
-  val produtosSaci
-    get() = ViewProdutoSaci.find(codigoProduto ?: "")
+  
   val descricaoProduto: String?
-    get() = produtosSaci.firstOrNull()?.nome ?: ""
+    get() = Produto.findProduto(codigoProduto, gradeProduto)?.descricao
+  
+  val descricaoProdutoSaci: String?
+    get() = ViewProdutoSaci.find(codigoProduto ).firstOrNull()?.nome
+  
+  
   val grades
-    get() = produtosSaci.mapNotNull { it.grade }
+    get() = ViewProdutoSaci.find(codigoProduto ).mapNotNull { it.grade }
   
   val codebar: String?
-    get() = produtosSaci.firstOrNull { it.grade == gradeProduto }?.codebar ?: ""
+    get() = Produto.findProduto(codigoProduto, gradeProduto)?.codebar ?: ""
   
-  val localizacao
-    get() = saci.findLocStr(lojaDefault?.numero, produto?.codigo, produto?.grade)
+  val localizacao by lazy  {
+    saci.findLocStr(lojaDefault?.numero, produto?.codigo, produto?.grade)
+  }
   
-  
-  val produto: Produto?
-    get() = Produto.findProduto(codigoProduto, gradeProduto)
+  val produto: Produto? get() {
+    return Produto.findProduto(codigoProduto, gradeProduto)
+  }
   
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null

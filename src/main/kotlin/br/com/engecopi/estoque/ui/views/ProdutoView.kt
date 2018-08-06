@@ -67,7 +67,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           textField("Descrição") {
             expandRatio = 3f
             isReadOnly = true
-            bind(binder).bind(ProdutoVo::descricaoProduto.name)
+            bind(binder).bind(ProdutoVo::descricaoProdutoSaci.name)
           }
           comboBox<String> {
             expandRatio = 1f
