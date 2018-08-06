@@ -1,5 +1,5 @@
 select I.storeno as storenoT, CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
-  N.nfno, N.nfse, N.issuedate as date,TRIM(P.prdno) as prdno, P.grade, P.qtty as quant,
+  N.nfno, N.nfse, N.issuedate as date,P.prdno as prdno, P.grade, P.qtty as quant,
   C.name as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
@@ -30,3 +30,32 @@ where N.storeno  = :storeno
       and N.nfse = :nfse
       AND N.issuedate > DATE_SUB(current_date, INTERVAL 12 MONTH)
       AND N.status <> 1
+UNION
+select null as storenoT, '' as rota, N.storeno,
+  N.nfno, N.nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
+  C.name as clienteName,
+  CASE
+    WHEN N.nfse = '66' then 'ACERTO_S'
+    WHEN N.nfse = '3' then 'ENT_RET'
+    ELSE 'VENDA'
+  END AS tipo
+from sqlpdv.pxa AS N
+  inner join sqlpdv.pxaprd AS P
+  USING(storeno, pdvno, xano)
+  inner join sqldados.nf as X
+  USING(storeno, pdvno, xano)
+  inner join sqldados.custp AS C
+    ON C.no = N.custno
+where N.storeno  = :storeno
+      and (N.nfno = :nfno
+        OR N.nfno = CONCAT('0', :nfno)
+        OR N.nfno = CONCAT('00', :nfno)
+        OR N.nfno = CONCAT('000', :nfno)
+        OR N.nfno = CONCAT('0000', :nfno)
+        OR N.nfno = CONCAT('00000', :nfno)
+        OR N.nfno = CONCAT('000000', :nfno)
+      )
+      and N.nfse = :nfse
+  and N.date > DATE_SUB(current_date, INTERVAL 12 MONTH)
+  and X.xano is null
+GROUP BY storeno, nfno, nfse, prdno, grade

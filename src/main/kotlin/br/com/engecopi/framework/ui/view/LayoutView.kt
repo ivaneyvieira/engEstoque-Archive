@@ -85,8 +85,8 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
       MessageDialog.info(message = msg)
   }
   
-  open fun print(text : String?) : BrowserWindowOpener {
-    val resource = StreamResource({ IOUtils.toInputStream(text) }, "${SystemUtils.md5(text?: "")}.txt")
+  open fun print(text: String?): BrowserWindowOpener {
+    val resource = StreamResource({ IOUtils.toInputStream(text) }, "${SystemUtils.md5(text ?: "")}.txt")
     resource.mimeType = "text/plain"
     return BrowserWindowOpener(resource)
   }
@@ -115,19 +115,23 @@ fun <V, T> HasItems<T>.bindItens(
   
   bind(binder, propertyList) { itens ->
     val oldValue = hasValue?.value
-    if (itensOld == null)
-      setItems(itens)
-    else
-      if (itensOld != itens)
+    if (itensOld != itens) {
+      if (this is ComboBox<T>)
+        setItems({itemCaption, filterText ->
+                   itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
+                 },itens)
+      else
         setItems(itens)
+    }
+    
     @Suppress("UNCHECKED_CAST")
     val contains = itens.contains(oldValue as? T)
-    val value = if (oldValue == null || !contains)
-      itens.firstOrNull()
+    val value = if (oldValue == null || !contains) {
+      null
+    }
     else
       itens.find { it == oldValue }
     hasValue?.value = value
-    //reloadPropertys(binder, *propertys)
   }
 }
 
@@ -183,7 +187,8 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
         }.forEach { binding ->
           binding.read(bean)
         }
-      } else {
+      }
+      else {
         reloadPropertys(binder, *propertys)
       }
     }
@@ -202,7 +207,7 @@ fun <BEAN> reloadPropertys(
 }
 
 fun <C> Column<C, LocalDate?>.dateFormat() {
-  this.setRenderer(LocalDateRenderer {DateTimeFormatter.ofPattern("dd/MM/yyyy")})
+  this.setRenderer(LocalDateRenderer { DateTimeFormatter.ofPattern("dd/MM/yyyy") })
 }
 
 fun <C> Column<C, Int?>.intFormat() {

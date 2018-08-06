@@ -107,7 +107,7 @@ class NotaPrint(item: ItemNota) {
   val grade = produto?.grade ?: ""
   val name = produto?.descricao ?: ""
   val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"
-  val un = produto?.produtoSaci()?.unidade ?: "UN"
+  val un = produto?.vproduto?.unidade ?: "UN"
   
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

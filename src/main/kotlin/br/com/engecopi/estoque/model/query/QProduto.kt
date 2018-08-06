@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
+import br.com.engecopi.estoque.model.query.assoc.QAssocViewProduto
 import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
@@ -36,6 +37,7 @@ class QProduto : TQRootBean<Produto, QProduto> {
   lateinit var codebar: PString<QProduto>
   lateinit var dataCadastro: PLocalDate<QProduto>
   lateinit var itensNota: QAssocItemNota<QProduto>
+  lateinit var vproduto: QAssocViewProduto<QProduto>
 
 
   /**

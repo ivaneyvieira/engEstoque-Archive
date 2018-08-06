@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
@@ -52,7 +53,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   override fun Produto.toVO(): ProdutoVo {
     val produto = this
     return ProdutoVo().apply {
-      codigoProduto = produto.codigo
+      codigoProduto = produto.codigo.trim()
       gradeProduto = produto.grade
       lojaDefault = usuario?.loja
     }
@@ -69,7 +70,7 @@ class ProdutoVo {
   var codigoProduto: String? = ""
   var gradeProduto: String? = ""
   val produtosSaci
-    get() = saci.findProduto(codigoProduto ?: "")
+    get() = ViewProdutoSaci.find(codigoProduto ?: "")
   val descricaoProduto: String?
     get() = produtosSaci.firstOrNull()?.nome ?: ""
   val grades

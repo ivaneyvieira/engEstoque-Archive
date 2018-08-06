@@ -1,4 +1,4 @@
-select TRIM(prdno) as codigo, grade, TRIM(S.barcode) codebar,
+select DISTINCT prdno as codigo, grade, TRIM(S.barcode) codebar,
        TRIM(MID(S.name, 1, 37)) as nome, cost/10000 as custo,
        MID(S.name, 38, 3) as unidade,
        CASE
@@ -11,4 +11,3 @@ from sqlpdv.prdstk AS S
     ON P.no = S.prdno
 where no = :prdno
       and storeno IN (1, 2, 3, 4, 5, 6, 7, 10)
-GROUP BY prdno, grade

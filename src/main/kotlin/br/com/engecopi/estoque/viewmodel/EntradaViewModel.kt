@@ -15,7 +15,6 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaEntradaSaci
-import br.com.engecopi.saci.beans.ProdutoSaci
 import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
@@ -70,10 +69,9 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   private fun saveProduto(bean: EntradaVo): Produto? {
-    bean.produtoSaci ?: throw EViewModel("Produto não encontrado no saci")
-    val produto = bean.produto(bean.produtoSaci)
-                  ?: Produto.createProduto(bean.produtoSaci)
-    return produto?.apply {
+    val produto =  bean.produto ?: throw EViewModel("Produto não encontrado no saci")
+   
+    return produto.apply {
       save()
     }
   }
@@ -82,7 +80,8 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
     val nota: Nota = bean.notaEntrada ?: Nota()
     nota.apply {
       this.numero = if (bean.numeroNF.isNullOrBlank())
-        "${Nota.novoNumero()}" else bean.numeroNF ?: ""
+        "${Nota.novoNumero()}"
+      else bean.numeroNF ?: ""
       this.tipoMov = TipoMov.ENTRADA
       this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
@@ -117,7 +116,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
       this.numeroNF = nota?.numero
       this.lojaNF = nota?.loja
       this.observacaoNota = nota?.observacao
-      this.produtoSaci = itemNota.produto?.produtoSaci()
+      this.produto = itemNota.produto
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = itemNota.nota?.rota
       this.usuario = itemNota.usuario
@@ -165,6 +164,7 @@ class EntradaVo {
         atualizaNota()
       }
     }
+  
   var tipoNota: TipoNota = OUTROS_E
   var rota: String? = ""
   
@@ -194,71 +194,49 @@ class EntradaVo {
   
   var observacaoNota: String? = ""
   
-  fun produto(produtoSaci: ProdutoSaci?): Produto? {
-    return produtoSaci?.let {
-      Produto.findProduto(it.codigo ?: "", it.grade ?: "")
-    }
-  }
-  
-  val produtoNota: List<ProdutoSaci>
+  val produtoNota: List<Produto>
     get() {
       val nota = notaEntradaSaci
       return if (nota.isNotEmpty())
-        nota.filter { notaSaci ->
-          Produto.findProduto(notaSaci.codigo, notaSaci.grade)?.let { produto ->
-            usuario?.temProduto(produto) ?: false
-          } ?: false
-        }.mapNotNull { it: NotaEntradaSaci ->
-          val grade = it.grade ?: ""
-          saci.findProduto(it.prdno).firstOrNull { it.grade == grade }
+        nota.mapNotNull { notaSaci ->
+          Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+        }.filter { produto ->
+          usuario?.temProduto(produto) ?: false
         }
       else
-        Produto.all().filter { usuario?.temProduto(it) ?: false }.mapNotNull { it.produtoSaci() }
+        Produto.all().filter { usuario?.temProduto(it) ?: false }
     }
   
-  var produtoSaci: ProdutoSaci? = null
+  var produto: Produto? = null
     set(value) {
       field = value
       quantProduto = itemNota?.quantidade
               ?: notaEntradaSaci.firstOrNull { neSaci ->
-        (neSaci.prdno ?: "") == (value?.codigo ?: "") &&
+        (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") &&
         (neSaci.grade ?: "") == (value?.grade ?: "")
       }?.quant ?: 0
     }
   
   val descricaoProduto: String
-    get() = produtoSaci?.nome ?: ""
+    get() = produto?.descricao ?: ""
   
   val codigo: String
-    get() = produtoSaci?.codigo ?: ""
+    get() = produto?.codigo ?: ""
   
   val grade: String
-    get() = produtoSaci?.grade ?: ""
+    get() = produto?.grade ?: ""
   
   var quantProduto: Int? = 0
   
   val saldo: Int
-    get() = produto(produtoSaci)?.saldoLoja(lojaNF) ?: 0
+    get() = produto?.saldoLoja(lojaNF) ?: 0
   
   val localizacao
-    get() = saci.findLocStr(lojaNF?.numero, produtoSaci?.codigo, produtoSaci?.grade)
+    get() = saci.findLocStr(lojaNF?.numero, produto?.codigo, produto?.grade)
   
   val nota: Nota?
     get() = Nota.findEntrada(numeroNF ?: "", lojaNF)
   
   val itemNota: ItemNota?
-    get() = ItemNota.find(nota, produto(produtoSaci))
-}
-
-class MovimentacaoVO {
-  var sequencia: Int? = 0
-  var total: Int? = 0
-  var quantidade: Int? = 0
-  
-  val descLote: String?
-    get() {
-      sequencia ?: return ""
-      total ?: return ""
-      return "$sequencia/$total"
-    }
+    get() = ItemNota.find(nota, produto)
 }

@@ -1,7 +1,6 @@
 package br.com.engecopi.framework.model
 
 import io.ebean.Model
-import io.ebean.annotation.DbDefault
 import io.ebean.annotation.WhenCreated
 import io.ebean.annotation.WhenModified
 import java.time.LocalDateTime
@@ -22,7 +21,4 @@ abstract class BaseModel(
         var updatedAt: LocalDateTime= LocalDateTime.now(),
         @Version
         var version: Int = 0
-                        ) : Model(){
-}
-
-
+                        ) : Model()

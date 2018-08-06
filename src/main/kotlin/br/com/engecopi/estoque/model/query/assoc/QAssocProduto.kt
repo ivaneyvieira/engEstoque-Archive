@@ -28,6 +28,7 @@ class QAssocProduto<R>(name: String, root: R) : TQAssocBean<Produto,R>(name, roo
   lateinit var codebar: PString<R>
   lateinit var dataCadastro: PLocalDate<R>
   lateinit var itensNota: QAssocItemNota<R>
+  lateinit var vproduto: QAssocViewProduto<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

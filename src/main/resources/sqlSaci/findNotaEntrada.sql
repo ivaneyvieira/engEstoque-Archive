@@ -1,5 +1,5 @@
-select P.invno, N.storeno, nfname as codigo, invse as serie,
-  CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.date, TRIM(P.prdno) as prdno,
+select P.invno, N.storeno, nfname as numero, invse as serie,
+  CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.date, P.prdno as prdno,
   P.grade, P.qtty/1000 as quant, P.cost/10000 as custo, V.name as vendName,
   CASE
     WHEN invse = '66' then 'ACERTO_E'

@@ -3,7 +3,7 @@ package br.com.engecopi.saci.beans
 class NotaEntradaSaci(
         val invno: Int?,
         val storeno: Int?,
-        val codigo: String?,
+        val numero: String?,
         val serie: String?,
         val rota: String?,
         val date: Int?,

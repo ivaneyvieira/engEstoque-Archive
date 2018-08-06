@@ -2,16 +2,16 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
-import br.com.engecopi.saci.beans.ProdutoSaci
-import br.com.engecopi.saci.saci
+import br.com.engecopi.utils.lpad
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
-import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
+import javax.persistence.JoinColumn
 import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.persistence.Transient
 import javax.validation.constraints.Size
@@ -30,14 +30,13 @@ class Produto : BaseModel() {
   var dataCadastro: LocalDate = LocalDate.now()
   @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
-  
-  fun produtoSaci(): ProdutoSaci? {
-    return saci.findProduto(codigo).firstOrNull { it.grade == grade }
-  }
+  @OneToOne(cascade = [])
+  @JoinColumn(name = "id")
+  var vproduto: ViewProduto? = null
   
   val descricao: String?
     @Transient
-    get() = produtoSaci()?.nome
+    get() = vproduto?.nome
   
   fun recalculaSaldos() {
     var saldo = 0
@@ -53,15 +52,15 @@ class Produto : BaseModel() {
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
       codigo ?: return null
-      return where().codigo.eq(codigo).grade.eq(grade ?: "").findOne()
+      return where().codigo.eq(codigo.lpad(16, " ")).grade.eq(grade ?: "").findOne()
     }
     
     fun findProdutos(codigo: String?): List<Produto> {
       codigo ?: return emptyList()
-      return where().codigo.eq(codigo).findList()
+      return where().codigo.eq(codigo.lpad(16, " ")).findList()
     }
     
-    fun createProduto(produtoSaci: ProdutoSaci?): Produto? {
+    fun createProduto(produtoSaci: ViewProdutoSaci?): Produto? {
       produtoSaci ?: return null
       return Produto().apply {
         produtoSaci.let { pSaci ->
@@ -73,10 +72,7 @@ class Produto : BaseModel() {
     }
     
     fun createProduto(codigoProduto: String?, gradeProduto: String?): Produto? {
-      codigoProduto ?: return null
-      gradeProduto ?: return null
-      val produtoSaci = saci.findProduto(codigoProduto)
-              .firstOrNull { it.grade == gradeProduto }
+      val produtoSaci = ViewProdutoSaci.find(codigoProduto, gradeProduto)
       return createProduto(produtoSaci)
     }
   }

@@ -69,7 +69,8 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
     val nota: Nota = bean.notaSaida ?: Nota()
     nota.apply {
       this.numero = if (bean.numeroNota.isNullOrBlank())
-        "${Nota.novoNumero()}" else bean.numeroNota ?: ""
+        "${Nota.novoNumero()}"
+      else bean.numeroNota ?: ""
       this.tipoMov = SAIDA
       this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
@@ -167,10 +168,11 @@ class SaidaVo {
   val listaProdutos: List<Produto>
     get() {
       val notaSaci = notaSaidaSaci
-      return if (notaSaci.isEmpty())
+      val lista = if (notaSaci.isEmpty())
         Produto.all()
       else
         notaSaci.mapNotNull { Produto.findProduto(it.prdno, it.grade) }
+      return lista.filter { usuario?.temProduto(it) ?: false }
     }
   
   val notaSaidaSaci
@@ -196,7 +198,7 @@ class SaidaVo {
     set(value) {
       notaSaidaSaci
               .find {
-                it.prdno == value?.codigo
+                it.prdno == value?.codigo?.trim()
                 && it.grade == value?.grade
               }?.let { prd ->
                 quantidade = prd.quant

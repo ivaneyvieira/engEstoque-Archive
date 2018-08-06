@@ -41,6 +41,7 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var nota: QAssocNota<QItemNota>
   lateinit var etiqueta: QAssocEtiqueta<QItemNota>
   lateinit var usuario: QAssocUsuario<QItemNota>
+  lateinit var saldo: PInteger<QItemNota>
 
 
   /**
