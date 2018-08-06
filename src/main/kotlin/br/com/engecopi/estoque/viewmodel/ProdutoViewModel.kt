@@ -11,6 +11,7 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.Sort
 import br.com.engecopi.saci.saci
+import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -18,6 +19,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
+      produto.codigo = bean.codigoProduto.lpad(16, " ")
       produto.codebar = bean.codebar ?: ""
       produto.update()
     }
@@ -25,7 +27,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   
   override fun add(bean: ProdutoVo) {
     Produto().apply {
-      this.codigo = bean.codigoProduto ?: ""
+      this.codigo = bean.codigoProduto.lpad(16, " ")
       this.grade = bean.gradeProduto ?: ""
       this.codebar = bean.codebar ?: ""
       this.insert()
