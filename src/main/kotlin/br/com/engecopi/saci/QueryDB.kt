@@ -72,7 +72,7 @@ open class QueryDB(
     val sql = SystemUtils.readFile(sqldir + file)
     this.sql2o.open().trywr { con ->
       val query = con.createQuery(sql)
-     // println("SQL2O ==> $sql")
+      println("SQL2O ==> $sql")
       return proc(con, query)
     }
   }
