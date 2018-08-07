@@ -12,7 +12,9 @@ select I.storeno as storenoT, CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.st
 from sqldados.nf AS N
   inner join sqldados.xaprd AS P
   USING(storeno, pdvno, xano)
-  inner join sqldados.custp AS C
+  inner join engEstoque.produtos AS E
+  ON E.codigo = P.prdno AND E.grade = P.grade
+  left join sqldados.custp AS C
     ON C.no = N.custno
   left join sqldados.inv AS I
     ON N.invno = I.invno
@@ -31,7 +33,7 @@ where N.storeno  = :storeno
       AND N.issuedate > DATE_SUB(current_date, INTERVAL 12 MONTH)
       AND N.status <> 1
 UNION
-select null as storenoT, '' as rota, N.storeno,
+select DISTINCT  null as storenoT, '' as rota, N.storeno,
   N.nfno, N.nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
   C.name as clienteName,
   CASE
@@ -42,9 +44,9 @@ select null as storenoT, '' as rota, N.storeno,
 from sqlpdv.pxa AS N
   inner join sqlpdv.pxaprd AS P
   USING(storeno, pdvno, xano)
-  left join sqldados.nf as X
-  USING(storeno, pdvno, xano)
-  inner join sqldados.custp AS C
+  inner join engEstoque.produtos AS E
+    ON E.codigo = P.prdno AND E.grade = P.grade
+  left join sqldados.custp AS C
     ON C.no = N.custno
 where N.storeno  = :storeno
       and (N.nfno = :nfno
@@ -56,6 +58,4 @@ where N.storeno  = :storeno
         OR N.nfno = CONCAT('000000', :nfno)
       )
       and N.nfse = :nfse
-  and N.date > DATE_SUB(current_date, INTERVAL 12 MONTH)
-  and X.xano is null
-GROUP BY storeno, nfno, nfse, prdno, grade
+      and processed = 0

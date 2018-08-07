@@ -199,11 +199,6 @@ class SaidaVo {
   
   var observacaoNota: String? = ""
   
-  var codigoBarra: String? = ""
-    set(value) {
-      field = value
-    }
-  
   val localizacao
     get() = saci.findLocStr(lojaNF?.numero, produto?.codigo, produto?.grade)
   
