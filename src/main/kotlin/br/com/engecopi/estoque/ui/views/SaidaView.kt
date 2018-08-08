@@ -156,6 +156,15 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::numeroNota) {
           caption = "Número NF"
         }
+        grid.addComponentColumn { saida ->
+          saida.itemNota?.produto?.recalculaSaldos()
+          val text = viewModel.imprimir(saida.itemNota)
+          val button = Button()
+          print(text).extend(button)
+          button.icon = VaadinIcons.PRINT
+          button
+        }
+  
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -190,14 +199,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::quantidade) {
           caption = "Quantidade"
           intFormat()
-        }
-        grid.addComponentColumn { saida ->
-          saida.itemNota?.produto?.recalculaSaldos()
-          val text = viewModel.imprimir(saida.itemNota)
-          val button = Button()
-          print(text).extend(button)
-          button.icon = VaadinIcons.PRINT
-          button
         }
       }
     }
