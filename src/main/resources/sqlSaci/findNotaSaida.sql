@@ -59,3 +59,18 @@ where N.storeno  = :storeno
       )
       and N.nfse = :nfse
       and processed = 0
+UNION
+select DISTINCT  null as storenoT, '' as rota, N.storeno,
+  N.ordno as nfno, '' as nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
+  C.name as clienteName,
+  'PEDIDO_S' AS tipo
+from sqldados.eord AS N
+  inner join sqldados.eoprd AS P
+  USING(storeno, ordno)
+  inner join engEstoque.produtos AS E
+    ON E.codigo = P.prdno AND E.grade = P.grade
+  left join sqldados.custp AS C
+    ON C.no = N.custno
+where N.storeno  = :storeno
+      and (N.ordno = :nfno)
+      and (:nfse = '')
