@@ -89,7 +89,7 @@ class Nota : BaseModel() {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
-      val serie = numeroNF.split("/").getOrNull(1) ?: return emptyList()
+      val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaEntrada(lojaNF.numero, numero, serie)
     }
     
@@ -97,7 +97,7 @@ class Nota : BaseModel() {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
-      val serie = numeroNF.split("/").getOrNull(1) ?: return emptyList()
+      val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaSaida(lojaNF.numero, numero, serie)
     }
   }
@@ -119,6 +119,7 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   TRANSFERENCIA_E(ENTRADA, "Transferência", "Transferência Entrada"),
   DEV_CLI(ENTRADA, "Dev Cliente", "Dev Cliente"),
   ACERTO_E(ENTRADA, "Acerto", "Acerto Entrada"),
+  PEDIDO_E(ENTRADA, "Pedido", "Pedido Entrada"),
   OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true),
   //Saída
   VENDA(SAIDA, "Venda", "Venda"),
@@ -126,10 +127,10 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"),
   DEV_FOR(SAIDA, "Dev Fornecedor","Dev Fornecedor"),
   ACERTO_S(SAIDA, "Acerto", "Acerto Saída"),
+  PEDIDO_S(SAIDA, "Pedido", "Pedido Saída"),
   OUTROS_S(SAIDA, "Outros", "Outras Saídas", true);
   
   companion object {
-    
     fun valuesEntrada(): List<TipoNota> {
       return values().filter { it.tipoMov == ENTRADA }
     }

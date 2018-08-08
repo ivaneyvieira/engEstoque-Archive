@@ -34,3 +34,22 @@ where N.storeno = :storeno
       AND N.bits & POW(2, 4) = 0
       AND N.auxShort13 & pow(2, 15) = 0
       AND invse <> ''
+UNION
+select 0 as invno, N.storeno, ordno as numero, '' as serie,
+  '' as rota, N.date, P.prdno as prdno,
+  P.grade, P.qtty/1000 as quant, 0/10000 as custo, C.name as vendName,
+  'PEDIDO_E' AS tipo, IFNULL(L.localizacao, '') AS localizacao
+from sqldados.eord AS N
+  inner join sqldados.eoprd AS P
+  USING(storeno, ordno)
+  inner join engEstoque.produtos AS E
+    ON E.codigo = P.prdno AND E.grade = P.grade
+  left join sqldados.custp AS C
+    ON C.no = N.custno
+  left join sqldados.prdloc AS L
+    ON N.storeno = L.storeno
+    AND P.prdno = L.prdno
+    AND P.grade = L.grade
+where N.storeno  = :storeno
+      and (N.ordno = :nfname)
+      and (:invse = '')
