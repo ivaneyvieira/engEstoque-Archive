@@ -59,3 +59,15 @@ where N.storeno  = :storeno
       )
       and N.nfse = :nfse
       and processed = 0
+
+/*
+N.storeno  = :storeno
+      and (N.nfno = :nfno
+        OR N.nfno = CONCAT('0', :nfno)
+        OR N.nfno = CONCAT('00', :nfno)
+        OR N.nfno = CONCAT('000', :nfno)
+        OR N.nfno = CONCAT('0000', :nfno)
+        OR N.nfno = CONCAT('00000', :nfno)
+        OR N.nfno = CONCAT('000000', :nfno)
+      )
+*/
