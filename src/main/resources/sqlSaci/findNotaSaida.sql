@@ -59,20 +59,6 @@ where N.storeno  = :storeno
       )
       and N.nfse = :nfse
       and processed = 0
-<<<<<<< HEAD
-
-/*
-N.storeno  = :storeno
-      and (N.nfno = :nfno
-        OR N.nfno = CONCAT('0', :nfno)
-        OR N.nfno = CONCAT('00', :nfno)
-        OR N.nfno = CONCAT('000', :nfno)
-        OR N.nfno = CONCAT('0000', :nfno)
-        OR N.nfno = CONCAT('00000', :nfno)
-        OR N.nfno = CONCAT('000000', :nfno)
-      )
-*/
-=======
 UNION
 select DISTINCT  null as storenoT, '' as rota, N.storeno,
   N.ordno as nfno, '' as nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
@@ -88,4 +74,4 @@ from sqldados.eord AS N
 where N.storeno  = :storeno
       and (N.ordno = :nfno)
       and (:nfse = '')
->>>>>>> 14dcdb9c9b7b485047893d7262910bb821a634e7
+
