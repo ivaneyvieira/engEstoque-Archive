@@ -24,6 +24,7 @@ class QAssocLoja<R>(name: String, root: R) : TQAssocBean<Loja,R>(name, root) {
   lateinit var numero: PInteger<R>
   lateinit var notas: QAssocNota<R>
   lateinit var usuarios: QAssocUsuario<R>
+  lateinit var viewProdutoLoc: QAssocViewProdutoLoc<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

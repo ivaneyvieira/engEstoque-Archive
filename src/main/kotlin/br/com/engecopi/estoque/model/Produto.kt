@@ -10,6 +10,7 @@ import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 import javax.persistence.Table
@@ -33,12 +34,20 @@ class Produto : BaseModel() {
   @OneToOne(cascade = [])
   @JoinColumn(name = "id")
   var vproduto: ViewProduto? = null
+  @OneToMany(mappedBy = "produto", cascade = [REFRESH])
+  var viewProdutoLoc: List<ViewProdutoLoc>? = null
   
   val descricao: String?
     @Transient
     get() = vproduto?.nome
   
-  fun recalculaSaldos() {
+  fun localizacao(loja : Loja? = null): String?{
+   val locs=  loja?.let { it -> viewProdutoLoc?.filter { it.loja.id == loja.id } }
+              ?:viewProdutoLoc
+    return locs.orEmpty().joinToString { it.localizacao }
+  }
+  
+  fun recalculaSaldos() : Int{
     var saldo = 0
     refresh()
     itensNota?.sortedWith(compareBy(ItemNota::data, ItemNota::id))?.forEach { item ->
@@ -47,6 +56,7 @@ class Produto : BaseModel() {
       item.saldo = saldo
       item.update()
     }
+    return saldo
   }
   
   companion object Find : ProdutoFinder() {

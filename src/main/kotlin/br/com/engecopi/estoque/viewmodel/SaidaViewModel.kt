@@ -51,7 +51,9 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
           quantidade: Int,
           usuario: Usuario
                          ): ItemNota {
-    val item = ItemNota.find(nota, produto)?: ItemNota()
+    if(quantidade == 0)
+      throw EViewModel("O produto ${produto.codigo} - ${produto.descricao}. Está com quantidade zerada.")
+    val item = ItemNota.find(nota, produto) ?: ItemNota()
     item.apply {
       this.nota = nota
       this.produto = produto
@@ -59,7 +61,9 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
       this.usuario = usuario
     }
     item.save()
-    item.produto?.recalculaSaldos()
+    val saldo = item.produto?.recalculaSaldos() ?: 0
+    if(saldo < 0)
+      throw EViewModel("O produto ${produto.codigo} - ${produto.descricao} não pode ficar com saldo negativo")
     return item
   }
   
@@ -135,7 +139,12 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun QItemNota.filterString(text: String): QItemNota {
+    val idUser = this@SaidaViewModel.usuario?.loja?.id
     return nota.numero.eq(text)
+            .and()
+            .produto.viewProdutoLoc.localizacao.contains(text)
+            .produto.viewProdutoLoc.loja.id.eq(idUser)
+            .endAnd()
   }
   
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {
@@ -204,7 +213,7 @@ class SaidaVo {
   var observacaoNota: String? = ""
   
   val localizacao
-    get() = saci.findLocStr(lojaNF?.numero, produto?.codigo, produto?.grade)
+    get() = produto?.localizacao(lojaNF)
   
   var produto: Produto? = null
     set(value) {

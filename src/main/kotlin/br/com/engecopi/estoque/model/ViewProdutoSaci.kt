@@ -9,7 +9,6 @@ import javax.persistence.Entity
 @Entity
 @View(name = "view_produtos_saci")
 class ViewProdutoSaci {
-  
   companion object {
     fun where(): QViewProdutoSaci {
       return QViewProdutoSaci(db())
@@ -24,7 +23,7 @@ class ViewProdutoSaci {
               .findOne()
     }
     
-    fun find(codigo : String?) : List<ViewProdutoSaci>{
+    fun find(codigo: String?): List<ViewProdutoSaci> {
       codigo ?: return emptyList()
       return where()
               .codigo.eq(codigo.lpad(16, " "))

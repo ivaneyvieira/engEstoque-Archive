@@ -10,6 +10,7 @@ import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
+import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 import javax.persistence.Transient
@@ -23,6 +24,8 @@ class Loja : BaseModel() {
   val notas: List<Nota>? = null
   @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val usuarios: List<Usuario>? = null
+  @OneToMany(mappedBy = "loja", cascade = [REFRESH])
+  var viewProdutoLoc: List<ViewProdutoLoc>? = null
   
   fun lojaSaci() = saci.findLojas(numero).firstOrNull()
   

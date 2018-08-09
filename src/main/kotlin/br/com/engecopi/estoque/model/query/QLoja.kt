@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model.query
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.query.assoc.QAssocNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
+import br.com.engecopi.estoque.model.query.assoc.QAssocViewProdutoLoc
 import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
@@ -33,6 +34,7 @@ class QLoja : TQRootBean<Loja, QLoja> {
   lateinit var numero: PInteger<QLoja>
   lateinit var notas: QAssocNota<QLoja>
   lateinit var usuarios: QAssocUsuario<QLoja>
+  lateinit var viewProdutoLoc: QAssocViewProdutoLoc<QLoja>
 
 
   /**

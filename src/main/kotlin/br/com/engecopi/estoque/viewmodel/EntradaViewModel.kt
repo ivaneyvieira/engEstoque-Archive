@@ -145,7 +145,12 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun QItemNota.filterString(text: String): QItemNota {
+    val idUser =   this@EntradaViewModel.usuario?.loja?.id
     return nota.numero.eq(text)
+            .and()
+            .produto.viewProdutoLoc.localizacao.contains(text)
+            .produto.viewProdutoLoc.loja.id.eq(idUser)
+            .endAnd()
   }
   
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {
@@ -253,7 +258,7 @@ class EntradaVo {
     get() = produto?.saldoLoja(lojaNF) ?: 0
   
   val localizacao
-    get() = saci.findLocStr(lojaNF?.numero, produto?.codigo, produto?.grade)
+    get() = produto?.localizacao(lojaNF)
   
   val nota: Nota?
     get() = Nota.findEntrada(numeroNF ?: "", lojaNF)

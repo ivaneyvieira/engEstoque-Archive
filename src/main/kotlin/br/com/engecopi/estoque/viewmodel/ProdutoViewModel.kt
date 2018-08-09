@@ -66,6 +66,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
             .codebar.eq(text)
             .vproduto.nome.contains(text)
             .grade.contains(text)
+            .viewProdutoLoc.localizacao.contains(text)
   }
 }
 
@@ -88,7 +89,7 @@ class ProdutoVo {
     get() = Produto.findProduto(codigoProduto, gradeProduto)?.codebar ?: ""
   
   val localizacao by lazy  {
-    saci.findLocStr(lojaDefault?.numero, produto?.codigo, produto?.grade)
+    produto?.localizacao()
   }
   
   val produto: Produto? get() {
