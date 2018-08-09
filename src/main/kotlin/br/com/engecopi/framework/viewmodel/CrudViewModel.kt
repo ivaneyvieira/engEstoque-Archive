@@ -59,6 +59,10 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     }
   }
   
+  open fun Q.orderQuery(filter: String): Q {
+    return this
+  }
+  
   private fun parserDate(filter: String): LocalDate? {
     val frm = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     return try {
@@ -69,7 +73,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
   }
   
   open fun findQuery(filter: String): List<VO> = execList {
-    query.filterBlank(filter)
+    query.filterBlank(filter).orderQuery(filter)
             .findList()
             .map { it.toVO() }
   }

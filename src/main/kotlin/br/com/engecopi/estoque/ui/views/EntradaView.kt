@@ -149,6 +149,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
+        grid.addComponentColumn { item ->
+          item.itemNota?.produto?.recalculaSaldos()
+          val text = viewModel.imprimir(item.itemNota)
+          val button = Button()
+          print(text).extend(button)
+          button.icon = VaadinIcons.PRINT
+          button
+        }
         column(EntradaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -182,14 +190,6 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::quantProduto) {
           caption = "Quantidade"
           intFormat()
-        }
-        grid.addComponentColumn { item ->
-          item.itemNota?.produto?.recalculaSaldos()
-          val text = viewModel.imprimir(item.itemNota)
-          val button = Button()
-          print(text).extend(button)
-          button.icon = VaadinIcons.PRINT
-          button
         }
       }
     }

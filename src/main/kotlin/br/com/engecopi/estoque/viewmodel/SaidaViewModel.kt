@@ -130,6 +130,10 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
+  override fun QItemNota.orderQuery(filter: String): QItemNota {
+    return this.order().id.desc()
+  }
+  
   override fun QItemNota.filterString(text: String): QItemNota {
     return nota.numero.eq(text)
   }
