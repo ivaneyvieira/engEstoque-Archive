@@ -58,6 +58,7 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     }
   }
   
+  /*
   fun findLoc(storeno: Int?, localizacao: String? = "", prdno: String? = "", grade: String? = ""): List<PrdLoc> {
     val sql = "/sqlSaci/findLoc.sql"
     return query(sql) { q ->
@@ -68,7 +69,8 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
               .executeAndFetch(PrdLoc::class.java)
     }
   }
-  
+  */
+  /*
   fun findLocStr(storeno: Int?, prdno: String? = "", grade: String? = ""): String{
     val loja = storeno ?: 0
     prdno ?: return ""
@@ -76,12 +78,13 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     val listLoc = findLoc(storeno = loja, prdno = prdno, grade = grade).mapNotNull { it.localizacao }.filter { it.isNotBlank() }
     return listLoc.joinToString()
   }
-  
+  */
+  /*
   fun findLocais(storeno: Int?): List<String> {
     storeno ?: return emptyList()
     return findLoc(storeno).mapNotNull { it.localizacao }.distinct()
   }
-  
+  */
   companion object {
     private val db = DB("saci")
     internal val driver = db.driver

@@ -118,21 +118,24 @@ fun <V, T> HasItems<T>.bindItens(
     val oldValue = hasValue?.value
     if (itensOld != itens) {
       if (this is ComboBox<T>)
-        setItems({itemCaption, filterText ->
+        setItems({ itemCaption, filterText ->
                    itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
-                 },itens)
+                 }, itens)
       else
         setItems(itens)
     }
     
     @Suppress("UNCHECKED_CAST")
     val contains = itens.contains(oldValue as? T)
-    val value = if (oldValue == null || !contains) {
+    val value = if (oldValue == null || !contains)
       null
-    }
     else
       itens.find { it == oldValue }
-    hasValue?.value = value
+    if (value == null)
+      hasValue?.value = hasValue?.emptyValue
+    else
+      hasValue?.value = value
+    
   }
 }
 
@@ -251,7 +254,6 @@ fun HasComponents.tokenField(captionPar: String = "", block: AdvancedTokenField.
         init(AdvancedTokenField(), block).apply {
           this.caption = captionPar
         }
-
 
 fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
         init(LabelField(caption), block)

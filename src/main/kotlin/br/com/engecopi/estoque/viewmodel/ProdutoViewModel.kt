@@ -42,7 +42,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   
   fun QProduto.filtroUsuario(): QProduto {
     return usuario?.let { u ->
-      if (u.isAdmin || u.localizacao.isNullOrBlank())
+      if (u.isAdmin || u.localizacaoes.isEmpty())
         this
       else
         itensNota.usuario.id.eq(u.id)

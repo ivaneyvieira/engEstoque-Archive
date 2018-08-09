@@ -83,9 +83,13 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItemCaptionGenerator { it }
           bind(binder).bind(UsuarioCrudVo::impressora)
         }
-        tokenField("Localização") {
-          expandRatio = 1f
-          addTokens(binder.bean.locaisLoja.map { Token(it) })
+      }
+      row {
+        twinColSelect<String>("Localizações") {
+          value = emptySet()
+          
+          bindItens(binder, UsuarioCrudVo::locaisLoja)
+          bind(binder).bind(UsuarioCrudVo::localizacaoes.name)
         }
       }
     }
@@ -110,7 +114,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           caption = "Loja"
           setRenderer({ loja -> loja?.sigla ?: "Todas" }, TextRenderer())
         }
-        column(UsuarioCrudVo::local) {
+        column(UsuarioCrudVo::localStr) {
           expandRatio = 1
           caption = "Localização"
         }

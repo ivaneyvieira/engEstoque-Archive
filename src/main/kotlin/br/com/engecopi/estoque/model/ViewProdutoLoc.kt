@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
-import io.ebean.annotation.Length
 import io.ebean.annotation.View
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -24,6 +23,15 @@ class ViewProdutoLoc(
         @OneToOne(cascade = [])
         @JoinColumn(name = "loja_id")
         val loja: Loja
-                    ){
-  companion object Find : ViewProdutoLocFinder()
+                    ) {
+  
+  companion object Find : ViewProdutoLocFinder() {
+    fun exists(loja: Loja?, produto: Produto, loc: String): Boolean {
+      loja ?: return false
+      return where().loja.id.eq(loja.id)
+              .produto.id.eq(produto.id)
+              .localizacao.eq(loc)
+              .findOne() != null
+    }
+  }
 }

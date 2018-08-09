@@ -3,14 +3,18 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
+import io.ebean.annotation.DbArray
 import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
+import io.ebean.annotation.Length
 import javax.persistence.CascadeType
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.REMOVE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -25,14 +29,19 @@ class Usuario : BaseModel() {
   var loginName: String = ""
   @Size(max = 30)
   var impressora: String = ""
-  @Size(max = 60)
-  var localizacao: String? = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
+  @Length(100)
+  var localizacaoes: String = ""
   @OneToMany(mappedBy = "usuario",
              cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   
+  var locais: List<String>
+    get() = localizacaoes.split(",").toList()
+    set(value) {
+      localizacaoes = value.sorted().joinToString()
+    }
   
   fun usuarioSaci() = saci.findUser(loginName)
   
@@ -43,23 +52,20 @@ class Usuario : BaseModel() {
   var isAdmin: Boolean = false
   
   fun temProduto(produto: Produto?): Boolean {
-    produto?: return false
-    if(isAdmin || this.localizacao.isNullOrBlank()) return true
-    return saci.findLoc(storeno = loja?.numero,
-                        localizacao = localizacao,
-                        prdno = produto.codigo,
-                        grade = produto.grade)
-            .isNotEmpty()
+    produto ?: return false
+    if (isAdmin || this.locais.isEmpty()) return true
+    return locais.any { loc -> ViewProdutoLoc.exists(loja, produto, loc) }
   }
   
   val produtoLoc: List<Produto>
     get() {
-      loja ?: return emptyList()
-      localizacao ?: return emptyList()
-      return saci.findLoc(loja?.numero, localizacao)
-              .mapNotNull { prdloc ->
-                Produto.findProduto(prdloc.codigo, prdloc.grade) ?: Produto.createProduto(prdloc.codigo, prdloc.grade)
-              }
+      return locais.flatMap { loc ->
+        ViewProdutoLoc.where()
+                .loja.id.eq(loja?.id)
+                .localizacao.eq(loc)
+                .findList()
+                .map { it.produto }
+      }
     }
   
   companion object Find : UsuarioFinder() {
