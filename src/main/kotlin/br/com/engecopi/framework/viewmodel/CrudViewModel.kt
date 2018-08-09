@@ -6,9 +6,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
-abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : Any>(
-        view: IView, val crudClass: KClass<VO>
-                                                                                   ) : ViewModel(view) {
+abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : Any>
+(view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
   var crudBean: VO? = null
   var filter: String? = null
   override fun execUpdate() {}

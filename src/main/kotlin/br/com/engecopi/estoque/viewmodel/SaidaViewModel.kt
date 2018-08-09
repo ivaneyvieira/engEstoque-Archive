@@ -50,21 +50,31 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
           produto: Produto,
           quantidade: Int,
           usuario: Usuario
-                         ): ItemNota {
-    if(quantidade == 0)
-      throw EViewModel("O produto ${produto.codigo} - ${produto.descricao}. Está com quantidade zerada.")
-    val item = ItemNota.find(nota, produto) ?: ItemNota()
-    item.apply {
-      this.nota = nota
-      this.produto = produto
-      this.quantidade = quantidade
-      this.usuario = usuario
+                         ): ItemNota? {
+    
+    val saldo = produto.saldoLoja(nota.loja) - quantidade
+    return when {
+      saldo < 0       -> {
+        view.showWarning("O produto ${produto.codigo} - ${produto.descricao}. Está com saldo insuficiente.")
+        null
+      }
+      quantidade == 0 -> {
+        view.showWarning("O produto ${produto.codigo} - ${produto.descricao}. Está com quantidade zerada.")
+        null
+      }
+      else            -> {
+        val item = ItemNota.find(nota, produto) ?: ItemNota()
+        item.apply {
+          this.nota = nota
+          this.produto = produto
+          this.quantidade = quantidade
+          this.usuario = usuario
+        }
+        item.save()
+        item.produto?.recalculaSaldos()
+        item
+      }
     }
-    item.save()
-    val saldo = item.produto?.recalculaSaldos() ?: 0
-    if(saldo < 0)
-      throw EViewModel("O produto ${produto.codigo} - ${produto.descricao} não pode ficar com saldo negativo")
-    return item
   }
   
   private fun updateItemNota(
@@ -145,6 +155,8 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
             .produto.viewProdutoLoc.localizacao.contains(text)
             .produto.viewProdutoLoc.loja.id.eq(idUser)
             .endAnd()
+            .produto.vproduto.codigo.contains(text)
+            .produto.vproduto.nome.contains(text)
   }
   
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {

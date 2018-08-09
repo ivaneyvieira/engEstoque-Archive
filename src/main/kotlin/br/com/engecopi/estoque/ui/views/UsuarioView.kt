@@ -11,6 +11,8 @@ import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
+import br.com.engecopi.framework.ui.view.tokenField
+import com.fo0.advancedtokenfield.model.Token
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
@@ -33,9 +35,9 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
     get() = EstoqueUI.user?.isAdmin ?: false
   
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
-          {query ->  viewModel.findProduto(query.offset, query.limit).stream()},
-          {_ -> viewModel.countProduto()}
-                                                      )
+          { query -> viewModel.findProduto(query.offset, query.limit).stream() },
+          { _ -> viewModel.countProduto() }
+                                                               )
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -81,22 +83,11 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItemCaptionGenerator { it }
           bind(binder).bind(UsuarioCrudVo::impressora)
         }
-        comboBox<String>("Localização") {
+        tokenField("Localização") {
           expandRatio = 1f
-          isEmptySelectionAllowed = true
-          isTextInputAllowed = false
-          emptySelectionCaption = "NENHUM"
-          bindItens(binder, UsuarioCrudVo::locaisLoja)
-          bind(binder).bind(UsuarioCrudVo::local)
+          addTokens(binder.bean.locaisLoja.map { Token(it) })
         }
       }
-/*      row {
-        twinColSelect<Produto>("Produtos") {
-          dataProvider = produtoDataProvider
-          setItemCaptionGenerator { "${it.codigo} ${it.grade} - ${it.descricao}".trim() }
-          bind(binder).bind(UsuarioCrudVo::produtos)
-        }
-      }*/
     }
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)

@@ -151,6 +151,8 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
             .produto.viewProdutoLoc.localizacao.contains(text)
             .produto.viewProdutoLoc.loja.id.eq(idUser)
             .endAnd()
+            .produto.vproduto.codigo.contains(text)
+            .produto.vproduto.nome.contains(text)
   }
   
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {

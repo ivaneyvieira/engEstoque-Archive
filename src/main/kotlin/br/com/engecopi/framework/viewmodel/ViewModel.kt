@@ -15,8 +15,6 @@ abstract class ViewModel(val view: IView) {
   private fun updateView(exception: EViewModel? = null) {
     if (exception == null)
       execUpdate()
-    else
-      view.showWarning(exception.message ?: "Erro desconhecido")
     
     view.updateView(this)
   }

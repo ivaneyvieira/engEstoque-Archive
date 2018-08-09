@@ -3,6 +3,7 @@ package br.com.engecopi.framework.ui.view
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.utils.SystemUtils
+import com.fo0.advancedtokenfield.main.AdvancedTokenField
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.align
@@ -245,6 +246,12 @@ fun HasComponents.mTextField(captionPar: String = "", block: MTextField.() -> Un
         init(MTextField(), block).apply {
           this.caption = captionPar
         }
+
+fun HasComponents.tokenField(captionPar: String = "", block: AdvancedTokenField.() -> Unit = {}) =
+        init(AdvancedTokenField(), block).apply {
+          this.caption = captionPar
+        }
+
 
 fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
         init(LabelField(caption), block)
