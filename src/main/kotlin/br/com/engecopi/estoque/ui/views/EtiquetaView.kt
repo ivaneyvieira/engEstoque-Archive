@@ -7,8 +7,11 @@ import br.com.engecopi.estoque.viewmodel.EtiquetaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.row
+import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.button
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.h
@@ -17,6 +20,8 @@ import com.github.vok.karibudsl.textArea
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.ui.Alignment
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
@@ -42,6 +47,14 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
           default { it.descricao }
           setItems(TipoMov.values().toList())
           bind(binder).bind(EtiquetaVo::tipoMov)
+        }
+        button("Ajuda") {
+          alignment = Alignment.BOTTOM_RIGHT
+          expandRatio = 1f
+          icon = VaadinIcons.BOOK
+          addClickListener {
+            showInfo(SystemUtils.readFile("/html/variaveis.html")?:"")
+          }
         }
       }
       row {

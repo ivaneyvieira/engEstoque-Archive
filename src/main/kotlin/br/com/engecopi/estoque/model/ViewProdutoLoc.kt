@@ -33,5 +33,13 @@ class ViewProdutoLoc(
               .localizacao.eq(loc)
               .findOne() != null
     }
+  
+    fun find(loja: Loja?, produto: Produto?): ViewProdutoLoc? {
+      loja ?: return null
+      produto ?: return null
+      return where().loja.id.eq(loja.id)
+              .produto.id.eq(produto.id)
+              .findOne()
+    }
   }
 }

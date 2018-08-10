@@ -33,6 +33,9 @@ class ItemNota : BaseModel() {
   var usuario: Usuario? = null
   var saldo: Int? = 0
   
+  val localizacao
+    get() = ViewProdutoLoc.find(nota?.loja, produto)?.localizacao ?: ""
+  
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
   
@@ -110,6 +113,7 @@ class NotaPrint(item: ItemNota) {
   val name = produto?.descricao ?: ""
   val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"
   val un = produto?.vproduto?.unidade ?: "UN"
+  val loc = item.localizacao
   
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

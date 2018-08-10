@@ -38,7 +38,7 @@ class Usuario : BaseModel() {
   val itensNota: List<ItemNota>? = null
   
   var locais: List<String>
-    get() = localizacaoes.split(",").toList()
+    get() = localizacaoes.split(",").filter { it.isNotBlank() }.map { it.trim() }.toList()
     set(value) {
       localizacaoes = value.sorted().joinToString()
     }
