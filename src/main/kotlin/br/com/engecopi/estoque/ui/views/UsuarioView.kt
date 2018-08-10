@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.printer.printerSaci
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
+import br.com.engecopi.framework.ui.view.bindItensSet
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.framework.ui.view.tokenField
@@ -86,10 +87,10 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
       }
       row {
         twinColSelect<String>("Localizações") {
-          value = emptySet()
-          
-          bindItens(binder, UsuarioCrudVo::locaisLoja)
-          bind(binder).bind(UsuarioCrudVo::localizacaoes.name)
+          //value = emptySet()
+  
+          bindItensSet(binder, UsuarioCrudVo::locaisLoja)
+          bind(binder).bind(UsuarioCrudVo::localizacaoes)
         }
       }
     }

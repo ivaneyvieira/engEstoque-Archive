@@ -73,17 +73,23 @@ class UsuarioCrudVo {
   var impressora: String? = ""
   
   var loja: Loja? = null
+  set(value) {
+    field = value
+    locaisLoja.clear()
+    val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
+            .map { it.localizacao }.distinct().toMutableSet()
+    locaisLoja.addAll(sets)
+  }
   
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
   
   //  var produtos: Set<Produto>? = null
   
-  val locaisLoja
-    get() = ViewProdutoLoc.where().loja.id.eq(loja?.id).findList()
-            .map { it.localizacao }.distinct().sorted()
+  var locaisLoja:MutableSet<String> = HashSet()
+
   
-  var localizacaoes: HashSet<String> = HashSet()
+  var localizacaoes: Set<String> = HashSet()
   
   val localStr
     get() = localizacaoes.joinToString()

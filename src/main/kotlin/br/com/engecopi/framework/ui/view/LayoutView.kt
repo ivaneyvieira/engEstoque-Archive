@@ -12,6 +12,7 @@ import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.label
+import com.github.vok.karibudsl.twinColSelect
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
@@ -29,6 +30,7 @@ import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
+import com.vaadin.ui.TwinColSelect
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
@@ -108,7 +110,7 @@ fun <T> ComboBox<T>.default(
 
 fun <V, T> HasItems<T>.bindItens(
         binder: Binder<V>,
-        propertyList: KProperty1<V, List<T>>
+        propertyList: KProperty1<V, Collection<T>>
                                 ) {
   val hasValue = (this as? HasValue<*>)
   
@@ -121,6 +123,8 @@ fun <V, T> HasItems<T>.bindItens(
         setItems({ itemCaption, filterText ->
                    itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
                  }, itens)
+      else if(this is TwinColSelect<T>)
+        setItems(itens)
       else
         setItems(itens)
     }
@@ -136,6 +140,18 @@ fun <V, T> HasItems<T>.bindItens(
     else
       hasValue?.value = value
     
+  }
+}
+
+fun <V, T> TwinColSelect<T>.bindItensSet(
+        binder: Binder<V>,
+        propertyList: KProperty1<V, MutableSet<T>>
+                                ) {
+  
+  bind(binder, propertyList) { itens ->
+    value = emptySet()
+    setItems(itens)
+  
   }
 }
 
