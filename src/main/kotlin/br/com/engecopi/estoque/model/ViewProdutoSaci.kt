@@ -1,18 +1,18 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.finder.ViewProdutoSaciFinder
 import br.com.engecopi.estoque.model.query.QViewProdutoSaci
 import br.com.engecopi.utils.lpad
 import io.ebean.Model.db
 import io.ebean.annotation.View
 import javax.persistence.Entity
+import javax.persistence.Id
 
 @Entity
 @View(name = "view_produtos_saci")
 class ViewProdutoSaci {
-  companion object {
-    fun where(): QViewProdutoSaci {
-      return QViewProdutoSaci(db())
-    }
+  
+  companion object Find : ViewProdutoSaciFinder() {
     
     fun find(codigo: String?, grade: String?): ViewProdutoSaci? {
       codigo ?: return null
@@ -31,6 +31,8 @@ class ViewProdutoSaci {
     }
   }
   
+  @Id
+  var id: String = ""
   var codigo: String? = null
   var nome: String? = null
   var grade: String? = null

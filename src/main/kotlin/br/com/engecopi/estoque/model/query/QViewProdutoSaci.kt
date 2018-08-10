@@ -23,6 +23,7 @@ class QViewProdutoSaci : TQRootBean<ViewProdutoSaci, QViewProdutoSaci> {
     val _alias = QViewProdutoSaci(true)
   }
 
+  lateinit var id: PString<QViewProdutoSaci>
   lateinit var codigo: PString<QViewProdutoSaci>
   lateinit var nome: PString<QViewProdutoSaci>
   lateinit var grade: PString<QViewProdutoSaci>

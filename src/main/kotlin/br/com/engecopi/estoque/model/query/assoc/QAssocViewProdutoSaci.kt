@@ -16,6 +16,7 @@ import io.ebean.typequery.TypeQueryBean
 @TypeQueryBean
 class QAssocViewProdutoSaci<R>(name: String, root: R) : TQAssocBean<ViewProdutoSaci,R>(name, root) {
 
+  lateinit var id: PString<R>
   lateinit var codigo: PString<R>
   lateinit var nome: PString<R>
   lateinit var grade: PString<R>
