@@ -11,7 +11,7 @@ object MainDbMigration {
    // System.setProperty("ddl.migration.generate", "true")
     
     System.setProperty("ddl.migration.name", "support end dating")
-    System.setProperty("ddl.migration.version", "V1.12")
+    //System.setProperty("ddl.migration.version", "V1.12")
     //System.setProperty("ddl.migration.pendingDropsFor", "1.10");
     val migration = DbMigration.create()
     migration.setStrictMode(false)
