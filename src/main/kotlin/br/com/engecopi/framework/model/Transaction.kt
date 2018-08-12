@@ -1,42 +1,64 @@
 package br.com.engecopi.framework.model
 
-import io.ebean.Ebean
 import javax.persistence.RollbackException
+import io.ebean.config.ServerConfig
+import io.ebean.EbeanServerFactory
+import io.ebean.Query
+import io.ebean.SqlQuery
+import io.ebean.SqlUpdate
 
 object Transaction {
+  val config = ServerConfig().apply {
+    loadFromProperties()
+  }
+  
+  val server = EbeanServerFactory.create(config)
+  
   private fun inTransaction(): Boolean {
-    return Ebean.getDefaultServer()?.currentTransaction() != null
+    return server.currentTransaction() != null
   }
   
   @Throws(Exception::class)
   fun execTransacao(lambda: () -> Unit) {
     try {
-      Ebean.beginTransaction()
+      server.beginTransaction()
       lambda()
-      Ebean.commitTransaction()
+      server.commitTransaction()
     } catch (e: RollbackException) {
-      Ebean.rollbackTransaction()
+      server.rollbackTransaction()
       throw e
     } catch (exception: Exception) {
-      Ebean.rollbackTransaction()
+      server.rollbackTransaction()
       throw exception
     } catch (error: Error) {
-      Ebean.rollbackTransaction()
+      server.rollbackTransaction()
       throw Exception(error)
     } finally {
-      Ebean.endTransaction()
+      server.endTransaction()
     }
   }
   
   fun commit() {
     if (inTransaction())
-      Ebean.commitTransaction()
-    Ebean.beginTransaction()
+      server.commitTransaction()
+    server.beginTransaction()
   }
   
   fun rollback() {
     if (inTransaction())
-      Ebean.rollbackTransaction()
-    Ebean.beginTransaction()
+      server.rollbackTransaction()
+    server.beginTransaction()
+  }
+  
+  fun createSqlUpdate(sql: String): SqlUpdate? {
+    return server.createSqlUpdate(sql)
+  }
+  
+  fun <T> find(javaClass: Class<T>): Query<T>? {
+    return server.find(javaClass)
+  }
+  
+  fun createSqlQuery(sql: String): SqlQuery? {
+    return server.createSqlQuery(sql)
   }
 }

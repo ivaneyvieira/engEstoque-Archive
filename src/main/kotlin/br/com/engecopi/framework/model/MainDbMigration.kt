@@ -8,20 +8,22 @@ object MainDbMigration {
   @Throws(IOException::class)
   @JvmStatic
   fun main(args: Array<String>) {
-    System.setProperty("ddl.migration.generate", "true")
+   // System.setProperty("ddl.migration.generate", "true")
     
     System.setProperty("ddl.migration.name", "support end dating")
-    
+    System.setProperty("ddl.migration.version", "V1.12")
+    //System.setProperty("ddl.migration.pendingDropsFor", "1.10");
     val migration = DbMigration.create()
     migration.setStrictMode(false)
     migration.setPlatform(Platform.MYSQL)
+    //migration.setVersion("1.12")
     migration.generateMigration()
     
     System.setProperty("disableTestProperties", "true")
     
     // starting EbeanServer triggers the apply of migrations
     // ... when ebean.migration.run=true
-    // Ebean.getDefaultServer()
+    Transaction.server
     
     System.out.println("done")
   }
