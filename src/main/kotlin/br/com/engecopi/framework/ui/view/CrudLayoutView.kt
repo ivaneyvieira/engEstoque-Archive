@@ -1,15 +1,20 @@
 package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.CrudViewModel
+import br.com.engecopi.framework.viewmodel.Sort
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.init
 import com.vaadin.data.Binder
+import com.vaadin.data.provider.CallbackDataProvider
+import com.vaadin.data.provider.DataProvider
+import com.vaadin.data.provider.Query
 
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
 import com.vaadin.ui.Button.ClickListener
@@ -145,7 +150,7 @@ class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<*, *, T>) 
   }
   
   override fun findAll(): List<T> {
-    return crudViewModel.findAll()
+    return emptyList()
   }
   
   override fun delete(domainObjectToDelete: T) {
@@ -153,8 +158,12 @@ class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<*, *, T>) 
     crudViewModel.delete()
   }
   
-  fun findQuery(filter: String): List<T> {
-    return crudViewModel.findQuery(filter)
+  fun findQuery(offset: Int, limit: Int, filter: String, sorts: List<Sort>): List<T> {
+    return crudViewModel.findQuery(offset, limit, filter, sorts)
+  }
+  
+  fun countQuery(filter: String): Int {
+    return crudViewModel.countQuery(filter)
   }
 }
 
@@ -187,12 +196,19 @@ open class GridCrudFlex<T : Any>(
         crudFormFactory: CrudFormFactory<T>,
         val crudListener: ViewModelCrudListener<T>
                                 ) : GridCrud<T>(domainType, crudLayout, crudFormFactory, crudListener) {
-  
+  val find = CallbackDataProvider.FetchCallback<T, String> { query ->
+    findQuery(query)
+  }
+  val count = CallbackDataProvider.CountCallback<T, String> { query ->
+    countQuery(query)
+  }
+  private val dataProvider = DataProvider.fromFilteringCallbacks(find, count)
+          .withConfigurableFilter()
   var readButton: Button? = null
   val filtroEdt = TextField {
     val value = if (it.value.isNullOrBlank()) null else it.value
-    crudListener.crudViewModel.filter = value
-    refreshGrid()
+    dataProvider.setFilter(value)
+    dataProvider.refreshAll()
   }
   
   init {
@@ -301,5 +317,20 @@ open class GridCrudFlex<T : Any>(
   
   override fun gridSelectionChanged() {
     updateButtons()
+  }
+  
+  override fun refreshGrid() {
+    grid.dataProvider.refreshAll()
+  }
+  
+  fun findQuery(query: Query<T, String>): Stream<T> {
+    val sorts = query.sortOrders.map {
+      Sort(it.sorted, it.direction == SortDirection.DESCENDING)
+    }
+    return crudListener.findQuery(query.offset, query.limit, query.filter.orElse(""), sorts).stream()
+  }
+  
+  fun countQuery(query: Query<T, String>): Int {
+    return crudListener.countQuery(query.filter.orElse(""))
   }
 }
