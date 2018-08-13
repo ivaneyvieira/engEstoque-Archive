@@ -8,6 +8,7 @@ import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.NotaSaidaSaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
+import io.ebean.annotation.Length
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.persistence.CascadeType.MERGE
@@ -34,6 +35,10 @@ class Nota : BaseModel() {
   var tipoNota: TipoNota? = null
   @Size(max = 6)
   var rota: String = ""
+  @Length(60)
+  var fornecedor : String = ""
+  @Length(60)
+  var cliente : String = ""
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   @Size(max = 100)

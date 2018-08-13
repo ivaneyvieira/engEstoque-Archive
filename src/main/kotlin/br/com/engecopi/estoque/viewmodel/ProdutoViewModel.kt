@@ -8,12 +8,10 @@ import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
+import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.framework.viewmodel.Sort
-import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.lpad
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
@@ -48,13 +46,14 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         itensNota.usuario.id.eq(u.id)
     } ?: this
   }
- 
+  
   override val query: QProduto
     get() = Produto.where().filtroUsuario()
   
   override fun Produto.toVO(): ProdutoVo {
     val produto = this
     return ProdutoVo().apply {
+      entityVo = produto
       codigoProduto = produto.codigo.trim()
       gradeProduto = produto.grade
       lojaDefault = usuario?.loja
@@ -70,7 +69,11 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   }
 }
 
-class ProdutoVo {
+class ProdutoVo : EntityVo<Produto>() {
+  override fun findEntity(): Produto? {
+    return Produto.findProduto(codigoProduto, gradeProduto)
+  }
+  
   var lojaDefault: Loja? = null
   var codigoProduto: String? = ""
   var gradeProduto: String? = ""
@@ -79,22 +82,20 @@ class ProdutoVo {
     get() = Produto.findProduto(codigoProduto, gradeProduto)?.descricao
   
   val descricaoProdutoSaci: String?
-    get() = ViewProdutoSaci.find(codigoProduto ).firstOrNull()?.nome
-  
+    get() = ViewProdutoSaci.find(codigoProduto).firstOrNull()?.nome
   
   val grades
-    get() = ViewProdutoSaci.find(codigoProduto ).mapNotNull { it.grade }
+    get() = ViewProdutoSaci.find(codigoProduto).mapNotNull { it.grade }
   
   val codebar: String?
     get() = Produto.findProduto(codigoProduto, gradeProduto)?.codebar ?: ""
   
-  val localizacao by lazy  {
+  val localizacao by lazy {
     produto?.localizacao()
   }
   
-  val produto: Produto? get() {
-    return Produto.findProduto(codigoProduto, gradeProduto)
-  }
+  val produto
+    get() = findEntity()
   
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
@@ -108,21 +109,21 @@ class ProdutoVo {
           it.nota?.loja?.id == lDef.id
         } ?: true)
         &&
-        (filtroDI?.let {di->
+        (filtroDI?.let { di ->
           (it.nota?.data?.isAfter(di) ?: true) ||
-          (it.nota?.data?.isEqual(di)?: true)
-        }?: true)
+          (it.nota?.data?.isEqual(di) ?: true)
+        } ?: true)
         &&
-        (filtroDF?.let {df->
+        (filtroDF?.let { df ->
           (it.nota?.data?.isBefore(df) ?: true) ||
-          (it.nota?.data?.isEqual(df)?: true)
-        }?: true)
+          (it.nota?.data?.isEqual(df) ?: true)
+        } ?: true)
         &&
-        (filtroTipo?.let {t->
+        (filtroTipo?.let { t ->
           it.nota?.tipoNota == t
-        }?: true)
+        } ?: true)
       }
-
+      
       return itens
     }
 }

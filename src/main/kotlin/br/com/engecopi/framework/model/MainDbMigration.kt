@@ -23,7 +23,7 @@ object MainDbMigration {
     
     // starting EbeanServer triggers the apply of migrations
     // ... when ebean.migration.run=true
-    Transaction.server
+  //  Transaction.server
     
     System.out.println("done")
   }

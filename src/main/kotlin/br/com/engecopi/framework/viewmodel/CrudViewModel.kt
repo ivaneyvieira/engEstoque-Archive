@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
-abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : Any>
+abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : EntityVo<MODEL>>
 (view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
   var crudBean: VO? = null
   override fun execUpdate() {}
@@ -70,22 +70,26 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
     }
   }
   
-  fun Q.makeSort(sorts :List<Sort>): Q{
-    return if(sorts.isEmpty())
+  fun Q.makeSort(sorts: List<Sort>): Q {
+    return if (sorts.isEmpty())
       this
-    else{
-      val orderByClause = sorts.joinToString { "${it.propertyName} ${if(it.descending) "DESC" else "ASC"}" }
+    else {
+      val orderByClause = sorts.joinToString { "${it.propertyName} ${if (it.descending) "DESC" else "ASC"}" }
       orderBy(orderByClause)
     }
   }
   
-  open fun findQuery(offset: Int, limit: Int, filter: String, sorts :List<Sort>): List<VO> = execList {
+  open fun findQuery(offset: Int, limit: Int, filter: String, sorts: List<Sort>): List<VO> = execList {
     query.filterBlank(filter)
             .setFirstRow(offset)
             .setMaxRows(limit)
             .makeSort(sorts)
             .findList()
-            .map { it.toVO() }
+            .map { model->
+              model.toVO().apply {
+                entityVo = model
+              }
+            }
   }
   
   open fun countQuery(filter: String): Int = execInt {
@@ -95,3 +99,13 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : A
 }
 
 data class Sort(val propertyName: String, val descending: Boolean = false)
+
+abstract class EntityVo<MODEL : BaseModel> {
+  open var entityVo: MODEL? = null
+  
+  fun toEntity(): MODEL? {
+    return entityVo ?: findEntity()
+  }
+  
+  abstract fun findEntity(): MODEL?
+}

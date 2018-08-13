@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <addColumn tableName="notas">
+            <column name="fornecedor" type="varchar(60)" notnull="true"/>
+            <column name="cliente" type="varchar(60)" notnull="true"/>
+        </addColumn>
+    </changeSet>
+</migration>

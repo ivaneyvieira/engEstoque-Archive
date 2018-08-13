@@ -13,9 +13,9 @@ import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
+import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaEntradaSaci
-import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
@@ -74,7 +74,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
           bean: EntradaVo, nota: Nota,
           produto: Produto?
                             ) {
-    bean.itemNota?.let { item ->
+    bean.toEntity()?.let { item ->
       item.apply {
         this.nota = nota
         this.produto = produto
@@ -129,6 +129,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   override fun ItemNota.toVO(): EntradaVo {
     val itemNota = this
     return EntradaVo().apply {
+      entityVo = itemNota
       val nota = itemNota.nota
       this.numeroNF = nota?.numero
       this.lojaNF = nota?.loja
@@ -145,7 +146,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun QItemNota.filterString(text: String): QItemNota {
-    val idUser =   this@EntradaViewModel.usuario?.loja?.id
+    val idUser = this@EntradaViewModel.usuario?.loja?.id
     return nota.numero.eq(text)
             .and()
             .produto.viewProdutoLoc.localizacao.contains(text)
@@ -160,7 +161,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun delete(bean: EntradaVo) {
-    bean.itemNota?.also { item ->
+    bean.toEntity()?.also { item ->
       item.delete()
     }
   }
@@ -176,7 +177,11 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
 }
 
-class EntradaVo {
+class EntradaVo : EntityVo<ItemNota>() {
+  override fun findEntity(): ItemNota? {
+    return ItemNota.find(nota, produto)
+  }
+  
   var usuario: Usuario? = null
   var numeroNF: String? = ""
     set(value) {
@@ -211,14 +216,14 @@ class EntradaVo {
   
   val dataNota: LocalDate
     get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
-            ?: itemNota?.data
+            ?: toEntity()?.data
             ?: LocalDate.now()
   
   val numeroInterno: Int
     get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
   
   val fornecedor: String
-    get() = notaEntradaSaci.firstOrNull()?.vendName ?: ""
+    get() =  itemNota?.nota?.fornecedor ?: notaEntradaSaci.firstOrNull()?.vendName ?: ""
   
   var observacaoNota: String? = ""
   
@@ -238,7 +243,7 @@ class EntradaVo {
   var produto: Produto? = null
     set(value) {
       field = value
-      quantProduto = itemNota?.quantidade
+      quantProduto = toEntity()?.quantidade
               ?: notaEntradaSaci.firstOrNull { neSaci ->
         (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") &&
         (neSaci.grade ?: "") == (value?.grade ?: "")
@@ -265,6 +270,6 @@ class EntradaVo {
   val nota: Nota?
     get() = Nota.findEntrada(numeroNF ?: "", lojaNF)
   
-  val itemNota: ItemNota?
-    get() = ItemNota.find(nota, produto)
+  val itemNota
+    get() = findEntity()
 }

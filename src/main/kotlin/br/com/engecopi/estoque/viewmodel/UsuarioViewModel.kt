@@ -6,8 +6,8 @@ import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QUsuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
+import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.saci.saci
 
 class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCrudVo>(view, UsuarioCrudVo::class) {
   val queryProduto get() = Produto.where()
@@ -48,6 +48,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
   override fun Usuario.toVO(): UsuarioCrudVo {
     val usuario = this
     return UsuarioCrudVo().apply {
+      entityVo = usuario
       this.loginName = usuario.loginName
       this.loja = usuario.loja
       this.impressora = usuario.impressora
@@ -68,26 +69,27 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
     get() = Produto.all()
 }
 
-class UsuarioCrudVo {
+class UsuarioCrudVo : EntityVo<Usuario>() {
+  override fun findEntity(): Usuario? {
+    return Usuario.findUsuario(loginName)
+  }
+  
   var loginName: String? = ""
   var impressora: String? = ""
   
   var loja: Loja? = null
-  set(value) {
-    field = value
-    locaisLoja.clear()
-    val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
-            .map { it.localizacao }.distinct().toMutableSet()
-    locaisLoja.addAll(sets)
-  }
+    set(value) {
+      field = value
+      locaisLoja.clear()
+      val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
+              .map { it.localizacao }.distinct().toMutableSet()
+      locaisLoja.addAll(sets)
+    }
   
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
   
-  //  var produtos: Set<Produto>? = null
-  
-  var locaisLoja:MutableSet<String> = HashSet()
-
+  var locaisLoja: MutableSet<String> = HashSet()
   
   var localizacaoes: Set<String> = HashSet()
   

@@ -1,6 +1,7 @@
 package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.CrudViewModel
+import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.Sort
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.addGlobalShortcutListener
@@ -41,7 +42,7 @@ import org.vaadin.crudui.layout.impl.WindowBasedCrudLayout
 import java.util.stream.*
 import kotlin.reflect.KProperty1
 
-abstract class CrudLayoutView<C : Any, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
+abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
   override fun updateView(viewModel: ViewModel) {}
   
   override fun updateModel() {}
@@ -73,7 +74,10 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<*, *, C>> : LayoutView<
   }
   
   abstract fun layoutForm(
-          formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<C>, readOnly: Boolean
+          formLayout: VerticalLayout,
+          operation: CrudOperation?,
+          binder: Binder<C>,
+          readOnly: Boolean
                          )
   
   private fun WindowBasedCrudLayout.defaults() {
@@ -93,7 +97,7 @@ abstract class CrudLayoutView<C : Any, V : CrudViewModel<*, *, C>> : LayoutView<
     setCancelButtonCaption("Cancela")
   }
   
-  private fun <T : Any> GridCrudFlex<T>.defaults() {
+  private fun <T : EntityVo<*>> GridCrudFlex<T>.defaults() {
     grid.removeAllColumns()
     
     setRowCountCaption("%d registro(s) encontrados")
@@ -136,7 +140,7 @@ class CustomCrudFormFactory<T>(
   }
 }
 
-class ViewModelCrudListener<T : Any>(val crudViewModel: CrudViewModel<*, *, T>) : CrudListener<T> {
+class ViewModelCrudListener<T : EntityVo<*>>(val crudViewModel: CrudViewModel<*, *, T>) : CrudListener<T> {
   override fun update(domainObjectToUpdate: T): T {
     crudViewModel.crudBean = domainObjectToUpdate
     crudViewModel.update()
@@ -190,7 +194,7 @@ class WindowsCrud : WindowBasedCrudLayout() {
   }
 }
 
-open class GridCrudFlex<T : Any>(
+open class GridCrudFlex<T : EntityVo<*>>(
         domainType: Class<T>,
         crudLayout: CrudLayout,
         crudFormFactory: CrudFormFactory<T>,
@@ -204,6 +208,7 @@ open class GridCrudFlex<T : Any>(
   }
   private val dataProvider = DataProvider.fromFilteringCallbacks(find, count)
           .withConfigurableFilter()
+          
   var readButton: Button? = null
   val filtroEdt = TextField {
     val value = if (it.value.isNullOrBlank()) null else it.value
@@ -228,6 +233,8 @@ open class GridCrudFlex<T : Any>(
           else
             readButtonClicked()
     }
+    
+    grid.dataProvider = dataProvider
     
     crudLayout.addFilterComponent(filtroEdt)
   }

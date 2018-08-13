@@ -3,18 +3,13 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
-import io.ebean.annotation.DbArray
 import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
-import javax.persistence.CascadeType
 import javax.persistence.CascadeType.MERGE
-import javax.persistence.CascadeType.REMOVE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
-import javax.persistence.JoinTable
-import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -69,7 +64,8 @@ class Usuario : BaseModel() {
     }
   
   companion object Find : UsuarioFinder() {
-    fun findUsuario(loginName: String): Usuario? {
+    fun findUsuario(loginName: String?): Usuario? {
+      if (loginName.isNullOrBlank()) return null
       return where().loginName.eq(loginName).findOne()
     }
     
