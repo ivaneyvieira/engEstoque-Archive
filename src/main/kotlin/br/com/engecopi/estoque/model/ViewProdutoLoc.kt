@@ -31,7 +31,7 @@ class ViewProdutoLoc(
       loja ?: return false
       return where().loja.id.eq(loja.id)
               .produto.id.eq(produto.id)
-              .localizacao.eq(loc)
+              .or().abreviacao.eq(loc).localizacao.eq(loc).endOr()
               .findOne() != null
     }
   

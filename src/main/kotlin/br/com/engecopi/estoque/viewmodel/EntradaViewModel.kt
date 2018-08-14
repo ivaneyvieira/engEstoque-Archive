@@ -225,7 +225,7 @@ class EntradaVo {
   val produtoNota: List<Produto>
     get() {
       val nota = notaEntradaSaci
-      return if (nota.isNotEmpty())
+      val produtos = if (nota.isNotEmpty())
         nota.mapNotNull { notaSaci ->
           Produto.findProduto(notaSaci.prdno, notaSaci.grade)
         }.filter { produto ->
@@ -233,6 +233,7 @@ class EntradaVo {
         }
       else
         Produto.all().filter { usuario?.temProduto(it) ?: false }
+      return produtos.sortedBy { it.codigo + it.grade }
     }
   
   var produto: Produto? = null

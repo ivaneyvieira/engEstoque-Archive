@@ -62,7 +62,7 @@ class Usuario : BaseModel() {
       return locais.flatMap { loc ->
         ViewProdutoLoc.where()
                 .loja.id.eq(loja?.id)
-                .localizacao.eq(loc)
+                .or().abreviacao.eq(loc).localizacao.eq(loc).endOr()
                 .findList()
                 .map { it.produto }
       }
