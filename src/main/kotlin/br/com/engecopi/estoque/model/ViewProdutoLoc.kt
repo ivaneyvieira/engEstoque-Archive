@@ -17,6 +17,7 @@ class ViewProdutoLoc(
         val codigo: String,
         val grade: String,
         val localizacao: String,
+        val abreviacao : String,
         @ManyToOne(cascade = [])
         @JoinColumn(name = "produto_id")
         val produto: Produto,

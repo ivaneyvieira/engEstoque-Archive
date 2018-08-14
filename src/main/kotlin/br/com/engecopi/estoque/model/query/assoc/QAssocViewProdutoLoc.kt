@@ -21,6 +21,7 @@ class QAssocViewProdutoLoc<R>(name: String, root: R) : TQAssocBean<ViewProdutoLo
   lateinit var codigo: PString<R>
   lateinit var grade: PString<R>
   lateinit var localizacao: PString<R>
+  lateinit var abreviacao: PString<R>
   lateinit var produto: QAssocProduto<R>
   lateinit var loja: QAssocLoja<R>
 

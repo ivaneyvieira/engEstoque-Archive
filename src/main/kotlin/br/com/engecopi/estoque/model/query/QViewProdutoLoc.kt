@@ -30,6 +30,7 @@ class QViewProdutoLoc : TQRootBean<ViewProdutoLoc, QViewProdutoLoc> {
   lateinit var codigo: PString<QViewProdutoLoc>
   lateinit var grade: PString<QViewProdutoLoc>
   lateinit var localizacao: PString<QViewProdutoLoc>
+  lateinit var abreviacao: PString<QViewProdutoLoc>
   lateinit var produto: QAssocProduto<QViewProdutoLoc>
   lateinit var loja: QAssocLoja<QViewProdutoLoc>
 

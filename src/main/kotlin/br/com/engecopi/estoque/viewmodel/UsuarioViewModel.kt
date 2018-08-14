@@ -77,7 +77,7 @@ class UsuarioCrudVo {
     field = value
     locaisLoja.clear()
     val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
-            .map { it.localizacao }.distinct().toMutableSet()
+            .map { it.abreviacao }.distinct().toMutableSet()
     locaisLoja.addAll(sets)
   }
   
