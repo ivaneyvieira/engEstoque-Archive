@@ -31,7 +31,7 @@ class Usuario : BaseModel() {
   var impressora: String = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
-  @Length(100)
+  @Length(4000)
   var localizacaoes: String = ""
   @OneToMany(mappedBy = "usuario",
              cascade = [PERSIST, MERGE, REFRESH])

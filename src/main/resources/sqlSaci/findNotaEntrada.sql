@@ -7,7 +7,7 @@ select P.invno, N.storeno, nfname as numero, invse as serie,
     WHEN type = 1 then "TRANSFERENCIA_E"
     WHEN type = 2 then "DEV_CLI"
     ELSE "INVALIDA"
-  END AS tipo, IFNULL(L.localizacao, '') AS localizacao
+  END AS tipo, SUBSTRING_INDEX(IFNULL(L.localizacao, ''), '.', 1) AS localizacao
 from sqldados.inv AS N
   inner join sqldados.iprd AS P
   USING(invno)
@@ -38,7 +38,7 @@ UNION
 select 0 as invno, N.storeno, ordno as numero, '' as serie,
   '' as rota, N.date, P.prdno as prdno,
   P.grade, P.qtty/1000 as quant, 0/10000 as custo, C.name as vendName,
-  'PEDIDO_E' AS tipo, IFNULL(L.localizacao, '') AS localizacao
+  'PEDIDO_E' AS tipo, SUBSTRING_INDEX(IFNULL(L.localizacao, ''), '.', 1) AS localizacao
 from sqldados.eord AS N
   inner join sqldados.eoprd AS P
   USING(storeno, ordno)
