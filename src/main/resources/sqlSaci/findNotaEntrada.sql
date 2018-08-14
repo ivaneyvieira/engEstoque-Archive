@@ -38,7 +38,7 @@ UNION
 select 0 as invno, N.storeno, ordno as numero, '' as serie,
   '' as rota, N.date, P.prdno as prdno,
   P.grade, P.qtty/1000 as quant, 0/10000 as custo, C.name as vendName,
-  'PEDIDO_E' AS tipo, SUBSTRING_INDEX(IFNULL(L.localizacao, ''), '.', 1) AS localizacao
+  'PEDIDO_E' AS tipo, L.localizacao
 from sqldados.eord AS N
   inner join sqldados.eoprd AS P
   USING(storeno, ordno)
