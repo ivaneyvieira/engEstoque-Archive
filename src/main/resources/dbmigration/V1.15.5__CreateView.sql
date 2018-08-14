@@ -1,19 +1,14 @@
-CREATE
-  OR
-REPLACE VIEW v_loc_produtos AS
-SELECT md5(concat(`L`.`prdno`,`L`.`grade`,`L`.`storeno`)) AS `id`,
-  `L`.`storeno`                                       AS `storeno`,
-  `L`.`prdno`                                         AS `codigo`,
-  `L`.`grade`                                         AS `grade`,
-  `L`.`localizacao`                                   AS `localizacao`,
-  `P`.`id`                                            AS `produto_id`,
-  `E`.`id`                                            AS `loja_id`
-FROM ((`sqldados`.`prdloc` `L`
-  JOIN `engEstoque`.`produtos` `P`
-  ON(((`P`.`codigo` = `L`.`prdno`)
-  AND (`P`.`grade` = `L`.`grade`))))
-  JOIN `engEstoque`.`lojas` `E`
-  ON((`E`.`numero` = `L`.`storeno`)));
+create or replace view v_loc_produtos AS
+select MD5(CONCAT(prdno, L.grade, storeno)) as 'id',
+storeno, prdno as codigo, L.grade, localizacao,
+  substring_index(localizacao, '.', 1) AS abreviacao,
+  P.id as produto_id, E.id AS loja_id
+from sqldados.prdloc AS L
+  inner join engEstoque.produtos AS P
+    ON P.codigo = L.prdno
+    AND P.grade = L.grade
+  inner join engEstoque.lojas AS E
+    ON E.numero = L.storeno;
 CREATE
   OR
 REPLACE VIEW view_produtos AS

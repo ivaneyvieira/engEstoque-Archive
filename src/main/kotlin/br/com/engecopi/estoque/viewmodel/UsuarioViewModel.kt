@@ -78,7 +78,6 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   var impressora: String? = ""
   
   var loja: Loja? = null
-<<<<<<< HEAD
   set(value) {
     field = value
     locaisLoja.clear()
@@ -86,15 +85,6 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
             .map { it.abreviacao }.distinct().toMutableSet()
     locaisLoja.addAll(sets)
   }
-=======
-    set(value) {
-      field = value
-      locaisLoja.clear()
-      val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
-              .map { it.localizacao }.distinct().toMutableSet()
-      locaisLoja.addAll(sets)
-    }
->>>>>>> datalazy
   
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
