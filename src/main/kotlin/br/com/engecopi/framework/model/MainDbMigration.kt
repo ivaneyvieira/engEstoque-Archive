@@ -8,7 +8,7 @@ object MainDbMigration {
   @Throws(IOException::class)
   @JvmStatic
   fun main(args: Array<String>) {
-   // System.setProperty("ddl.migration.generate", "true")
+    // System.setProperty("ddl.migration.generate", "true")
     
     System.setProperty("ddl.migration.name", "support end dating")
     //System.setProperty("ddl.migration.version", "V1.12")

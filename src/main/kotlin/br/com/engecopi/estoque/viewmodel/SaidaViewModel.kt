@@ -12,8 +12,8 @@ import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
+import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
@@ -133,6 +133,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   override fun ItemNota.toVO(): SaidaVo {
     val itemNota = this
     return SaidaVo().apply {
+      entityVo = itemNota
       val nota = itemNota.nota
       this.numeroNota = nota?.numero
       this.lojaNF = nota?.loja
@@ -174,7 +175,11 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   }
 }
 
-class SaidaVo {
+class SaidaVo : EntityVo<ItemNota>() {
+  override fun findEntity(): ItemNota? {
+    return ItemNota.find(notaSaida, produto)
+  }
+  
   var usuario: Usuario? = null
   
   var numeroNota: String? = ""
@@ -194,7 +199,7 @@ class SaidaVo {
   var tipoNota: TipoNota = OUTROS_S
   var rota: String? = ""
   val clienteName
-    get() = notaSaidaSaci.firstOrNull()?.clienteName ?: observacaoNota
+    get() = itemNota?.nota?.cliente ?:  notaSaidaSaci.firstOrNull()?.clienteName ?: observacaoNota
   
   fun atualizaNota() {
     notaSaidaSaci.firstOrNull()?.let { nota ->
@@ -255,5 +260,5 @@ class SaidaVo {
   var quantidade: Int? = 0
   
   val itemNota: ItemNota?
-    get() = ItemNota.find(notaSaida, produto)
+    get() = findEntity()
 }

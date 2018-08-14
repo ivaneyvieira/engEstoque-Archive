@@ -1,15 +1,17 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Etiqueta
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.query.QEtiqueta
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
+import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 
 class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, EtiquetaVo>(view, EtiquetaVo::class) {
   override fun update(bean: EtiquetaVo) {
-    Etiqueta.byId(bean.id)?.apply {
+    bean.entityVo?.apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
       this.tipoMov = bean.tipoMov ?: throw EViewModel("O tipo está vazio")
@@ -27,7 +29,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
   }
   
   override fun delete(bean: EtiquetaVo) {
-    Etiqueta.deleteById(bean.id)
+    bean.entityVo?.delete()
   }
   
   override val query: QEtiqueta
@@ -36,7 +38,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
   override fun Etiqueta.toVO(): EtiquetaVo {
     val etiqueta = this
     return EtiquetaVo().apply {
-      this.id = etiqueta.id
+      this.entityVo = etiqueta
       this.titulo = etiqueta.titulo
       this.template = etiqueta.template
       this.tipoMov = etiqueta.tipoMov
@@ -48,8 +50,14 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
   }
 }
 
-class EtiquetaVo {
-  var id: Long = 0
+class EtiquetaVo : EntityVo<Etiqueta>() {
+  override fun findEntity(): Etiqueta? {
+    return Etiqueta.where()
+            .titulo.eq(titulo)
+            .tipoMov.eq(tipoMov)
+            .findOne()
+      }
+  
   var titulo: String? = ""
   var template: String? = ""
   var tipoMov : TipoMov? = null
