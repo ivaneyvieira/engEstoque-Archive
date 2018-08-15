@@ -4,10 +4,12 @@ import br.com.engecopi.estoque.model.finder.ViewProdutoSaciFinder
 import br.com.engecopi.estoque.model.query.QViewProdutoSaci
 import br.com.engecopi.utils.lpad
 import io.ebean.Model.db
+import io.ebean.annotation.Cache
 import io.ebean.annotation.View
 import javax.persistence.Entity
 import javax.persistence.Id
 
+@Cache(enableQueryCache = true)
 @Entity
 @View(name = "view_produtos_saci")
 class ViewProdutoSaci {
