@@ -164,15 +164,17 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
           dateFormat()
-          setSortProperty("data", "hora")
+  
+          setSortProperty("nota.data", "data", "hora")
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
-        column(EntradaVo::fornecedor) {
-          caption = "Fornecedor"
+        column(EntradaVo::quantProduto) {
+          caption = "Quantidade"
+          intFormat()
         }
         column(EntradaVo::codigo) {
           caption = "Código"
@@ -183,13 +185,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::grade) {
           caption = "Grade"
+          setSortProperty("produto.grade")
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
         }
-        column(EntradaVo::quantProduto) {
-          caption = "Quantidade"
-          intFormat()
+        column(EntradaVo::fornecedor) {
+          caption = "Fornecedor"
+          setSortProperty("nota.fornecedor")
         }
       }
     }

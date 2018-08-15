@@ -141,7 +141,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
-  override fun QItemNota.orderQuery(filter: String): QItemNota {
+  override fun QItemNota.orderQuery(): QItemNota {
     return this.order().id.desc()
   }
   
@@ -208,22 +208,24 @@ class EntradaVo : EntityVo<ItemNota>() {
     get() = Nota.findEntrada(numeroNF, lojaNF)
   
   fun atualizaNota() {
-    notaEntradaSaci.firstOrNull()?.let { nota ->
-      tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
-      rota = nota.rota
+    if (entityVo == null) {
+      notaEntradaSaci.firstOrNull()?.let { nota ->
+        tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
+        rota = nota.rota
+      }
     }
   }
   
   val dataNota: LocalDate
-    get() = notaEntradaSaci.firstOrNull()?.date?.localDate()
-            ?: toEntity()?.data
+    get() = toEntity()?.dataNota
+            ?: notaEntradaSaci.firstOrNull()?.date?.localDate()
             ?: LocalDate.now()
   
   val numeroInterno: Int
     get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
   
   val fornecedor: String
-    get() =  itemNota?.nota?.fornecedor ?: notaEntradaSaci.firstOrNull()?.vendName ?: ""
+    get() = itemNota?.nota?.fornecedor ?: notaEntradaSaci.firstOrNull()?.vendName ?: ""
   
   var observacaoNota: String? = ""
   
@@ -272,5 +274,5 @@ class EntradaVo : EntityVo<ItemNota>() {
     get() = Nota.findEntrada(numeroNF ?: "", lojaNF)
   
   val itemNota
-    get() = findEntity()
+    get() = toEntity()
 }

@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
+import io.ebean.annotation.Cache
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import javax.persistence.CascadeType.MERGE
@@ -17,6 +18,7 @@ import javax.persistence.Table
 import javax.persistence.Transient
 import javax.validation.constraints.Size
 
+@Cache(enableQueryCache=true)
 @Entity
 @Table(name = "produtos")
 @Index(unique = true, columnNames = ["codigo", "grade"])

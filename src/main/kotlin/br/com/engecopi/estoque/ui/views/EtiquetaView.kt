@@ -74,10 +74,12 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
         column(EtiquetaVo::titulo) {
           expandRatio = 1
           caption = "Título"
+          setSortProperty("titulo")
         }
         column(EtiquetaVo::tipoMov) {
           setRenderer({ it?.descricao ?: "" }, TextRenderer())
           caption = "Tipo"
+          setSortProperty("tipoMov")
         }
       }
     }

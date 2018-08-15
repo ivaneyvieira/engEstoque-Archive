@@ -199,7 +199,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
         crudLayout: CrudLayout,
         crudFormFactory: CrudFormFactory<T>,
         val crudListener: ViewModelCrudListener<T>
-                                ) : GridCrud<T>(domainType, crudLayout, crudFormFactory, crudListener) {
+                                        ) : GridCrud<T>(domainType, crudLayout, crudFormFactory, crudListener) {
   val find = CallbackDataProvider.FetchCallback<T, String> { query ->
     findQuery(query)
   }
@@ -208,7 +208,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
   }
   private val dataProvider = DataProvider.fromFilteringCallbacks(find, count)
           .withConfigurableFilter()
-          
+  
   var readButton: Button? = null
   val filtroEdt = TextField {
     val value = if (it.value.isNullOrBlank()) null else it.value

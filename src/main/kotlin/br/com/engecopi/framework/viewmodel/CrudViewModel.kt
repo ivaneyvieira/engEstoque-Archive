@@ -57,7 +57,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
     }
   }
   
-  open fun Q.orderQuery(filter: String): Q {
+  open fun Q.orderQuery(): Q {
     return this
   }
   
@@ -72,7 +72,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
   
   fun Q.makeSort(sorts: List<Sort>): Q {
     return if (sorts.isEmpty())
-      this
+      this.orderQuery()
     else {
       val orderByClause = sorts.joinToString { "${it.propertyName} ${if (it.descending) "DESC" else "ASC"}" }
       orderBy(orderByClause)
@@ -80,6 +80,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
   }
   
   open fun findQuery(offset: Int, limit: Int, filter: String, sorts: List<Sort>): List<VO> = execList {
+    println("LAZY ==> offset = $offset limit = $limit filter = $filter")
     query.filterBlank(filter)
             .setFirstRow(offset)
             .setMaxRows(limit)

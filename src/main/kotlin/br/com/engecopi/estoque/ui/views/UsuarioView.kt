@@ -3,17 +3,13 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.ui.EstoqueUI
-import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.printer.printerSaci
 import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindItensSet
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import br.com.engecopi.framework.ui.view.tokenField
-import com.fo0.advancedtokenfield.model.Token
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
@@ -21,7 +17,6 @@ import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.twinColSelect
 import com.vaadin.data.Binder
-import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -88,7 +83,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
       row {
         twinColSelect<String>("Localizações") {
           //value = emptySet()
-  
+          
           bindItensSet(binder, UsuarioCrudVo::locaisLoja)
           bind(binder).bind(UsuarioCrudVo::localizacaoes)
         }
@@ -105,6 +100,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         column(UsuarioCrudVo::loginName) {
           expandRatio = 1
           caption = "Usuário"
+          setSortProperty("loginName")
         }
         column(UsuarioCrudVo::nome) {
           expandRatio = 5
@@ -118,6 +114,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         column(UsuarioCrudVo::localStr) {
           expandRatio = 1
           caption = "Localização"
+          setSortProperty("localizacaoes")
         }
         column(UsuarioCrudVo::impressora) {
           expandRatio = 1

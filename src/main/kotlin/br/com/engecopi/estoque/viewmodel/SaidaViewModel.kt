@@ -145,7 +145,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
-  override fun QItemNota.orderQuery(filter: String): QItemNota {
+  override fun QItemNota.orderQuery(): QItemNota {
     return this.order().id.desc()
   }
   
@@ -199,13 +199,14 @@ class SaidaVo : EntityVo<ItemNota>() {
   var tipoNota: TipoNota = OUTROS_S
   var rota: String? = ""
   val clienteName
-    get() = itemNota?.nota?.cliente ?:  notaSaidaSaci.firstOrNull()?.clienteName ?: observacaoNota
+    get() = itemNota?.nota?.cliente ?: notaSaidaSaci.firstOrNull()?.clienteName ?: observacaoNota
   
   fun atualizaNota() {
-    notaSaidaSaci.firstOrNull()?.let { nota ->
-      tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_S
-      rota = nota.rota
-    }
+    if (itemNota == null)
+      notaSaidaSaci.firstOrNull()?.let { nota ->
+        tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_S
+        rota = nota.rota
+      }
   }
   
   val listaProdutos: List<Produto>
@@ -222,7 +223,7 @@ class SaidaVo : EntityVo<ItemNota>() {
     get() = Nota.findNotaSaidaSaci(numeroNota, lojaNF)
   
   val dataNF: LocalDate
-    get() = notaSaidaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
+    get() = entityVo?.dataNota ?: notaSaidaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
   
   val notaSaida: Nota?
     get() = Nota.findSaida(numeroNota, lojaNF)
@@ -234,13 +235,14 @@ class SaidaVo : EntityVo<ItemNota>() {
   
   var produto: Produto? = null
     set(value) {
-      notaSaidaSaci
-              .find {
-                it.prdno == value?.codigo?.trim()
-                && it.grade == value?.grade
-              }?.let { prd ->
-                quantidade = prd.quant
-              }
+      if (entityVo == null)
+        notaSaidaSaci
+                .find {
+                  it.prdno == value?.codigo?.trim()
+                  && it.grade == value?.grade
+                }?.let { prd ->
+                  quantidade = prd.quant
+                }
       
       field = value
     }
@@ -260,5 +262,5 @@ class SaidaVo : EntityVo<ItemNota>() {
   var quantidade: Int? = 0
   
   val itemNota: ItemNota?
-    get() = findEntity()
+    get() = toEntity()
 }

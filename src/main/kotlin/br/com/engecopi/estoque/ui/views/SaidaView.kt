@@ -155,6 +155,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         addOnly = !isAdmin
         column(SaidaVo::numeroNota) {
           caption = "Número NF"
+          setSortProperty("nota.numero")
         }
         grid.addComponentColumn { saida ->
           saida.itemNota?.produto?.recalculaSaldos()
@@ -172,19 +173,23 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::dataNF) {
           caption = "Data"
           dateFormat()
+          setSortProperty("nota.data",  "data", "hora")
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
+          setSortProperty("usuario.loginName")
         }
-        column(SaidaVo::clienteName) {
-          caption = "Cliente"
+        column(SaidaVo::quantidade) {
+          caption = "Quantidade"
+          intFormat()
         }
         column(SaidaVo::rota) {
           caption = "Rota"
         }
         column(SaidaVo::codigo) {
           caption = "Código"
+          setSortProperty("produto.codigo")
         }
         column(SaidaVo::descricaoProduto) {
           expandRatio = 1
@@ -192,13 +197,14 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         }
         column(SaidaVo::grade) {
           caption = "Grade"
+          setSortProperty("produto.grade")
         }
         column(SaidaVo::localizacao) {
-          caption = "Local"
+          caption = "Localização"
         }
-        column(SaidaVo::quantidade) {
-          caption = "Quantidade"
-          intFormat()
+        column(SaidaVo::clienteName) {
+          caption = "Cliente"
+          setSortProperty("nota.cliente")
         }
       }
     }

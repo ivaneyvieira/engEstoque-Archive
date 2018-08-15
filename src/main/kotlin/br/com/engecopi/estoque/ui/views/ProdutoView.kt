@@ -154,6 +154,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         column(ProdutoVo::codigoProduto) {
           expandRatio = 1
           caption = "Código"
+          setSortProperty("codigo")
         }
         column(ProdutoVo::descricaoProduto) {
           expandRatio = 5
@@ -162,10 +163,11 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         column(ProdutoVo::gradeProduto) {
           expandRatio = 1
           caption = "Grade"
+          setSortProperty("grade")
         }
         column(ProdutoVo::localizacao) {
           expandRatio = 1
-          caption = "Local"
+          caption = "Localização"
         }
       }
     }
