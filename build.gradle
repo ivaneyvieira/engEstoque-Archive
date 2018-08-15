@@ -61,7 +61,7 @@ vaadin {
 }
 
 ebean {
-  debugLevel = 0
+  debugLevel = 9
 }
 
 compileKotlin {
