@@ -117,7 +117,13 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   
   override val query: QItemNota
     get() {
-      val query = ItemNota.where().nota.tipoMov.eq(SAIDA)
+      val query = ItemNota
+              .where()
+              .fetch("nota")
+              .fetch("produto")
+              .fetch("produto.vproduto")
+              .fetch("produto.viewProdutoLoc")
+              .nota.tipoMov.eq(SAIDA)
       return usuario?.let { u ->
         query.let { q ->
           val loja = u.loja

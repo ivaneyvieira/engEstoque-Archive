@@ -25,7 +25,6 @@ import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
-import com.vaadin.server.BrowserWindowOpener
 import com.vaadin.ui.Button
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -158,16 +157,15 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           setSortProperty("nota.numero")
         }
         grid.addComponentColumn { saida ->
-       
           val button = Button()
-          print{
+          print {
             saida.itemNota?.produto?.recalculaSaldos()
             viewModel.imprimir(saida.itemNota)
           }.extend(button)
           button.icon = VaadinIcons.PRINT
           button
         }
-  
+        
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -175,7 +173,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::dataNF) {
           caption = "Data"
           dateFormat()
-          setSortProperty("nota.data",  "data", "hora")
+          setSortProperty("nota.data", "data", "hora")
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"

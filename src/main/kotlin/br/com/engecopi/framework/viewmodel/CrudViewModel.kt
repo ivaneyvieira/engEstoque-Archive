@@ -83,7 +83,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
     println("LAZY ==> offset = $offset limit = $limit filter = $filter")
     query.filterBlank(filter)
             .setFirstRow(offset)
-            .setMaxRows(25)
+            .setMaxRows(limit)
             .makeSort(sorts)
             .findList()
             .map { model->
