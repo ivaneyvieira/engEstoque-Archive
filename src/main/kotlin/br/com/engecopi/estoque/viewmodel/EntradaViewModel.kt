@@ -113,7 +113,12 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   
   override val query: QItemNota
     get() {
-      val query = ItemNota.where()
+      val query = ItemNota
+              .where()
+              .fetch("nota")
+              .fetch("produto")
+              .fetch("produto.vproduto")
+              .fetch("produto.viewProdutoLoc")
               .nota.tipoMov.eq(ENTRADA)
       return usuario?.let { u ->
         query.let { q ->

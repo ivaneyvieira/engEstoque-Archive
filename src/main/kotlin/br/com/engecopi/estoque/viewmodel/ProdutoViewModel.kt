@@ -48,7 +48,10 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override val query: QProduto
-    get() = Produto.where().filtroUsuario()
+    get() = Produto
+            .where()
+            .fetch("viewProdutoLoc")
+            .filtroUsuario()
   
   override fun Produto.toVO(): ProdutoVo {
     val produto = this

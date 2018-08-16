@@ -29,11 +29,11 @@ class ViewProdutoLoc(
                     ) {
   
   companion object Find : ViewProdutoLocFinder() {
-    fun exists(loja: Loja?, produto: Produto, loc: String): Boolean {
+    fun exists(loja: Loja?, produto: Produto, locs: List<String>): Boolean {
       loja ?: return false
       return where().loja.id.eq(loja.id)
               .produto.id.eq(produto.id)
-              .or().abreviacao.eq(loc).localizacao.eq(loc).endOr()
+              .or().abreviacao.isIn(locs).localizacao.isIn(locs).endOr()
               .findOne() != null
     }
   

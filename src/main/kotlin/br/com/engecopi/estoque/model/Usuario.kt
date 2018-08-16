@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Formula
@@ -49,7 +50,7 @@ class Usuario : BaseModel() {
   fun temProduto(produto: Produto?): Boolean {
     produto ?: return false
     if (isAdmin || this.locais.isEmpty()) return true
-    return locais.any { loc -> ViewProdutoLoc.exists(loja, produto, loc) }
+    return ViewProdutoLoc.exists(loja, produto, locais)
   }
   
   val produtoLoc: List<Produto>

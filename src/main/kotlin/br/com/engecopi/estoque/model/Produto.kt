@@ -11,14 +11,13 @@ import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.persistence.Transient
 import javax.validation.constraints.Size
 
-@Cache(enableQueryCache=true)
+@Cache(enableQueryCache = true)
 @Entity
 @Table(name = "produtos")
 @Index(unique = true, columnNames = ["codigo", "grade"])
@@ -43,13 +42,16 @@ class Produto : BaseModel() {
     @Transient
     get() = vproduto?.nome
   
-  fun localizacao(loja : Loja? = null): String?{
-   val locs=  loja?.let { it -> viewProdutoLoc?.filter { it.loja.id == loja.id } }
-              ?:viewProdutoLoc
-    return locs.orEmpty().joinToString { it.localizacao }
+  fun localizacao(loja: Loja? = null): String? {
+    val locs = if (loja == null)
+      viewProdutoLoc
+    else
+      listOf(ViewProdutoLoc.find(loja, this))
+    
+    return locs.orEmpty().filterNotNull().joinToString { it.localizacao }
   }
   
-  fun recalculaSaldos() : Int{
+  fun recalculaSaldos(): Int {
     var saldo = 0
     refresh()
     itensNota?.sortedWith(compareBy(ItemNota::data, ItemNota::id))?.forEach { item ->

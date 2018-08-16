@@ -25,6 +25,7 @@ import javax.validation.constraints.Size
 
 @Entity
 @Table(name = "notas")
+@Index(columnNames = ["loja_id", "tipo_mov"])
 class Nota : BaseModel() {
   @Size(max = 15)
   @Index(unique = false)
