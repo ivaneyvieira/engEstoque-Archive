@@ -45,11 +45,11 @@ class Usuario : BaseModel() {
     @Transient get() = usuarioSaci()?.name
   
   @Formula(select = "(login_name = 'ADM' OR login_name = 'YASMINE')")
-  var isAdmin: Boolean = false
+  var admin: Boolean = false
   
   fun temProduto(produto: Produto?): Boolean {
     produto ?: return false
-    if (isAdmin || this.locais.isEmpty()) return true
+    if (admin || this.locais.isEmpty()) return true
     return ViewProdutoLoc.exists(loja, produto, locais)
   }
   

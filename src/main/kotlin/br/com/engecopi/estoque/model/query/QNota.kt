@@ -40,6 +40,8 @@ class QNota : TQRootBean<Nota, QNota> {
   lateinit var tipoMov: PEnum<QNota,TipoMov>
   lateinit var tipoNota: PEnum<QNota,TipoNota>
   lateinit var rota: PString<QNota>
+  lateinit var fornecedor: PString<QNota>
+  lateinit var cliente: PString<QNota>
   lateinit var data: PLocalDate<QNota>
   lateinit var hora: PLocalTime<QNota>
   lateinit var observacao: PString<QNota>

@@ -70,7 +70,7 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
   init {
     form("Etiquetas") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
+        setDeleteOperationVisible(EstoqueUI.user?.admin ?: false)
         column(EtiquetaVo::titulo) {
           expandRatio = 1
           caption = "Título"

@@ -44,7 +44,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
   val isAdmin
-    get() = EstoqueUI.user?.isAdmin ?: false
+    get() = EstoqueUI.user?.admin ?: false
   
   override fun layoutForm(
           formLayout: VerticalLayout,

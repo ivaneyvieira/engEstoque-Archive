@@ -126,7 +126,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
           if (loja == null) q
           else q.nota.loja.id.eq(loja.id)
         }.let { q ->
-          if (u.isAdmin) q
+          if (u.admin) q
           else q.usuario.id.eq(usuario.id)
         }
       } ?: query
@@ -208,10 +208,13 @@ class EntradaVo : EntityVo<ItemNota>() {
   var rota: String? = ""
   
   val notaEntradaSaci: List<NotaEntradaSaci>
-    get() = Nota.findNotaEntradaSaci(numeroNF, lojaNF)
+    get() = if (entityVo == null)
+      Nota.findNotaEntradaSaci(numeroNF, lojaNF)
+    else
+      emptyList()
   
   val notaEntrada: Nota?
-    get() = Nota.findEntrada(numeroNF, lojaNF)
+    get() = entityVo?.nota ?: Nota.findEntrada(numeroNF, lojaNF)
   
   fun atualizaNota() {
     if (entityVo == null) {
@@ -228,10 +231,11 @@ class EntradaVo : EntityVo<ItemNota>() {
             ?: LocalDate.now()
   
   val numeroInterno: Int
-    get() = notaEntradaSaci.firstOrNull()?.invno ?: 0
-  
+    get() = if (entityVo == null)
+      notaEntradaSaci.firstOrNull()?.invno ?: 0
+    else 0
   val fornecedor: String
-    get() = itemNota?.nota?.fornecedor ?: notaEntradaSaci.firstOrNull()?.vendName ?: ""
+    get() = entityVo?.nota?.fornecedor ?: notaEntradaSaci.firstOrNull()?.vendName ?: ""
   
   var observacaoNota: String? = ""
   
@@ -277,7 +281,7 @@ class EntradaVo : EntityVo<ItemNota>() {
     get() = produto?.localizacao(lojaNF)
   
   val nota: Nota?
-    get() = Nota.findEntrada(numeroNF ?: "", lojaNF)
+    get() =  entityVo?.nota ?: Nota.findEntrada(numeroNF ?: "", lojaNF)
   
   val itemNota
     get() = toEntity()

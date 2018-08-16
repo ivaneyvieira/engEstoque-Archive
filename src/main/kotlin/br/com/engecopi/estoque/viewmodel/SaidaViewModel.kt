@@ -124,7 +124,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
           if (loja == null) q
           else q.nota.loja.id.eq(loja.id)
         }.let { q ->
-          if (u.isAdmin) q
+          if (u.admin) q
           else q.usuario.id.eq(usuario.id)
         }
       } ?: query
@@ -140,6 +140,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
       this.observacaoNota = nota?.observacao
       this.produto = itemNota.produto
       this.quantidade = itemNota.quantidade
+      this.rota = itemNota.rota
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_S
       this.usuario = itemNota.usuario
     }
@@ -226,7 +227,7 @@ class SaidaVo : EntityVo<ItemNota>() {
     get() = entityVo?.dataNota ?: notaSaidaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
   
   val notaSaida: Nota?
-    get() = Nota.findSaida(numeroNota, lojaNF)
+    get() = entityVo?.nota ?: Nota.findSaida(numeroNota, lojaNF)
   
   var observacaoNota: String? = ""
   

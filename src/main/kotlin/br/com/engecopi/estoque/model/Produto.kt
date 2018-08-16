@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
 import io.ebean.annotation.Cache
+import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import javax.persistence.CascadeType.MERGE
@@ -33,8 +34,10 @@ class Produto : BaseModel() {
   @OneToMany(mappedBy = "produto", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   @OneToOne(cascade = [])
+  @FetchPreference(1)
   @JoinColumn(name = "id")
   var vproduto: ViewProduto? = null
+  @FetchPreference(2)
   @OneToMany(mappedBy = "produto", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   

@@ -28,7 +28,7 @@ class QAssocUsuario<R>(name: String, root: R) : TQAssocBean<Usuario,R>(name, roo
   lateinit var loja: QAssocLoja<R>
   lateinit var localizacaoes: PString<R>
   lateinit var itensNota: QAssocItemNota<R>
-  lateinit var isAdmin: PBoolean<R>
+  lateinit var admin: PBoolean<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

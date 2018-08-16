@@ -2,11 +2,11 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
+import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Index
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
@@ -23,13 +23,17 @@ class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
+  @FetchPreference(1)
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
+  @FetchPreference(2)
   var nota: Nota? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
+  @FetchPreference(3)
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
+  @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
   
@@ -112,7 +116,8 @@ class NotaPrint(item: ItemNota) {
   val grade = produto?.grade ?: ""
   val name = produto?.descricao ?: ""
   val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"
-  val un = produto?.vproduto?.unidade ?: "UN"
+  val un
+    get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
   
   fun print(template: String): String {

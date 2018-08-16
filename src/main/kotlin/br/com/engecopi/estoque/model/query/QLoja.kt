@@ -8,6 +8,7 @@ import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
+import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
 import io.ebean.typequery.TypeQueryBean
 
@@ -32,6 +33,7 @@ class QLoja : TQRootBean<Loja, QLoja> {
   lateinit var updatedAt: PLocalDateTime<QLoja>
   lateinit var version: PInteger<QLoja>
   lateinit var numero: PInteger<QLoja>
+  lateinit var sigla: PString<QLoja>
   lateinit var notas: QAssocNota<QLoja>
   lateinit var usuarios: QAssocUsuario<QLoja>
   lateinit var viewProdutoLoc: QAssocViewProdutoLoc<QLoja>

@@ -35,7 +35,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
   val isAdmin
-    get() = EstoqueUI.user?.isAdmin ?: false
+    get() = EstoqueUI.user?.admin ?: false
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -150,10 +150,11 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           setSortProperty("nota.numero")
         }
         grid.addComponentColumn { item ->
-          item.itemNota?.produto?.recalculaSaldos()
-          val text = viewModel.imprimir(item.itemNota)
           val button = Button()
-          print(text).extend(button)
+          print{
+            item.itemNota?.produto?.recalculaSaldos()
+            viewModel.imprimir(item.itemNota)
+          }.extend(button)
           button.icon = VaadinIcons.PRINT
           button
         }

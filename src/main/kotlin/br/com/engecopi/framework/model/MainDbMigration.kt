@@ -17,13 +17,12 @@ object MainDbMigration {
     migration.setStrictMode(false)
     migration.setPlatform(Platform.MYSQL)
     //migration.setVersion("1.12")
-    migration.generateMigration()
-    
     System.setProperty("disableTestProperties", "true")
+    migration.generateMigration()
     
     // starting EbeanServer triggers the apply of migrations
     // ... when ebean.migration.run=true
-    Transaction.server
+    //Transaction.server
     
     System.out.println("done")
   }

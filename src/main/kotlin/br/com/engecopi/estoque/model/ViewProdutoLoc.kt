@@ -29,6 +29,7 @@ class ViewProdutoLoc(
                     ) {
   
   companion object Find : ViewProdutoLocFinder() {
+    
     fun exists(loja: Loja?, produto: Produto, locs: List<String>): Boolean {
       loja ?: return false
       return where().loja.id.eq(loja.id)
@@ -40,9 +41,9 @@ class ViewProdutoLoc(
     fun find(loja: Loja?, produto: Produto?): ViewProdutoLoc? {
       loja ?: return null
       produto ?: return null
-      return where().loja.id.eq(loja.id)
-              .produto.id.eq(produto.id)
-              .findOne()
+      return viewProdutosLoc.firstOrNull {
+        it.loja.id == loja.id && it.produto.id == produto.id
+      }
     }
   }
 }

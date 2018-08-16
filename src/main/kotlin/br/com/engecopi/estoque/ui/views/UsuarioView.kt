@@ -28,7 +28,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
   val isAdmin
-    get() = EstoqueUI.user?.isAdmin ?: false
+    get() = EstoqueUI.user?.admin ?: false
   
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
           { query -> viewModel.findProduto(query.offset, query.limit).stream() },
@@ -96,7 +96,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(EstoqueUI.user?.isAdmin ?: false)
+        setDeleteOperationVisible(EstoqueUI.user?.admin ?: false)
         column(UsuarioCrudVo::loginName) {
           expandRatio = 1
           caption = "Usuário"

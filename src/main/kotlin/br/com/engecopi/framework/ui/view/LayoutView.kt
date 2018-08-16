@@ -12,7 +12,6 @@ import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.label
-import com.github.vok.karibudsl.twinColSelect
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
@@ -49,6 +48,7 @@ import org.vaadin.viritin.fields.MCheckBox
 import org.vaadin.viritin.fields.MTextField
 import java.text.DecimalFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -88,8 +88,10 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
       MessageDialog.info(message = msg)
   }
   
-  open fun print(text: String?): BrowserWindowOpener {
-    val resource = StreamResource({ IOUtils.toInputStream(text) }, "${SystemUtils.md5(text ?: "")}.txt")
+  open fun print(text: () -> String): BrowserWindowOpener {
+    val resource =
+            StreamResource({ IOUtils.toInputStream(text()) },
+                           "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
     resource.mimeType = "text/plain"
     return BrowserWindowOpener(resource)
   }
@@ -123,7 +125,7 @@ fun <V, T> HasItems<T>.bindItens(
         setItems({ itemCaption, filterText ->
                    itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
                  }, itens)
-      else if(this is TwinColSelect<T>)
+      else if (this is TwinColSelect<T>)
         setItems(itens)
       else
         setItems(itens)
@@ -146,12 +148,12 @@ fun <V, T> HasItems<T>.bindItens(
 fun <V, T> TwinColSelect<T>.bindItensSet(
         binder: Binder<V>,
         propertyList: KProperty1<V, MutableSet<T>>
-                                ) {
+                                        ) {
   
   bind(binder, propertyList) { itens ->
     value = emptySet()
     setItems(itens)
-  
+    
   }
 }
 
