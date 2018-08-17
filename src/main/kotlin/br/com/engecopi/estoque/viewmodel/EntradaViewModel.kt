@@ -105,6 +105,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
       this.data = bean.dataNota
       this.observacao = bean.observacaoNota ?: ""
       this.rota = bean.rota ?: ""
+      this.fornecedor = bean.fornecedor
     }
     
     nota.save()
@@ -121,13 +122,14 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
               .fetch("produto.viewProdutoLoc")
               .nota.tipoMov.eq(ENTRADA)
       return usuario?.let { u ->
+        val loja = u.loja
         query.let { q ->
-          val loja = u.loja
           if (loja == null) q
           else q.nota.loja.id.eq(loja.id)
         }.let { q ->
           if (u.admin) q
-          else q.usuario.id.eq(usuario.id)
+          else q.produto.viewProdutoLoc.localizacao.isIn(usuario.locais)
+                  .produto.viewProdutoLoc.loja.id.eq(loja?.id)
         }
       } ?: query
     }
@@ -281,7 +283,7 @@ class EntradaVo : EntityVo<ItemNota>() {
     get() = produto?.localizacao(lojaNF)
   
   val nota: Nota?
-    get() =  entityVo?.nota ?: Nota.findEntrada(numeroNF ?: "", lojaNF)
+    get() = entityVo?.nota ?: Nota.findEntrada(numeroNF ?: "", lojaNF)
   
   val itemNota
     get() = toEntity()

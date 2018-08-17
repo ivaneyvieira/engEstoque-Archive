@@ -165,7 +165,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           button.icon = VaadinIcons.PRINT
           button
         }
-        
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -175,17 +174,9 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           dateFormat()
           setSortProperty("nota.data", "data", "hora")
         }
-        column(SaidaVo::usuario) {
-          caption = "Usuário"
-          setRenderer({ it?.loginName ?: "" }, TextRenderer())
-          setSortProperty("usuario.loginName")
-        }
         column(SaidaVo::quantidade) {
           caption = "Quantidade"
           intFormat()
-        }
-        column(SaidaVo::rota) {
-          caption = "Rota"
         }
         column(SaidaVo::codigo) {
           caption = "Código"
@@ -201,6 +192,14 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         }
         column(SaidaVo::localizacao) {
           caption = "Localização"
+        }
+        column(SaidaVo::rota) {
+          caption = "Rota"
+        }
+        column(SaidaVo::usuario) {
+          caption = "Usuário"
+          setRenderer({ it?.loginName ?: "" }, TextRenderer())
+          setSortProperty("usuario.loginName")
         }
         column(SaidaVo::clienteName) {
           caption = "Cliente"

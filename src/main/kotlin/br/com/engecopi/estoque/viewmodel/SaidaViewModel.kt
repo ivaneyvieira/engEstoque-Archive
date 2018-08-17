@@ -10,6 +10,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
@@ -103,6 +104,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
       this.loja = bean.lojaNF
       this.observacao = bean.observacaoNota ?: ""
       this.rota = bean.rota ?: ""
+      this.cliente = bean.clienteName ?: ""
     }
     
     nota.save()
@@ -125,13 +127,14 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
               .fetch("produto.viewProdutoLoc")
               .nota.tipoMov.eq(SAIDA)
       return usuario?.let { u ->
+        val loja = u.loja
         query.let { q ->
-          val loja = u.loja
           if (loja == null) q
           else q.nota.loja.id.eq(loja.id)
         }.let { q ->
           if (u.admin) q
-          else q.usuario.id.eq(usuario.id)
+          else q.produto.viewProdutoLoc.localizacao.isIn(usuario.locais)
+                  .produto.viewProdutoLoc.loja.id.eq(loja?.id)
         }
       } ?: query
     }

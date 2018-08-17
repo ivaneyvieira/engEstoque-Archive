@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
+import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.dateFormat
@@ -168,11 +169,6 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   
           setSortProperty("nota.data", "data", "hora")
         }
-        column(EntradaVo::usuario) {
-          caption = "Usuário"
-          setRenderer({ it?.loginName ?: "" }, TextRenderer())
-          setSortProperty("usuario.loginName")
-        }
         column(EntradaVo::quantProduto) {
           caption = "Quantidade"
           intFormat()
@@ -190,6 +186,14 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
+        }
+        column(EntradaVo::rota) {
+          caption = "Rota"
+        }
+        column(EntradaVo::usuario) {
+          caption = "Usuário"
+          setRenderer({ it?.loginName ?: "" }, TextRenderer())
+          setSortProperty("usuario.loginName")
         }
         column(EntradaVo::fornecedor) {
           caption = "Fornecedor"
