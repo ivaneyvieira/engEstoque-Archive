@@ -128,7 +128,10 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
           else q.nota.loja.id.eq(loja.id)
         }.let { q ->
           if (u.admin) q
-          else q.produto.viewProdutoLoc.localizacao.isIn(usuario.locais)
+          else q.or()
+                  .produto.viewProdutoLoc.localizacao.isIn(usuario.locais)
+                  .produto.viewProdutoLoc.abreviacao.isIn(usuario.locais)
+                  .endOr()
                   .produto.viewProdutoLoc.loja.id.eq(loja?.id)
         }
       } ?: query
