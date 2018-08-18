@@ -6,6 +6,7 @@ select P.invno, N.storeno, nfname as numero, invse as serie,
     WHEN type = 0 then "COMPRA"
     WHEN type = 1 then "TRANSFERENCIA_E"
     WHEN type = 2 then "DEV_CLI"
+    WHEN type = 10 AND remarks LIKE 'DEV%' then "DEV_CLI"
     ELSE "INVALIDA"
   END AS tipo, SUBSTRING_INDEX(IFNULL(L.localizacao, ''), '.', 1) AS localizacao
 from sqldados.inv AS N
