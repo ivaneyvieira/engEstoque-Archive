@@ -193,13 +193,13 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::localizacao) {
           caption = "Localização"
         }
-        column(SaidaVo::rota) {
-          caption = "Rota"
-        }
         column(SaidaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
+        }
+        column(SaidaVo::rota) {
+          caption = "Rota"
         }
         column(SaidaVo::clienteName) {
           caption = "Cliente"

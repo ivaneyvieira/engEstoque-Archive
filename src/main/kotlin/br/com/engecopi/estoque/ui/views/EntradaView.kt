@@ -187,13 +187,13 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::localizacao) {
           caption = "Local"
         }
-        column(EntradaVo::rota) {
-          caption = "Rota"
-        }
         column(EntradaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
+        }
+        column(EntradaVo::rota) {
+          caption = "Rota"
         }
         column(EntradaVo::fornecedor) {
           caption = "Fornecedor"

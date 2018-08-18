@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
@@ -43,7 +44,11 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
       if (u.admin || u.localizacaoes.isEmpty())
         this
       else
-        itensNota.usuario.id.eq(u.id)
+        this.or()
+                .viewProdutoLoc.localizacao.isIn(usuario.locais)
+                .viewProdutoLoc.abreviacao.isIn(usuario.locais)
+                .endOr()
+                .viewProdutoLoc.loja.id.eq(loja?.id)
     } ?: this
   }
   
