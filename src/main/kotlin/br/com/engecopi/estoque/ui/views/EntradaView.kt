@@ -130,7 +130,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           }
           integerField("Qtd Entrada") {
             expandRatio = 1f
-            isReadOnly = operation != ADD
+            isReadOnly = isAdmin == false
             this.bind(binder)
                     .bind(EntradaVo::quantProduto.name)
           }
