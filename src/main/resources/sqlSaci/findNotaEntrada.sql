@@ -20,15 +20,7 @@ from sqldados.inv AS N
     AND P.prdno = L.prdno
     AND P.grade = L.grade
 where N.storeno = :storeno
-      and (nfname = :nfname
-        OR nfname = CONCAT('0', :nfname)
-        OR nfname = CONCAT('00', :nfname)
-        OR nfname = CONCAT('000', :nfname)
-        OR nfname = CONCAT('0000', :nfname)
-        OR nfname = CONCAT('00000', :nfname)
-        OR nfname = CONCAT('000000', :nfname)
-        OR nfname = CONCAT('0000000', :nfname)
-      )
+      and nfname = :nfname
       and invse = :invse
       AND N.date > DATE_SUB(current_date, INTERVAL 12 MONTH)
       AND N.bits & POW(2, 4) = 0
