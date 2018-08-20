@@ -184,6 +184,10 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   fun imprimir(itemNota: ItemNota?) = execString {
     val template = Etiqueta.where().tipoMov.eq(itemNota?.tipoMov).findOne()?.template
     val print = itemNota?.printEtiqueta()
+    itemNota?.let {
+      it.impresso = true
+      it.save()
+    }
     print?.print(template ?: "") ?: ""
   }
 }

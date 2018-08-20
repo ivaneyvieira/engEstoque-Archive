@@ -156,13 +156,18 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
-        grid.addComponentColumn { saida ->
+        grid.addComponentColumn { item ->
           val button = Button()
           print {
-            saida.itemNota?.produto?.recalculaSaldos()
-            viewModel.imprimir(saida.itemNota)
+            item.itemNota?.produto?.recalculaSaldos()
+            val print = viewModel.imprimir(item.itemNota)
+            refreshGrid()
+            print
           }.extend(button)
           button.icon = VaadinIcons.PRINT
+          item?.entityVo?.refresh()
+          val impresso = item?.entityVo?.impresso ?: true
+          button.isEnabled = impresso == false || isAdmin
           button
         }
         column(SaidaVo::lojaNF) {

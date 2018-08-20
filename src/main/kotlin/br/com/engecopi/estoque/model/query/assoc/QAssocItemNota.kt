@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.query.QItemNota
+import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
@@ -31,6 +32,7 @@ class QAssocItemNota<R>(name: String, root: R) : TQAssocBean<ItemNota,R>(name, r
   lateinit var etiqueta: QAssocEtiqueta<R>
   lateinit var usuario: QAssocUsuario<R>
   lateinit var saldo: PInteger<R>
+  lateinit var impresso: PBoolean<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

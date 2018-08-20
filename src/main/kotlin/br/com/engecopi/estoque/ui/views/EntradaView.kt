@@ -6,7 +6,6 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
-import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.dateFormat
@@ -21,6 +20,7 @@ import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
+import com.github.vok.karibudsl.refresh
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
@@ -130,7 +130,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           }
           integerField("Qtd Entrada") {
             expandRatio = 1f
-            isReadOnly = isAdmin == false
+            isReadOnly = (isAdmin == false) && (operation != ADD)
             this.bind(binder)
                     .bind(EntradaVo::quantProduto.name)
           }
@@ -152,11 +152,21 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         }
         grid.addComponentColumn { item ->
           val button = Button()
-          print{
+          
+          print {
             item.itemNota?.produto?.recalculaSaldos()
-            viewModel.imprimir(item.itemNota)
+            val print = viewModel.imprimir(item.itemNota)
+            print
           }.extend(button)
+          val impresso = item?.entityVo?.impresso ?: true
+          button.isEnabled = impresso == false || isAdmin
           button.icon = VaadinIcons.PRINT
+          button.addClickListener {
+            val impresso = item?.entityVo?.impresso ?: true
+            it.button.isEnabled = impresso == false || isAdmin
+            refreshGrid()
+          }
+          
           button
         }
         column(EntradaVo::lojaNF) {
@@ -166,7 +176,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
           dateFormat()
-  
+          
           setSortProperty("nota.data", "data", "hora")
         }
         column(EntradaVo::quantProduto) {

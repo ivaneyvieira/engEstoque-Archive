@@ -184,6 +184,10 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   fun imprimir(itemNota: ItemNota?) = execString {
     val template = Etiqueta.where().tipoMov.eq(itemNota?.tipoMov).findOne()?.template
     val print = itemNota?.printEtiqueta()
+    itemNota?.let {
+      it.impresso = true
+      it.save()
+    }
     print?.print(template ?: "") ?: ""
   }
 }
@@ -229,7 +233,7 @@ class SaidaVo : EntityVo<ItemNota>() {
         Produto.all()
       else
         notaSaci.mapNotNull { Produto.findProduto(it.prdno, it.grade) }
-      return lista.filter { usuario?.temProduto(it) ?: false }
+      return lista.filter { usuario?.temProduto(it) ?: false }.sortedBy { it.codigo + it.grade }
     }
   
   val notaSaidaSaci

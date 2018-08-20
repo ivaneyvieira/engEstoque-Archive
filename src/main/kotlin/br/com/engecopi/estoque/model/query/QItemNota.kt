@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.model.query.assoc.QAssocNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
 import io.ebean.EbeanServer
+import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
@@ -42,6 +43,7 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var etiqueta: QAssocEtiqueta<QItemNota>
   lateinit var usuario: QAssocUsuario<QItemNota>
   lateinit var saldo: PInteger<QItemNota>
+  lateinit var impresso: PBoolean<QItemNota>
 
 
   /**

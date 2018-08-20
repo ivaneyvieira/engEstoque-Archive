@@ -36,6 +36,7 @@ class ItemNota : BaseModel() {
   @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
+  var impresso : Boolean = false
   
   val localizacao
     get() = ViewProdutoLoc.find(nota?.loja, produto)?.localizacao ?: ""
@@ -87,7 +88,7 @@ class ItemNota : BaseModel() {
     }
   }
   
-  fun printEtiqueta() = NotaPrint(this)
+  fun printEtiqueta() : NotaPrint? = if(impresso) null else NotaPrint(this)
 }
 
 class NotaPrint(item: ItemNota) {
