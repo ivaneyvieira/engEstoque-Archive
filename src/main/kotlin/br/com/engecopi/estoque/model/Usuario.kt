@@ -48,7 +48,6 @@ class Usuario : BaseModel() {
   var admin: Boolean = false
   
   fun temProduto(produto: Produto?): Boolean {
-    produto ?: return false
     if (admin || this.locais.isEmpty()) return true
     return ViewProdutoLoc.exists(loja, produto, locais)
   }
