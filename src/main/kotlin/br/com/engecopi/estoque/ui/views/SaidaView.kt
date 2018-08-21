@@ -161,13 +161,16 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           print {
             item.itemNota?.produto?.recalculaSaldos()
             val print = viewModel.imprimir(item.itemNota)
-            refreshGrid()
             print
           }.extend(button)
-          button.icon = VaadinIcons.PRINT
-          item?.entityVo?.refresh()
           val impresso = item?.entityVo?.impresso ?: true
           button.isEnabled = impresso == false || isAdmin
+          button.icon = VaadinIcons.PRINT
+          button.addClickListener {
+            val impresso = item?.entityVo?.impresso ?: true
+            it.button.isEnabled = impresso == false || isAdmin
+            refreshGrid()
+          }
           button
         }
         column(SaidaVo::lojaNF) {

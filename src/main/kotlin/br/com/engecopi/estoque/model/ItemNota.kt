@@ -88,7 +88,7 @@ class ItemNota : BaseModel() {
     }
   }
   
-  fun printEtiqueta() : NotaPrint? = if(impresso) null else NotaPrint(this)
+  fun printEtiqueta() = NotaPrint(this)
 }
 
 class NotaPrint(item: ItemNota) {
