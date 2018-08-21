@@ -117,6 +117,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
       val query = ItemNota
               .where()
               .fetch("nota")
+              .fetch("usuario")
               .fetch("produto")
               .fetch("produto.vproduto")
               .fetch("produto.viewProdutoLoc")
