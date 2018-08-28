@@ -115,5 +115,9 @@ class Produto : BaseModel() {
     refresh()
     return itensNota?.sortedBy { it.id }?.lastOrNull()
   }
+  
+  fun finItensNota() : List<ItemNota>{
+    return ItemNota.where().produto.id.eq(id).findList()
+  }
 }
 
