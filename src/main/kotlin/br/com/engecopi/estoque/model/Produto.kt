@@ -6,6 +6,7 @@ import br.com.engecopi.utils.lpad
 import io.ebean.annotation.Cache
 import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Index
+import io.ebean.annotation.Transactional
 import java.time.LocalDate
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
@@ -54,6 +55,7 @@ class Produto : BaseModel() {
     return locs.orEmpty().filterNotNull().joinToString { it.localizacao }
   }
   
+  @Transactional
   fun recalculaSaldos(): Int {
     var saldo = 0
     refresh()

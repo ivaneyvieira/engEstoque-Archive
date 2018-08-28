@@ -9,7 +9,7 @@ import io.ebean.annotation.View
 import javax.persistence.Entity
 import javax.persistence.Id
 
-@Cache(enableQueryCache = true)
+@Cache(enableQueryCache = false)
 @Entity
 @View(name = "view_produtos_saci")
 class ViewProdutoSaci {

@@ -11,7 +11,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.OneToOne
 
-@Cache(enableQueryCache = true)
+@Cache(enableQueryCache = false)
 @Entity
 @View(name = "view_produtos", dependentTables = ["produtos"])
 class ViewProduto {
