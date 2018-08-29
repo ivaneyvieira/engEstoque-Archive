@@ -56,16 +56,22 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
           usuario: Usuario
                             ): ItemNota? {
     return if (quantProduto != 0) {
-      val item = ItemNota.find(nota, produto) ?: ItemNota()
-      item.apply {
-        this.nota = nota
-        this.produto = produto
-        this.quantidade = quantProduto
-        this.usuario = usuario
+      if (Nota.existNumero(nota, produto)) {
+        view.showWarning("O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}.")
+        null
       }
-      item.save()
-      item.produto?.recalculaSaldos()
-      item
+      else {
+        val item = ItemNota.find(nota, produto) ?: ItemNota()
+        item.apply {
+          this.nota = nota
+          this.produto = produto
+          this.quantidade = quantProduto
+          this.usuario = usuario
+        }
+        item.save()
+        item.produto?.recalculaSaldos()
+        item
+      }
     }
     else
       null
@@ -127,8 +133,6 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
       this.rota = bean.rota ?: ""
       this.fornecedor = bean.fornecedor
     }
-    if(Nota.existNumero(nota))
-      throw EViewModel("Essa nota/pedido já está cadastrado")
     nota.save()
     return nota
   }

@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.saci.beans.NotaSaidaSaci
@@ -107,10 +108,11 @@ class Nota : BaseModel() {
       return saci.findNotaSaida(lojaNF.numero, numero, serie)
     }
     
-    fun existNumero(nota: Nota): Boolean {
-      return where().loja.id.eq(nota.loja?.id)
-                     .numero.eq(nota.numero)
-                     .tipoMov.eq(nota.tipoMov)
+    fun existNumero(nota: Nota, produto : Produto): Boolean {
+      return ItemNota.where().nota.loja.id.eq(nota.loja?.id)
+                     .nota.numero.eq(nota.numero)
+                     .nota.tipoMov.eq(nota.tipoMov)
+                     .produto.id.eq(produto.id)
                      .findCount() > 0
     }
   }

@@ -63,6 +63,10 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
         view.showWarning("O produto ${produto.codigo} - ${produto.descricao}. Está com quantidade zerada.")
         null
       }
+      Nota.existNumero(nota, produto) ->{
+        view.showWarning("O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}.")
+        null
+      }
       else            -> {
         val item = ItemNota.find(nota, produto) ?: ItemNota()
         item.apply {
@@ -124,9 +128,6 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
       this.rota = bean.rota ?: ""
       this.cliente = bean.clienteName ?: ""
     }
-    if(Nota.existNumero(nota))
-      throw EViewModel("Essa nota/pedido já está cadastrado")
-  
     nota.save()
     return nota
   }
