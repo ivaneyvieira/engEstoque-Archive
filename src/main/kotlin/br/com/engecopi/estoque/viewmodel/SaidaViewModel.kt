@@ -10,6 +10,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
+import br.com.engecopi.estoque.model.updateViewProdutosLoc
 import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -119,6 +120,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   
   override val query: QItemNota
     get() {
+      updateViewProdutosLoc()
       val query = ItemNota
               .where()
               .fetch("nota")
