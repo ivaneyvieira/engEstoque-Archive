@@ -191,7 +191,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           setSortProperty("produto.codigo")
         }
         column(SaidaVo::descricaoProduto) {
-          expandRatio = 1
           caption = "Descrição"
         }
         column(SaidaVo::grade) {

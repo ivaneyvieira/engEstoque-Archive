@@ -7,6 +7,7 @@ import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.init
+import com.github.vok.karibudsl.refresh
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
@@ -69,6 +70,8 @@ abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : Lay
   
   fun <T> GridCrudFlex<C>.column(property: KProperty1<C, T>, block: Column<C, T?>.() -> Unit = {}): Column<C, T?> {
     val column: Column<C, T?> = grid.addColumn(property)
+    print(column.isMinimumWidthFromContent)
+    column.isMinimumWidthFromContent = true
     column.block()
     return column
   }

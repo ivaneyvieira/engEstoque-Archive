@@ -37,9 +37,9 @@ class Nota : BaseModel() {
   @Size(max = 6)
   var rota: String = ""
   @Length(60)
-  var fornecedor : String = ""
+  var fornecedor: String = ""
   @Length(60)
-  var cliente : String = ""
+  var cliente: String = ""
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   @Size(max = 100)
@@ -106,6 +106,13 @@ class Nota : BaseModel() {
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaSaida(lojaNF.numero, numero, serie)
     }
+    
+    fun existNumero(nota: Nota): Boolean {
+      return where().loja.id.eq(nota.loja?.id)
+                     .numero.eq(nota.numero)
+                     .tipoMov.eq(nota.tipoMov)
+                     .findCount() > 0
+    }
   }
   
   fun findItem(produto: Produto): ItemNota? {
@@ -114,7 +121,7 @@ class Nota : BaseModel() {
   }
 }
 
-enum class TipoMov(val multiplicador: Int, val descricao : String) {
+enum class TipoMov(val multiplicador: Int, val descricao: String) {
   ENTRADA(1, "Entrada"),
   SAIDA(-1, "Saida")
 }
@@ -131,7 +138,7 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   VENDA(SAIDA, "Venda", "Venda"),
   TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"),
   ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"),
-  DEV_FOR(SAIDA, "Dev Fornecedor","Dev Fornecedor"),
+  DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"),
   ACERTO_S(SAIDA, "Acerto", "Acerto Saida"),
   PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
   OUTROS_S(SAIDA, "Outros", "Outras Saidas", true);

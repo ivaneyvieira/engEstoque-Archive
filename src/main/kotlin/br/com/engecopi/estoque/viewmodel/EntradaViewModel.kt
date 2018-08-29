@@ -23,7 +23,7 @@ import java.time.LocalDate
 class EntradaViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<ItemNota, QItemNota, EntradaVo>(view, EntradaVo::class) {
   override fun update(bean: EntradaVo) {
-    val nota = saveNota(bean)
+    val nota = updateNota(bean)
     
     val produto = saveProduto(bean.produto)
     
@@ -31,7 +31,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun add(bean: EntradaVo) {
-    val nota = saveNota(bean)
+    val nota = insertNota(bean)
     val notasSaci = bean.notaEntradaSaci
     val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
     if (notasSaci.isEmpty()) {
@@ -94,7 +94,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
-  private fun saveNota(bean: EntradaVo): Nota {
+  private fun updateNota(bean: EntradaVo): Nota {
     val nota: Nota = bean.notaEntrada ?: Nota()
     nota.apply {
       this.numero = if (bean.numeroNF.isNullOrBlank())
@@ -109,6 +109,26 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
       this.fornecedor = bean.fornecedor
     }
     
+    nota.save()
+    return nota
+  }
+  
+  private fun insertNota(bean: EntradaVo): Nota {
+    val nota: Nota = bean.notaEntrada ?: Nota()
+    nota.apply {
+      this.numero = if (bean.numeroNF.isNullOrBlank())
+        "${Nota.novoNumero()}"
+      else bean.numeroNF ?: ""
+      this.tipoMov = TipoMov.ENTRADA
+      this.tipoNota = bean.tipoNota
+      this.loja = bean.lojaNF
+      this.data = bean.dataNota
+      this.observacao = bean.observacaoNota ?: ""
+      this.rota = bean.rota ?: ""
+      this.fornecedor = bean.fornecedor
+    }
+    if(Nota.existNumero(nota))
+      throw EViewModel("Essa nota/pedido já está cadastrado")
     nota.save()
     return nota
   }

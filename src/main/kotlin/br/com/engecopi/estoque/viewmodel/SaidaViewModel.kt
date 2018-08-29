@@ -11,7 +11,6 @@ import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.estoque.model.updateViewProdutosLoc
-import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
@@ -22,7 +21,7 @@ import java.time.LocalDate
 class SaidaViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<ItemNota, QItemNota, SaidaVo>(view, SaidaVo::class) {
   override fun update(bean: SaidaVo) {
-    val nota = saveNota(bean)
+    val nota = updateNota(bean)
     
     val produto = bean.produto ?: throw EViewModel("Produto não encontrado no saci")
     
@@ -30,7 +29,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun add(bean: SaidaVo) {
-    val nota = saveNota(bean)
+    val nota = insertNota(bean)
     
     val notasSaida = bean.notaSaidaSaci
     val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
@@ -94,7 +93,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
     }
   }
   
-  private fun saveNota(bean: SaidaVo): Nota {
+  private fun updateNota(bean: SaidaVo): Nota {
     val nota: Nota = bean.notaSaida ?: Nota()
     nota.apply {
       this.numero = if (bean.numeroNota.isNullOrBlank())
@@ -108,6 +107,26 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
       this.cliente = bean.clienteName ?: ""
     }
     
+    nota.save()
+    return nota
+  }
+  
+  private fun insertNota(bean: SaidaVo): Nota {
+    val nota: Nota = bean.notaSaida ?: Nota()
+    nota.apply {
+      this.numero = if (bean.numeroNota.isNullOrBlank())
+        "${Nota.novoNumero()}"
+      else bean.numeroNota ?: ""
+      this.tipoMov = SAIDA
+      this.tipoNota = bean.tipoNota
+      this.loja = bean.lojaNF
+      this.observacao = bean.observacaoNota ?: ""
+      this.rota = bean.rota ?: ""
+      this.cliente = bean.clienteName ?: ""
+    }
+    if(Nota.existNumero(nota))
+      throw EViewModel("Essa nota/pedido já está cadastrado")
+  
     nota.save()
     return nota
   }
