@@ -20,6 +20,10 @@ import java.time.LocalDate
 
 class SaidaViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<ItemNota, QItemNota, SaidaVo>(view, SaidaVo::class) {
+  init {
+    Loja.setLojaDefault(usuario?.loja?.numero ?: 0)
+  }
+  
   override fun update(bean: SaidaVo) {
     val nota = updateNota(bean)
     

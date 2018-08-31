@@ -16,6 +16,11 @@ import java.time.LocalDate
 
 class ProdutoViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
+  
+  init {
+    Loja.setLojaDefault(usuario?.loja?.numero ?: 0)
+  }
+  
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.codigo = bean.codigoProduto.lpad(16, " ")
@@ -98,15 +103,13 @@ class ProdutoVo : EntityVo<Produto>() {
   val codebar: String?
     get() = Produto.findProduto(codigoProduto, gradeProduto)?.codebar ?: ""
   
-  val localizacao by lazy {
-    produto?.localizacao()
-  }
+  val localizacao get() = produto?.localizacao ?: ""
   
   val produto
     get() = findEntity()
   
   val saldo
-    get() = entityVo?.recalculaSaldos() ?: 0
+    get() = entityVo?.saldo_total ?: 0
   
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null

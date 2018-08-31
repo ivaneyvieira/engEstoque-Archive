@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.LojaFinder
 import br.com.engecopi.framework.model.BaseModel
+import br.com.engecopi.framework.model.Transaction
 import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
@@ -31,6 +32,12 @@ class Loja : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   
   companion object Find : LojaFinder() {
+    const val LOJA_DEFAULT_FIELD = "LOJA_DEFAULT"
+    
+    fun setLojaDefault(numero : Int){
+      Transaction.variable(LOJA_DEFAULT_FIELD, "$numero")
+    }
+    
     fun findLoja(storeno: Int?): Loja? {
       return if(storeno == 0 || storeno == null) null
       else

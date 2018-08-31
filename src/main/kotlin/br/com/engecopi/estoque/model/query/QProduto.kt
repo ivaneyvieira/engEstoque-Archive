@@ -40,6 +40,8 @@ class QProduto : TQRootBean<Produto, QProduto> {
   lateinit var itensNota: QAssocItemNota<QProduto>
   lateinit var vproduto: QAssocViewProduto<QProduto>
   lateinit var viewProdutoLoc: QAssocViewProdutoLoc<QProduto>
+  lateinit var localizacao: PString<QProduto>
+  lateinit var saldo: PInteger<QProduto>
 
 
   /**

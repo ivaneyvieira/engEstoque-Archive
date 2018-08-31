@@ -5,6 +5,7 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
 import io.ebean.annotation.Cache
 import io.ebean.annotation.FetchPreference
+import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Transactional
 import java.time.LocalDate
@@ -41,6 +42,20 @@ class Produto : BaseModel() {
   @FetchPreference(2)
   @OneToMany(mappedBy = "produto", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
+  @Formula(select = "LOC.localizacao",
+           join = "join (select produto_id, localizacao from v_loc_produtos where storeno = @${Loja.LOJA_DEFAULT_FIELD} group by produto_id) " +
+                  "AS LOC ON LOC.produto_id = \${ta}.id")
+  var localizacao: String = ""
+  @Formula(select = "SAL.saldo_total",
+           join = "JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total\n" +
+                  "from itens_nota AS I\n" +
+                  "  inner join notas AS N\n" +
+                  "    ON N.id = I.nota_id\n" +
+                  "  inner join lojas AS L\n" +
+                  "    ON L.id = N.loja_id\n" +
+                  "WHERE L.numero = @${Loja.LOJA_DEFAULT_FIELD} \n" +
+                  "group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id")
+  var saldo_total: Int = 0
   
   val descricao: String?
     @Transient
@@ -118,7 +133,7 @@ class Produto : BaseModel() {
     return itensNota?.sortedBy { it.id }?.lastOrNull()
   }
   
-  fun finItensNota() : List<ItemNota>{
+  fun finItensNota(): List<ItemNota> {
     return ItemNota.where().produto.id.eq(id).findList()
   }
 }

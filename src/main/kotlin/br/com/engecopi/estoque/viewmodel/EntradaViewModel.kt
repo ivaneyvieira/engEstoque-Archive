@@ -22,6 +22,10 @@ import java.time.LocalDate
 
 class EntradaViewModel(view: IView, val usuario: Usuario?) :
         CrudViewModel<ItemNota, QItemNota, EntradaVo>(view, EntradaVo::class) {
+  init {
+    Loja.setLojaDefault(usuario?.loja?.numero ?: 0)
+  }
+  
   override fun update(bean: EntradaVo) {
     val nota = updateNota(bean)
     

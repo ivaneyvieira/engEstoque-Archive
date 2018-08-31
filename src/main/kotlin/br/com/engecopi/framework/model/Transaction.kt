@@ -7,6 +7,9 @@ import io.ebean.EbeanServerFactory
 import io.ebean.Query
 import io.ebean.SqlQuery
 import io.ebean.SqlUpdate
+import java.sql.ResultSet
+
+
 
 object Transaction {
   
@@ -38,6 +41,14 @@ object Transaction {
     if (inTransaction())
       Ebean.commitTransaction()
     Ebean.beginTransaction()
+  }
+  
+  fun variable(name : String, value : String) {
+    Ebean.currentTransaction()?.connection?.let { con ->
+      val stmt = con.createStatement()
+      val sql = "SET @$name := $value;"
+      stmt.executeQuery(sql)
+    }
   }
   
   fun rollback() {
