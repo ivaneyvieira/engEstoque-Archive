@@ -105,6 +105,9 @@ class ProdutoVo : EntityVo<Produto>() {
   val produto
     get() = findEntity()
   
+  val saldo
+    get() = entityVo?.recalculaSaldos() ?: 0
+  
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
   var filtroTipo: TipoNota? = null
