@@ -36,8 +36,8 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
-  val isAdmin
-    get() = EstoqueUI.user?.admin ?: false
+  val usuario = EstoqueUI.user!!
+  val isAdmin = usuario.admin ?: false
   
   override fun layoutForm(
           formLayout: VerticalLayout,
@@ -47,7 +47,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
                          ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
-      binder.bean.usuario = EstoqueUI.user
+      binder.bean.usuario = usuario
     }
     formLayout.apply {
       grupo("Nota fiscal de saída") {
@@ -217,6 +217,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
   }
   
   override val viewModel
-    get() = SaidaViewModel(this, EstoqueUI.user!!)
+    get() = SaidaViewModel(this, usuario)
 }
 
