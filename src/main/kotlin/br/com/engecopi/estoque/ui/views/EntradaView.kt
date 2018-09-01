@@ -36,7 +36,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   val lojaDefault
     get() = EstoqueUI.loja
   val usuario = EstoqueUI.user!!
-  val isAdmin= usuario?.admin ?: false
+  val isAdmin= usuario.admin
   
   override fun layoutForm(
           formLayout: VerticalLayout,
