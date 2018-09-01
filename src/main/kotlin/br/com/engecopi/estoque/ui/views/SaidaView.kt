@@ -167,8 +167,8 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           button.isEnabled = impresso == false || isAdmin
           button.icon = VaadinIcons.PRINT
           button.addClickListener {
-            val impresso = item?.entityVo?.impresso ?: true
-            it.button.isEnabled = impresso == false || isAdmin
+            val print = item?.entityVo?.impresso ?: true
+            it.button.isEnabled = print == false || isAdmin
             refreshGrid()
           }
           button
@@ -217,6 +217,6 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
   }
   
   override val viewModel
-    get() = SaidaViewModel(this, EstoqueUI.user)
+    get() = SaidaViewModel(this, EstoqueUI.user!!)
 }
 

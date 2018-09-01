@@ -14,11 +14,11 @@ import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 
-class ProdutoViewModel(view: IView, val usuario: Usuario?) :
+class ProdutoViewModel(view: IView, val usuario: Usuario) :
         CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
   
   init {
-    Loja.setLojaDefault(usuario?.loja?.numero ?: 0)
+    Loja.setLojaDefault(usuario.loja?.numero ?: 0)
   }
   
   override fun update(bean: ProdutoVo) {
@@ -45,7 +45,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   }
   
   fun QProduto.filtroUsuario(): QProduto {
-    return usuario?.let { u ->
+    return usuario.let { u ->
       if (u.admin || u.localizacaoes.isEmpty())
         this
       else
@@ -60,7 +60,6 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
   override val query: QProduto
     get() = Produto
             .where()
-            .fetch("viewProdutoLoc")
             .filtroUsuario()
   
   override fun Produto.toVO(): ProdutoVo {
@@ -69,7 +68,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
       entityVo = produto
       codigoProduto = produto.codigo.trim()
       gradeProduto = produto.grade
-      lojaDefault = usuario?.loja
+      lojaDefault = usuario.loja
     }
   }
   
@@ -78,7 +77,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario?) :
             .codebar.eq(text)
             .vproduto.nome.contains(text)
             .grade.contains(text)
-            .viewProdutoLoc.localizacao.contains(text)
+            .localizacao.contains(text)
   }
 }
 
@@ -92,7 +91,7 @@ class ProdutoVo : EntityVo<Produto>() {
   var gradeProduto: String? = ""
   
   val descricaoProduto: String?
-    get() = Produto.findProduto(codigoProduto, gradeProduto)?.descricao
+    get() = produto?.descricao
   
   val descricaoProdutoSaci: String?
     get() = ViewProdutoSaci.find(codigoProduto).firstOrNull()?.nome
@@ -101,15 +100,15 @@ class ProdutoVo : EntityVo<Produto>() {
     get() = ViewProdutoSaci.find(codigoProduto).mapNotNull { it.grade }
   
   val codebar: String?
-    get() = Produto.findProduto(codigoProduto, gradeProduto)?.codebar ?: ""
+    get() = produto?.codebar ?: ""
   
   val localizacao get() = produto?.localizacao ?: ""
   
   val produto
-    get() = findEntity()
+    get() = toEntity()
   
   val saldo
-    get() = entityVo?.saldo_total ?: 0
+    get() = produto?.saldo_total ?: 0
   
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null

@@ -43,11 +43,11 @@ class Produto : BaseModel() {
   @OneToMany(mappedBy = "produto", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(select = "LOC.localizacao",
-           join = "join (select produto_id, localizacao from v_loc_produtos where storeno = @${Loja.LOJA_DEFAULT_FIELD} group by produto_id) " +
+           join = "LEFT join (select produto_id, localizacao from v_loc_produtos where storeno = @${Loja.LOJA_DEFAULT_FIELD} group by produto_id) " +
                   "AS LOC ON LOC.produto_id = \${ta}.id")
-  var localizacao: String = ""
+  var localizacao: String? = ""
   @Formula(select = "SAL.saldo_total",
-           join = "JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total\n" +
+           join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total\n" +
                   "from itens_nota AS I\n" +
                   "  inner join notas AS N\n" +
                   "    ON N.id = I.nota_id\n" +
@@ -55,7 +55,7 @@ class Produto : BaseModel() {
                   "    ON L.id = N.loja_id\n" +
                   "WHERE L.numero = @${Loja.LOJA_DEFAULT_FIELD} \n" +
                   "group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id")
-  var saldo_total: Int = 0
+  var saldo_total: Int? = 0
   
   val descricao: String?
     @Transient

@@ -20,10 +20,10 @@ import br.com.engecopi.saci.beans.NotaEntradaSaci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class EntradaViewModel(view: IView, val usuario: Usuario?) :
+class EntradaViewModel(view: IView, val usuario: Usuario) :
         CrudViewModel<ItemNota, QItemNota, EntradaVo>(view, EntradaVo::class) {
   init {
-    Loja.setLojaDefault(usuario?.loja?.numero ?: 0)
+    Loja.setLojaDefault(usuario.loja?.numero ?: 0)
   }
   
   override fun update(bean: EntradaVo) {
@@ -152,7 +152,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
               .fetch("produto.vproduto")
               .fetch("produto.viewProdutoLoc")
               .nota.tipoMov.eq(ENTRADA)
-      return usuario?.let { u ->
+      return usuario.let { u ->
         val loja = u.loja
         query.let { q ->
           if (loja == null) q
@@ -188,7 +188,7 @@ class EntradaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun QItemNota.filterString(text: String): QItemNota {
-    val idUser = this@EntradaViewModel.usuario?.loja?.id
+    val idUser = this@EntradaViewModel.usuario.loja?.id
     return nota.numero.eq(text)
             .and()
             .produto.viewProdutoLoc.localizacao.contains(text)

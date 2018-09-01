@@ -162,8 +162,8 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
           button.isEnabled = impresso == false || isAdmin
           button.icon = VaadinIcons.PRINT
           button.addClickListener {
-            val impresso = item?.entityVo?.impresso ?: true
-            it.button.isEnabled = impresso == false || isAdmin
+            val print = item?.entityVo?.impresso ?: true
+            it.button.isEnabled = print == false || isAdmin
             refreshGrid()
           }
           
@@ -214,7 +214,7 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
   }
   
   override val viewModel: EntradaViewModel
-    get() = EntradaViewModel(this, EstoqueUI.user)
+    get() = EntradaViewModel(this, EstoqueUI.user!!)
 }
 
 

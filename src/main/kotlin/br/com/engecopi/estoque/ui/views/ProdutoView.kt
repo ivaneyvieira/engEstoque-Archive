@@ -173,14 +173,16 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         column(ProdutoVo::saldo) {
           expandRatio = 1
           caption = "Saldo"
-          setSortProperty("saldo")
+          setSortProperty("saldo_total")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
         }
       }
     }
   }
   
   override val viewModel: ProdutoViewModel
-    get() = ProdutoViewModel(this, EstoqueUI.user)
+    get() = ProdutoViewModel(this, EstoqueUI.user!!)
 }
 
 

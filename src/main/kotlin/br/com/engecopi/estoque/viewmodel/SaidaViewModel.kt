@@ -18,10 +18,10 @@ import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 
-class SaidaViewModel(view: IView, val usuario: Usuario?) :
+class SaidaViewModel(view: IView, val usuario: Usuario) :
         CrudViewModel<ItemNota, QItemNota, SaidaVo>(view, SaidaVo::class) {
   init {
-    Loja.setLojaDefault(usuario?.loja?.numero ?: 0)
+    Loja.setLojaDefault(usuario.loja?.numero ?: 0)
   }
   
   override fun update(bean: SaidaVo) {
@@ -152,7 +152,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
               .fetch("produto.vproduto")
               .fetch("produto.viewProdutoLoc")
               .nota.tipoMov.eq(SAIDA)
-      return usuario?.let { u ->
+      return usuario.let { u ->
         val loja = u.loja
         query.let { q ->
           if (loja == null) q
@@ -189,7 +189,7 @@ class SaidaViewModel(view: IView, val usuario: Usuario?) :
   }
   
   override fun QItemNota.filterString(text: String): QItemNota {
-    val idUser = this@SaidaViewModel.usuario?.loja?.id
+    val idUser = this@SaidaViewModel.usuario.loja?.id
     return nota.numero.eq(text)
             .and()
             .produto.viewProdutoLoc.localizacao.contains(text)
