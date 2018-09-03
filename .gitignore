@@ -8,3 +8,5 @@ classes
 out
 bin
 deploy.sh
+widgetsets/
+gwt-unitCache/
