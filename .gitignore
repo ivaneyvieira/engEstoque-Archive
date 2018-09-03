@@ -8,5 +8,5 @@ classes
 out
 bin
 deploy.sh
-widgetsets/
-gwt-unitCache/
+src/main/webapp/VAADIN/widgetsets
+src/main/webapp/VAADIN/gwt-unitCache
