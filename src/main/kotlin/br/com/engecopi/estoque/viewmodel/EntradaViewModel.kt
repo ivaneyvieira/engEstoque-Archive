@@ -264,10 +264,28 @@ class EntradaVo : EntityVo<ItemNota>() {
   val itemNota
     get() = toEntity()
   val produtos = ArrayList<ProdutoVOEntrada>()
+  var produto: Produto? = null
+    set(value) {
+      field = value
+      quantProduto = toEntity()?.quantidade ?: notaEntradaSaci.firstOrNull { neSaci ->
+        (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
+      }?.quant ?: 0
+    }
+  val descricaoProduto: String
+    get() = produto?.descricao ?: ""
+  val codigo: String
+    get() = produto?.codigo ?: ""
+  val grade: String
+    get() = produto?.grade ?: ""
+  var quantProduto: Int? = 0
+  val saldo: Int
+    get() = produto?.saldoLoja(lojaNF) ?: 0
+  val localizacao
+    get() = produto?.localizacao(lojaNF)
 }
 
 class ProdutoVOEntrada {
-  var nota : Nota? = null
+  var nota: Nota? = null
   var codigo: String = ""
   var descricao: String = ""
   var grade: String = ""
