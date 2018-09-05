@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel

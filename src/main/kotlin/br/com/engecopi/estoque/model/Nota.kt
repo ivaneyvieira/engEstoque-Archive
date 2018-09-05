@@ -108,7 +108,9 @@ class Nota : BaseModel() {
       return saci.findNotaSaida(lojaNF.numero, numero, serie)
     }
     
-    fun existNumero(nota: Nota, produto : Produto): Boolean {
+    fun existNumero(nota: Nota?, produto : Produto?): Boolean {
+      nota ?: return false
+      produto ?: return false
       return ItemNota.where().nota.loja.id.eq(nota.loja?.id)
                      .nota.numero.eq(nota.numero)
                      .nota.tipoMov.eq(nota.tipoMov)

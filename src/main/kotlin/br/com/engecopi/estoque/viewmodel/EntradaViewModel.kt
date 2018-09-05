@@ -36,39 +36,38 @@ class EntradaViewModel(view: IView, val usuario: Usuario) : CrudViewModel<ItemNo
 
   override fun add(bean: EntradaVo) {
     val nota = insertNota(bean)
-    val notasSaci = bean.notaEntradaSaci
+    val produtos = bean.produtos
     val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
-    if (notasSaci.isEmpty()) {
+    if (bean.notaEntradaSaci == null) {
       val produto = saveProduto(bean.produto)
       insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario)
     }
     else {
-      notasSaci.forEach { notaSaci ->
-        val produto = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        produto?.let {
-          if (usuario.temProduto(produto)) insertItemNota(nota, produto, notaSaci.quant ?: 0, usuario)
+      produtos.filter { it.selecionado }.forEach { produto ->
+        produto.let {prd->
+          if (usuario.temProduto(prd.produto)) insertItemNota(nota, prd.produto, prd.quantidade, usuario)
         }
       }
     }
   }
 
   private fun insertItemNota(
-          nota: Nota, produto: Produto, quantProduto: Int, usuario: Usuario
+          nota: Nota, produto: Produto?, quantProduto: Int, usuario: Usuario
   ): ItemNota? {
     return if (quantProduto != 0) {
       if (Nota.existNumero(nota, produto)) {
-        view.showWarning("O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}.")
+        view.showWarning("O produto ${produto?.codigo} - ${produto?.descricao}. Já foi inserido na nota ${nota.numero}.")
         null
       }
       else {
-        val item = ItemNota.find(nota, produto) ?: ItemNota()
+        val item =  ItemNota()
         item.apply {
           this.nota = nota
           this.produto = produto
           this.quantidade = quantProduto
           this.usuario = usuario
         }
-        item.save()
+        item.insert()
         item.produto?.recalculaSaldos()
         item
       }
@@ -92,7 +91,6 @@ class EntradaViewModel(view: IView, val usuario: Usuario) : CrudViewModel<ItemNo
 
   private fun saveProduto(produto: Produto?): Produto {
     produto ?: throw EViewModel("Produto não encontrado no saci")
-
     return produto.apply {
       save()
     }
@@ -224,33 +222,51 @@ class EntradaVo : EntityVo<ItemNota>() {
       }
     }
   var tipoNota: TipoNota = OUTROS_E
+  val temGrid
+    get() = (tipoNota != OUTROS_E) && (entityVo == null)
+  val naoTemGrid
+    get() = !temGrid
   var rota: String? = ""
-  val notaEntradaSaci: List<NotaEntradaSaci>
+  private val notaEntradaProdutoSaci: List<NotaEntradaSaci>
     get() = if (entityVo == null) Nota.findNotaEntradaSaci(numeroNF, lojaNF)
     else emptyList()
+  val notaEntradaSaci
+    get() = notaEntradaProdutoSaci.firstOrNull()
   val notaEntrada: Nota?
     get() = entityVo?.nota ?: Nota.findEntrada(numeroNF, lojaNF)
 
   fun atualizaNota() {
     if (entityVo == null) {
-      notaEntradaSaci.firstOrNull()?.let { nota ->
+      val nota = notaEntradaSaci?.let { nota ->
         tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
         rota = nota.rota
       }
+      if(nota == null){
+        tipoNota = OUTROS_E
+        rota = ""
+      }
+      produtos.addAll( notaEntradaProdutoSaci.mapNotNull { notaSaci ->
+        val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+        if (usuario?.temProduto(prd) == true) ProdutoVOEntrada().apply {
+          this.codigo = prd?.codigo ?: ""
+          this.grade = prd?.grade ?: ""
+          this.quantidade = notaSaci.quant ?: 0
+        }
+        else null
+      })
     }
   }
-
   val dataNota: LocalDate
-    get() = toEntity()?.dataNota ?: notaEntradaSaci.firstOrNull()?.date?.localDate() ?: LocalDate.now()
+    get() = toEntity()?.dataNota ?: notaEntradaSaci?.date?.localDate() ?: LocalDate.now()
   val numeroInterno: Int
-    get() = if (entityVo == null) notaEntradaSaci.firstOrNull()?.invno ?: 0
+    get() = if (entityVo == null) notaEntradaSaci?.invno ?: 0
     else 0
   val fornecedor: String
-    get() = entityVo?.nota?.fornecedor ?: notaEntradaSaci.firstOrNull()?.vendName ?: ""
+    get() = entityVo?.nota?.fornecedor ?: notaEntradaSaci?.vendName ?: ""
   var observacaoNota: String? = ""
   val produtoNota: List<Produto>
     get() {
-      val nota = notaEntradaSaci
+      val nota = notaEntradaProdutoSaci
       val produtos = if (nota.isNotEmpty()) nota.mapNotNull { notaSaci ->
         Produto.findProduto(notaSaci.prdno, notaSaci.grade)
       }.filter { produto ->
@@ -267,7 +283,7 @@ class EntradaVo : EntityVo<ItemNota>() {
   var produto: Produto? = null
     set(value) {
       field = value
-      quantProduto = toEntity()?.quantidade ?: notaEntradaSaci.firstOrNull { neSaci ->
+      quantProduto = toEntity()?.quantidade ?: notaEntradaProdutoSaci.firstOrNull { neSaci ->
         (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
       }?.quant ?: 0
     }
@@ -285,19 +301,12 @@ class EntradaVo : EntityVo<ItemNota>() {
 }
 
 class ProdutoVOEntrada {
-  var nota: Nota? = null
   var codigo: String = ""
-  var descricao: String = ""
   var grade: String = ""
   var quantidade: Int = 0
-  var selecionado: Boolean = true
+  var selecionado: Boolean = false
   val produto: Produto?
     get() = Produto.findProduto(codigo, grade)
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
-  var quantProduto: Int? = 0
-  val saldo: Int
-    get() = produto?.saldoLoja(nota?.loja) ?: 0
-  val localizacao
-    get() = produto?.localizacao(nota?.loja)
 }

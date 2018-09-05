@@ -13,6 +13,7 @@ import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.w
+import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
@@ -57,50 +58,45 @@ import kotlin.streams.toList
 
 abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   abstract val viewModel: V
-  
+
   fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit = {}) {
     isMargin = true
     setSizeFull()
     title(titleForm)
     this.block()
   }
-  
+
   override fun enter(event: ViewChangeEvent) {
     updateView(viewModel)
   }
-  
+
   fun <T> Grid<T>.actionSelected(msgErro: String = "Selecione um item", action: (T) -> Unit) {
     this.selectedItems.firstOrNull()?.let { item -> action(item) } ?: showWarning(msgErro)
   }
-  
+
   override fun showWarning(msg: String) {
-    if (msg.isNotBlank())
-      MessageDialog.warning(message = msg)
+    if (msg.isNotBlank()) MessageDialog.warning(message = msg)
   }
-  
+
   override fun showError(msg: String) {
-    if (msg.isNotBlank())
-      MessageDialog.error(message = msg)
+    if (msg.isNotBlank()) MessageDialog.error(message = msg)
   }
-  
+
   override fun showInfo(msg: String) {
-    if (msg.isNotBlank())
-      MessageDialog.info(message = msg)
+    if (msg.isNotBlank()) MessageDialog.info(message = msg)
   }
-  
+
   open fun print(text: () -> String): BrowserWindowOpener {
     val resource =
-            StreamResource({ IOUtils.toInputStream(text()) },
-                           "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
+            StreamResource({ IOUtils.toInputStream(text()) }, "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
     resource.mimeType = "text/plain"
     return BrowserWindowOpener(resource)
   }
 }
 
 fun <T> ComboBox<T>.default(
-        valueEmpty: T? = null,
-        captionGenerator: (T) -> String = { it.toString() }
-                           ) {
+        valueEmpty: T? = null, captionGenerator: (T) -> String = { it.toString() }
+) {
   isEmptySelectionAllowed = false
   isTextInputAllowed = false
   valueEmpty?.let {
@@ -111,68 +107,59 @@ fun <T> ComboBox<T>.default(
 }
 
 fun <V, T> HasItems<T>.bindItens(
-        binder: Binder<V>,
-        propertyList: KProperty1<V, Collection<T>>
-                                ) {
+        binder: Binder<V>, propertyList: KProperty1<V, Collection<T>>
+) {
   val hasValue = (this as? HasValue<*>)
-  
   val itensOld: List<T>? = (this.dataProvider as? ListDataProvider<T>)?.items?.toList()
-  
+
   bind(binder, propertyList) { itens ->
     val oldValue = hasValue?.value
     if (itensOld != itens) {
-      if (this is ComboBox<T>)
-        setItems({ itemCaption, filterText ->
-                   itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
-                 }, itens)
-      else if (this is TwinColSelect<T>)
-        setItems(itens)
-      else
-        setItems(itens)
+      if (this is ComboBox<T>) setItems({ itemCaption, filterText ->
+                                          itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
+                                        }, itens)
+      else if (this is TwinColSelect<T>) setItems(itens)
+      else setItems(itens)
     }
-    
     @Suppress("UNCHECKED_CAST")
     val contains = itens.contains(oldValue as? T)
-    val value = if (oldValue == null || !contains)
-      null
-    else
-      itens.find { it == oldValue }
-    if (value == null)
-      hasValue?.value = hasValue?.emptyValue
-    else
-      hasValue?.value = value
-    
+    val value = if (oldValue == null || !contains) null
+    else itens.find { it == oldValue }
+    if (value == null) hasValue?.value = hasValue?.emptyValue
+    else hasValue?.value = value
   }
 }
 
 fun <V, T> TwinColSelect<T>.bindItensSet(
-        binder: Binder<V>,
-        propertyList: KProperty1<V, MutableSet<T>>
-                                        ) {
-  
+        binder: Binder<V>, propertyList: KProperty1<V, MutableSet<T>>
+) {
   bind(binder, propertyList) { itens ->
     value = emptySet()
     setItems(itens)
-    
   }
 }
 
 fun <BEAN> HasValue<*>.bindReadOnly(
-        binder: Binder<BEAN>,
-        property: KProperty1<BEAN, Boolean>,
-        block: (Boolean) -> Unit = {}
-                                   ) {
+        binder: Binder<BEAN>, property: KProperty1<BEAN, Boolean>, block: (Boolean) -> Unit = {}
+) {
   bind(binder, property) { readOnly ->
     isReadOnly = readOnly
     block(readOnly)
   }
 }
 
+fun <BEAN> Component.bindVisible(
+        binder: Binder<BEAN>, property: KProperty1<BEAN, Boolean>, block: (Boolean) -> Unit = {}
+) {
+  bind(binder, property) { visible ->
+    isVisible = visible
+    block(visible)
+  }
+}
+
 fun <BEAN> Component.bindCaption(
-        binder: Binder<BEAN>,
-        property: KProperty1<BEAN, String>,
-        block: (String) -> Unit = {}
-                                ) {
+        binder: Binder<BEAN>, property: KProperty1<BEAN, String>, block: (String) -> Unit = {}
+) {
   bind(binder, property) {
     caption = it
     block(it)
@@ -180,10 +167,8 @@ fun <BEAN> Component.bindCaption(
 }
 
 private fun <BEAN, FIELDVALUE> bind(
-        binder: Binder<BEAN>,
-        property: KProperty1<BEAN, FIELDVALUE>,
-        blockBinder: (FIELDVALUE) -> Unit
-                                   ): Binding<BEAN, FIELDVALUE> {
+        binder: Binder<BEAN>, property: KProperty1<BEAN, FIELDVALUE>, blockBinder: (FIELDVALUE) -> Unit
+): Binding<BEAN, FIELDVALUE> {
   val field = ReadOnlyHasValue<FIELDVALUE> { itens -> blockBinder(itens) }
   return field.bind(binder).bind(property.name)
 }
@@ -194,14 +179,13 @@ fun Binder<*>.reload() {
 
 inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(
         binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
-                                                                                     ) {
+) {
   addValueChangeListener { event ->
     if (event.isUserOriginated && (event.oldValue != event.value)) {
-      
       val bean = binder.bean
       if (propertys.isEmpty()) {
-        val bindings = BEAN::class.declaredMemberProperties
-                .mapNotNull { prop -> binder.getBinding(prop.name).orElse(null) }
+        val bindings =
+                BEAN::class.declaredMemberProperties.mapNotNull { prop -> binder.getBinding(prop.name).orElse(null) }
         binder.fields.toList().mapNotNull { field ->
           bindings.find { binding ->
             binding.field == field && binding.field != this
@@ -219,7 +203,7 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
 
 fun <BEAN> reloadPropertys(
         binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
-                          ) {
+) {
   val bean = binder.bean
   propertys.forEach { prop ->
     binder.getBinding(prop.name).ifPresent { binding ->
@@ -278,8 +262,7 @@ fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -
 
 inline fun <reified T : Enum<*>> HasComponents.enumSelect(
         caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}
-                                                         ) =
-        init(EnumSelect<T>(caption, T::class.java), block)
+) = init(EnumSelect<T>(caption, T::class.java), block)
 
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
@@ -288,11 +271,12 @@ fun HasComponents.title(title: String) = label(title) {
 
 //FilterGrid
 fun <T : Any> (@VaadinDsl HasComponents).filterGrid(
-        itemClass: KClass<T>? = null, caption: String? = null, dataProvider: DataProvider<T, *>? = null,
+        itemClass: KClass<T>? = null,
+        caption: String? = null,
+        dataProvider: DataProvider<T, *>? = null,
         block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}
-                                                   ) =
-        init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
-          this.caption = caption
-          if (dataProvider != null) this.dataProvider = dataProvider
-          block()
-        }
+) = init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
+  this.caption = caption
+  if (dataProvider != null) this.dataProvider = dataProvider
+  block()
+}
