@@ -82,9 +82,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
       }
       row {
         twinColSelect<String>("Localizações") {
-          //value = emptySet()
-          
-          bindItensSet(binder, UsuarioCrudVo::locaisLoja)
+          bindItensSet(binder, UsuarioCrudVo::locaisLoja.name)
           bind(binder).bind(UsuarioCrudVo::localizacaoes)
         }
       }

@@ -3,10 +3,8 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
-import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.model.BaseModel
-import br.com.engecopi.saci.beans.NotaEntradaSaci
-import br.com.engecopi.saci.beans.NotaSaidaSaci
+import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
@@ -15,7 +13,6 @@ import java.time.LocalTime
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
-import javax.persistence.CascadeType.REMOVE
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -92,7 +89,7 @@ class Nota : BaseModel() {
       return numMax + 1
     }
     
-    fun findNotaEntradaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaEntradaSaci> {
+    fun findNotaEntradaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
@@ -100,7 +97,7 @@ class Nota : BaseModel() {
       return saci.findNotaEntrada(lojaNF.numero, numero, serie)
     }
     
-    fun findNotaSaidaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaidaSaci> {
+    fun findNotaSaidaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()

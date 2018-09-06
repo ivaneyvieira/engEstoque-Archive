@@ -75,7 +75,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             caption = "Grade"
             default { it }
             bind(binder).bind(ProdutoVo::gradeProduto)
-            bindItens(binder, ProdutoVo::grades)
+            bindItens(binder, "grades")
             reloadBinderOnChange(binder)
           }
         }
@@ -139,7 +139,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               setRenderer(NumberRenderer(DecimalFormat("0")))
               align = VAlign.Right
             }
-            bindItens(binder, ProdutoVo::itensNota)
+            bindItens(binder, "itensNota")
           }
         }
       }

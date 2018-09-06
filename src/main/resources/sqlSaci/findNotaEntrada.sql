@@ -1,6 +1,6 @@
 select P.invno, N.storeno, nfname as numero, invse as serie,
   CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.date, P.prdno as prdno,
-  P.grade, P.qtty/1000 as quant, P.cost/10000 as custo, V.name as vendName,
+  P.grade, P.qtty/1000 as quant,  V.name as vendName,
   CASE
     WHEN invse = '66' then 'ACERTO_E'
     WHEN type = 0 then "COMPRA"
@@ -30,7 +30,7 @@ where N.storeno = :storeno
 UNION
 select 0 as invno, N.storeno, ordno as numero, '' as serie,
   '' as rota, N.date, P.prdno as prdno,
-  P.grade, P.qtty/1000 as quant, 0/10000 as custo, C.name as vendName,
+  P.grade, P.qtty/1000 as quant, C.name as vendName,
   'PEDIDO_E' AS tipo, L.localizacao
 from sqldados.eord AS N
   inner join sqldados.eoprd AS P

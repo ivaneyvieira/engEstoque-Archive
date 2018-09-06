@@ -3,12 +3,10 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
-import br.com.engecopi.estoque.viewmodel.ProdutoVOEntrada
-import br.com.engecopi.estoque.viewmodel.ProdutoVo
+import br.com.engecopi.estoque.viewmodel.ProdutoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindVisible
@@ -20,23 +18,22 @@ import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.column
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.getAll
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.isMultiSelect
 import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.refresh
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid.SelectionMode.MULTI
+import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
@@ -44,14 +41,9 @@ import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView("")
-class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
-  val lojaDefault
-    get() = EstoqueUI.loja
-  val usuario = EstoqueUI.user!!
-  val isAdmin = usuario.admin
-
+class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
   override fun layoutForm(
-          formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<EntradaVo>, readOnly: Boolean
+    formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<EntradaVo>, readOnly: Boolean
   ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
@@ -60,22 +52,8 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
     formLayout.apply {
       grupo("Nota fiscal de entrada") {
         row {
-          textField("Nota Fiscal") {
-            expandRatio = 2f
-            isReadOnly = operation != ADD
-            bind(binder).bind(EntradaVo::numeroNF)
-            reloadBinderOnChange(binder)
-          }
-          comboBox<Loja>("Loja") {
-            expandRatio = 2f
-            isReadOnly = operation != ADD
-            default { it.sigla }
-
-            setItems(viewModel.findLojas(lojaDefault))
-
-            bind(binder).bind(EntradaVo::lojaNF)
-            reloadBinderOnChange(binder)
-          }
+          notaFiscalField(operation, binder)
+          lojaField(operation, binder)
           comboBox<TipoNota>("Tipo") {
             expandRatio = 2f
             default { it.descricao }
@@ -115,74 +93,12 @@ class EntradaView : CrudLayoutView<EntradaVo, EntradaViewModel>() {
       }
 
       grupo("Produto") {
-        row {
-          this.bindVisible(binder, EntradaVo::naoTemGrid)
-          comboBox<Produto>("Código") {
-            expandRatio = 2f
-            isReadOnly = operation != ADD
-            default { "${it.codigo.trim()} ${it.grade}".trim() }
-            isTextInputAllowed = true
-            bindItens(binder, EntradaVo::produtoNota)
-            bind(binder).bind(EntradaVo::produto)
-            reloadBinderOnChange(binder)
-          }
-          textField("Descrição") {
-            expandRatio = 5f
-            isReadOnly = true
-            bind(binder).bind(EntradaVo::descricaoProduto.name)
-          }
-          textField("Grade") {
-            expandRatio = 1f
-            isReadOnly = true
-            bind(binder).bind(EntradaVo::grade.name)
-          }
-          integerField("Qtd Entrada") {
-            expandRatio = 1f
-            isReadOnly = (isAdmin == false) && (operation != ADD)
-            this.bind(binder).bind(EntradaVo::quantProduto.name)
-          }
-        }
-        row {
-          this.bindVisible(binder, EntradaVo::temGrid)
-
-          grid(ProdutoVOEntrada::class) {
-            expandRatio = 2f
-            this.h = 200.px
-            removeAllColumns()
-            val selectionModel = setSelectionMode(MULTI)
-            selectionModel.addSelectionListener { select ->
-              if (select.isUserOriginated) {
-                this.dataProvider.getAll().forEach {
-                  it.selecionado = false
-                }
-                select.allSelectedItems.forEach {
-                  it.selecionado = true
-                }
-              }
-            }
-            addColumnFor(ProdutoVOEntrada::codigo) {
-              expandRatio = 1
-              caption = "Código"
-            }
-            addColumnFor(ProdutoVOEntrada::descricaoProduto) {
-              expandRatio = 5
-              caption = "Descrição"
-            }
-            addColumnFor(ProdutoVOEntrada::grade) {
-              expandRatio = 1
-              caption = "Grade"
-            }
-            addColumnFor(ProdutoVOEntrada::quantidade) {
-              expandRatio = 1
-              caption = "Qtd Entrada"
-            }
-            bindItens(binder, EntradaVo::produtos)
-          }
-        }
+        produtoField( operation, binder, "Entrada")
       }
     }
     if (!isAdmin && operation == UPDATE) binder.setReadOnly(true)
   }
+
 
   init {
     form("Entrada de produtos") {

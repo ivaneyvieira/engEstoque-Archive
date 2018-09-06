@@ -33,18 +33,13 @@ import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView
-class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
-  val lojaDefault
-    get() = EstoqueUI.loja
-  val usuario = EstoqueUI.user!!
-  val isAdmin = usuario.admin
-  
+class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
   override fun layoutForm(
-          formLayout: VerticalLayout,
-          operation: CrudOperation?,
-          binder: Binder<SaidaVo>,
-          readOnly: Boolean
-                         ) {
+    formLayout: VerticalLayout,
+    operation: CrudOperation?,
+    binder: Binder<SaidaVo>,
+    readOnly: Boolean
+  ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
       binder.bean.usuario = usuario
@@ -53,20 +48,8 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
       grupo("Nota fiscal de saída") {
         verticalLayout {
           row {
-            textField("Nota fiscal") {
-              expandRatio = 2f
-              isReadOnly = operation != ADD
-              bind(binder).bind(SaidaVo::numeroNota)
-              reloadBinderOnChange(binder)
-            }
-            comboBox<Loja>("Loja") {
-              expandRatio = 2f
-              default { it.sigla }
-              isReadOnly = operation != ADD
-              setItems(viewModel.findLojas(lojaDefault))
-              bind(binder).asRequired("A loja deve ser informada").bind(SaidaVo::lojaNF)
-              reloadBinderOnChange(binder)
-            }
+            notaFiscalField(operation, binder)
+            lojaField(operation, binder)
             comboBox<TipoNota>("Tipo") {
               expandRatio = 2f
               default { it.descricao }
@@ -77,7 +60,7 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
             dateField("Data") {
               expandRatio = 1f
               isReadOnly = true
-              bind(binder).bind(SaidaVo::dataNF.name)
+              bind(binder).bind(SaidaVo::dataNota.name)
             }
             textField("Rota") {
               expandRatio = 1f
@@ -93,66 +76,20 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           }
         }
       }
-      /*
-      grupo("Código de Barras") {
-        verticalLayout {
-          row {
-            textField() {
-              expandRatio = 1f
-              isReadOnly = operation != ADD
-              bind(binder).bind(SaidaVo::codigoBarra)
-              reloadBinderOnChange(binder)
-            }
-          }
-        }
-      }
-      */
+
       grupo("Produto") {
-        verticalLayout {
-          row {
-            comboBox<Produto>("Código") {
-              expandRatio = 2f
-              default { "${it.codigo} ${it.grade}".trim() }
-              isReadOnly = operation != ADD
-              isTextInputAllowed = true
-              bindItens(binder, SaidaVo::listaProdutos)
-              
-              bind(binder).bind(SaidaVo::produto)
-              reloadBinderOnChange(binder)
-            }
-            textField("Descrição") {
-              expandRatio = 5f
-              isReadOnly = true
-              bind(binder).bind(SaidaVo::descricaoProduto.name)
-            }
-            textField("Grade") {
-              expandRatio = 1f
-              isReadOnly = true
-              bind(binder).bind(SaidaVo::grade.name)
-            }
-            integerField("Qtd. Saída") {
-              expandRatio = 1f
-              
-              bindReadOnly(binder, SaidaVo::quantidadeReadOnly) { quantidadeReadOnly ->
-                isReadOnly = if (operation == ADD) quantidadeReadOnly else true
-              }
-              bind(binder)
-                      .bind(SaidaVo::quantidade)
-              reloadBinderOnChange(binder)
-            }
-          }
-        }
+        produtoField( operation, binder, "Saída")
       }
     }
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
-  
+
   init {
     form("Expedição") {
       gridCrud(viewModel.crudClass.java) {
         addOnly = !isAdmin
-        column(SaidaVo::numeroNota) {
+        column(SaidaVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
@@ -177,12 +114,12 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
-        column(SaidaVo::dataNF) {
+        column(SaidaVo::dataNota) {
           caption = "Data"
           dateFormat()
           setSortProperty("nota.data", "data", "hora")
         }
-        column(SaidaVo::quantidade) {
+        column(SaidaVo::quantProduto) {
           caption = "Quantidade"
           intFormat()
         }
@@ -208,14 +145,14 @@ class SaidaView : CrudLayoutView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::rota) {
           caption = "Rota"
         }
-        column(SaidaVo::clienteName) {
+        column(SaidaVo::cliente) {
           caption = "Cliente"
           setSortProperty("nota.cliente")
         }
       }
     }
   }
-  
+
   override val viewModel
     get() = SaidaViewModel(this, usuario)
 }

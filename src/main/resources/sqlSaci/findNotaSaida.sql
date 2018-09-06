@@ -1,5 +1,5 @@
-select I.storeno as storenoT, CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
-  N.nfno, N.nfse, N.issuedate as date,P.prdno as prdno, P.grade, P.qtty as quant,
+select CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
+  N.nfno as numero, N.nfse as serie, N.issuedate as date,P.prdno as prdno, P.grade, P.qtty as quant,
   C.name as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
@@ -26,7 +26,7 @@ where N.storeno  = :storeno
       AND N.issuedate > DATE_SUB(current_date, INTERVAL 12 MONTH)
       AND N.status <> 1
 UNION
-select DISTINCT  null as storenoT, '' as rota, N.storeno,
+select DISTINCT  '' as rota, N.storeno,
   N.nfno, N.nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
   C.name as clienteName,
   CASE
@@ -46,7 +46,7 @@ where N.storeno  = :storeno
       and N.nfse = :nfse
       and processed = 0
 UNION
-select DISTINCT  null as storenoT, '' as rota, N.storeno,
+select DISTINCT  '' as rota, N.storeno,
   N.ordno as nfno, '' as nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
   C.name as clienteName,
   'PEDIDO_S' AS tipo
