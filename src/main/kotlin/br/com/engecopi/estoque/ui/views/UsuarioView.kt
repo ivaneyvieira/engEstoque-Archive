@@ -27,25 +27,24 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
-  val isAdmin
-    get() = EstoqueUI.user?.admin ?: false
-  
+  val isAdmin = EstoqueUI.user?.admin ?: false
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
-          { query -> viewModel.findProduto(query.offset, query.limit).stream() },
-          { _ -> viewModel.countProduto() }
-                                                               )
-  
+    { query -> viewModel.findProduto(query.offset, query.limit).stream() },
+    { _ -> viewModel.countProduto() }
+  )
+
   override fun layoutForm(
-          formLayout: VerticalLayout,
-          operation: CrudOperation?,
-          binder: Binder<UsuarioCrudVo>,
-          readOnly: Boolean
-                         ) {
+    formLayout: VerticalLayout,
+    operation: CrudOperation?,
+    binder: Binder<UsuarioCrudVo>,
+    readOnly: Boolean
+  ) {
     formLayout.apply {
       row {
         textField {
           expandRatio = 1f
           caption = "Login Saci"
+          isReadOnly = isAdmin == false
           bind(binder).bind(UsuarioCrudVo::loginName)
           addValueChangeListener {
             binder.readBean(binder.bean)
@@ -90,7 +89,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
-  
+
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
