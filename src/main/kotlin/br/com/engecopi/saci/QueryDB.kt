@@ -18,8 +18,8 @@ open class QueryDB(
     ds.jdbcUrl =url
     ds.username=username
     ds.password=password
-    ds.minConnectionsPerPartition = 5
-    ds.maxConnectionsPerPartition = 10
+    ds.minConnectionsPerPartition = 2
+    ds.maxConnectionsPerPartition = 8
     ds.partitionCount = 1
     this.sql2o = Sql2o(ds)
   }
