@@ -29,29 +29,33 @@ class Usuario : BaseModel() {
   var loja: Loja? = null
   @Length(4000)
   var localizacaoes: String = ""
-  @OneToMany(mappedBy = "usuario",
-             cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(
+    mappedBy = "usuario",
+    cascade = [PERSIST, MERGE, REFRESH]
+  )
   val itensNota: List<ItemNota>? = null
-  
   var locais: List<String>
-    get() = localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
+    get() = if (admin)
+      ViewProdutoLoc.allAbreviacoes()
+    else
+      localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
     set(value) {
-      localizacaoes = value.asSequence().sorted().joinToString()
+      if (!admin)
+        localizacaoes = value.asSequence().sorted().joinToString()
     }
-  
+
   fun usuarioSaci() = saci.findUser(loginName)
-  
+
   val nome: String?
     @Transient get() = usuarioSaci()?.name
-  
   @Formula(select = "(login_name = 'ADM' OR login_name = 'YASMINE')")
   var admin: Boolean = false
-  
+
   fun temProduto(produto: Produto?): Boolean {
     if (admin || this.locais.isEmpty()) return true
     return ViewProdutoLoc.exists(loja, produto, locais)
   }
-  
+
   val produtoLoc: List<Produto>
     get() {
       return locais.flatMap { loc ->
@@ -62,13 +66,13 @@ class Usuario : BaseModel() {
                 .map { it.produto }
       }
     }
-  
+
   companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String?): Usuario? {
       if (loginName.isNullOrBlank()) return null
       return where().loginName.eq(loginName).findOne()
     }
-    
+
     fun nomeSaci(value: String): String {
       return saci.findUser(value)?.name ?: ""
     }

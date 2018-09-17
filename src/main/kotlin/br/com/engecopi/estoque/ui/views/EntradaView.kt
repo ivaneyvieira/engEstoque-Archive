@@ -154,6 +154,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
+          setSortProperty("localizacao")
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"

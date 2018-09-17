@@ -47,5 +47,9 @@ class ViewProdutoLoc(
                 && usuario.locais.contains(it.abreviacao)
       }
     }
+
+    fun allAbreviacoes(): List<String> {
+      return viewProdutosLoc.mapNotNull { it.abreviacao }
+    }
   }
 }

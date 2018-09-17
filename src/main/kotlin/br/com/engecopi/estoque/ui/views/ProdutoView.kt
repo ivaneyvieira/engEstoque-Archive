@@ -120,6 +120,10 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               this.isSortable = false
               caption = "Rota"
             }
+            addColumnFor(ItemNota::localizacao) {
+              this.isSortable = false
+              caption = "Local"
+            }
             addColumnFor(ItemNota::quantidadeSaldo) {
               this.isSortable = false
               caption = "Quantidade"

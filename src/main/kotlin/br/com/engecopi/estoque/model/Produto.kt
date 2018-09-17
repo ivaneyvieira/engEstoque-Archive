@@ -132,11 +132,17 @@ class Produto : BaseModel() {
   
   fun ultimaNota(): ItemNota? {
     refresh()
-    return itensNota?.sortedBy { it.id }?.lastOrNull()
+    return itensNota?.asSequence()?.sortedBy { it.id }?.lastOrNull()
   }
   
   fun finItensNota(): List<ItemNota> {
-    return ItemNota.where().produto.id.eq(id).findList()
+    return ItemNota
+            .where().produto.id.eq(id)
+            .orderBy()
+            .localizacao.asc()
+            .nota.data.desc()
+            .id.desc()
+            .findList()
   }
 }
 

@@ -315,7 +315,7 @@ abstract class NotaVo(val tipo: TipoMov, val usuario: Usuario) : EntityVo<ItemNo
   val saldo: Int
     get() = produto?.saldoLoja(lojaNF) ?: 0
   val localizacao
-    get() = produto?.localizacao(usuario)
+    get() = toEntity()?.localizacao ?: ""
 }
 
 class ProdutoVO {

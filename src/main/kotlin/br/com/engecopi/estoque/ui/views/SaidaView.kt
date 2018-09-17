@@ -134,7 +134,8 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           setSortProperty("produto.grade")
         }
         column(SaidaVo::localizacao) {
-          caption = "Localização"
+          caption = "Local"
+          setSortProperty("localizacao")
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"
