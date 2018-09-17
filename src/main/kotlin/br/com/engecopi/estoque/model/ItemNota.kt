@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Index
+import io.ebean.annotation.Length
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -37,9 +38,8 @@ class ItemNota : BaseModel() {
   var usuario: Usuario? = null
   var saldo: Int? = 0
   var impresso : Boolean = false
-  
-  val localizacao
-    get() = ViewProdutoLoc.find(nota?.loja, produto)?.localizacao ?: ""
+  @Length(60)
+  var localizacao : String=""
   
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade

@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
+import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
 import io.ebean.annotation.Cache
@@ -61,13 +62,14 @@ class Produto : BaseModel() {
     @Transient
     get() = vproduto?.nome
   
-  fun localizacao(loja: Loja? = null): String? {
+  fun localizacao(usuario: Usuario): String? {
+    val loja = usuario.loja
     val locs = if (loja == null)
       viewProdutoLoc
     else
-      listOf(ViewProdutoLoc.find(loja, this))
+      listOf(ViewProdutoLoc.find(usuario, this))
     
-    return locs.orEmpty().filterNotNull().joinToString { it.localizacao }
+    return locs.orEmpty().asSequence().filterNotNull().joinToString { it.localizacao }
   }
   
   @Transactional

@@ -13,37 +13,38 @@ import javax.persistence.OneToOne
 @Entity
 @View(name = "v_loc_produtos")
 class ViewProdutoLoc(
-        @Id
-        val id: String,
-        val storeno: Int,
-        val codigo: String,
-        val grade: String,
-        val localizacao: String,
-        val abreviacao : String,
-        @ManyToOne(cascade = [])
-        @JoinColumn(name = "produto_id")
-        val produto: Produto,
-        @OneToOne(cascade = [])
-        @JoinColumn(name = "loja_id")
-        val loja: Loja
-                    ) {
-  
+  @Id
+  val id: String,
+  val storeno: Int,
+  val codigo: String,
+  val grade: String,
+  val localizacao: String,
+  val abreviacao: String,
+  @ManyToOne(cascade = [])
+  @JoinColumn(name = "produto_id")
+  val produto: Produto,
+  @OneToOne(cascade = [])
+  @JoinColumn(name = "loja_id")
+  val loja: Loja
+) {
   companion object Find : ViewProdutoLocFinder() {
-    
     fun exists(loja: Loja?, produto: Produto?, locs: List<String>): Boolean {
       loja ?: return false
       produto ?: return false
       return where().loja.id.eq(loja.id)
               .produto.id.eq(produto.id)
-              .or().abreviacao.isIn(locs).localizacao.isIn(locs).endOr()
-              .findOne() != null
+              .or().abreviacao.isIn(locs)
+              .localizacao.isIn(locs)
+              .endOr()
+              .findCount() > 0
     }
-  
-    fun find(loja: Loja?, produto: Produto?): ViewProdutoLoc? {
-      loja ?: return null
+
+    fun find(usuario: Usuario, produto: Produto?): ViewProdutoLoc? {
+      val loja = usuario.loja ?: return null
       produto ?: return null
       return viewProdutosLoc.firstOrNull {
         it.loja.id == loja.id && it.produto.id == produto.id
+                && usuario.locais.contains(it.abreviacao)
       }
     }
   }

@@ -34,9 +34,9 @@ class Usuario : BaseModel() {
   val itensNota: List<ItemNota>? = null
   
   var locais: List<String>
-    get() = localizacaoes.split(",").filter { it.isNotBlank() }.map { it.trim() }.toList()
+    get() = localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
     set(value) {
-      localizacaoes = value.sorted().joinToString()
+      localizacaoes = value.asSequence().sorted().joinToString()
     }
   
   fun usuarioSaci() = saci.findUser(loginName)
