@@ -68,13 +68,14 @@ class ItemNota : BaseModel() {
   val dataNota: LocalDate?
     @Transient get() = nota?.data
   
-  val ultilmaMovimentacao: Boolean
+/*  val ultilmaMovimentacao: Boolean
     @Transient
     get() {
       return produto?.ultimaNota()?.let {
         it.id == this.id
       } ?: true
     }
+    */
   val template: String
     @Transient get() = Etiqueta.where().tipoMov.eq(tipoMov).findOne()?.template ?: ""
   

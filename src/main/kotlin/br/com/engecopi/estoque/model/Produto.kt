@@ -43,59 +43,63 @@ class Produto : BaseModel() {
   @FetchPreference(2)
   @OneToMany(mappedBy = "produto", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
-  @Formula(select = "LOC.localizacao",
-           join = "LEFT join (select produto_id, localizacao from v_loc_produtos where storeno = @${Loja.LOJA_DEFAULT_FIELD} group by produto_id) " +
-                  "AS LOC ON LOC.produto_id = \${ta}.id")
+  @Formula(
+    select = "LOC.localizacao",
+    join = "LEFT join (select produto_id, localizacao from v_loc_produtos where storeno = @${Loja.LOJA_DEFAULT_FIELD} group by produto_id) " +
+            "AS LOC ON LOC.produto_id = \${ta}.id"
+  )
   var localizacao: String? = ""
-  @Formula(select = "SAL.saldo_total",
-           join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total\n" +
-                  "from itens_nota AS I\n" +
-                  "  inner join notas AS N\n" +
-                  "    ON N.id = I.nota_id\n" +
-                  "  inner join lojas AS L\n" +
-                  "    ON L.id = N.loja_id\n" +
-                  "WHERE L.numero = @${Loja.LOJA_DEFAULT_FIELD} \n" +
-                  "group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id")
+  @Formula(
+    select = "SAL.saldo_total",
+    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total\n" +
+            "from itens_nota AS I\n" +
+            "  inner join notas AS N\n" +
+            "    ON N.id = I.nota_id\n" +
+            "  inner join lojas AS L\n" +
+            "    ON L.id = N.loja_id\n" +
+            "WHERE L.numero = @${Loja.LOJA_DEFAULT_FIELD} \n" +
+            "group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
+  )
   var saldo_total: Int? = 0
-  
   val descricao: String?
     @Transient
     get() = vproduto?.nome
-  
+
   fun localizacao(usuario: Usuario): String? {
     val loja = usuario.loja
     val locs = if (loja == null)
       viewProdutoLoc
     else
       listOf(ViewProdutoLoc.find(usuario, this))
-    
+
     return locs.orEmpty().asSequence().filterNotNull().joinToString { it.localizacao }
   }
-  
+
   @Transactional
-  fun recalculaSaldos(): Int {
-    var saldo = 0
+  fun recalculaSaldos() {
+    var mapSaldos = HashMap<String, Int>()
     refresh()
     itensNota?.sortedWith(compareBy(ItemNota::data, ItemNota::id))?.forEach { item ->
+      var saldo = mapSaldos[item.localizacao] ?: 0
       item.refresh()
       saldo += item.quantidadeSaldo
       item.saldo = saldo
       item.update()
+      mapSaldos[item.localizacao] = saldo
     }
-    return saldo
   }
-  
+
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
       codigo ?: return null
       return where().codigo.eq(codigo.lpad(16, " ")).grade.eq(grade ?: "").findOne()
     }
-    
+
     fun findProdutos(codigo: String?): List<Produto> {
       codigo ?: return emptyList()
       return where().codigo.eq(codigo.lpad(16, " ")).findList()
     }
-    
+
     fun createProduto(produtoSaci: ViewProdutoSaci?): Produto? {
       produtoSaci ?: return null
       return Produto().apply {
@@ -106,22 +110,29 @@ class Produto : BaseModel() {
         }
       }
     }
-    
+
     fun createProduto(codigoProduto: String?, gradeProduto: String?): Produto? {
       val produtoSaci = ViewProdutoSaci.find(codigoProduto, gradeProduto)
       return createProduto(produtoSaci)
     }
   }
-  
-  fun saldoLoja(loja: Loja?): Int {
+
+  fun saldoLoja(loja: Loja?, localizacao: String): Int {
     loja ?: return 0
+
     refresh()
-    return itensNota.orEmpty().filter { it.nota?.loja?.id == loja.id }.sumBy { item ->
-      val multiplicador = item.nota?.tipoMov?.multiplicador ?: 0
-      multiplicador * item.quantidade
-    }
+    return itensNota
+            .orEmpty().asSequence()
+            .filter {
+              (it.nota?.loja?.id == loja.id) && (it.localizacao == localizacao)
+            }
+            .sumBy { item ->
+              val multiplicador = item.nota?.tipoMov?.multiplicador ?: 0
+              multiplicador * item.quantidade
+            }
   }
-  
+
+  /*
   fun saldoTotal(): Int {
     refresh()
     return itensNota.orEmpty().sumBy { item ->
@@ -134,7 +145,7 @@ class Produto : BaseModel() {
     refresh()
     return itensNota?.asSequence()?.sortedBy { it.id }?.lastOrNull()
   }
-  
+  */
   fun finItensNota(): List<ItemNota> {
     return ItemNota
             .where().produto.id.eq(id)

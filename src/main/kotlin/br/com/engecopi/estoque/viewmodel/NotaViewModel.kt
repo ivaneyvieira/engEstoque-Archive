@@ -312,10 +312,10 @@ abstract class NotaVo(val tipo: TipoMov, val usuario: Usuario) : EntityVo<ItemNo
   val grade: String
     get() = produto?.grade ?: ""
   var quantProduto: Int? = 0
-  val saldo: Int
-    get() = produto?.saldoLoja(lojaNF) ?: 0
   val localizacao
     get() = toEntity()?.localizacao ?: ""
+  val saldo: Int
+    get() = produto?.saldoLoja(lojaNF, localizacao) ?: 0
 }
 
 class ProdutoVO {
