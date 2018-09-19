@@ -58,8 +58,6 @@ vaadin {
   manageRepositories true
 
   push true
-
-  
 }
 
 ebean {
