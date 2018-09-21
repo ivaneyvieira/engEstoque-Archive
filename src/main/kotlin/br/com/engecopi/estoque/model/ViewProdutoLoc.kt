@@ -33,13 +33,9 @@ class ViewProdutoLoc(
       produto ?: return false
       return where().loja.id.eq(loja.id)
               .produto.id.eq(produto.id)
-<<<<<<< HEAD
-              .or().abreviacao.isIn(locs).localizacao.isIn(locs).endOr()
-=======
               .or().abreviacao.isIn(locs)
               .localizacao.isIn(locs)
               .endOr()
->>>>>>> 9921615b309041e2f7b5d78986e65ab94b1ae22a
               .findCount() > 0
     }
 
