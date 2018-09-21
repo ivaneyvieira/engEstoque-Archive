@@ -3,7 +3,6 @@ package br.com.engecopi.framework.ui.view
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.utils.SystemUtils
-import com.fo0.advancedtokenfield.main.AdvancedTokenField
 import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.align
@@ -13,13 +12,11 @@ import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.w
-import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
 import com.vaadin.data.HasValue
 import com.vaadin.data.ReadOnlyHasValue
-import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
@@ -36,7 +33,6 @@ import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.apache.commons.io.IOUtils
-import org.vaadin.addons.filteringgrid.FilterGrid
 import org.vaadin.viritin.fields.ClearableTextField
 import org.vaadin.viritin.fields.DoubleField
 import org.vaadin.viritin.fields.EmailField
@@ -51,9 +47,7 @@ import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 import kotlin.streams.toList
 
@@ -253,11 +247,6 @@ fun HasComponents.mTextField(captionPar: String = "", block: MTextField.() -> Un
     this.caption = captionPar
   }
 
-fun HasComponents.tokenField(captionPar: String = "", block: AdvancedTokenField.() -> Unit = {}) =
-  init(AdvancedTokenField(), block).apply {
-    this.caption = captionPar
-  }
-
 fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
   init(LabelField(caption), block)
 
@@ -268,16 +257,4 @@ inline fun <reified T : Enum<*>> HasComponents.enumSelect(
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
   addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
-}
-
-//FilterGrid
-fun <T : Any> (@VaadinDsl HasComponents).filterGrid(
-  itemClass: KClass<T>? = null,
-  caption: String? = null,
-  dataProvider: DataProvider<T, *>? = null,
-  block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}
-) = init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
-  this.caption = caption
-  if (dataProvider != null) this.dataProvider = dataProvider
-  block()
 }

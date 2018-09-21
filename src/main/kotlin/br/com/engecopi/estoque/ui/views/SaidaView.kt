@@ -42,7 +42,6 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
   ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
-      binder.bean.usuario = usuario
     }
     formLayout.apply {
       grupo("Nota fiscal de saída") {
@@ -135,7 +134,8 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           setSortProperty("produto.grade")
         }
         column(SaidaVo::localizacao) {
-          caption = "Localização"
+          caption = "Local"
+          setSortProperty("localizacao")
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"

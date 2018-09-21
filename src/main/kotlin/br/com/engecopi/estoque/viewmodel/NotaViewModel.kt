@@ -42,7 +42,7 @@ abstract class NotaViewModel<VO : NotaVo>(
   override fun add(bean: VO) {
     val nota = insertNota(bean)
     val produtos = bean.produtos
-    val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
+    val usuario = bean.usuario
     if (bean.notaSaci == null) {
       val produto = saveProduto(bean.produto)
       insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario)
@@ -173,7 +173,6 @@ abstract class NotaViewModel<VO : NotaVo>(
       this.produto = itemNota.produto
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = itemNota.nota?.rota
-      this.usuario = itemNota.usuario
     }
   }
 
@@ -212,12 +211,11 @@ abstract class NotaViewModel<VO : NotaVo>(
   }
 }
 
-abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
+abstract class NotaVo(val tipo: TipoMov, val usuario: Usuario) : EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {
     return ItemNota.find(nota, produto)
   }
 
-  var usuario: Usuario? = null
   var numeroNF: String? = ""
     set(value) {
       if (field != value) {
@@ -264,7 +262,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       }
       produtos.addAll(notaProdutoSaci.mapNotNull { notaSaci ->
         val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        if (usuario?.temProduto(prd) == true) ProdutoVO().apply {
+        if (usuario.temProduto(prd)) ProdutoVO().apply {
           this.codigo = prd?.codigo ?: ""
           this.grade = prd?.grade ?: ""
           this.quantidade = notaSaci.quant ?: 0
@@ -290,9 +288,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       val produtos = if (nota.isNotEmpty()) nota.mapNotNull { notaSaci ->
         Produto.findProduto(notaSaci.prdno, notaSaci.grade)
       }.filter { produto ->
-        usuario?.temProduto(produto) ?: false
+        usuario.temProduto(produto)
       }
-      else Produto.all().filter { usuario?.temProduto(it) ?: false }
+      else Produto.all().filter { usuario.temProduto(it) }
       return produtos.sortedBy { it.codigo + it.grade }
     }
   val quantidadeReadOnly
@@ -314,10 +312,10 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val grade: String
     get() = produto?.grade ?: ""
   var quantProduto: Int? = 0
-  val saldo: Int
-    get() = produto?.saldoLoja(lojaNF) ?: 0
   val localizacao
-    get() = produto?.localizacao(lojaNF)
+    get() = toEntity()?.localizacao ?: ""
+  val saldo: Int
+    get() = produto?.saldoLoja(lojaNF, localizacao) ?: 0
 }
 
 class ProdutoVO {

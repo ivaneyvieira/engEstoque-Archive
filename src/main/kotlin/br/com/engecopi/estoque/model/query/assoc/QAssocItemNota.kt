@@ -8,6 +8,7 @@ import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLocalTime
 import io.ebean.typequery.PLong
+import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
 import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
@@ -33,6 +34,7 @@ class QAssocItemNota<R>(name: String, root: R) : TQAssocBean<ItemNota,R>(name, r
   lateinit var usuario: QAssocUsuario<R>
   lateinit var saldo: PInteger<R>
   lateinit var impresso: PBoolean<R>
+  lateinit var localizacao: PString<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

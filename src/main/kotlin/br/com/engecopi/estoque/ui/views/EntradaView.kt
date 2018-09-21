@@ -47,7 +47,6 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
   ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
-      binder.bean.usuario = usuario
     }
     formLayout.apply {
       grupo("Nota fiscal de entrada") {
@@ -155,6 +154,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
+          setSortProperty("localizacao")
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"

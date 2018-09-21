@@ -1,22 +1,29 @@
 @startuml modelo
 hide methods
 
-class Produto{
+class Produto {
 	codigo
 	grade
 	codebar
 	data_cadastro
 }
 
-class ItemNota{
+class ItemNota {
 	data
 	hora
 	quantidade
+	saldo
+	impresso
+	localizacao
 }
 
 class Nota {
 	numero
 	tipoMov [ENTRADA, SAIDA]
+	tipoNota
+	rota
+	fornecedor
+	cliente
 	data
 	hora
 	observacao
@@ -24,29 +31,54 @@ class Nota {
 
 class Loja {
 	numero
+	sigla
+}
+
+class ViewProdutoLoc {
+	localizacao
+	abreviacao
+}
+
+class ViewAbreviacao {
+	abreviacao
 }
 
 class Usuario {
 	loginName
-	impressora
-}
-
-class Saldo {
-	quantidade
 }
 
 class Etiqueta {
 	titulo
+	tipoMov
 	template
 }
 
+class ViewProduto{
+	codigo
+	nome
+	grade
+	codebar
+	custo
+	unidade
+	tipo
+	comp
+	larg
+	alt 
+	cubagem
+}
 
-ItemNota	-u->	Nota
-ItemNota	-l->	Produto
-Nota		-l->	Loja
-Usuario		-u->	Loja
-Usuario		<-d->	Produto
-Saldo		-u->	Loja
-Saldo		-d->	Produto
-ItemNota	-r->	Etiqueta
+
+ItemNota		-u->		Nota
+ItemNota		-l->		Produto
+Nota			-l->		Loja
+Usuario			-u->		Loja
+Usuario			<-d->		Produto
+ItemNota		-d->		Etiqueta
+ItemNota		-u->		Usuario
+ViewProduto		-u->		Produto
+ViewProdutoLoc	-u->		Loja
+ViewProdutoLoc	-d->		Produto
+
+ViewProdutoLoc	-r->		ViewAbreviacao
+ViewAbreviacao	<-r->		Usuario
 @enduml
