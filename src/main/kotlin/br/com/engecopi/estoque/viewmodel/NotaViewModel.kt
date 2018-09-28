@@ -262,6 +262,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         tipoNota = OUTROS_E
         rota = ""
       }
+      produtos.clear()
       produtos.addAll(notaProdutoSaci.mapNotNull { notaSaci ->
         val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
         if (usuario?.temProduto(prd) == true) ProdutoVO().apply {
