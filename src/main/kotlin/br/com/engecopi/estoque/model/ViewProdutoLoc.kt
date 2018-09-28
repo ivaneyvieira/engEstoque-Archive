@@ -36,7 +36,7 @@ class ViewProdutoLoc(
       return where().loja.id.eq(loja.id)
               .produto.id.eq(produto.id)
               .or().abreviacao.isIn(locs).localizacao.isIn(locs).endOr()
-              .findOne() != null
+              .findCount() > 0
     }
   
     fun find(loja: Loja?, produto: Produto?): ViewProdutoLoc? {
