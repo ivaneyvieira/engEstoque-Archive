@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Etiqueta
-import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.query.QEtiqueta
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -18,7 +17,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       update()
     }
   }
-  
+
   override fun add(bean: EtiquetaVo) {
     Etiqueta().apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
@@ -27,14 +26,14 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       insert()
     }
   }
-  
+
   override fun delete(bean: EtiquetaVo) {
     bean.entityVo?.delete()
   }
-  
+
   override val query: QEtiqueta
     get() = Etiqueta.where()
-  
+
   override fun Etiqueta.toVO(): EtiquetaVo {
     val etiqueta = this
     return EtiquetaVo().apply {
@@ -44,7 +43,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.tipoMov = etiqueta.tipoMov
     }
   }
-  
+
   override fun QEtiqueta.filterString(text: String): QEtiqueta {
     return titulo.contains(text)
   }
@@ -52,13 +51,10 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
 
 class EtiquetaVo : EntityVo<Etiqueta>() {
   override fun findEntity(): Etiqueta? {
-    return Etiqueta.where()
-            .titulo.eq(titulo)
-            .tipoMov.eq(tipoMov)
-            .findOne()
-      }
-  
+    return Etiqueta.find(titulo, tipoMov)
+  }
+
   var titulo: String? = ""
   var template: String? = ""
-  var tipoMov : TipoMov? = null
+  var tipoMov: TipoMov? = null
 }
