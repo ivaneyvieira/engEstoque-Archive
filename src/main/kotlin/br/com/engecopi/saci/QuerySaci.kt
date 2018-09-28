@@ -10,7 +10,7 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaEntrada.sql"
     return query(sql) { q ->
-      q.addParameter("storeno", "$storeno")
+      q.addParameter("storeno", storeno)
               .addParameter("nfname", nfname)
               .addParameter("invse", invse)
               .executeAndFetch(NotaSaci::class.java)
@@ -20,7 +20,7 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
   fun findNotaSaida(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaida.sql"
     return query(sql) { q ->
-      q.addParameter("storeno", "$storeno")
+      q.addParameter("storeno", storeno)
               .addParameter("nfno", nfno)
               .addParameter("nfse", nfse)
               .executeAndFetch(NotaSaci::class.java)
