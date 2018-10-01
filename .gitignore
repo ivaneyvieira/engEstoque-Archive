@@ -1,12 +1,5 @@
-.idea
-build
-.gradle
-*.iml
-styles.css
-styles.css.gz
-classes
-out
 bin
-deploy.sh
-src/main/webapp/VAADIN/widgetsets
-src/main/webapp/VAADIN/gwt-unitCache
+out
+build
+.idea
+inventario-pwa.iml
