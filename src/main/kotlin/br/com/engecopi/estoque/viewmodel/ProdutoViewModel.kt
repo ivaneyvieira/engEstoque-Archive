@@ -109,6 +109,9 @@ class ProdutoVo : EntityVo<Produto>() {
   
   val saldo
     get() = produto?.saldo_total ?: 0
+
+  val comprimento : Int?
+    get() = produto?.vproduto?.com
   
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
