@@ -179,6 +179,34 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           setRenderer(NumberRenderer(DecimalFormat("0")))
           align = VAlign.Right
         }
+        column(ProdutoVo::comprimento) {
+          expandRatio = 1
+          caption = "Comprimento"
+          setSortProperty("vproduto.comp")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+        column(ProdutoVo::lagura) {
+          expandRatio = 1
+          caption = "Largura"
+          setSortProperty("vproduto.larg")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+        column(ProdutoVo::altura) {
+          expandRatio = 1
+          caption = "Altura"
+          setSortProperty("vproduto.alt")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+        column(ProdutoVo::cubagem) {
+          expandRatio = 1
+          caption = "Cubagem"
+          setSortProperty("vproduto.cubagem")
+          setRenderer(NumberRenderer(DecimalFormat("0.000000")))
+          align = VAlign.Right
+        }
       }
     }
   }
