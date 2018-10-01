@@ -117,7 +117,8 @@ class ProdutoVo : EntityVo<Produto>() {
   val itensNota: List<ItemNota>
     get() {
       produto?.recalculaSaldos()
-      val itens = produto?.finItensNota().orEmpty().filter {
+
+      return produto?.finItensNota().orEmpty().filter {
         (lojaDefault?.let { lDef ->
           it.nota?.loja?.id == lDef.id
         } ?: true)
@@ -136,7 +137,5 @@ class ProdutoVo : EntityVo<Produto>() {
           it.nota?.tipoNota == t
         } ?: true)
       }
-      
-      return itens
     }
 }
