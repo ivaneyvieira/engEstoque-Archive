@@ -22,8 +22,8 @@ from sqldados.inv AS N
     AND P.grade = L.grade
 where N.storeno = :storeno
       and nfname = :nfname
-      and invse = :invse
-      AND N.date > DATE_SUB(current_date, INTERVAL 12 MONTH)
+      and invse = :invse AND
+      N.date > DATE_SUB(current_date, INTERVAL 6 MONTH)
       AND N.bits & POW(2, 4) = 0
       AND N.auxShort13 & pow(2, 15) = 0
       AND invse <> ''
@@ -43,6 +43,8 @@ from sqldados.eord AS N
     ON N.storeno = L.storeno
     AND P.prdno = L.prdno
     AND P.grade = L.grade
-where N.storeno  = :storeno
+WHERE N.date > DATE_SUB(current_date, INTERVAL 6 MONTH) AND
+      N.paymno = 290 AND
+      N.storeno = :storeno
       and (N.ordno = :nfname)
       and (:invse = '')

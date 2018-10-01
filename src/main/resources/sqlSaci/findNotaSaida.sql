@@ -22,8 +22,8 @@ from sqldados.nf AS N
     ON X.no = I.xfrno
 where N.storeno  = :storeno
       and N.nfno = :nfno
-      and N.nfse = :nfse
-      AND N.issuedate > DATE_SUB(current_date, INTERVAL 12 MONTH)
+      and N.nfse = :nfse AND
+      N.issuedate > DATE_SUB(current_date, INTERVAL 7 DAY)
       AND N.status <> 1
 UNION
 select DISTINCT  '' as rota, N.storeno,
@@ -44,7 +44,8 @@ from sqlpdv.pxa AS N
 where N.storeno  = :storeno
       and N.nfno = :nfno
       and N.nfse = :nfse
-      and processed = 0
+      and processed = 0 AND
+      N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
 UNION
 select DISTINCT  '' as rota, N.storeno,
   N.ordno as nfno, '' as nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
@@ -57,7 +58,10 @@ from sqldados.eord AS N
     ON E.codigo = P.prdno AND E.grade = P.grade
   left join sqldados.custp AS C
     ON C.no = N.custno
-where N.storeno  = :storeno
+WHERE N.date > DATE_SUB(current_date, INTERVAL 7 DAY) AND
+      N.paymno = 291 AND
+      N.storeno = :storeno
       and (N.ordno = :nfno)
       and (:nfse = '')
+
 
