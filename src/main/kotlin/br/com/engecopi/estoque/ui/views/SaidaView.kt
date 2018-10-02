@@ -1,20 +1,12 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
-import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.bindItens
-import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
-import br.com.engecopi.framework.ui.view.integerField
-import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.bind
@@ -118,6 +110,11 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           caption = "Data"
           dateFormat()
           setSortProperty("nota.data", "data", "hora")
+        }
+        column(SaidaVo::dataEmissao) {
+          caption = "Emissao"
+          dateFormat()
+          setSortProperty("nota.dataEmissao", "data", "hora")
         }
         column(SaidaVo::quantProduto) {
           caption = "Quantidade"

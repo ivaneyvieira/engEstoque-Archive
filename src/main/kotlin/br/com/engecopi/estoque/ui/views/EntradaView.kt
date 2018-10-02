@@ -1,39 +1,23 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
-import br.com.engecopi.estoque.viewmodel.ProdutoVO
-import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.bindItens
-import br.com.engecopi.framework.ui.view.bindVisible
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.integerField
-import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.VaadinDsl
-import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.getAll
-import com.github.vok.karibudsl.grid
-import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
-import com.vaadin.ui.Grid.SelectionMode.MULTI
-import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
@@ -137,6 +121,11 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           dateFormat()
 
           setSortProperty("nota.data", "data", "hora")
+        }
+        column(EntradaVo::dataEmissao) {
+          caption = "Emissao"
+          dateFormat()
+          setSortProperty("nota.dataEmissao", "data", "hora")
         }
         column(EntradaVo::quantProduto) {
           caption = "Quantidade"

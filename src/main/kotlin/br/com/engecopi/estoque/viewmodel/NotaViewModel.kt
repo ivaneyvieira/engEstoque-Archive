@@ -108,6 +108,7 @@ abstract class NotaViewModel<VO : NotaVo>(
       this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
       this.data = bean.dataNota
+      this.dataEmissao = bean.dataEmissao
       this.observacao = bean.observacaoNota ?: ""
       this.rota = bean.rota ?: ""
       this.fornecedor = bean.fornecedor
@@ -127,6 +128,7 @@ abstract class NotaViewModel<VO : NotaVo>(
       this.tipoNota = bean.tipoNota
       this.loja = bean.lojaNF
       this.data = bean.dataNota
+      this.dataEmissao = bean.dataEmissao
       this.observacao = bean.observacaoNota ?: ""
       this.rota = bean.rota ?: ""
       this.fornecedor = bean.fornecedor
@@ -277,6 +279,8 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
 
   val dataNota: LocalDate
     get() = toEntity()?.dataNota ?: notaSaci?.date?.localDate() ?: LocalDate.now()
+  val dataEmissao: LocalDate
+    get() = toEntity()?.nota?.dataEmissao ?: notaSaci?.dt_emissao?.localDate() ?: LocalDate.now()
   val numeroInterno: Int
     get() = if (entityVo == null) notaSaci?.invno ?: 0
     else 0
