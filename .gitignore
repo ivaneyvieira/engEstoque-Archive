@@ -2,6 +2,14 @@ bin
 out
 build
 .idea
-.gradle
 gradle*
 src/main/webapp/VAADIN/widgetsets
+.designer
+.gradle
+.settings
+.vscode
+.classpath
+.project
+model.iml
+Procfile
+
