@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.model.query.assoc
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.query.QNota
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
@@ -12,7 +11,6 @@ import io.ebean.typequery.PLocalTime
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
-import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
 
 /**
@@ -34,6 +32,7 @@ class QAssocNota<R>(name: String, root: R) : TQAssocBean<Nota,R>(name, root) {
   lateinit var fornecedor: PString<R>
   lateinit var cliente: PString<R>
   lateinit var data: PLocalDate<R>
+  lateinit var dataEmissao: PLocalDate<R>
   lateinit var hora: PLocalTime<R>
   lateinit var observacao: PString<R>
   lateinit var loja: QAssocLoja<R>
