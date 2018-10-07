@@ -12,6 +12,7 @@ import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLocalTime
 import io.ebean.typequery.PLong
+import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
 import io.ebean.typequery.TypeQueryBean
 
@@ -44,6 +45,7 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var usuario: QAssocUsuario<QItemNota>
   lateinit var saldo: PInteger<QItemNota>
   lateinit var impresso: PBoolean<QItemNota>
+  lateinit var localizacao: PString<QItemNota>
 
 
   /**
