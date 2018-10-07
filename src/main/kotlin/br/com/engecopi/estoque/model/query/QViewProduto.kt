@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.ViewProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocProduto
 import io.ebean.EbeanServer
 import io.ebean.typequery.PDouble
+import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
@@ -33,6 +34,10 @@ class QViewProduto : TQRootBean<ViewProduto, QViewProduto> {
   lateinit var custo: PDouble<QViewProduto>
   lateinit var unidade: PString<QViewProduto>
   lateinit var tipo: PString<QViewProduto>
+  lateinit var comp: PInteger<QViewProduto>
+  lateinit var larg: PInteger<QViewProduto>
+  lateinit var alt: PInteger<QViewProduto>
+  lateinit var cubagem: PDouble<QViewProduto>
   lateinit var produto: QAssocProduto<QViewProduto>
 
 
