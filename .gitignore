@@ -2,6 +2,13 @@ bin
 out
 build
 .idea
-inventario-pwa.iml
+.gradle
+gradle*
 src/main/webapp/VAADIN/widgetsets
-
+.settings
+.vscode
+.designer
+.project
+.classpath
+*.iml
+Procfile

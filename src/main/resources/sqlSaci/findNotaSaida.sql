@@ -1,6 +1,12 @@
 select CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
-  N.nfno as numero, N.nfse as serie, N.issuedate as date,P.prdno as prdno, P.grade, P.qtty as quant,
-  C.name as clienteName,
+       N.nfno                               AS numero,
+       N.nfse                               AS serie,
+       N.issuedate                          AS date,
+       N.issuedate                          AS dt_emissao,
+       P.prdno                              AS prdno,
+       P.grade,
+       P.qtty                               AS quant,
+       C.name                               as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
     WHEN N.nfse = '3' then 'ENT_RET'
@@ -8,7 +14,7 @@ select CAST(IFNULL(X.xrouteno, '') AS CHAR) as rota, N.storeno,
     WHEN tipo = 1 then 'TRANSFERENCIA_S'
     WHEN tipo = 2 then 'DEV_FOR'
     ELSE 'INVALIDA'
-  END AS tipo
+  END                                       AS tipo
 from sqldados.nf AS N
   inner join sqldados.xaprd AS P
   USING(storeno, pdvno, xano)
@@ -22,18 +28,24 @@ from sqldados.nf AS N
     ON X.no = I.xfrno
 where N.storeno  = :storeno
       and N.nfno = :nfno
-      and N.nfse = :nfse
-      AND N.issuedate > DATE_SUB(current_date, INTERVAL 7 DAY)
+      and N.nfse = :nfse AND
+      N.issuedate > DATE_SUB(current_date, INTERVAL 7 DAY)
       AND N.status <> 1
 UNION
-select DISTINCT  '' as rota, N.storeno,
-  N.nfno, N.nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
-  C.name as clienteName,
+select DISTINCT ''            as rota, N.storeno,
+                N.nfno,
+                N.nfse,
+                N.date,
+                N.date,
+                P.prdno,
+                P.grade,
+                P.qtty / 1000 AS quant,
+                C.name        as clienteName,
   CASE
     WHEN N.nfse = '66' then 'ACERTO_S'
     WHEN N.nfse = '3' then 'ENT_RET'
     ELSE 'VENDA'
-  END AS tipo
+  END                         AS tipo
 from sqlpdv.pxa AS N
   inner join sqlpdv.pxaprd AS P
   USING(storeno, pdvno, xano)
@@ -44,13 +56,19 @@ from sqlpdv.pxa AS N
 where N.storeno  = :storeno
       and N.nfno = :nfno
       and N.nfse = :nfse
-      and processed = 0
-      AND N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
+      and processed = 0 AND
+      N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
 UNION
-select DISTINCT  '' as rota, N.storeno,
-  N.ordno as nfno, '' as nfse, N.date,P.prdno, P.grade, P.qtty/1000 as quant,
-  C.name as clienteName,
-  'PEDIDO_S' AS tipo
+select DISTINCT ''            as rota, N.storeno,
+                N.ordno       AS nfno,
+                ''            AS nfse,
+                N.date,
+                N.date,
+                P.prdno,
+                P.grade,
+                P.qtty / 1000 AS quant,
+                C.name        as clienteName,
+                'PEDIDO_S'    AS tipo
 from sqldados.eord AS N
   inner join sqldados.eoprd AS P
   USING(storeno, ordno)
@@ -58,9 +76,9 @@ from sqldados.eord AS N
     ON E.codigo = P.prdno AND E.grade = P.grade
   left join sqldados.custp AS C
     ON C.no = N.custno
-where N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
-      and N.paymno = 291
-      and N.storeno  = :storeno
+WHERE N.date > DATE_SUB(current_date, INTERVAL 7 DAY) AND
+      N.paymno = 291 AND
+      N.storeno = :storeno
       and (N.ordno = :nfno)
       and (:nfse = '')
 

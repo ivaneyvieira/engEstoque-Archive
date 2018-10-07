@@ -15,12 +15,12 @@ import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 
 class ProdutoViewModel(view: IView, val usuario: Usuario) :
-        CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
-  
+  CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
+
   init {
     Loja.setLojaDefault(usuario.loja?.numero ?: 0)
   }
-  
+
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.codigo = bean.codigoProduto.lpad(16, " ")
@@ -28,7 +28,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
       produto.update()
     }
   }
-  
+
   override fun add(bean: ProdutoVo) {
     Produto().apply {
       this.codigo = bean.codigoProduto.lpad(16, " ")
@@ -37,13 +37,13 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
       this.insert()
     }
   }
-  
+
   override fun delete(bean: ProdutoVo) {
     Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
       produto.delete()
     }
   }
-  
+
   fun QProduto.filtroUsuario(): QProduto {
     return usuario.let { u ->
       if (u.admin || u.localizacaoes.isEmpty())
@@ -56,12 +56,12 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
                 .viewProdutoLoc.loja.id.eq(loja?.id)
     } ?: this
   }
-  
+
   override val query: QProduto
     get() = Produto
             .where()
             .filtroUsuario()
-  
+
   override fun Produto.toVO(): ProdutoVo {
     val produto = this
     return ProdutoVo().apply {
@@ -71,7 +71,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
       lojaDefault = usuario.loja
     }
   }
-  
+
   override fun QProduto.filterString(text: String): QProduto {
     return codigo.contains(text)
             .codebar.eq(text)
@@ -85,58 +85,56 @@ class ProdutoVo : EntityVo<Produto>() {
   override fun findEntity(): Produto? {
     return Produto.findProduto(codigoProduto, gradeProduto)
   }
-  
+
   var lojaDefault: Loja? = null
   var codigoProduto: String? = ""
   var gradeProduto: String? = ""
-  
   val descricaoProduto: String?
     get() = produto?.descricao
-  
   val descricaoProdutoSaci: String?
     get() = ViewProdutoSaci.find(codigoProduto).firstOrNull()?.nome
-  
   val grades
     get() = ViewProdutoSaci.find(codigoProduto).mapNotNull { it.grade }
-  
   val codebar: String?
     get() = produto?.codebar ?: ""
-  
   val localizacao get() = produto?.localizacao ?: ""
-  
   val produto
     get() = toEntity()
-  
   val saldo
     get() = produto?.saldo_total ?: 0
-  
+  val comprimento: Int?
+    get() = produto?.vproduto?.comp
+  val lagura: Int?
+    get() = produto?.vproduto?.larg
+  val altura: Int?
+    get() = produto?.vproduto?.alt
+  val cubagem: Double?
+    get() = produto?.vproduto?.cubagem
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
   var filtroTipo: TipoNota? = null
-  
   val itensNota: List<ItemNota>
     get() {
       produto?.recalculaSaldos()
-      val itens = produto?.finItensNota().orEmpty().filter {
+
+      return produto?.finItensNota().orEmpty().filter {
         (lojaDefault?.let { lDef ->
           it.nota?.loja?.id == lDef.id
         } ?: true)
-        &&
-        (filtroDI?.let { di ->
-          (it.nota?.data?.isAfter(di) ?: true) ||
-          (it.nota?.data?.isEqual(di) ?: true)
-        } ?: true)
-        &&
-        (filtroDF?.let { df ->
-          (it.nota?.data?.isBefore(df) ?: true) ||
-          (it.nota?.data?.isEqual(df) ?: true)
-        } ?: true)
-        &&
-        (filtroTipo?.let { t ->
-          it.nota?.tipoNota == t
-        } ?: true)
+                &&
+                (filtroDI?.let { di ->
+                  (it.nota?.data?.isAfter(di) ?: true) ||
+                          (it.nota?.data?.isEqual(di) ?: true)
+                } ?: true)
+                &&
+                (filtroDF?.let { df ->
+                  (it.nota?.data?.isBefore(df) ?: true) ||
+                          (it.nota?.data?.isEqual(df) ?: true)
+                } ?: true)
+                &&
+                (filtroTipo?.let { t ->
+                  it.nota?.tipoNota == t
+                } ?: true)
       }
-      
-      return itens
     }
 }

@@ -39,6 +39,7 @@ class Nota : BaseModel() {
   @Length(60)
   var cliente: String = ""
   var data: LocalDate = LocalDate.now()
+  var dataEmissao: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   @Size(max = 100)
   var observacao: String = ""

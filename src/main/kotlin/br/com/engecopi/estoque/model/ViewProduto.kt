@@ -1,8 +1,6 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ViewProdutoFinder
-import br.com.engecopi.estoque.model.query.QViewProduto
-import io.ebean.Model.db
 import io.ebean.annotation.Cache
 import io.ebean.annotation.Formula
 import io.ebean.annotation.View
@@ -28,11 +26,11 @@ class ViewProduto {
   var custo: Double? = null
   var unidade: String? = null
   var tipo: String? = null
-  var comp : Int? = null
-  var larg : Int? = null
-  var alt : Int? = null
+  var comp: Int? = null
+  var larg: Int? = null
+  var alt: Int? = null
   @Formula(select = "(comp*larg*alt/(100*100*100))")
-  var cubagem : Double? = null
+  var cubagem: Double? = null
 
   @OneToOne(cascade = [])
   @JoinColumn(name = "produto_id")

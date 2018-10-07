@@ -2,6 +2,12 @@
 
 VERSAO="$1"
 
+<<<<<<< HEAD
+BANCO_TESTE="localhost"
+BANCO_PRODUCAO="192.168.1.1"
+
+=======
+>>>>>>> fcc0339004c671003e160e4ce8af0634009c141c
 DIR="engEstoque"
 ARQ_VERSAO="src/main/resources/versao.txt"
 
@@ -17,7 +23,11 @@ echo ${VERSAO} > ${ARQ_VERSAO}
 
 ./clean.sh "deploy $VERSAO"
 
+<<<<<<< HEAD
+sed -i "s:$BANCO_TESTE:$BANCO_PRODUCAO:g" src/main/resources/ebean.properties
+=======
 sed -i 's:localhost:192.168.1.1:g' src/main/resources/ebean.properties
+>>>>>>> fcc0339004c671003e160e4ce8af0634009c141c
 
 ./gradlew --console=rich  clean
 ./gradlew --console=rich  build
@@ -26,6 +36,15 @@ sed -i 's:localhost:192.168.1.1:g' src/main/resources/ebean.properties
 #      web/src/main/resources/engecopi/*.sql root@192.168.1.14:/root/$DIR/
 
 sshpass -pengecopi2017 rsync -avP \
+<<<<<<< HEAD
+       build/libs/engEstoque-1.0-SNAPSHOT.war root@192.168.1.14:/root/${DIR}Teste/engEstoque.war
+
+#sshpass -pengecopi2017 ssh root@192.168.1.14 /root/$DIR/build_docker.sh
+
+sed -i "s:$BANCO_PRODUCAO:$BANCO_TESTE:g" src/main/resources/ebean.properties
+
+cp ./deploy.sh ~/Dropbox/temp/
+=======
        build/libs/engEstoque-1.0-SNAPSHOT.war root@192.168.1.14:/root/${DIR}/engEstoque.war
 
 sshpass -pengecopi2017 ssh root@192.168.1.14 /root/${DIR}/build_docker.sh
@@ -33,3 +52,4 @@ sshpass -pengecopi2017 ssh root@192.168.1.14 /root/${DIR}/build_docker.sh
 sed -i 's:192.168.1.1:localhost:g' src/main/resources/ebean.properties
 
 cp ./deploy.sh ~/Dropbox/temp/
+>>>>>>> fcc0339004c671003e160e4ce8af0634009c141c
