@@ -4,10 +4,10 @@ build
 .idea
 gradle*
 src/main/webapp/VAADIN/widgetsets
-gwt-unitCache
-addons.scss
-styles.css
-styles.css.gz
+src/main/webapp/VAADIN/gwt-unitCache
+src/main/webapp/VAADIN/themes/mytheme/addons.scss
+src/main/webapp/VAADIN/themes/mytheme/styles.css
+src/main/webapp/VAADIN/themes/mytheme/styles.css.gz
 .designer
 .gradle
 .settings
