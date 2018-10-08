@@ -14,7 +14,7 @@ class DB(banco: String) {
   val sqldir = prop?.getProperty("$banco.sqldir") ?: ""
   
   companion object {
-    private const val propertieFile = "/etc/db.conf"
+    private const val propertieFile = "/etc/engecopi/db.conf"
     
     private fun properties(): Properties? {
       val properties = Properties()
