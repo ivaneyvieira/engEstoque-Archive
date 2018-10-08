@@ -31,8 +31,7 @@ import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
-  val lojaDefault
-    get() = EstoqueUI.loja
+  val lojaDefault= EstoqueUI.loja
   val usuario = EstoqueUI.user!!
   val isAdmin = usuario.admin
 

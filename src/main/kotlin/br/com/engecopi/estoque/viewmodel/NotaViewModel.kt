@@ -45,25 +45,31 @@ abstract class NotaViewModel<VO : NotaVo>(
     val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
     if (bean.notaSaci == null) {
       val produto = saveProduto(bean.produto)
-      insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario)
+      insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao)
     } else {
       produtos.filter {
         it.selecionado
       }.forEach { produto ->
         produto.let { prd ->
           if (usuario.temProduto(prd.produto)) insertItemNota(
-            nota, prd.produto, prd.quantidade, usuario
+            nota, prd.produto, prd.quantidade, usuario, bean.localizacao
           )
         }
       }
     }
   }
 
-  private fun insertItemNota(nota: Nota, produto: Produto?, quantProduto: Int, usuario: Usuario): ItemNota? {
+  private fun insertItemNota(
+    nota: Nota,
+    produto: Produto?,
+    quantProduto: Int,
+    usuario: Usuario,
+    local: String?
+  ): ItemNota? {
     return if (quantProduto != 0) {
       if (Nota.existNumero(nota, produto)) {
-        view
-                .showWarning("O produto ${produto?.codigo} - ${produto?.descricao}. Já foi inserido na nota ${nota.numero}.")
+        val msg = "O produto ${produto?.codigo} - ${produto?.descricao}. Já foi inserido na nota ${nota.numero}."
+        view.showWarning(msg)
         null
       } else {
         val item = ItemNota()
@@ -72,6 +78,7 @@ abstract class NotaViewModel<VO : NotaVo>(
           this.produto = produto
           this.quantidade = quantProduto
           this.usuario = usuario
+          this.localizacao = local ?: ""
         }
         item.insert()
         item.produto?.recalculaSaldos()
@@ -322,7 +329,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val saldo: Int
     get() = produto?.saldoLoja(lojaNF) ?: 0
   val localizacao
-    get() = produto?.localizacao(lojaNF)
+    get() = produto?.localizacao(lojaNF, usuario)
 }
 
 class ProdutoVO {
