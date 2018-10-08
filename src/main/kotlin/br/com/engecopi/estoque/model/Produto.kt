@@ -68,12 +68,12 @@ class Produto : BaseModel() {
     val user = usuario ?: return ""
     val localizacaoUser = user.localizacoesProduto(this)
     val locs = if (loja == null) viewProdutoLoc
-    else listOf(
+    else
       ViewProdutoLoc.find(
         loja = loja,
         produto = this
       )
-    )
+
 
     return locs
       .orEmpty().asSequence()
@@ -84,20 +84,44 @@ class Produto : BaseModel() {
   }
 
   @Transactional
-  fun recalculaSaldos(): Int {
+  fun recalculaSaldos(loja: Loja?) {
+    ViewProdutoLoc.find(
+      loja,
+      this
+    ).map { it.localizacao }.forEach { localizacao ->
+      recalculaSaldos(
+        loja,
+        localizacao
+      )
+    }
+  }
+
+  @Transactional
+  fun recalculaSaldos(loja: Loja?, localizacao: String?): Int {
+    loja ?: return 0
+    localizacao ?: return 0
     var saldo = 0
     refresh()
-    itensNota?.sortedWith(
-      compareBy(
-        ItemNota::data,
-        ItemNota::id
+    val itensNotNull = itensNota ?: return 0
+    itensNotNull
+      .asSequence()
+      .filter {
+        it.nota?.loja?.id == loja.id &&
+        it.localizacao == localizacao
+      }
+      .sortedWith(
+        compareBy(
+          ItemNota::data,
+          ItemNota::id
+        )
       )
-    )?.forEach { item ->
-      item.refresh()
-      saldo += item.quantidadeSaldo
-      item.saldo = saldo
-      item.update()
-    }
+      .toList()
+      .forEach { item ->
+        item.refresh()
+        saldo += item.quantidadeSaldo
+        item.saldo = saldo
+        item.update()
+      }
     return saldo
   }
 
@@ -164,7 +188,10 @@ class Produto : BaseModel() {
 
   fun ultimaNota(): ItemNota? {
     refresh()
-    return itensNota?.sortedBy { it.id }?.lastOrNull()
+    return itensNota
+      ?.asSequence()
+      ?.sortedBy { it.id }
+      ?.lastOrNull()
   }
 
   fun finItensNota(): List<ItemNota> {

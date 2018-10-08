@@ -97,7 +97,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           val button = Button()
 
           print {
-            item.itemNota?.produto?.recalculaSaldos()
+            item.itemNota?.recalculaSaldos()
             val print = viewModel.imprimir(item.itemNota)
             print
           }.extend(button)

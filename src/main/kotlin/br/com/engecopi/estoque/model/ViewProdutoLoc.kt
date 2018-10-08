@@ -37,10 +37,10 @@ class ViewProdutoLoc(
                .findCount() > 0
     }
 
-    fun find(loja: Loja?, produto: Produto?): ViewProdutoLoc? {
-      loja ?: return null
-      produto ?: return null
-      return viewProdutosLoc.firstOrNull {
+    fun find(loja: Loja?, produto: Produto?): List<ViewProdutoLoc> {
+      loja ?: return emptyList()
+      produto ?: return emptyList()
+      return viewProdutosLoc.filter {
         it.loja.id == loja.id && it.produto.id == produto.id
       }
     }
