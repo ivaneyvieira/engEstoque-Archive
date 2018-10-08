@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
@@ -94,6 +95,15 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
       .grade.contains(text)
       .localizacao.contains(text)
   }
+
+  fun localizacoes(bean: ProdutoVo?): List<String> {
+    return ViewProdutoLoc
+      .where()
+      .loja.equalTo(loja)
+      .produto.equalTo(bean?.produto)
+      .findList()
+      .mapNotNull { it.localizacao }
+  }
 }
 
 class ProdutoVo : EntityVo<Produto>() {
@@ -131,6 +141,7 @@ class ProdutoVo : EntityVo<Produto>() {
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
   var filtroTipo: TipoNota? = null
+  var filtroLocalizacao: String? = null
   val itensNota: List<ItemNota>
     get() {
       produto?.recalculaSaldos(lojaDefault)
@@ -143,6 +154,8 @@ class ProdutoVo : EntityVo<Produto>() {
         (filtroDF?.let { df -> (it.nota?.data?.isBefore(df) ?: true) || (it.nota?.data?.isEqual(df) ?: true) } ?: true)
         &&
         (filtroTipo?.let { t -> it.nota?.tipoNota == t } ?: true)
+        &&
+        (filtroLocalizacao?.let { loc -> it.localizacao == loc } ?: true)
       }
     }
 }

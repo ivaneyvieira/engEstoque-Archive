@@ -2,15 +2,12 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.ui.EstoqueUI
-import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.default
-import br.com.engecopi.framework.ui.view.filterGrid
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
@@ -26,9 +23,7 @@ import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.h
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
-import com.sun.javafx.webkit.theme.Renderer.setRenderer
 import com.vaadin.data.Binder
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
@@ -37,8 +32,6 @@ import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 import java.text.DecimalFormat
-import java.time.LocalDate
-import javax.ws.rs.client.Entity.form
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
@@ -102,6 +95,15 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             emptySelectionCaption = "Todos"
             value = null
             bind(binder).bind(ProdutoVo::filtroTipo)
+            reloadBinderOnChange(binder)
+          }
+          comboBox<String>("Local") {
+            default { it }
+            id = "filtro"
+            val itens = viewModel.localizacoes(binder.bean)
+            setItems(itens)
+            bind(binder).bind(ProdutoVo::filtroLocalizacao)
+            value = itens.firstOrNull()
             reloadBinderOnChange(binder)
           }
         }
