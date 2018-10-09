@@ -5,7 +5,12 @@ import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.utils.DB
 
-class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
+class QuerySaci : QueryDB(
+  driver,
+  url,
+  username,
+  password
+) {
 
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaEntrada.sql"
@@ -49,7 +54,6 @@ class QuerySaci : QueryDB(driver, url, username, password, sqldir) {
     internal val url = db.url
     internal val username = db.username
     internal val password = db.password
-    internal val sqldir = db.sqldir
     
     val ipServer = QuerySaci.db.url.split("/").getOrNull(2)
   }
