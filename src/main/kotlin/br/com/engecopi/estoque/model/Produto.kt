@@ -74,7 +74,6 @@ class Produto : BaseModel() {
         produto = this
       )
 
-
     return locs
       .orEmpty().asSequence()
       .filterNotNull()
