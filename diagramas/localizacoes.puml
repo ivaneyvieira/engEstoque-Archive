@@ -1,0 +1,15 @@
+@startuml modelo
+hide methods
+
+
+Usuario			-l->			PrefixoLoc
+Localizacao		-r->			PrefixoLoc
+Localizacao		-u->			Loja
+Localizacao		-u->			Produto
+Usuario			-u->			Loja
+
+Nota			-d->			Loja
+Nota			-d->			Usuario
+Nota			-d->			Localizacao
+Nota			-d->			Produto
+@enduml
