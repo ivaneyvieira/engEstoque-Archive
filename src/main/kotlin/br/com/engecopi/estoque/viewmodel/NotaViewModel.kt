@@ -97,7 +97,7 @@ abstract class NotaViewModel<VO : NotaVo>(
           view.showWarning(msg)
           null
         }
-        saldoLocal + nota.tipoMov.multiplicador * quantProduto < 0 -> {
+        (saldoLocal + (nota.tipoMov.multiplicador * quantProduto)) < 0 -> {
           val msg = "Saldo insuficiente para o produto ${produto?.codigo} - ${produto?.descricao}."
           view.showWarning(msg)
           null
