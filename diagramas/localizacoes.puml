@@ -1,15 +1,19 @@
 @startuml modelo
 hide methods
+hide members
 
 
-Usuario			-l->			PrefixoLoc
-Localizacao		-r->			PrefixoLoc
-Localizacao		-u->			Loja
-Localizacao		-u->			Produto
-Usuario			-u->			Loja
 
-Nota			-d->			Loja
-Nota			-d->			Usuario
-Nota			-d->			Localizacao
-Nota			-d->			Produto
+Usuario			<-l->		PrefixoLoc
+Localizacao		-u->		PrefixoLoc
+Localizacao		-r->		Loja
+Localizacao		<-u->		Produto
+Usuario			-r->		Loja
+
+ItemNota		-d->		Usuario
+ItemNota		-d->		(Localizacao, Produto)
+
+ItemNota		-u->		Nota
+Nota			-d->		Loja
+ItemNota		-u->		Etiqueta
 @enduml
