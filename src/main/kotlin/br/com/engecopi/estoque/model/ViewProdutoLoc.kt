@@ -50,7 +50,12 @@ class ViewProdutoLoc(
     }
 
     fun findAbreviacoresLoja(loja: Loja?): List<String> {
-      TODO()
+      loja ?: return emptyList()
+      return viewProdutosLoc
+        .asSequence()
+        .filter { it.storeno == loja.numero }
+        .map { it.abreviacao }
+        .distinct().toList()
     }
   }
 }
