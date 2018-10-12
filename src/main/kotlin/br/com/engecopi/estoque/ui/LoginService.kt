@@ -1,10 +1,13 @@
 package br.com.engecopi.estoque.ui
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacao
+import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.saci.saci
 import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.button
+import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.horizontalLayout
@@ -22,6 +25,7 @@ import com.vaadin.server.Page
 import com.vaadin.server.VaadinSession
 import com.vaadin.shared.ui.ContentMode.HTML
 import com.vaadin.ui.Alignment
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Notification
 import com.vaadin.ui.TextField
 import com.vaadin.ui.VerticalLayout
@@ -40,11 +44,16 @@ object LoginService {
     VaadinSession.getCurrent().close()
     Page.getCurrent()?.reload()
   }
+
+  fun abreviacaoes(username: String?): List<String> {
+    return Usuario.abreviacaoes(username)
+  }
 }
 
 class LoginForm(private val appTitle: String) : VerticalLayout() {
   private lateinit var username: TextField
   private lateinit var password: TextField
+  private lateinit var abreviacao : ComboBox<String>
   
   init {
     setSizeFull()
@@ -77,6 +86,18 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             w = fillParent
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
+            addValueChangeListener {
+              if(::abreviacao.isInitialized) {
+                val abreviacoes = LoginService.abreviacaoes(it.value)
+                abreviacao.setItems(abreviacoes)
+              }
+            }
+          }
+          abreviacao = comboBox("Localizacao") {
+            isResponsive=true
+            expandRatio = 1f
+            w = fillParent
+            isEmptySelectionAllowed = false
           }
           password = passwordField("Senha") {
             isResponsive=true

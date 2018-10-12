@@ -39,7 +39,6 @@ class Usuario : BaseModel() {
 
   fun usuarioSaci() = saci.findUser(loginName)
   var admin: Boolean = false
-
   val nome: String?
     @Transient
     get() = usuarioSaci()?.name
@@ -85,6 +84,14 @@ class Usuario : BaseModel() {
 
     fun nomeSaci(value: String): String {
       return saci.findUser(value)?.name ?: ""
+    }
+
+    fun abreviacaoes(username: String?): List<String> {
+      return findUsuario(loginName = username)?.let { usuario ->
+        val locais = usuario.locais
+        if (locais.isEmpty()) ViewProdutoLoc.findAbreviacoresLoja(usuario.loja)
+        else locais
+      } ?: emptyList()
     }
   }
 }
