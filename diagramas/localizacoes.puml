@@ -1,19 +1,59 @@
 @startuml modelo
 hide methods
-hide members
 
+package Model {
 
+class Produto{
+	codigo
+	grade
+	codebar
+	dataCadastro
+}
 
-Usuario			<-l->		PrefixoLoc
-Localizacao		-u->		PrefixoLoc
-Localizacao		-r->		Loja
-Localizacao		<-u->		Produto
-Usuario			-r->		Loja
+class ItemNota{
+	data
+	hora
+	quantidade
+	saldo
+	impresso
+	localizacao
+}
 
-ItemNota		-d->		Usuario
-ItemNota		-d->		(Localizacao, Produto)
+class Nota {
+	numero
+	tipoMov
+	tipoNota
+	rota
+	data
+	hora
+	observacao
+	fornecedor
+	cliente
+	dataEmissao
+}
 
+class Loja {
+	numero
+	sigla
+}
+
+class Usuario {
+	loginName
+	localizacaoes
+	isAdmin
+}
+
+class Etiqueta {
+	titulo
+	template
+	tipo_mov
+}
+
+ItemNota		-r->		Usuario
+ItemNota		-d->		Produto
 ItemNota		-u->		Nota
-Nota			-d->		Loja
-ItemNota		-u->		Etiqueta
+ItemNota		-l->		Etiqueta
+Nota			-r->		Loja
+Usuario			-u->		Loja
+}
 @enduml
