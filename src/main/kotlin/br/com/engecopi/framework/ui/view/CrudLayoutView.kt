@@ -7,12 +7,10 @@ import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.init
-import com.github.vok.karibudsl.refresh
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.Query
-
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.icons.VaadinIcons
@@ -314,7 +312,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
         refreshGrid()
         if (items.contains(domainObject)) {
           grid.asSingleSelect().value = domainObject
-          // TODO: grid.scrollTo(updatedObject);
+          // grid.scrollTo(updatedObject);
         }
       } catch (e1: CrudOperationException) {
         refreshGrid()

@@ -9,7 +9,7 @@ import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.annotation.WebFilter
 
-//@WebFilter(value = ["/*"])
+@WebFilter(value = ["/*"])
 class ConnectionFilter : Filter {
   
   @Throws(ServletException::class)

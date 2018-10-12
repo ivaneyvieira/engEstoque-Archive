@@ -89,6 +89,13 @@ class ItemNota : BaseModel() {
   }
   
   fun printEtiqueta() = NotaPrint(this)
+
+  fun recalculaSaldos() {
+    produto?.recalculaSaldos(
+      loja = nota?.loja,
+      localizacao = localizacao
+    )
+  }
 }
 
 class NotaPrint(item: ItemNota) {

@@ -88,7 +88,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         grid.addComponentColumn { item ->
           val button = Button()
           print {
-            item.itemNota?.produto?.recalculaSaldos()
+            item.itemNota?.recalculaSaldos()
             val print = viewModel.imprimir(item.itemNota)
             print
           }.extend(button)

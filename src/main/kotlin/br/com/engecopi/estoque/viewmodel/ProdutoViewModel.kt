@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
@@ -15,15 +16,24 @@ import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 
 class ProdutoViewModel(view: IView, val usuario: Usuario) :
-  CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
+  CrudViewModel<Produto, QProduto, ProdutoVo>(
+    view,
+    ProdutoVo::class
+  ) {
 
   init {
     Loja.setLojaDefault(usuario.loja?.numero ?: 0)
   }
 
   override fun update(bean: ProdutoVo) {
-    Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
-      produto.codigo = bean.codigoProduto.lpad(16, " ")
+    Produto.findProduto(
+      bean.codigoProduto,
+      bean.gradeProduto
+    )?.let { produto ->
+      produto.codigo = bean.codigoProduto.lpad(
+        16,
+        " "
+      )
       produto.codebar = bean.codebar ?: ""
       produto.update()
     }
@@ -31,7 +41,10 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
 
   override fun add(bean: ProdutoVo) {
     Produto().apply {
-      this.codigo = bean.codigoProduto.lpad(16, " ")
+      this.codigo = bean.codigoProduto.lpad(
+        16,
+        " "
+      )
       this.grade = bean.gradeProduto ?: ""
       this.codebar = bean.codebar ?: ""
       this.insert()
@@ -39,7 +52,10 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
   }
 
   override fun delete(bean: ProdutoVo) {
-    Produto.findProduto(bean.codigoProduto, bean.gradeProduto)?.let { produto ->
+    Produto.findProduto(
+      bean.codigoProduto,
+      bean.gradeProduto
+    )?.let { produto ->
       produto.delete()
     }
   }
@@ -50,17 +66,17 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
         this
       else
         this.or()
-                .viewProdutoLoc.localizacao.isIn(usuario.locais)
-                .viewProdutoLoc.abreviacao.isIn(usuario.locais)
-                .endOr()
-                .viewProdutoLoc.loja.id.eq(loja?.id)
+          .viewProdutoLoc.localizacao.isIn(usuario.locais)
+          .viewProdutoLoc.abreviacao.isIn(usuario.locais)
+          .endOr()
+          .viewProdutoLoc.loja.id.eq(loja?.id)
     } ?: this
   }
 
   override val query: QProduto
     get() = Produto
-            .where()
-            .filtroUsuario()
+      .where()
+      .filtroUsuario()
 
   override fun Produto.toVO(): ProdutoVo {
     val produto = this
@@ -74,16 +90,28 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
 
   override fun QProduto.filterString(text: String): QProduto {
     return codigo.contains(text)
-            .codebar.eq(text)
-            .vproduto.nome.contains(text)
-            .grade.contains(text)
-            .localizacao.contains(text)
+      .codebar.eq(text)
+      .vproduto.nome.contains(text)
+      .grade.contains(text)
+      .localizacao.contains(text)
+  }
+
+  fun localizacoes(bean: ProdutoVo?): List<String> {
+    return ViewProdutoLoc
+      .where()
+      .loja.equalTo(loja)
+      .produto.equalTo(bean?.produto)
+      .findList()
+      .mapNotNull { it.localizacao }
   }
 }
 
 class ProdutoVo : EntityVo<Produto>() {
   override fun findEntity(): Produto? {
-    return Produto.findProduto(codigoProduto, gradeProduto)
+    return Produto.findProduto(
+      codigoProduto,
+      gradeProduto
+    )
   }
 
   var lojaDefault: Loja? = null
@@ -113,28 +141,21 @@ class ProdutoVo : EntityVo<Produto>() {
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
   var filtroTipo: TipoNota? = null
+  var filtroLocalizacao: String? = null
   val itensNota: List<ItemNota>
     get() {
-      produto?.recalculaSaldos()
+      produto?.recalculaSaldos(lojaDefault)
 
       return produto?.finItensNota().orEmpty().filter {
-        (lojaDefault?.let { lDef ->
-          it.nota?.loja?.id == lDef.id
-        } ?: true)
-                &&
-                (filtroDI?.let { di ->
-                  (it.nota?.data?.isAfter(di) ?: true) ||
-                          (it.nota?.data?.isEqual(di) ?: true)
-                } ?: true)
-                &&
-                (filtroDF?.let { df ->
-                  (it.nota?.data?.isBefore(df) ?: true) ||
-                          (it.nota?.data?.isEqual(df) ?: true)
-                } ?: true)
-                &&
-                (filtroTipo?.let { t ->
-                  it.nota?.tipoNota == t
-                } ?: true)
+        (lojaDefault?.let { lDef -> it.nota?.loja?.id == lDef.id } ?: true)
+        &&
+        (filtroDI?.let { di -> (it.nota?.data?.isAfter(di) ?: true) || (it.nota?.data?.isEqual(di) ?: true) } ?: true)
+        &&
+        (filtroDF?.let { df -> (it.nota?.data?.isBefore(df) ?: true) || (it.nota?.data?.isEqual(df) ?: true) } ?: true)
+        &&
+        (filtroTipo?.let { t -> it.nota?.tipoNota == t } ?: true)
+        &&
+        (filtroLocalizacao?.let { loc -> it.localizacao == loc } ?: true)
       }
     }
 }

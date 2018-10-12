@@ -47,49 +47,32 @@ class Nota : BaseModel() {
   var loja: Loja? = null
   @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
-  
+
   companion object Find : NotaFinder() {
     fun findEntrada(numero: String?, loja: Loja?): Nota? {
-      return Nota.where()
-              .tipoMov.eq(ENTRADA)
-              .numero.eq(numero)
-              .loja.id.eq(loja?.id)
-              .findOne()
+      return Nota.where().tipoMov.eq(ENTRADA).numero.eq(numero).loja.id.eq(loja?.id).findOne()
     }
-    
+
     fun findSaida(numero: String?, loja: Loja?): Nota? {
-      return if (numero.isNullOrBlank() || loja == null)
-        null
-      else
-        Nota.where()
-                .tipoMov.eq(SAIDA)
-                .numero.eq(numero)
-                .loja.id.eq(loja.id)
-                .findOne()
+      return if (numero.isNullOrBlank() || loja == null) null
+      else Nota.where().tipoMov.eq(SAIDA).numero.eq(numero).loja.id.eq(loja.id).findOne()
     }
-    
+
     fun findEntradas(loja: Int): List<Nota> {
-      return Nota.where()
-              .tipoMov.eq(ENTRADA)
-              .findList()
-              .filter { (it.loja?.numero ?: 0) == loja || loja == 0 }
+      return Nota.where().tipoMov.eq(ENTRADA).findList().filter { (it.loja?.numero ?: 0) == loja || loja == 0 }
     }
-    
+
     fun findSaidas(): List<Nota> {
       return where().tipoMov.eq(SAIDA).findList()
     }
-    
+
     fun novoNumero(): Int {
       val regex = "[0-9]+".toRegex()
-      val max = where()
-                        .findList()
-                        .map { it.numero }
-                        .filter { regex.matches(it) }
-                        .max() ?: "0"
+      val max = where().findList().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
       val numMax = max.toIntOrNull() ?: 0
       return numMax + 1
     }
-    
+
     fun findNotaEntradaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
@@ -97,7 +80,7 @@ class Nota : BaseModel() {
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaEntrada(lojaNF.numero, numero, serie)
     }
-    
+
     fun findNotaSaidaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       lojaNF ?: return emptyList()
@@ -105,18 +88,23 @@ class Nota : BaseModel() {
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaSaida(lojaNF.numero, numero, serie)
     }
-    
-    fun existNumero(nota: Nota?, produto : Produto?): Boolean {
+
+    fun existNumero(nota: Nota?, produto: Produto?): Boolean {
       nota ?: return false
       produto ?: return false
-      return ItemNota.where().nota.loja.id.eq(nota.loja?.id)
-                     .nota.numero.eq(nota.numero)
-                     .nota.tipoMov.eq(nota.tipoMov)
-                     .produto.id.eq(produto.id)
-                     .findCount() > 0
+      val loja_id = nota.loja?.id
+      val numero = nota.numero
+      val tipoMov = nota.tipoMov
+      val produto_id = produto.id
+      return ItemNota.where()
+               .nota.loja.id.eq(loja_id)
+               .nota.numero.eq(numero)
+               .nota.tipoMov.eq(tipoMov)
+               .produto.id.eq(produto_id)
+               .findCount() > 0
     }
   }
-  
+
   fun findItem(produto: Produto): ItemNota? {
     refresh()
     return itensNota?.firstOrNull { it.produto == produto }
@@ -124,32 +112,25 @@ class Nota : BaseModel() {
 }
 
 enum class TipoMov(val multiplicador: Int, val descricao: String) {
-  ENTRADA(1, "Entrada"),
-  SAIDA(-1, "Saida")
+  ENTRADA(1, "Entrada"), SAIDA(-1, "Saida")
 }
 
 enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2: String, val isFree: Boolean = false) {
   //Entrada
   COMPRA(ENTRADA, "Compra", "Compra"),
-  TRANSFERENCIA_E(ENTRADA, "Transferencia", "Transferencia Entrada"),
-  DEV_CLI(ENTRADA, "Dev Cliente", "Dev Cliente"),
-  ACERTO_E(ENTRADA, "Acerto", "Acerto Entrada"),
-  PEDIDO_E(ENTRADA, "Pedido", "Pedido Entrada"),
-  OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true),
-  //Saída
-  VENDA(SAIDA, "Venda", "Venda"),
-  TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"),
-  ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"),
-  DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"),
-  ACERTO_S(SAIDA, "Acerto", "Acerto Saida"),
-  PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
+  TRANSFERENCIA_E(ENTRADA, "Transferencia", "Transferencia Entrada"), DEV_CLI(ENTRADA, "Dev Cliente", "Dev Cliente"),
+  ACERTO_E(ENTRADA, "Acerto", "Acerto Entrada"), PEDIDO_E(ENTRADA, "Pedido", "Pedido Entrada"),
+  OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true), //Saída
+  VENDA(SAIDA, "Venda", "Venda"), TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"),
+  ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"), DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"),
+  ACERTO_S(SAIDA, "Acerto", "Acerto Saida"), PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
   OUTROS_S(SAIDA, "Outros", "Outras Saidas", true);
-  
+
   companion object {
     fun valuesEntrada(): List<TipoNota> {
       return values().filter { it.tipoMov == ENTRADA }
     }
-    
+
     fun valuesSaida(): List<TipoNota> {
       return values().filter { it.tipoMov == SAIDA }
     }
