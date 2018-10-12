@@ -29,7 +29,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       if (loginName.isNotBlank())
         usuario.loginName = loginName
       usuario.loja = bean.loja
-      usuario.impressora = bean.impressora ?: ""
       usuario.locais = bean.localizacaoes.toList()
       usuario.update()
     }
@@ -39,7 +38,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
     val usuario = Usuario().apply {
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
-      this.impressora = bean.impressora ?: ""
       this.locais = bean.localizacaoes.toList()
     }
     usuario.insert()
@@ -54,7 +52,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       entityVo = usuario
       this.loginName = usuario.loginName
       this.loja = usuario.loja
-      this.impressora = usuario.impressora
       this.localizacaoes = usuario.locais.toHashSet()
     }
   }
@@ -78,7 +75,7 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   }
 
   var loginName: String? = ""
-  var impressora: String? = ""
+
   var loja: Loja? = null
     set(value) {
       field = value

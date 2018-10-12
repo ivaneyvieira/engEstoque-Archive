@@ -22,8 +22,6 @@ class Usuario : BaseModel() {
   @Size(max = 8)
   @Index(unique = true)
   var loginName: String = ""
-  @Size(max = 30)
-  var impressora: String = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var loja: Loja? = null
   @Length(4000)

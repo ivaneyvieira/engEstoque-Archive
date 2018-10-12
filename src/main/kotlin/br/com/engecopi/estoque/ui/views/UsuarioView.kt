@@ -69,15 +69,6 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           bind(binder).bind(UsuarioCrudVo::loja)
           reloadBinderOnChange(binder)
         }
-        comboBox<String> {
-          expandRatio = 1f
-          caption = "Impressora"
-          isEmptySelectionAllowed = false
-          isTextInputAllowed = false
-          setItems(printerSaci.printers.map { it.name })
-          setItemCaptionGenerator { it }
-          bind(binder).bind(UsuarioCrudVo::impressora)
-        }
       }
       row {
         twinColSelect<String>("Localizações") {
@@ -112,10 +103,6 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           expandRatio = 1
           caption = "Localização"
           setSortProperty("localizacaoes")
-        }
-        column(UsuarioCrudVo::impressora) {
-          expandRatio = 1
-          caption = "Impressora"
         }
       }
     }
