@@ -26,7 +26,7 @@ class ViewProdutoLoc(
   @OneToOne(cascade = [])
   @JoinColumn(name = "loja_id")
   val loja: Loja
-) {
+                    ) {
   companion object Find : ViewProdutoLocFinder() {
     fun exists(loja: Loja?, produto: Produto?, locs: List<String>): Boolean {
       loja ?: return false
@@ -47,6 +47,10 @@ class ViewProdutoLoc(
       return viewProdutosLoc.filter {
         it.loja.id == loja.id && it.produto.id == produto.id
       }
+    }
+
+    fun findAbreviacoresLoja(loja: Loja?): List<String> {
+      TODO()
     }
   }
 }

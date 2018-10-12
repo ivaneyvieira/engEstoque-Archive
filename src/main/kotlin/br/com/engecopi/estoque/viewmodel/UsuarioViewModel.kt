@@ -14,9 +14,9 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
 
   fun findProduto(offset: Int, limit: Int): List<Produto> {
     return queryProduto
-            .setFirstRow(offset)
-            .setMaxRows(limit)
-            .findList()
+      .setFirstRow(offset)
+      .setMaxRows(limit)
+      .findList()
   }
 
   fun countProduto(): Int {
@@ -75,13 +75,13 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   }
 
   var loginName: String? = ""
-
   var loja: Loja? = null
     set(value) {
       field = value
       locaisLoja.clear()
       val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
-              .map { it.abreviacao }.distinct().toMutableSet()
+        .asSequence()
+        .map { it.abreviacao }.distinct().toMutableSet()
       locaisLoja.addAll(sets)
     }
   val nome
