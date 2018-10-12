@@ -14,7 +14,11 @@ import javax.persistence.OneToOne
 @View(name = "v_loc_produtos")
 class ViewProdutoLoc(
   @Id
-  val id: String, val storeno: Int, val codigo: String, val grade: String, val localizacao: String,
+  val id: String,
+  val storeno: Int,
+  val codigo: String,
+  val grade: String,
+  val localizacao: String,
   val abreviacao: String,
   @ManyToOne(cascade = [])
   @JoinColumn(name = "produto_id")
