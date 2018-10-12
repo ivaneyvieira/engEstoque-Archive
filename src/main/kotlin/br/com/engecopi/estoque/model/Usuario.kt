@@ -31,7 +31,7 @@ class Usuario : BaseModel() {
   @OneToMany(
     mappedBy = "usuario",
     cascade = [PERSIST, MERGE, REFRESH]
-  )
+            )
   val itensNota: List<ItemNota>? = null
   var locais: List<String>
     get() = localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
@@ -40,11 +40,11 @@ class Usuario : BaseModel() {
     }
 
   fun usuarioSaci() = saci.findUser(loginName)
+  var admin: Boolean = false
 
   val nome: String?
-    @Transient get() = usuarioSaci()?.name
-  @Formula(select = "(login_name = 'ADM' OR login_name = 'YASMINE')")
-  var admin: Boolean = false
+    @Transient
+    get() = usuarioSaci()?.name
 
   fun temProduto(produto: Produto?): Boolean {
     if (admin || this.locais.isEmpty()) return true
@@ -52,7 +52,7 @@ class Usuario : BaseModel() {
       loja,
       produto,
       locais
-    )
+                                )
   }
 
   fun localizacoesProduto(produto: Produto): List<String> {
