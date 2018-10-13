@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
@@ -27,7 +28,7 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
-  val isAdmin = EstoqueUI.user?.admin ?: false
+  val isAdmin = RegistryUserInfo.usuario.admin
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
     { _ -> viewModel.countProduto() }
@@ -84,7 +85,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(EstoqueUI.user?.admin ?: false)
+        setDeleteOperationVisible(RegistryUserInfo.usuario.admin)
         column(UsuarioCrudVo::loginName) {
           expandRatio = 1
           caption = "Usuário"

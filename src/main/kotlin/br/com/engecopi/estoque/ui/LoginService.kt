@@ -1,9 +1,7 @@
 package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
-import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.Usuario
-import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.saci.saci
 import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.button
@@ -33,16 +31,16 @@ import com.vaadin.ui.themes.ValoTheme
 
 object LoginService {
   fun login(loginInfo: LoginInfo) {
-    RegistryUserInfo.register(loginInfo)
-    Session[LoginInfo::class] = loginInfo
+    EstoqueUI.current?.loginInfo = loginInfo
+    //Session[LoginInfo::class] = loginInfo
     Page.getCurrent().reload()
   }
 
   val currentUser: LoginInfo?
-    get() = Session[LoginInfo::class]
+    get() = EstoqueUI.current?.loginInfo
 
   fun logout() {
-    RegistryUserInfo.unRegister()
+    EstoqueUI.current?.loginInfo = null
     VaadinSession.getCurrent().close()
     Page.getCurrent()?.reload()
   }

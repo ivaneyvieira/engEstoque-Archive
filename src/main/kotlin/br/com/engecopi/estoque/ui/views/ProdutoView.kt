@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
@@ -35,16 +36,14 @@ import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
-  val lojaDefault
-    get() = EstoqueUI.loja
-  val isAdmin
-    get() = EstoqueUI.user?.admin ?: false
-  
+  val lojaDefault = RegistryUserInfo.loja
+  val isAdmin = RegistryUserInfo.usuario.admin
+
   override fun layoutForm(
-          formLayout: VerticalLayout,
-          operation: CrudOperation?,
-          binder: Binder<ProdutoVo>,
-          readOnly: Boolean
+    formLayout: VerticalLayout,
+    operation: CrudOperation?,
+    binder: Binder<ProdutoVo>,
+    readOnly: Boolean
                          ) {
     binder.bean.lojaDefault = lojaDefault
     formLayout.apply {
@@ -149,7 +148,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
-  
+
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
@@ -212,9 +211,9 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
       }
     }
   }
-  
+
   override val viewModel: ProdutoViewModel
-    get() = ProdutoViewModel(this, EstoqueUI.user!!)
+    get() = ProdutoViewModel(this, RegistryUserInfo.usuario)
 }
 
 

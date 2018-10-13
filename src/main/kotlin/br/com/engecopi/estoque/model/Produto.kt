@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
@@ -53,12 +54,12 @@ class Produto : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(
     select = "LOC.localizacao",
-    join = "LEFT join (select produto_id, localizacao from v_loc_produtos where storeno = @${Loja.LOJA_DEFAULT_FIELD} group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
+    join = "LEFT join (select produto_id, localizacao from v_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
           )
   var localizacao: String? = ""
   @Formula(
     select = "SAL.saldo_total",
-    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total\n" + "from itens_nota AS I\n" + "  inner join notas AS N\n" + "    ON N.id = I.nota_id\n" + "  inner join lojas AS L\n" + "    ON L.id = N.loja_id\n" + "WHERE L.numero = @${Loja.LOJA_DEFAULT_FIELD} \n" + "group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
+    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
           )
   var saldo_total: Int? = 0
   val descricao: String?

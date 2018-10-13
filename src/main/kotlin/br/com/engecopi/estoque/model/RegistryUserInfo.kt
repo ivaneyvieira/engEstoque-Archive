@@ -1,21 +1,25 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.framework.model.Transaction
+
 object RegistryUserInfo {
-  private var loginInfo: LoginInfo? = null
+  const val LOJA_FIELD = "LOJA_DEFAULT"
+  const val USER_FIELD = "USER_DEFAULT"
+  const val ABREV_FIELD = "ABREV_DEFAULT"
 
-  fun register(loginInfo: LoginInfo) {
-    if (this.loginInfo == null)
-      this.loginInfo = loginInfo
-  }
+  private var loginInfo: () -> LoginInfo? = { null }
 
-  fun unRegister() {
-    this.loginInfo = null
+  fun register(loginInfo: () -> LoginInfo?) {
+    this.loginInfo = loginInfo
+    Transaction.variable(LOJA_FIELD, "${loja.numero}")
+    Transaction.variable(USER_FIELD, "${usuario.id}")
+    Transaction.variable(ABREV_FIELD, abreviacao)
   }
 
   val usuario
-    get() = loginInfo!!.usuario
+    get() = loginInfo()!!.usuario
   val abreviacao
-    get() = loginInfo!!.abreviacao
+    get() = loginInfo()!!.abreviacao
   val loja
     get() = usuario.loja!!
 }

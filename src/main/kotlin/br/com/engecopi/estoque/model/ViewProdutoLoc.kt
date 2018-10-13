@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
+import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import io.ebean.annotation.Cache
 import io.ebean.annotation.View
 import javax.persistence.Entity
@@ -55,7 +56,18 @@ class ViewProdutoLoc(
         .asSequence()
         .filter { it.storeno == loja.numero }
         .map { it.abreviacao }
-        .distinct().toList()
+        .distinct()
+        .toList()
+    }
+
+    fun localizacoes(produto: Produto?): List<String> {
+      produto?: return emptyList()
+      return viewProdutosLoc
+        .asSequence()
+        .filter{it.storeno == RegistryUserInfo.loja.numero && it.produto.id == produto.id}
+        .distinct()
+        .toList()
+        .mapNotNull { it.localizacao }
     }
   }
 }

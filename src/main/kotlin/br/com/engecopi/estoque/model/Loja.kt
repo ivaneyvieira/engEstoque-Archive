@@ -32,12 +32,6 @@ class Loja : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   
   companion object Find : LojaFinder() {
-    const val LOJA_DEFAULT_FIELD = "LOJA_DEFAULT"
-    
-    fun setLojaDefault(numero : Int){
-      Transaction.variable(LOJA_DEFAULT_FIELD, "$numero")
-    }
-    
     fun findLoja(storeno: Int?): Loja? {
       return if(storeno == 0 || storeno == null) null
       else

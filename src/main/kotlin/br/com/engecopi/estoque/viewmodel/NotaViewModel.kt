@@ -25,10 +25,6 @@ import kotlin.reflect.KClass
 abstract class NotaViewModel<VO : NotaVo>(
   view: IView, val usuario: Usuario, classVO: KClass<VO>, val tipo: TipoMov
                                          ) : CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
-  init {
-    Loja.setLojaDefault(usuario.loja?.numero ?: 0)
-  }
-
   override fun update(bean: VO) {
     val nota = updateNota(bean)
     val produto = saveProduto(bean.produto)

@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.EtiquetaView
@@ -53,6 +54,7 @@ class EstoqueUI : UI() {
   var loginInfo: LoginInfo? = null
 
   override fun init(request: VaadinRequest?) {
+    RegistryUserInfo.register { EstoqueUI.current?.loginInfo }
     val info = loginInfo
     if (info == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")

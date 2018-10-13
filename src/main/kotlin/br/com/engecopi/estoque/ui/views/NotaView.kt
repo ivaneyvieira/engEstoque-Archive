@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.NotaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaVo
@@ -31,8 +32,8 @@ import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
-  val lojaDefault= EstoqueUI.loja
-  val usuario = EstoqueUI.user!!
+  val lojaDefault= RegistryUserInfo.loja
+  val usuario = RegistryUserInfo.usuario
   val isAdmin = usuario.admin
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).notaFiscalField(

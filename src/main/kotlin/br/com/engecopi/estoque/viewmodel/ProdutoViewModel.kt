@@ -3,12 +3,12 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
-import br.com.engecopi.estoque.ui.EstoqueUI.Companion.loja
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
@@ -20,10 +20,6 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
     view,
     ProdutoVo::class
   ) {
-
-  init {
-    Loja.setLojaDefault(usuario.loja?.numero ?: 0)
-  }
 
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(
@@ -69,7 +65,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
           .viewProdutoLoc.localizacao.isIn(usuario.locais)
           .viewProdutoLoc.abreviacao.isIn(usuario.locais)
           .endOr()
-          .viewProdutoLoc.loja.id.eq(loja?.id)
+          .viewProdutoLoc.loja.id.eq(loja.id)
     } ?: this
   }
 
@@ -97,12 +93,7 @@ class ProdutoViewModel(view: IView, val usuario: Usuario) :
   }
 
   fun localizacoes(bean: ProdutoVo?): List<String> {
-    return ViewProdutoLoc
-      .where()
-      .loja.equalTo(loja)
-      .produto.equalTo(bean?.produto)
-      .findList()
-      .mapNotNull { it.localizacao }
+    return ViewProdutoLoc.localizacoes(bean?.produto)
   }
 }
 
