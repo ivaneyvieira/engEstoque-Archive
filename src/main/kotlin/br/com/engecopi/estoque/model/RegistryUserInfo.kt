@@ -6,8 +6,10 @@ object RegistryUserInfo {
   fun register(loginInfo: LoginInfo) {
     if (this.loginInfo == null)
       this.loginInfo = loginInfo
-    else
-      throw Exception("As informações de login já forma registradas")
+  }
+
+  fun unRegister() {
+    this.loginInfo = null
   }
 
   val usuario

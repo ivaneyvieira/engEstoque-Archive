@@ -24,12 +24,12 @@ import kotlin.reflect.KProperty
  */
 class SessionScoped<out R>(private val clazz: Class<R>) : ReadOnlyProperty<Any?, R> {
   override fun getValue(
-          thisRef: Any?,
-          property: KProperty<*>
+    thisRef: Any?,
+    property: KProperty<*>
                        ): R = getOrCreate()
-  
+
   private fun getOrCreate(): R = checkUIThread().session.getOrCreate()
-  
+
   private fun VaadinSession.getOrCreate(): R {
     var result: R? = getAttribute(clazz)
     if (result == null) {
@@ -49,51 +49,64 @@ class SessionScoped<out R>(private val clazz: Class<R>) : ReadOnlyProperty<Any?,
  * @param R the object type
  */
 inline fun <reified R> lazySession() where R : Any, R : Serializable =
-        SessionScoped(R::class.java)
+  SessionScoped(R::class.java)
 
 /**
  * Just a namespace object for attaching your [SessionScoped] objects.
  */
 object Session {
-  
   /**
    * Returns the current [VaadinSession]; fails if there is no session, most probably since we are not in the UI thread.
    */
   val current: VaadinSession get() = VaadinSession.getCurrent() ?: throw IllegalStateException("Not in UI thread")
-  
+
   /**
    * Returns the attribute stored in this session under given key.
    * @param key the key
    * @return the attribute value, may be null
    */
   operator fun get(key: String): Any? = current.getAttribute(key)
-  
+
   /**
    * Returns the attribute stored in this session under given key.
    * @param key the key
    * @return the attribute value, may be null
    */
   operator fun <T : Any> get(key: KClass<T>): T? = current.getAttribute(key.java)
-  
+
   /**
    * Stores given value under given key in a session. Removes the mapping if value is null
    * @param key the key
    * @param value the value to store, may be null if
    */
   operator fun set(
-          key: String,
-          value: Any?
-                  ) = current.setAttribute(key, value)
-  
+    key: String,
+    value: Any?
+                  ) {
+    try {
+      current.lock()
+      current.setAttribute(key, value)
+    } finally {
+      current.unlock()
+    }
+  }
+
   /**
    * Stores given value under given key in a session. Removes the mapping if value is null
    * @param key the key
    * @param value the value to store, may be null if
    */
   operator fun <T : Any> set(
-          key: KClass<T>,
-          value: T?
-                            ) = current.setAttribute(key.java, value)
+    key: KClass<T>,
+    value: T?
+                            ) {
+    try {
+      current.lock()
+      current.setAttribute(key.java, value)
+    } finally {
+      current.unlock()
+    }
+  }
 }
 
 val currentRequest: VaadinRequest
@@ -112,15 +125,15 @@ object Cookies {
    * @return cookie or null if there is no such cookie.
    */
   operator fun get(name: String): Cookie? = currentRequest.cookies?.firstOrNull { it.name == name }
-  
+
   /**
    * Overwrites given cookie, or deletes it.
    * @param name cookie name
    * @param cookie the cookie to overwrite. If null, the cookie is deleted.
    */
   operator fun set(
-          name: String,
-          cookie: Cookie?
+    name: String,
+    cookie: Cookie?
                   ) {
     if (cookie == null) {
       val newCookie = Cookie(name, null)
@@ -134,10 +147,10 @@ object Cookies {
 }
 
 infix operator fun Cookies.plusAssign(cookie: Cookie) =
-        set(cookie.name, cookie)
+  set(cookie.name, cookie)
 
 infix operator fun Cookies.minusAssign(cookie: Cookie) =
-        set(cookie.name, null)
+  set(cookie.name, null)
 
 /**
  * Checks that this thread runs with Vaadin UI set.
@@ -145,4 +158,4 @@ infix operator fun Cookies.minusAssign(cookie: Cookie) =
  * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
  */
 fun checkUIThread() =
-        UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
+  UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")

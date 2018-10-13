@@ -1,9 +1,9 @@
 package br.com.engecopi.estoque.ui
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacao
+import br.com.engecopi.estoque.model.LoginInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.ui.Session
-import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.saci.saci
 import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.button
@@ -32,34 +32,32 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
 object LoginService {
-  fun login(user: UserSaci) {
-    Session[UserSaci::class] = user
+  fun login(loginInfo: LoginInfo) {
+    RegistryUserInfo.register(loginInfo)
+    Session[LoginInfo::class] = loginInfo
     Page.getCurrent().reload()
   }
-  
-  val currentUser: UserSaci?
-    get() = Session[UserSaci::class]
-  
+
+  val currentUser: LoginInfo?
+    get() = Session[LoginInfo::class]
+
   fun logout() {
+    RegistryUserInfo.unRegister()
     VaadinSession.getCurrent().close()
     Page.getCurrent()?.reload()
-  }
-
-  fun abreviacaoes(username: String?): List<String> {
-    return Usuario.abreviacaoes(username)
   }
 }
 
 class LoginForm(private val appTitle: String) : VerticalLayout() {
   private lateinit var username: TextField
   private lateinit var password: TextField
-  private lateinit var abreviacao : ComboBox<String>
-  
+  private lateinit var abreviacao: ComboBox<String>
+
   init {
     setSizeFull()
-    isResponsive=true
+    isResponsive = true
     panel {
-      isResponsive=true
+      isResponsive = true
       w = 500.px
       alignment = Alignment.MIDDLE_CENTER
       verticalLayout {
@@ -79,35 +77,37 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
         }
         horizontalLayout {
           w = fillParent
-          isResponsive=true
+          isResponsive = true
           username = textField("Usuário") {
-            isResponsive=true
+            isResponsive = true
             expandRatio = 1f
             w = fillParent
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
             addValueChangeListener {
-              if(::abreviacao.isInitialized) {
-                val abreviacoes = LoginService.abreviacaoes(it.value)
+              if (::abreviacao.isInitialized) {
+                val abreviacoes = abreviacaoes(it.value)
                 abreviacao.setItems(abreviacoes)
+                abreviacao.value = abreviacoes.firstOrNull()
               }
             }
           }
           abreviacao = comboBox("Localizacao") {
-            isResponsive=true
+            isResponsive = true
             expandRatio = 1f
             w = fillParent
             isEmptySelectionAllowed = false
+            isTextInputAllowed = false
           }
           password = passwordField("Senha") {
-            isResponsive=true
+            isResponsive = true
             expandRatio = 1f
             w = fillParent
             icon = VaadinIcons.LOCK
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
           }
           button("Login") {
-            isResponsive=true
+            isResponsive = true
             alignment = Alignment.BOTTOM_RIGHT
             setPrimary()
             onLeftClick { login() }
@@ -116,14 +116,27 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
       }
     }
   }
-  
+
+  fun abreviacaoes(username: String?): List<String> {
+    return Usuario.abreviacaoes(username)
+  }
+
   private fun login() {
     val user = saci.findUser(username.value)
     val pass = password.value
+    val abrev = abreviacao.value
     if (user == null || user.senha != pass) {
       Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
       LoginService.logout()
-    } else
-      LoginService.login(user)
+    } else {
+      val usuario = Usuario.findUsuario(user.login)
+      if (usuario == null) {
+        Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
+        LoginService.logout()
+      } else {
+        val loginInfo = LoginInfo(usuario, abrev)
+        LoginService.login(loginInfo)
+      }
+    }
   }
 }
