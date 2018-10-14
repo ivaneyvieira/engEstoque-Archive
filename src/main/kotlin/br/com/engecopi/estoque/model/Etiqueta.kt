@@ -33,5 +33,9 @@ class Etiqueta : BaseModel() {
               .tipoMov.eq(tipoMov)
               .findOne()
     }
+
+    fun template(tipoMov : TipoMov?): String? {
+      return where().tipoMov.eq(tipoMov).findOne()?.template
+    }
   }
 }

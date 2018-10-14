@@ -147,8 +147,9 @@ abstract class NotaViewModel<VO : NotaVo>(
   override val query: QItemNota
     get() {
       updateViewProdutosLoc()
-      val query = ItemNota.where().fetch("nota").fetch("usuario").fetch("produto").fetch("produto.vproduto")
-        .fetch("produto.viewProdutoLoc").nota.tipoMov.eq(tipo)
+      //      val query = ItemNota.where().fetch("nota").fetch("usuario").fetch("produto").fetch("produto.vproduto")
+      //      .fetch("produto.viewProdutoLoc").nota.tipoMov.eq(tipo)
+      val query = ItemNota.where().nota.tipoMov.eq(tipo)
       return usuario.let { u ->
         val loja = u.loja
         query.let { q ->
@@ -204,7 +205,7 @@ abstract class NotaViewModel<VO : NotaVo>(
   }
 
   fun imprimir(itemNota: ItemNota?) = execString {
-    val template = Etiqueta.where().tipoMov.eq(itemNota?.tipoMov).findOne()?.template
+    val template = Etiqueta.template(itemNota?.tipoMov)
     val print = itemNota?.printEtiqueta()
     itemNota?.let {
       it.impresso = true
