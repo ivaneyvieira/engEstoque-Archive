@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
+import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
@@ -65,18 +66,13 @@ class Produto : BaseModel() {
   val descricao: String?
     @Transient get() = vproduto?.nome
 
-  fun localizacao(loja: Loja?, usuario: Usuario?): String? {
+  fun localizacao(usuario: Usuario?): String? {
     val user = usuario ?: return ""
     val localizacaoUser = user.localizacoesProduto(this)
-    val locs = if (loja == null) viewProdutoLoc
-    else
-      ViewProdutoLoc.find(
-        loja = loja,
-        produto = this
-                         )
+    val locs = ViewProdutoLoc.find(produto = this)
 
     return locs
-      .orEmpty().asSequence()
+      .asSequence()
       .filterNotNull()
       .filter { localizacaoUser.contains(it.localizacao) }
       .firstOrNull()
@@ -84,21 +80,15 @@ class Produto : BaseModel() {
   }
 
   @Transactional
-  fun recalculaSaldos(loja: Loja?) {
-    ViewProdutoLoc.find(
-      loja,
-      this
-                       ).map { it.localizacao }.forEach { localizacao ->
-      recalculaSaldos(
-        loja,
-        localizacao
-                     )
+  fun recalculaSaldos() {
+    ViewProdutoLoc.find(this).map { it.localizacao }.forEach { localizacao ->
+      recalculaSaldos(localizacao)
     }
   }
 
   @Transactional
-  fun recalculaSaldos(loja: Loja?, localizacao: String?): Int {
-    loja ?: return 0
+  fun recalculaSaldos(localizacao: String?): Int {
+    val loja = RegistryUserInfo.loja
     localizacao ?: return 0
     var saldo = 0
     refresh()
@@ -128,12 +118,10 @@ class Produto : BaseModel() {
   companion object Find : ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
       codigo ?: return null
-      return where().codigo.eq(
-        codigo.lpad(
-          16,
-          " "
-                   )
-                              ).grade.eq(grade ?: "").findOne()
+      return where()
+        .codigo.eq(codigo.lpad(16, " "))
+        .grade.eq(grade ?: "")
+        .findOne()
     }
 
     fun findProdutos(codigo: String?): List<Produto> {
@@ -171,8 +159,8 @@ class Produto : BaseModel() {
     return multiplicador * item.quantidade
   }
 
-  fun saldoLoja(loja: Loja?, localizacao: String?): Int {
-    loja ?: return 0
+  fun saldoLoja(localizacao: String?): Int {
+    val loja = RegistryUserInfo.loja
     refresh()
     return itensNota
       .orEmpty().asSequence()

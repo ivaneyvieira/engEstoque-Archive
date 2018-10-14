@@ -45,11 +45,7 @@ class Usuario : BaseModel() {
 
   fun temProduto(produto: Produto?): Boolean {
     if (admin || this.locais.isEmpty()) return true
-    return ViewProdutoLoc.exists(
-      loja,
-      produto,
-      locais
-                                )
+    return ViewProdutoLoc.exists(produto, locais)
   }
 
   fun localizacoesProduto(produto: Produto): List<String> {
@@ -89,7 +85,7 @@ class Usuario : BaseModel() {
     fun abreviacaoes(username: String?): List<String> {
       return findUsuario(loginName = username)?.let { usuario ->
         val locais = usuario.locais
-        if (locais.isEmpty()) ViewProdutoLoc.findAbreviacoresLoja(usuario.loja)
+        if (locais.isEmpty()) ViewProdutoLoc.findAbreviacoresLoja()
         else locais
       } ?: emptyList()
     }

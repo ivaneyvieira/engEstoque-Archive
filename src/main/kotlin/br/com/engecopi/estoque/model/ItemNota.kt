@@ -37,37 +37,27 @@ class ItemNota : BaseModel() {
   @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
-  var impresso : Boolean = false
+  var impresso: Boolean = false
   @Length(60)
-  var localizacao : String=""
-  
+  var localizacao: String = ""
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
-  
   val descricao: String?
     @Transient get() = produto?.descricao
-  
   val codigo: String?
     @Transient get() = produto?.codigo
-  
   val grade: String?
     @Transient get() = produto?.grade
-  
   val numeroNota: String?
     @Transient get() = nota?.numero
-  
   val rota: String?
     @Transient get() = nota?.rota
-  
   val tipoMov: TipoMov?
     @Transient get() = nota?.tipoMov
-  
   val tipoNota: TipoNota?
     @Transient get() = nota?.tipoNota
-  
   val dataNota: LocalDate?
     @Transient get() = nota?.data
-  
   val ultilmaMovimentacao: Boolean
     @Transient
     get() {
@@ -76,25 +66,27 @@ class ItemNota : BaseModel() {
       } ?: true
     }
   val template: String
-    @Transient get() = Etiqueta.where().tipoMov.eq(tipoMov).findOne()?.template ?: ""
-  
+    @Transient get() = Etiqueta
+                         .where()
+                         .tipoMov
+                         .eq(tipoMov)
+                         .findList()
+                         .firstOrNull()?.template ?: ""
+
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
       nota ?: return null
       produto ?: return null
       return ItemNota.where().nota.id.eq(nota.id)
-              .produto.id.eq(produto.id)
-              .findOne()
+        .produto.id.eq(produto.id)
+        .findOne()
     }
   }
-  
+
   fun printEtiqueta() = NotaPrint(this)
 
   fun recalculaSaldos() {
-    produto?.recalculaSaldos(
-      loja = nota?.loja,
-      localizacao = localizacao
-    )
+    produto?.recalculaSaldos(localizacao = localizacao)
   }
 }
 
@@ -115,7 +107,6 @@ class NotaPrint(item: ItemNota) {
   val dataLocal = if (isNotaSaci)
     notaSaci?.data
   else item.data
-  
   val data = dataLocal?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
   val produto = item.produto
   val sd = item.saldo ?: 0
@@ -127,7 +118,7 @@ class NotaPrint(item: ItemNota) {
   val un
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
-  
+
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->
       reduce.replace("[${prop.name}]", "${prop.get(this)}")

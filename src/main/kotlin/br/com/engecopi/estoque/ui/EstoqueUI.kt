@@ -54,11 +54,13 @@ class EstoqueUI : UI() {
   var loginInfo: LoginInfo? = null
 
   override fun init(request: VaadinRequest?) {
-    RegistryUserInfo.register { EstoqueUI.current?.loginInfo }
     val info = loginInfo
     if (info == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")
     } else {
+      RegistryUserInfo.register {
+        EstoqueUI.current?.loginInfo
+      }
       val user = info.usuario
       val content = valoMenu {
         this.appTitle = title

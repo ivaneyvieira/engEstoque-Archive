@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
@@ -49,21 +50,33 @@ class Nota : BaseModel() {
   val itensNota: List<ItemNota>? = null
 
   companion object Find : NotaFinder() {
-    fun findEntrada(numero: String?, loja: Loja?): Nota? {
-      return Nota.where().tipoMov.eq(ENTRADA).numero.eq(numero).loja.id.eq(loja?.id).findOne()
+    fun findEntrada(numero: String?): Nota? {
+      val loja = RegistryUserInfo.loja
+      return if (numero.isNullOrBlank()) null
+      else Nota.where().tipoMov.eq(ENTRADA).numero.eq(numero).loja.id.eq(loja.id).findOne()
     }
 
-    fun findSaida(numero: String?, loja: Loja?): Nota? {
-      return if (numero.isNullOrBlank() || loja == null) null
+    fun findSaida(numero: String?): Nota? {
+      val loja = RegistryUserInfo.loja
+      return if (numero.isNullOrBlank()) null
       else Nota.where().tipoMov.eq(SAIDA).numero.eq(numero).loja.id.eq(loja.id).findOne()
     }
 
-    fun findEntradas(loja: Int): List<Nota> {
-      return Nota.where().tipoMov.eq(ENTRADA).findList().filter { (it.loja?.numero ?: 0) == loja || loja == 0 }
+    fun findEntradas(): List<Nota> {
+      val numero = RegistryUserInfo.loja.numero
+      return Nota
+        .where()
+        .tipoMov.eq(ENTRADA)
+        .loja.numero.eq(numero)
+        .findList()
     }
 
     fun findSaidas(): List<Nota> {
-      return where().tipoMov.eq(SAIDA).findList()
+      val numero = RegistryUserInfo.loja.numero
+      return where()
+        .tipoMov.eq(SAIDA)
+        .loja.numero.eq(numero)
+        .findList()
     }
 
     fun novoNumero(): Int {
@@ -73,20 +86,20 @@ class Nota : BaseModel() {
       return numMax + 1
     }
 
-    fun findNotaEntradaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaci> {
+    fun findNotaEntradaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
-      lojaNF ?: return emptyList()
+      val loja = RegistryUserInfo.loja
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaEntrada(lojaNF.numero, numero, serie)
+      return saci.findNotaEntrada(loja.numero, numero, serie)
     }
 
-    fun findNotaSaidaSaci(numeroNF: String?, lojaNF: Loja?): List<NotaSaci> {
+    fun findNotaSaidaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
-      lojaNF ?: return emptyList()
+      val loja = RegistryUserInfo.loja
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaSaida(lojaNF.numero, numero, serie)
+      return saci.findNotaSaida(loja.numero, numero, serie)
     }
 
     fun existNumero(nota: Nota?, produto: Produto?): Boolean {

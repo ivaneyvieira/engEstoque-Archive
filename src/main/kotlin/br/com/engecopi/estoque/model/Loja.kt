@@ -23,17 +23,17 @@ class Loja : BaseModel() {
   @Index(unique = true)
   var numero: Int = 0
   @Length(2)
-  var sigla: String =""
+  var sigla: String = ""
   @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val notas: List<Nota>? = null
   @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val usuarios: List<Usuario>? = null
   @OneToMany(mappedBy = "loja", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
-  
+
   companion object Find : LojaFinder() {
     fun findLoja(storeno: Int?): Loja? {
-      return if(storeno == 0 || storeno == null) null
+      return if (storeno == 0 || storeno == null) null
       else
         where().numero.eq(storeno).findOne()
         ?: saci.findLojas(storeno).firstOrNull()?.let { lojaSaci ->
@@ -44,21 +44,18 @@ class Loja : BaseModel() {
           loja
         }
     }
-    
-    fun lojaSaldo(storeno: Int): List<Loja> {
+
+    fun lojaSaldo(): List<Loja> {
+      val loja = RegistryUserInfo.loja
       return where().notas.id.gt(0).findList()
-              .filter { loja -> loja.numero == storeno || storeno == 0 }
+        .filter { it.id == loja.id }
     }
-    
-    fun findLojaUser(storeno: Int): List<Loja> {
-      return where().findList().filter { loja -> loja.numero == storeno || storeno == 0 }
-    }
-    
+
     fun carregasLojas() {
-      saci.findLojas(0).forEach {lojaSaci->
-        lojaSaci.storeno?.let {storeno ->
+      saci.findLojas(0).forEach { lojaSaci ->
+        lojaSaci.storeno?.let { storeno ->
           val loja = Loja.findLoja(storeno)
-          if(loja == null){
+          if (loja == null) {
             Loja().apply {
               numero = storeno
             }.insert()

@@ -13,26 +13,6 @@ import javax.persistence.Id
 @Entity
 @View(name = "view_produtos_saci")
 class ViewProdutoSaci {
-  
-  companion object Find : ViewProdutoSaciFinder() {
-    
-    fun find(codigo: String?, grade: String?): ViewProdutoSaci? {
-      codigo ?: return null
-      val gradeN = grade ?: ""
-      return where()
-              .codigo.eq(codigo.lpad(16, " "))
-              .grade.eq(gradeN)
-              .findOne()
-    }
-    
-    fun find(codigo: String?): List<ViewProdutoSaci> {
-      codigo ?: return emptyList()
-      return where()
-              .codigo.eq(codigo.lpad(16, " "))
-              .findList()
-    }
-  }
-  
   @Id
   var id: String = ""
   var codigo: String? = null
@@ -42,4 +22,22 @@ class ViewProdutoSaci {
   var custo: Double? = null
   var unidade: String? = null
   var tipo: String? = null
+
+  companion object Find : ViewProdutoSaciFinder() {
+    fun find(codigo: String?, grade: String?): ViewProdutoSaci? {
+      codigo ?: return null
+      val gradeN = grade ?: ""
+      return where()
+        .codigo.eq(codigo.lpad(16, " "))
+        .grade.eq(gradeN)
+        .findOne()
+    }
+
+    fun find(codigo: String?): List<ViewProdutoSaci> {
+      codigo ?: return emptyList()
+      return where()
+        .codigo.eq(codigo.lpad(16, " "))
+        .findList()
+    }
+  }
 }

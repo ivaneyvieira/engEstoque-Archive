@@ -135,7 +135,7 @@ class ProdutoVo : EntityVo<Produto>() {
   var filtroLocalizacao: String? = null
   val itensNota: List<ItemNota>
     get() {
-      produto?.recalculaSaldos(lojaDefault)
+      produto?.recalculaSaldos()
 
       return produto?.finItensNota().orEmpty().filter {
         (lojaDefault?.let { lDef -> it.nota?.loja?.id == lDef.id } ?: true)

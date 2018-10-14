@@ -56,7 +56,7 @@ abstract class NotaViewModel<VO : NotaVo>(
 
   private fun insertItemNota(nota: Nota, produto: Produto?, quantProduto: Int, usuario3: Usuario,
                              local: String?): ItemNota? {
-    val saldoLocal = produto?.saldoLoja(nota.loja, local) ?: 0
+    val saldoLocal = produto?.saldoLoja(local) ?: 0
     return if (quantProduto != 0) {
       when {
         Nota.existNumero(nota, produto)                                -> {
@@ -79,7 +79,7 @@ abstract class NotaViewModel<VO : NotaVo>(
             this.localizacao = local ?: ""
           }
           item.insert()
-          item.produto?.recalculaSaldos(nota.loja, local)
+          item.produto?.recalculaSaldos(local)
           item
         }
       }
@@ -94,7 +94,7 @@ abstract class NotaViewModel<VO : NotaVo>(
         this.quantidade = bean.quantProduto ?: 0
       }
       item.update()
-      item.produto?.recalculaSaldos(nota.loja, bean.localizacao)
+      item.produto?.recalculaSaldos(bean.localizacao)
     }
   }
 
@@ -243,16 +243,16 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var rota: String? = ""
   private val notaProdutoSaci: List<NotaSaci>
     get() = if (entityVo == null) when (tipo) {
-      SAIDA   -> Nota.findNotaSaidaSaci(numeroNF, lojaNF)
-      ENTRADA -> Nota.findNotaEntradaSaci(numeroNF, lojaNF)
+      SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
+      ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
     }
     else emptyList()
   val notaSaci
     get() = notaProdutoSaci.firstOrNull()
   val nota: Nota?
     get() = entityVo?.nota ?: when (tipo) {
-      SAIDA   -> Nota.findSaida(numeroNF, lojaNF)
-      ENTRADA -> Nota.findEntrada(numeroNF, lojaNF)
+      SAIDA   -> Nota.findSaida(numeroNF)
+      ENTRADA -> Nota.findEntrada(numeroNF)
     }
 
   fun atualizaNota() {
@@ -321,9 +321,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
     get() = produto?.grade ?: ""
   var quantProduto: Int? = 0
   val saldo: Int
-    get() = produto?.saldoLoja(lojaNF, localizacao) ?: 0
+    get() = produto?.saldoLoja(localizacao) ?: 0
   val localizacao
-    get() = entityVo?.localizacao ?: produto?.localizacao(lojaNF, usuario)
+    get() = entityVo?.localizacao ?: produto?.localizacao(usuario)
 }
 
 class ProdutoVO {
