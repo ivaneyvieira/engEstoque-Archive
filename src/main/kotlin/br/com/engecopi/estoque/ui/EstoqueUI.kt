@@ -21,14 +21,22 @@ import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.icons.VaadinIcons.INBOX
+import com.vaadin.icons.VaadinIcons.OUT
+import com.vaadin.icons.VaadinIcons.OUTBOX
+import com.vaadin.icons.VaadinIcons.PACKAGE
+import com.vaadin.icons.VaadinIcons.PAPERCLIP
+import com.vaadin.icons.VaadinIcons.USER
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.Page
+import com.vaadin.server.Responsive
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
 import com.vaadin.shared.Position
+import com.vaadin.shared.Position.TOP_CENTER
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
@@ -50,44 +58,57 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 @JavaScript("https://code.jquery.com/jquery-2.1.4.min.js",
             "https://code.responsivevoice.org/responsivevoice.js")
 @PushStateNavigation
+@PreserveOnRefresh
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
   val versao = SystemUtils.readFile("/versao.txt")
   var loginInfo: LoginInfo? = null
+    set(value) {
+      field = value
+      updateContent("")
+    }
 
   override fun init(request: VaadinRequest?) {
-    loginInfo = Session[LoginInfo::class]
+    RegistryUserInfo.register {
+      EstoqueUI.current?.loginInfo
+    }
+    isResponsive = true
+    updateContent(request?.contextPath ?: "")
+  }
+
+  private fun updateContent(contextPath: String) {
+    //loginInfo = Session[LoginInfo::class]
     val info = loginInfo
     if (info == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")
+      navigator = null
     } else {
-      RegistryUserInfo.register {
-        EstoqueUI.current?.loginInfo
-      }
+      content = null
       val user = info.usuario
-      val content = valoMenu {
+      valoMenu {
         this.appTitle = title
 
         section("Usuário: " + user.loginName)
-        menuButton("Sair", icon = VaadinIcons.OUT) {
+        menuButton("Sair", icon = OUT) {
           onLeftClick {
             LoginService.logout()
           }
         }
         section("Movimentação")
-        menuButton("Entrada", VaadinIcons.INBOX, view = EntradaView::class.java)
-        menuButton("Saída", VaadinIcons.OUTBOX, view = SaidaView::class.java)
+        menuButton("Entrada", INBOX, view = EntradaView::class.java)
+        menuButton("Saída", OUTBOX, view = SaidaView::class.java)
         section("Consulta")
-        menuButton("Produtos", VaadinIcons.PACKAGE, view = ProdutoView::class.java)
+        menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
         if (user.admin) {
-          menuButton("Usuários", VaadinIcons.USER, view = UsuarioView::class.java)
-          menuButton("Etiquetas", VaadinIcons.PAPERCLIP, view = EtiquetaView::class.java)
+          menuButton("Usuários", USER, view = UsuarioView::class.java)
+          menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
         }
       }
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl
       navigator = Navigator(this, content as ViewDisplay)
       navigator.addProvider(autoViewProvider)
 
+      navigator.navigateTo(contextPath)
       setErrorHandler { e ->
         log.error("Erro não identificado ${e.throwable}", e.throwable)
         // when the exception occurs, show a nice notification
@@ -96,7 +117,7 @@ class EstoqueUI : UI() {
                      ERROR_MESSAGE)
           .apply {
             styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
-            position = Position.TOP_CENTER
+            position = TOP_CENTER
             show(Page.getCurrent())
           }
       }

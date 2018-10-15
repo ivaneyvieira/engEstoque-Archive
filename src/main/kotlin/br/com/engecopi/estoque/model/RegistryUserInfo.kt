@@ -11,9 +11,15 @@ object RegistryUserInfo {
 
   fun register(loginInfo: () -> LoginInfo?) {
     this.loginInfo = loginInfo
-    Transaction.variable(LOJA_FIELD, "${loja.numero}")
-    Transaction.variable(USER_FIELD, "${usuario.id}")
-    Transaction.variable(ABREV_FIELD, "'$abreviacao'")
+    if(this.loginInfo() == null) {
+      Transaction.variable(LOJA_FIELD, "NULL")
+      Transaction.variable(USER_FIELD, "NULL")
+      Transaction.variable(ABREV_FIELD, "NULL")
+    }else{
+      Transaction.variable(LOJA_FIELD, "${loja.numero}")
+      Transaction.variable(USER_FIELD, "${usuario.id}")
+      Transaction.variable(ABREV_FIELD, "'$abreviacao'")
+    }
   }
 
   val usuario

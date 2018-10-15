@@ -34,8 +34,8 @@ import com.vaadin.ui.themes.ValoTheme
 object LoginService {
   fun login(loginInfo: LoginInfo) {
     EstoqueUI.current?.loginInfo = loginInfo
-    Session[LoginInfo::class] = loginInfo
-    Page.getCurrent().reload()
+    //Session[LoginInfo::class] = loginInfo
+    //Page.getCurrent().reload()
   }
 
   val currentUser: LoginInfo?
@@ -43,8 +43,8 @@ object LoginService {
 
   fun logout() {
     EstoqueUI.current?.loginInfo = null
-    VaadinSession.getCurrent().close()
-    Page.getCurrent()?.reload()
+    // VaadinSession.getCurrent().close()
+    // Page.getCurrent()?.reload()
   }
 }
 

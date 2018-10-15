@@ -49,11 +49,13 @@ class Etiqueta {
 	tipo_mov
 }
 
-ItemNota		-r->		Usuario
-ItemNota		-d->		Produto
-ItemNota		-u->		Nota
-ItemNota		-l->		Etiqueta
-Nota			-r->		Loja
-Usuario			-u->		Loja
+ItemNota		}-r-		Usuario
+ItemNota		}-d-		Produto
+ItemNota		}-u-		Nota
+ItemNota		}-l-		Etiqueta
+Nota			}-r-		Loja
+Usuario			}-u-		Loja
+Usuario			}-d-{		localizacao
+localizacao		}-l-{		Produto
 }
 @enduml

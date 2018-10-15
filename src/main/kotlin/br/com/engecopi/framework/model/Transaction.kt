@@ -43,7 +43,7 @@ object Transaction {
     Ebean.beginTransaction()
   }
   
-  fun variable(name : String, value : String) {
+  fun variable(name : String, value : String?) {
     Ebean.currentTransaction()?.connection?.let { con ->
       val stmt = con.createStatement()
       val sql = "SET @$name := $value;"
