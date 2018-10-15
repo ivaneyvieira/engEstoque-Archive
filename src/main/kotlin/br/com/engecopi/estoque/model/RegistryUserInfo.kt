@@ -28,6 +28,8 @@ object RegistryUserInfo {
     get() = loginInfo()!!.abreviacao
   val loja
     get() = usuario.loja!!
+  val admin
+    get() = usuario.admin
 }
 
 data class LoginInfo(val usuario: Usuario, val abreviacao: String)

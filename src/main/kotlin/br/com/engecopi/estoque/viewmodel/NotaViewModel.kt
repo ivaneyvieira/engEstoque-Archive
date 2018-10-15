@@ -5,6 +5,8 @@ import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuario
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -22,9 +24,8 @@ import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 import kotlin.reflect.KClass
 
-abstract class NotaViewModel<VO : NotaVo>(
-  view: IView, val usuario: Usuario, classVO: KClass<VO>, val tipo: TipoMov
-                                         ) : CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
+abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov) :
+  CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     val nota = updateNota(bean)
     val produto = saveProduto(bean.produto)
@@ -185,9 +186,14 @@ abstract class NotaViewModel<VO : NotaVo>(
   }
 
   override fun QItemNota.filterString(text: String): QItemNota {
-    val idUser = this@NotaViewModel.usuario.loja?.id
-    return nota.numero.eq(text).and().produto.viewProdutoLoc.localizacao.contains(text).produto.viewProdutoLoc.loja.id
-      .eq(idUser).endAnd().produto.vproduto.codigo.contains(text).produto.vproduto.nome.contains(text)
+    val idLoja = RegistryUserInfo.loja.id
+    return nota.numero.eq(text)
+      .and()
+      .produto.viewProdutoLoc.localizacao.contains(text)
+      .produto.viewProdutoLoc.loja.id.eq(idLoja)
+      .endAnd()
+      .produto.vproduto.codigo.contains(text)
+      .produto.vproduto.nome.contains(text)
   }
 
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {

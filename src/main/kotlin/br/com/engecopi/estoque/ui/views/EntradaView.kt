@@ -162,7 +162,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
   }
 
   override val viewModel: EntradaViewModel
-    get() = EntradaViewModel(this, usuario)
+    get() = EntradaViewModel(this)
 }
 
 

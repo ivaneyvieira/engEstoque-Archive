@@ -151,6 +151,6 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
   }
 
   override val viewModel
-    get() = SaidaViewModel(this, usuario)
+    get() = SaidaViewModel(this)
 }
 

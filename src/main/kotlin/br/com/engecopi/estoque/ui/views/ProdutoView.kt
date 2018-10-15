@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -36,16 +35,13 @@ import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
-  val lojaDefault = RegistryUserInfo.loja
-  val isAdmin = RegistryUserInfo.usuario.admin
-
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,
     binder: Binder<ProdutoVo>,
     readOnly: Boolean
                          ) {
-    binder.bean.lojaDefault = lojaDefault
+    binder.bean.lojaDefault = RegistryUserInfo.loja
     formLayout.apply {
       w = 800.px
       h = 300.px
@@ -145,14 +141,14 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
       }
     }
-    if (!isAdmin && operation == UPDATE)
+    if (!RegistryUserInfo.usuario.admin && operation == UPDATE)
       binder.setReadOnly(true)
   }
 
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
-        queryOnly = !isAdmin
+        queryOnly = !RegistryUserInfo.usuario.admin
         column(ProdutoVo::codigoProduto) {
           expandRatio = 1
           caption = "Código"
@@ -213,7 +209,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   }
 
   override val viewModel: ProdutoViewModel
-    get() = ProdutoViewModel(this, RegistryUserInfo.usuario)
+    get() = ProdutoViewModel(this)
 }
 
 

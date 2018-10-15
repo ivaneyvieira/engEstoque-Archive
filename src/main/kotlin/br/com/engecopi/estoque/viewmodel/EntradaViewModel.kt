@@ -4,7 +4,7 @@ import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.framework.viewmodel.IView
 
-class EntradaViewModel(view: IView, usuario: Usuario) : NotaViewModel<EntradaVo>(view, usuario, EntradaVo::class, ENTRADA) {
+class EntradaViewModel(view: IView) : NotaViewModel<EntradaVo>(view, EntradaVo::class, ENTRADA) {
   override fun createVo() = EntradaVo()
 }
 

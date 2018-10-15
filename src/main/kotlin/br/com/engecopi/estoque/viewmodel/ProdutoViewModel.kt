@@ -4,8 +4,8 @@ import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo.loja
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuario
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
@@ -15,7 +15,7 @@ import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 
-class ProdutoViewModel(view: IView, val usuario: Usuario) :
+class ProdutoViewModel(view: IView) :
   CrudViewModel<Produto, QProduto, ProdutoVo>(
     view,
     ProdutoVo::class
