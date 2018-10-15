@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuario
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
@@ -148,20 +149,16 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   override val query: QItemNota
     get() {
       updateViewProdutosLoc()
-      //      val query = ItemNota.where().fetch("nota").fetch("usuario").fetch("produto").fetch("produto.vproduto")
-      //      .fetch("produto.viewProdutoLoc").nota.tipoMov.eq(tipo)
-      val query = ItemNota.where().nota.tipoMov.eq(tipo)
-      return usuario.let { u ->
-        val loja = u.loja
-        query.let { q ->
-          if (loja == null) q
-          else q.nota.loja.id.eq(loja.id)
-        }.let { q ->
-          if (u.admin) q
-          else q.or().produto.viewProdutoLoc.localizacao.isIn(usuario.locais).produto.viewProdutoLoc.abreviacao.isIn(
-            usuario.locais).endOr().produto.viewProdutoLoc.loja.id.eq(loja?.id)
-        }
-      } ?: query
+      val query = ItemNota.where()
+        .fetch("nota")
+        .fetch("usuario")
+        .fetch("produto")
+        .fetch("produto.vproduto")
+        .fetch("produto.viewProdutoLoc")
+        .nota.tipoMov.eq(tipo)
+      return query
+        .nota.loja.id.eq(loja.id)
+        .localizacao.isIn(RegistryUserInfo.localizacaoes)
     }
 
   abstract fun createVo(): VO

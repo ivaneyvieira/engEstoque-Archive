@@ -12,8 +12,13 @@ import br.com.engecopi.estoque.ui.views.UsuarioView
 import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.autoViewProvider
+import com.github.vok.karibudsl.comboBox
+import com.github.vok.karibudsl.expandRatio
+import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.onLeftClick
+import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.valoMenu
+import com.github.vok.karibudsl.w
 import com.vaadin.annotations.JavaScript
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.annotations.Theme
@@ -37,12 +42,14 @@ import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
 import com.vaadin.shared.Position
 import com.vaadin.shared.Position.TOP_CENTER
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
 import com.vaadin.ui.themes.ValoTheme
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import java.rmi.registry.Registry
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
@@ -62,6 +69,7 @@ private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
   val versao = SystemUtils.readFile("/versao.txt")
+  lateinit var comboLocalizacao: ComboBox<String>
   var loginInfo: LoginInfo? = null
     set(value) {
       field = value
@@ -88,20 +96,28 @@ class EstoqueUI : UI() {
       valoMenu {
         this.appTitle = title
 
-        section("Usuário: " + user.loginName)
-        menuButton("Sair", icon = OUT) {
-          onLeftClick {
-            LoginService.logout()
+        section("Login") {
+          menuButton("Usuário:", badge = user.loginName)
+          menuButton("Localizacao:", badge = info.abreviacao)
+          menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
+          menuButton("Sair", icon = OUT) {
+            onLeftClick {
+              LoginService.logout()
+            }
           }
         }
-        section("Movimentação")
-        menuButton("Entrada", INBOX, view = EntradaView::class.java)
-        menuButton("Saída", OUTBOX, view = SaidaView::class.java)
-        section("Consulta")
-        menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
-        if (user.admin) {
-          menuButton("Usuários", USER, view = UsuarioView::class.java)
-          menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
+
+
+        section("Movimentação") {
+          menuButton("Entrada", INBOX, view = EntradaView::class.java)
+          menuButton("Saída", OUTBOX, view = SaidaView::class.java)
+        }
+        section("Consulta") {
+          menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
+          if (user.admin) {
+            menuButton("Usuários", USER, view = UsuarioView::class.java)
+            menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
+          }
         }
       }
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl

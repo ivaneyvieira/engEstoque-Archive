@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.RegistryUserInfo.localizacaoes
 import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuario
 import br.com.engecopi.estoque.model.TipoNota
@@ -16,20 +17,16 @@ import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 
 class ProdutoViewModel(view: IView) :
-  CrudViewModel<Produto, QProduto, ProdutoVo>(
-    view,
-    ProdutoVo::class
-  ) {
-
+  CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
   override fun update(bean: ProdutoVo) {
     Produto.findProduto(
       bean.codigoProduto,
       bean.gradeProduto
-    )?.let { produto ->
+                       )?.let { produto ->
       produto.codigo = bean.codigoProduto.lpad(
         16,
         " "
-      )
+                                              )
       produto.codebar = bean.codebar ?: ""
       produto.update()
     }
@@ -40,7 +37,7 @@ class ProdutoViewModel(view: IView) :
       this.codigo = bean.codigoProduto.lpad(
         16,
         " "
-      )
+                                           )
       this.grade = bean.gradeProduto ?: ""
       this.codebar = bean.codebar ?: ""
       this.insert()
@@ -51,20 +48,18 @@ class ProdutoViewModel(view: IView) :
     Produto.findProduto(
       bean.codigoProduto,
       bean.gradeProduto
-    )?.let { produto ->
+                       )?.let { produto ->
       produto.delete()
     }
   }
 
   fun QProduto.filtroUsuario(): QProduto {
     return usuario.let { u ->
-      if (u.admin || u.localizacaoes.isEmpty())
+      if (u.admin)
         this
       else
-        this.or()
-          .viewProdutoLoc.localizacao.isIn(usuario.locais)
-          .viewProdutoLoc.abreviacao.isIn(usuario.locais)
-          .endOr()
+        this
+          .viewProdutoLoc.localizacao.isIn(localizacaoes)
           .viewProdutoLoc.loja.id.eq(loja.id)
     } ?: this
   }
@@ -102,7 +97,7 @@ class ProdutoVo : EntityVo<Produto>() {
     return Produto.findProduto(
       codigoProduto,
       gradeProduto
-    )
+                              )
   }
 
   var lojaDefault: Loja? = null
