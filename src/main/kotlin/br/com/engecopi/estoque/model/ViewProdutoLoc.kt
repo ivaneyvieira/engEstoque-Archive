@@ -51,16 +51,6 @@ class ViewProdutoLoc(
       }
     }
 
-    fun findAbreviacoresLoja(): List<String> {
-      val loja = RegistryUserInfo.loja
-      return viewProdutosLoc
-        .asSequence()
-        .filter { it.storeno == loja.numero }
-        .map { it.abreviacao }
-        .distinct()
-        .toList()
-    }
-
     fun localizacoes(produto: Produto?): List<String> {
       val loja = RegistryUserInfo.loja
       produto?: return emptyList()

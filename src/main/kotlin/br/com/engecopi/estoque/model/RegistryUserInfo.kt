@@ -13,7 +13,7 @@ object RegistryUserInfo {
     this.loginInfo = loginInfo
     Transaction.variable(LOJA_FIELD, "${loja.numero}")
     Transaction.variable(USER_FIELD, "${usuario.id}")
-    Transaction.variable(ABREV_FIELD, abreviacao)
+    Transaction.variable(ABREV_FIELD, "'$abreviacao'")
   }
 
   val usuario

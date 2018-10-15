@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
@@ -85,7 +86,8 @@ class Usuario : BaseModel() {
     fun abreviacaoes(username: String?): List<String> {
       return findUsuario(loginName = username)?.let { usuario ->
         val locais = usuario.locais
-        if (locais.isEmpty()) ViewProdutoLoc.findAbreviacoresLoja()
+        if (locais.isEmpty())
+          usuario.loja?.findAbreviacores()
         else locais
       } ?: emptyList()
     }

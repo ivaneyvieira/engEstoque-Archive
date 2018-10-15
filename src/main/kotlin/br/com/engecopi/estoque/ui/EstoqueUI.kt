@@ -9,11 +9,13 @@ import br.com.engecopi.estoque.ui.views.EtiquetaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
+import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.autoViewProvider
 import com.github.vok.karibudsl.onLeftClick
 import com.github.vok.karibudsl.valoMenu
 import com.vaadin.annotations.JavaScript
+import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
@@ -54,6 +56,7 @@ class EstoqueUI : UI() {
   var loginInfo: LoginInfo? = null
 
   override fun init(request: VaadinRequest?) {
+    loginInfo = Session[LoginInfo::class]
     val info = loginInfo
     if (info == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")

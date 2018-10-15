@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.finder.LojaFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.framework.model.Transaction
@@ -63,5 +64,14 @@ class Loja : BaseModel() {
         }
       }
     }
+  }
+
+  fun findAbreviacores(): List<String> {
+    return viewProdutosLoc
+      .asSequence()
+      .filter { it.storeno == numero }
+      .map { it.abreviacao }
+      .distinct()
+      .toList()
   }
 }

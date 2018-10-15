@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.saci.saci
 import com.github.vok.karibudsl.alignment
 import com.github.vok.karibudsl.button
@@ -18,6 +19,7 @@ import com.github.vok.karibudsl.setPrimary
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
+import com.vaadin.data.HasValue.ValueChangeEvent
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.Page
 import com.vaadin.server.VaadinSession
@@ -32,7 +34,7 @@ import com.vaadin.ui.themes.ValoTheme
 object LoginService {
   fun login(loginInfo: LoginInfo) {
     EstoqueUI.current?.loginInfo = loginInfo
-    //Session[LoginInfo::class] = loginInfo
+    Session[LoginInfo::class] = loginInfo
     Page.getCurrent().reload()
   }
 
@@ -83,11 +85,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
             addValueChangeListener {
-              if (::abreviacao.isInitialized) {
-                val abreviacoes = abreviacaoes(it.value)
-                abreviacao.setItems(abreviacoes)
-                abreviacao.value = abreviacoes.firstOrNull()
-              }
+              changeUserName(it.value)
             }
           }
           abreviacao = comboBox("Localizacao") {
@@ -96,6 +94,9 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             w = fillParent
             isEmptySelectionAllowed = false
             isTextInputAllowed = false
+            val abreviacoes = abreviacaoes(username.value)
+            this.setItems(abreviacoes)
+            this.value = abreviacoes.firstOrNull()
           }
           password = passwordField("Senha") {
             isResponsive = true
@@ -112,6 +113,14 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
           }
         }
       }
+    }
+  }
+
+  private fun changeUserName(value: String?) {
+    if (::abreviacao.isInitialized) {
+      val abreviacoes = abreviacaoes(value)
+      abreviacao.setItems(abreviacoes)
+      abreviacao.value = abreviacoes.firstOrNull()
     }
   }
 
