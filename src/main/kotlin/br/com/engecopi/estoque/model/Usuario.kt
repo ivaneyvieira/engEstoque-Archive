@@ -1,10 +1,8 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
-import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import javax.persistence.CascadeType.MERGE
@@ -28,7 +26,7 @@ class Usuario : BaseModel() {
   @Length(4000)
   var localizacaoes: String = ""
   @OneToMany(
-    mappedBy = "usuario",
+    mappedBy = "usuarioDefault",
     cascade = [PERSIST, MERGE, REFRESH]
             )
   val itensNota: List<ItemNota>? = null

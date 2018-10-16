@@ -6,8 +6,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
-import br.com.engecopi.estoque.model.RegistryUserInfo.usuario
+import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -151,14 +150,14 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       updateViewProdutosLoc()
       val query = ItemNota.where()
         .fetch("nota")
-        .fetch("usuario")
+        .fetch("usuarioDefault")
         .fetch("produto")
         .fetch("produto.vproduto")
         .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
       return query
-        .nota.loja.id.eq(loja.id)
-        .localizacao.isIn(RegistryUserInfo.localizacaoes)
+        .nota.loja.id.eq(lojaDefault.id)
+        .localizacao.isIn(RegistryUserInfo.localizacaoesDefault)
     }
 
   abstract fun createVo(): VO
@@ -183,7 +182,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   }
 
   override fun QItemNota.filterString(text: String): QItemNota {
-    val idLoja = RegistryUserInfo.loja.id
+    val idLoja = RegistryUserInfo.lojaDefault.id
     return nota.numero.eq(text)
       .and()
       .produto.viewProdutoLoc.localizacao.contains(text)

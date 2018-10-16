@@ -1,22 +1,16 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.finder.LojaFinder
 import br.com.engecopi.framework.model.BaseModel
-import br.com.engecopi.framework.model.Transaction
-import br.com.engecopi.saci.QuerySaci
 import br.com.engecopi.saci.saci
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
-import javax.persistence.CascadeType.ALL
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
-import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
-import javax.persistence.Transient
 
 @Entity
 @Table(name = "lojas")
@@ -25,11 +19,11 @@ class Loja : BaseModel() {
   var numero: Int = 0
   @Length(2)
   var sigla: String = ""
-  @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "lojaDefault", cascade = [PERSIST, MERGE, REFRESH])
   val notas: List<Nota>? = null
-  @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "lojaDefault", cascade = [PERSIST, MERGE, REFRESH])
   val usuarios: List<Usuario>? = null
-  @OneToMany(mappedBy = "loja", cascade = [REFRESH])
+  @OneToMany(mappedBy = "lojaDefault", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
 
   companion object Find : LojaFinder() {
@@ -47,7 +41,7 @@ class Loja : BaseModel() {
     }
 
     fun lojaSaldo(): List<Loja> {
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       return where().notas.id.gt(0).findList()
         .filter { it.id == loja.id }
     }

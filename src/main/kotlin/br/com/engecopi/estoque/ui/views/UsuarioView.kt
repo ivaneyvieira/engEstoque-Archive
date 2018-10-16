@@ -3,10 +3,8 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
-import br.com.engecopi.framework.printer.printerSaci
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItensSet
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
@@ -28,7 +26,7 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
-  val isAdmin = RegistryUserInfo.usuario.admin
+  val isAdmin = RegistryUserInfo.usuarioDefault.admin
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
     { _ -> viewModel.countProduto() }
@@ -85,7 +83,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(RegistryUserInfo.usuario.admin)
+        setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
         column(UsuarioCrudVo::loginName) {
           expandRatio = 1
           caption = "Usuário"
@@ -103,7 +101,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         column(UsuarioCrudVo::localStr) {
           expandRatio = 1
           caption = "Localização"
-          setSortProperty("localizacaoes")
+          setSortProperty("localizacaoesDefault")
         }
       }
     }

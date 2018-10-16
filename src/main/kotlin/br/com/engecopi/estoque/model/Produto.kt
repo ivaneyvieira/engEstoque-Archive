@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
@@ -88,7 +87,7 @@ class Produto : BaseModel() {
 
   @Transactional
   fun recalculaSaldos(localizacao: String?): Int {
-    val loja = RegistryUserInfo.loja
+    val loja = RegistryUserInfo.lojaDefault
     localizacao ?: return 0
     var saldo = 0
     refresh()
@@ -160,7 +159,7 @@ class Produto : BaseModel() {
   }
 
   fun saldoLoja(localizacao: String?): Int {
-    val loja = RegistryUserInfo.loja
+    val loja = RegistryUserInfo.lojaDefault
     refresh()
     return itensNota
       .orEmpty().asSequence()

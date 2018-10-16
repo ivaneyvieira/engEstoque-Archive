@@ -41,7 +41,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
     binder: Binder<ProdutoVo>,
     readOnly: Boolean
                          ) {
-    binder.bean.lojaDefault = RegistryUserInfo.loja
+    binder.bean.lojaDefault = RegistryUserInfo.lojaDefault
     formLayout.apply {
       w = 800.px
       h = 300.px
@@ -141,14 +141,14 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
       }
     }
-    if (!RegistryUserInfo.usuario.admin && operation == UPDATE)
+    if (!RegistryUserInfo.usuarioDefault.admin && operation == UPDATE)
       binder.setReadOnly(true)
   }
 
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
-        queryOnly = !RegistryUserInfo.usuario.admin
+        queryOnly = !RegistryUserInfo.usuarioDefault.admin
         column(ProdutoVo::codigoProduto) {
           expandRatio = 1
           caption = "Código"

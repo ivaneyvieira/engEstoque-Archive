@@ -1,8 +1,7 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
+import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
-import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import io.ebean.annotation.Cache
 import io.ebean.annotation.View
 import javax.persistence.Entity
@@ -31,7 +30,7 @@ class ViewProdutoLoc(
                     ) {
   companion object Find : ViewProdutoLocFinder() {
     fun exists(produto: Produto?, locs: List<String>): Boolean {
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       produto ?: return false
       return where()
                .loja.id.eq(loja.id)
@@ -44,7 +43,7 @@ class ViewProdutoLoc(
     }
 
     fun find(produto: Produto?): List<ViewProdutoLoc> {
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       produto ?: return emptyList()
       return viewProdutosLoc.filter {
         it.loja.id == loja.id && it.produto.id == produto.id
@@ -54,18 +53,17 @@ class ViewProdutoLoc(
     fun localizacoes(abreviacao : String): List<String> {
       return viewProdutosLoc
         .asSequence()
-        .filter{it.storeno == loja.numero && it.abreviacao == abreviacao}
+        .filter{ it.storeno == lojaDefault.numero && it.abreviacao == abreviacao}
         .distinct()
         .toList()
         .mapNotNull { it.localizacao }
     }
 
     fun localizacoes(produto: Produto?): List<String> {
-      val loja = RegistryUserInfo.loja
       produto?: return emptyList()
       return viewProdutosLoc
         .asSequence()
-        .filter{it.storeno == loja.numero && it.produto.id == produto.id}
+        .filter{ it.storeno == lojaDefault.numero && it.produto.id == produto.id}
         .distinct()
         .toList()
         .mapNotNull { it.localizacao }

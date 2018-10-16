@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.TipoMov
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EtiquetaViewModel
 import br.com.engecopi.estoque.viewmodel.EtiquetaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -71,7 +70,7 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
   init {
     form("Etiquetas") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(RegistryUserInfo.usuario.admin)
+        setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
         column(EtiquetaVo::titulo) {
           expandRatio = 1
           caption = "Título"

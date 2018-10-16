@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
@@ -51,19 +50,19 @@ class Nota : BaseModel() {
 
   companion object Find : NotaFinder() {
     fun findEntrada(numero: String?): Nota? {
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       return if (numero.isNullOrBlank()) null
       else Nota.where().tipoMov.eq(ENTRADA).numero.eq(numero).loja.id.eq(loja.id).findOne()
     }
 
     fun findSaida(numero: String?): Nota? {
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       return if (numero.isNullOrBlank()) null
       else Nota.where().tipoMov.eq(SAIDA).numero.eq(numero).loja.id.eq(loja.id).findOne()
     }
 
     fun findEntradas(): List<Nota> {
-      val numero = RegistryUserInfo.loja.numero
+      val numero = RegistryUserInfo.lojaDefault.numero
       return Nota
         .where()
         .tipoMov.eq(ENTRADA)
@@ -72,7 +71,7 @@ class Nota : BaseModel() {
     }
 
     fun findSaidas(): List<Nota> {
-      val numero = RegistryUserInfo.loja.numero
+      val numero = RegistryUserInfo.lojaDefault.numero
       return where()
         .tipoMov.eq(SAIDA)
         .loja.numero.eq(numero)
@@ -88,7 +87,7 @@ class Nota : BaseModel() {
 
     fun findNotaEntradaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaEntrada(loja.numero, numero, serie)
@@ -96,7 +95,7 @@ class Nota : BaseModel() {
 
     fun findNotaSaidaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
-      val loja = RegistryUserInfo.loja
+      val loja = RegistryUserInfo.lojaDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
       return saci.findNotaSaida(loja.numero, numero, serie)
