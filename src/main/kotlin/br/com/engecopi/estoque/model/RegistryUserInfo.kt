@@ -35,8 +35,8 @@ object RegistryUserInfo {
     get() = usuarioDefault.loja!!
   val userDefaultIsAdmin
     get() = usuarioDefault.admin
-  val localizacaoesDefault
-    get() = ViewProdutoLoc.localizacoes(abreviacaoDefault)
+//  val localizacaoesDefault
+  //  get() = ViewProdutoLoc.localizacoes(abreviacaoDefault)
 }
 
 data class LoginInfo(val usuario: Usuario, val abreviacao: String)
