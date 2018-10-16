@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
@@ -157,7 +158,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .nota.tipoMov.eq(tipo)
       return query
         .nota.loja.id.eq(lojaDefault.id)
-        .localizacao.isIn(RegistryUserInfo.localizacaoesDefault)
+        .localizacao.startsWith(abreviacaoDefault)
     }
 
   abstract fun createVo(): VO
@@ -268,15 +269,22 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         rota = ""
       }
       produtos.clear()
-      produtos.addAll(notaProdutoSaci.mapNotNull { notaSaci ->
+      produtos.addAll(notaProdutoSaci.flatMap { notaSaci ->
         val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        if (usuario?.temProduto(prd) == true) ProdutoVO().apply {
-          this.codigo = prd?.codigo ?: ""
-          this.grade = prd?.grade ?: ""
-          this.quantidade = notaSaci.quant ?: 0
-        }
-        else null
-      })
+        val prds: List<ProdutoVO> = prd?.localizacoes().orEmpty().asSequence().map { localizacao ->
+          val prdVO: ProdutoVO? = if (usuario?.temProduto(prd) == true)
+            ProdutoVO().apply {
+              this.codigo = prd?.codigo ?: ""
+              this.grade = prd?.grade ?: ""
+              this.localizacao = localizacao
+              this.quantidade = notaSaci.quant ?: 0
+            }
+          else null
+          prdVO
+        }.filterNotNull().toList()
+        prds
+      }
+                     )
     }
   }
 
@@ -295,11 +303,12 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val produtoNota: List<Produto>
     get() {
       val nota = notaProdutoSaci
-      val produtos = if (nota.isNotEmpty()) nota.mapNotNull { notaSaci ->
-        Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-      }.filter { produto ->
-        usuario?.temProduto(produto) ?: false
-      }
+      val produtos = if (nota.isNotEmpty())
+        nota.asSequence().mapNotNull { notaSaci ->
+          Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+        }.filter { produto ->
+          usuario?.temProduto(produto) ?: false
+        }.toList()
       else Produto.all().filter { usuario?.temProduto(it) ?: false }
       return produtos.sortedBy { it.codigo + it.grade }
     }
@@ -333,8 +342,11 @@ class ProdutoVO {
   var grade: String = ""
   var quantidade: Int = 0
   var selecionado: Boolean = false
+  var localizacao: String = ""
   val produto: Produto?
     get() = Produto.findProduto(codigo, grade)
+  val saldo: Int
+    get() = produto?.saldoLoja(localizacao) ?: 0
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
 }

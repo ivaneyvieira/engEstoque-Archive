@@ -3,7 +3,7 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.RegistryUserInfo.localizacaoesDefault
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.TipoNota
@@ -55,7 +55,7 @@ class ProdutoViewModel(view: IView) :
 
   fun QProduto.filtroUsuario(): QProduto {
     return this
-      .viewProdutoLoc.localizacao.isIn(localizacaoesDefault)
+      .viewProdutoLoc.localizacao.startsWith(abreviacaoDefault)
       .viewProdutoLoc.loja.id.eq(lojaDefault.id)
   }
 

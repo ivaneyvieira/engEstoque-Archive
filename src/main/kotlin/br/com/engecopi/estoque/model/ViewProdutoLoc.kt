@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
 import io.ebean.annotation.Cache
@@ -29,17 +30,13 @@ class ViewProdutoLoc(
   val loja: Loja
                     ) {
   companion object Find : ViewProdutoLocFinder() {
-    fun exists(produto: Produto?, locs: List<String>): Boolean {
-      val loja = RegistryUserInfo.lojaDefault
-      produto ?: return false
-      return where()
-               .loja.id.eq(loja.id)
-               .produto.id.eq(produto.id)
-               .or()
-               .abreviacao.isIn(locs)
-               .localizacao.isIn(locs)
-               .endOr()
-               .findCount() > 0
+    fun exists(produto: Produto?): Boolean {
+      val abreviacao = RegistryUserInfo.abreviacaoDefault
+      val lojaId = RegistryUserInfo.lojaDefault.id
+      val produtoId = produto?.id ?: return false
+      return viewProdutosLoc.any {
+        it.loja.id == lojaId && it.produto.id == produtoId && it.abreviacao == abreviacao
+      }
     }
 
     fun find(produto: Produto?): List<ViewProdutoLoc> {
@@ -54,19 +51,19 @@ class ViewProdutoLoc(
       return viewProdutosLoc
         .asSequence()
         .filter{ it.storeno == lojaDefault.numero && it.abreviacao == abreviacao}
-        .distinct()
+        .mapNotNull { it.localizacao }.distinct()
         .toList()
-        .mapNotNull { it.localizacao }
     }
 
     fun localizacoes(produto: Produto?): List<String> {
       produto?: return emptyList()
+      val abreviacao = abreviacaoDefault
       return viewProdutosLoc
         .asSequence()
-        .filter{ it.storeno == lojaDefault.numero && it.produto.id == produto.id}
+        .filter{ it.storeno == lojaDefault.numero && it.produto.id == produto.id && it.abreviacao == abreviacao}
+        .mapNotNull { it.localizacao }
         .distinct()
         .toList()
-        .mapNotNull { it.localizacao }
     }
   }
 }
