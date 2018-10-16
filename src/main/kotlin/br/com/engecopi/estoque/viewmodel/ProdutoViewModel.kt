@@ -55,8 +55,13 @@ class ProdutoViewModel(view: IView) :
 
   fun QProduto.filtroUsuario(): QProduto {
     return this
+<<<<<<< HEAD
       .viewProdutoLoc.localizacao.startsWith(abreviacaoDefault)
       .viewProdutoLoc.loja.id.eq(lojaDefault.id)
+=======
+      .viewProdutoLoc.localizacao.isIn(localizacaoes)
+      .viewProdutoLoc.loja.id.eq(loja.id)
+>>>>>>> c6ee3b290e686ea62a175dee8e69f10fcb76bd74
   }
 
   override val query: QProduto
