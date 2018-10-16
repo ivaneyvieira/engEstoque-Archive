@@ -19,7 +19,7 @@ import kotlin.reflect.full.memberProperties
 
 @Entity
 @Table(name = "itens_nota")
-@Index(unique = true, columnNames = ["nota_id", "produto_id"])
+@Index(unique = true, columnNames = ["nota_id", "produto_id", "localizacao"])
 class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
