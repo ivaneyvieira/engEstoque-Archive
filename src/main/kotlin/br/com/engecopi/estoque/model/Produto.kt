@@ -184,5 +184,9 @@ class Produto : BaseModel() {
   fun finItensNota(): List<ItemNota> {
     return ItemNota.where().produto.id.eq(id).findList()
   }
+
+  fun localizacoes(): List<String> {
+    return ViewProdutoLoc.localizacoes(produto = this)
+  }
 }
 
