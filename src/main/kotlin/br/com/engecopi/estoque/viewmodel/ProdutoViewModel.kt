@@ -54,14 +54,9 @@ class ProdutoViewModel(view: IView) :
   }
 
   fun QProduto.filtroUsuario(): QProduto {
-    return usuario.let { u ->
-      if (u.admin)
-        this
-      else
-        this
-          .viewProdutoLoc.localizacao.isIn(localizacaoes)
-          .viewProdutoLoc.loja.id.eq(loja.id)
-    } ?: this
+    return this
+      .viewProdutoLoc.localizacao.isIn(localizacaoes)
+      .viewProdutoLoc.loja.id.eq(loja.id)
   }
 
   override val query: QProduto
