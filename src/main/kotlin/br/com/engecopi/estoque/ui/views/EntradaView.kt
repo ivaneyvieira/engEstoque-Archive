@@ -148,7 +148,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
         column(EntradaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
-          setSortProperty("usuarioDefault.loginName")
+          setSortProperty("usuario.loginName")
         }
         column(EntradaVo::rota) {
           caption = "Rota"

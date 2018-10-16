@@ -150,7 +150,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       updateViewProdutosLoc()
       val query = ItemNota.where()
         .fetch("nota")
-        .fetch("usuarioDefault")
+        .fetch("usuario")
         .fetch("produto")
         .fetch("produto.vproduto")
         .fetch("produto.viewProdutoLoc")

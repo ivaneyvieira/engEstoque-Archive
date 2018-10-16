@@ -137,7 +137,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
-          setSortProperty("usuarioDefault.loginName")
+          setSortProperty("usuario.loginName")
         }
         column(SaidaVo::rota) {
           caption = "Rota"

@@ -19,11 +19,11 @@ class Loja : BaseModel() {
   var numero: Int = 0
   @Length(2)
   var sigla: String = ""
-  @OneToMany(mappedBy = "lojaDefault", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val notas: List<Nota>? = null
-  @OneToMany(mappedBy = "lojaDefault", cascade = [PERSIST, MERGE, REFRESH])
+  @OneToMany(mappedBy = "loja", cascade = [PERSIST, MERGE, REFRESH])
   val usuarios: List<Usuario>? = null
-  @OneToMany(mappedBy = "lojaDefault", cascade = [REFRESH])
+  @OneToMany(mappedBy = "loja", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
 
   companion object Find : LojaFinder() {

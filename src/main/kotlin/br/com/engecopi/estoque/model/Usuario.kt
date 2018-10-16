@@ -26,7 +26,7 @@ class Usuario : BaseModel() {
   @Length(4000)
   var localizacaoes: String = ""
   @OneToMany(
-    mappedBy = "usuarioDefault",
+    mappedBy = "usuario",
     cascade = [PERSIST, MERGE, REFRESH]
             )
   val itensNota: List<ItemNota>? = null
