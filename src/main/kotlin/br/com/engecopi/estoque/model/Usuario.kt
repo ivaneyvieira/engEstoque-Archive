@@ -43,8 +43,8 @@ class Usuario : BaseModel() {
     get() = usuarioSaci()?.name
 
   fun temProduto(produto: Produto?): Boolean {
-    if (admin || this.locais.isEmpty()) return true
-    return ViewProdutoLoc.exists(produto, locais)
+    produto ?: return false
+    return ViewProdutoLoc.exists(produto)
   }
 
   fun localizacoesProduto(produto: Produto): List<String> {
