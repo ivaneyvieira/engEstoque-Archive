@@ -24,11 +24,15 @@ import com.github.vok.karibudsl.h
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
+import org.vaadin.patrik.FastNavigation
+
+
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
   val lojaDefault= RegistryUserInfo.lojaDefault
@@ -106,6 +110,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       grid(ProdutoVO::class) {
         expandRatio = 2f
         this.h = 200.px
+        editor.isEnabled = true
         removeAllColumns()
         val selectionModel = setSelectionMode(MULTI)
         selectionModel.addSelectionListener { select ->
@@ -118,6 +123,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
             }
           }
         }
+        val comboLoc = ComboBox<String>().apply {
+          isEmptySelectionAllowed = false
+          isTextInputAllowed = false
+        }
+
         addColumnFor(ProdutoVO::codigo) {
           expandRatio = 1
           caption = "Código"
@@ -125,6 +135,12 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         addColumnFor(ProdutoVO::descricaoProduto) {
           expandRatio = 5
           caption = "Descrição"
+        }
+        addColumnFor(ProdutoVO::localizacao) {
+          expandRatio = 1
+          caption = "Localizacao"
+
+          setEditorComponent(comboLoc)
         }
         addColumnFor(ProdutoVO::grade) {
           expandRatio = 1
@@ -135,6 +151,15 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Qtd ${tipo}"
         }
         bindItens(binder, "produtos")
+        editor.addOpenListener {
+          comboLoc.setItems(it.bean.produto?.localizacoes().orEmpty())
+        }
+        val nav = FastNavigation<ProdutoVO>(this, false, true)
+        nav.changeColumnAfterLastRow = true
+        nav.openEditorWithSingleClick = true
+        editor.cancelCaption = "Cancelar"
+        editor.saveCaption = "Salvar"
+        editor.isBuffered = false
       }
     }
   }

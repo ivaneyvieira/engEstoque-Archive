@@ -58,12 +58,12 @@ class ViewProdutoLoc(
     fun localizacoes(produto: Produto?): List<String> {
       produto?: return emptyList()
       val abreviacao = abreviacaoDefault
-      return viewProdutosLoc
+      val ret =  viewProdutosLoc
         .asSequence()
         .filter{ it.storeno == lojaDefault.numero && it.produto.id == produto.id && it.abreviacao == abreviacao}
         .mapNotNull { it.localizacao }
-        .distinct()
         .toList()
+      return ret.distinct()
     }
   }
 }

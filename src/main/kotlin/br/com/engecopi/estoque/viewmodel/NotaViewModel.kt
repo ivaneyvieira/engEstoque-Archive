@@ -15,6 +15,7 @@ import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.estoque.model.updateViewProdutosLoc
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -208,6 +209,10 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     loja?.let { listOf(it) } ?: Loja.all()
   }
 
+  fun localizacaoes(): List<String> {
+    return ViewProdutoLoc.localizacoes(abreviacaoDefault)
+  }
+
   fun imprimir(itemNota: ItemNota?) = execString {
     val template = Etiqueta.template(itemNota?.tipoMov)
     val print = itemNota?.printEtiqueta()
@@ -271,20 +276,28 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         rota = ""
       }
       produtos.clear()
-      produtos.addAll(notaProdutoSaci.flatMap { notaSaci ->
+      val produtosVo = notaProdutoSaci.flatMap { notaSaci ->
         val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        prd?.localizacoes().orEmpty().asSequence().map { localizacao ->
-          if (usuario.temProduto(prd))
+        val localizacoes = prd?.localizacoes().orEmpty()
+        val prdLocs: List<ProdutoVO> = if (tipoNota == SAIDA)
+          localizacoes.asSequence().map { localizacao ->
             ProdutoVO().apply {
               this.codigo = prd?.codigo ?: ""
               this.grade = prd?.grade ?: ""
               this.localizacao = localizacao
               this.quantidade = notaSaci.quant ?: 0
             }
-          else null
-        }.filterNotNull().toList()
+          }.toList()
+        else
+          listOf(ProdutoVO().apply {
+            this.codigo = prd?.codigo ?: ""
+            this.grade = prd?.grade ?: ""
+            this.localizacao = ""
+            this.quantidade = notaSaci.quant ?: 0
+          })
+        prdLocs
       }
-                     )
+      produtos.addAll(produtosVo)
     }
   }
 
