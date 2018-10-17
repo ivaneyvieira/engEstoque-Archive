@@ -8,6 +8,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -37,22 +38,21 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   override fun add(bean: VO) {
     val nota = insertNota(bean)
     val produtos = bean.produtos
-    val usuario = bean.usuario ?: throw EViewModel("Usuário não encontrado")
+    val usuario = bean.usuario
     if (bean.notaSaci == null) {
       val produto = saveProduto(bean.produto)
       insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao)
     } else {
-      produtos.filter {
-        it.selecionado
-      }.forEach { produto ->
-        produto.let { prd ->
-          if (usuario.temProduto(prd.produto)) insertItemNota(nota,
-                                                              prd.produto,
-                                                              prd.quantidade,
-                                                              usuario,
-                                                              bean.localizacao)
+      produtos.filter { it.selecionado && it.quantidade != 0 }
+        .forEach { produto ->
+          produto.let { prd ->
+            if (usuario.temProduto(prd.produto)) insertItemNota(nota,
+                                                                prd.produto,
+                                                                prd.quantidade,
+                                                                usuario,
+                                                                prd.localizacao)
+          }
         }
-      }
     }
   }
 
@@ -174,7 +174,8 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.produto = itemNota.produto
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = itemNota.nota?.rota
-      this.usuario = itemNota.usuario
+      this.usuario = itemNota.usuario ?: usuarioDefault
+      this.localizacao = itemNota.localizacao
     }
   }
 
@@ -223,7 +224,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
     return ItemNota.find(nota, produto)
   }
 
-  var usuario: Usuario? = null
+  var usuario: Usuario = RegistryUserInfo.usuarioDefault
   var numeroNF: String? = ""
     set(value) {
       if (field != value) {
@@ -245,10 +246,11 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
     get() = !temGrid
   var rota: String? = ""
   private val notaProdutoSaci: List<NotaSaci>
-    get() = if (entityVo == null) when (tipo) {
-      SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
-      ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
-    }
+    get() = if (entityVo == null)
+      when (tipo) {
+        SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
+        ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
+      }
     else emptyList()
   val notaSaci
     get() = notaProdutoSaci.firstOrNull()
@@ -271,8 +273,8 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       produtos.clear()
       produtos.addAll(notaProdutoSaci.flatMap { notaSaci ->
         val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        val prds: List<ProdutoVO> = prd?.localizacoes().orEmpty().asSequence().map { localizacao ->
-          val prdVO: ProdutoVO? = if (usuario?.temProduto(prd) == true)
+        prd?.localizacoes().orEmpty().asSequence().map { localizacao ->
+          if (usuario.temProduto(prd))
             ProdutoVO().apply {
               this.codigo = prd?.codigo ?: ""
               this.grade = prd?.grade ?: ""
@@ -280,9 +282,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
               this.quantidade = notaSaci.quant ?: 0
             }
           else null
-          prdVO
         }.filterNotNull().toList()
-        prds
       }
                      )
     }
@@ -307,9 +307,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         nota.asSequence().mapNotNull { notaSaci ->
           Produto.findProduto(notaSaci.prdno, notaSaci.grade)
         }.filter { produto ->
-          usuario?.temProduto(produto) ?: false
+          usuario.temProduto(produto)
         }.toList()
-      else Produto.all().filter { usuario?.temProduto(it) ?: false }
+      else Produto.all().filter { usuario.temProduto(it) }
       return produtos.sortedBy { it.codigo + it.grade }
     }
   val quantidadeReadOnly
@@ -333,8 +333,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var quantProduto: Int? = 0
   val saldo: Int
     get() = produto?.saldoLoja(localizacao) ?: 0
-  val localizacao
-    get() = entityVo?.localizacao ?: produto?.localizacao(usuario)
+  var localizacao: String? = ""
 }
 
 class ProdutoVO {
