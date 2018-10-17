@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.NotaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
@@ -32,8 +31,8 @@ import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
-  val lojaDefault= RegistryUserInfo.loja
-  val usuario = RegistryUserInfo.usuario
+  val lojaDefault= RegistryUserInfo.lojaDefault
+  val usuario = RegistryUserInfo.usuarioDefault
   val isAdmin = usuario.admin
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).notaFiscalField(
@@ -58,7 +57,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       isReadOnly = operation != ADD
       setItems(viewModel.findLojas(lojaDefault))
 
-      bind(binder).asRequired("A loja deve ser informada").bind("lojaNF")
+      bind(binder).asRequired("A lojaDefault deve ser informada").bind("lojaNF")
       reloadBinderOnChange(binder)
     }
   }

@@ -3,9 +3,9 @@ package br.com.engecopi.estoque.viewmodel
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.RegistryUserInfo.localizacaoes
-import br.com.engecopi.estoque.model.RegistryUserInfo.loja
-import br.com.engecopi.estoque.model.RegistryUserInfo.usuario
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
+import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
@@ -55,8 +55,8 @@ class ProdutoViewModel(view: IView) :
 
   fun QProduto.filtroUsuario(): QProduto {
     return this
-      .viewProdutoLoc.localizacao.isIn(localizacaoes)
-      .viewProdutoLoc.loja.id.eq(loja.id)
+      .viewProdutoLoc.localizacao.startsWith(abreviacaoDefault)
+      .viewProdutoLoc.loja.id.eq(lojaDefault.id)
   }
 
   override val query: QProduto
@@ -70,7 +70,7 @@ class ProdutoViewModel(view: IView) :
       entityVo = produto
       codigoProduto = produto.codigo.trim()
       gradeProduto = produto.grade
-      lojaDefault = usuario.loja
+      lojaDefault = usuarioDefault.loja
     }
   }
 
@@ -89,10 +89,7 @@ class ProdutoViewModel(view: IView) :
 
 class ProdutoVo : EntityVo<Produto>() {
   override fun findEntity(): Produto? {
-    return Produto.findProduto(
-      codigoProduto,
-      gradeProduto
-                              )
+    return Produto.findProduto(codigoProduto, gradeProduto)
   }
 
   var lojaDefault: Loja? = null

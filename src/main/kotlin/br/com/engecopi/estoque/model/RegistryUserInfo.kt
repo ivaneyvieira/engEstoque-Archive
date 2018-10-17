@@ -1,8 +1,5 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.ABREV_FIELD
-import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
-import br.com.engecopi.estoque.model.RegistryUserInfo.USER_FIELD
 import br.com.engecopi.framework.model.Transaction
 
 object RegistryUserInfo {
@@ -30,16 +27,16 @@ object RegistryUserInfo {
     return info!!
   }
 
-  val usuario
+  val usuarioDefault
     get() = info.usuario
-  val abreviacao
+  val abreviacaoDefault
     get() = info.abreviacao
-  val loja
-    get() = usuario.loja!!
-  val admin
-    get() = usuario.admin
-  val localizacaoes
-    get() = ViewProdutoLoc.localizacoes(abreviacao)
+  val lojaDefault
+    get() = usuarioDefault.loja!!
+  val userDefaultIsAdmin
+    get() = usuarioDefault.admin
+//  val localizacaoesDefault
+  //  get() = ViewProdutoLoc.localizacoes(abreviacaoDefault)
 }
 
 data class LoginInfo(val usuario: Usuario, val abreviacao: String)
