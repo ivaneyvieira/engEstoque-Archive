@@ -13,7 +13,6 @@ import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
 import com.github.vok.karibudsl.label
 import com.github.vok.karibudsl.w
-import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
 import com.vaadin.data.HasItems
@@ -53,7 +52,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 import kotlin.streams.toList
 
@@ -95,9 +93,7 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   }
 }
 
-fun <T> ComboBox<T>.default(
-  valueEmpty: T? = null, captionGenerator: (T) -> String = { it.toString() }
-) {
+fun <T> ComboBox<T>.default(valueEmpty: T? = null, captionGenerator: (T) -> String = { it.toString() }) {
   isEmptySelectionAllowed = false
   isTextInputAllowed = false
   valueEmpty?.let {
@@ -107,9 +103,7 @@ fun <T> ComboBox<T>.default(
   setItemCaptionGenerator(captionGenerator)
 }
 
-fun <V, T> HasItems<T>.bindItens(
-  binder: Binder<V>, propertyList: String
-) {
+fun <V, T> HasItems<T>.bindItens(binder: Binder<V>, propertyList: String) {
   val hasValue = (this as? HasValue<*>)
   val itensOld: List<T>? = (this.dataProvider as? ListDataProvider<T>)?.items?.toList()
 
@@ -131,45 +125,36 @@ fun <V, T> HasItems<T>.bindItens(
   }
 }
 
-fun <V, T> TwinColSelect<T>.bindItensSet(
-  binder: Binder<V>, propertyList: String
-) {
+fun <V, T> TwinColSelect<T>.bindItensSet(binder: Binder<V>, propertyList: String) {
   bind<V, MutableSet<T>>(binder, propertyList) { itens ->
     value = emptySet()
     setItems(itens)
   }
 }
 
-fun <BEAN> HasValue<*>.bindReadOnly(
-  binder: Binder<BEAN>, property: String, block: (Boolean) -> Unit = {}
-) {
+fun <BEAN> HasValue<*>.bindReadOnly(binder: Binder<BEAN>, property: String, block: (Boolean) -> Unit = {}) {
   bind<BEAN, Boolean>(binder, property) { readOnly ->
     isReadOnly = readOnly
     block(readOnly)
   }
 }
 
-fun <BEAN> Component.bindVisible(
-  binder: Binder<BEAN>, property: String, block: (Boolean) -> Unit = {}
-) {
+fun <BEAN> Component.bindVisible(binder: Binder<BEAN>, property: String, block: (Boolean) -> Unit = {}) {
   bind<BEAN, Boolean>(binder, property) { visible ->
     isVisible = visible
     block(visible)
   }
 }
 
-fun <BEAN> Component.bindCaption(
-  binder: Binder<BEAN>, property: String, block: (String) -> Unit = {}
-) {
+fun <BEAN> Component.bindCaption(binder: Binder<BEAN>, property: String, block: (String) -> Unit = {}) {
   bind<BEAN, String>(binder, property) {
     caption = it
     block(it)
   }
 }
 
-private fun <BEAN, FIELDVALUE> bind(
-  binder: Binder<BEAN>, property: String, blockBinder: (FIELDVALUE) -> Unit
-): Binding<BEAN, FIELDVALUE> {
+private fun <BEAN, FIELDVALUE> bind(binder: Binder<BEAN>, property: String,
+                                    blockBinder: (FIELDVALUE) -> Unit): Binding<BEAN, FIELDVALUE> {
   val field = ReadOnlyHasValue<FIELDVALUE> { itens -> blockBinder(itens) }
   return field.bind(binder).bind(property)
 }
@@ -178,10 +163,8 @@ fun Binder<*>.reload() {
   bean = bean
 }
 
-inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(
-  binder: Binder<BEAN>,
-  vararg propertys: KProperty1<BEAN, *>
-) {
+inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(binder: Binder<BEAN>,
+                                                                                      vararg propertys: KProperty1<BEAN, *>) {
   addValueChangeListener { event ->
     if (event.isUserOriginated && (event.oldValue != event.value)) {
       val bean = binder.bean
@@ -202,9 +185,7 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
   }
 }
 
-fun <BEAN> reloadPropertys(
-  binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>
-) {
+fun <BEAN> reloadPropertys(binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>) {
   val bean = binder.bean
   propertys.forEach { prop ->
     binder.getBinding(prop.name).ifPresent { binding ->
@@ -263,7 +244,7 @@ fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -
 
 inline fun <reified T : Enum<*>> HasComponents.enumSelect(
   caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}
-) = init(EnumSelect<T>(caption, T::class.java), block)
+                                                         ) = init(EnumSelect<T>(caption, T::class.java), block)
 
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
@@ -276,8 +257,9 @@ fun <T : Any> (@VaadinDsl HasComponents).filterGrid(
   caption: String? = null,
   dataProvider: DataProvider<T, *>? = null,
   block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}
-) = init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
-  this.caption = caption
-  if (dataProvider != null) this.dataProvider = dataProvider
-  block()
-}
+                                                   ) =
+  init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
+    this.caption = caption
+    if (dataProvider != null) this.dataProvider = dataProvider
+    block()
+  }
