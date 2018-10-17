@@ -82,12 +82,20 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         isReadOnly = true
         bind(binder).bind("descricaoProduto")
       }
+      comboBox<String>("Localizacao") {
+        expandRatio = 2f
+        isReadOnly = operation != ADD
+        default { it }
+        isTextInputAllowed = true
+        bindItens(binder, "localizacaoProduto")
+        bind(binder).bind("localizacao")
+      }
       textField("Grade") {
         expandRatio = 1f
         isReadOnly = true
         bind(binder).bind("grade")
       }
-      integerField("Qtd ${tipo}") {
+      integerField("Qtd $tipo") {
         expandRatio = 1f
         isReadOnly = (isAdmin == false) && (operation != ADD)
         this.bind(binder).bind("quantProduto")
