@@ -159,6 +159,9 @@ class Produto : BaseModel() {
   }
 
   fun saldoLoja(localizacao: String?): Int {
+    localizacao ?: return 0
+    if(localizacao == "")
+      return 0
     val loja = RegistryUserInfo.lojaDefault
     refresh()
     return itensNota
@@ -186,7 +189,7 @@ class Produto : BaseModel() {
   }
 
   fun localizacoes(): List<String> {
-    return ViewProdutoLoc.localizacoes(produto = this)
+    return ViewProdutoLoc.localizacoes(produto = this).sorted()
   }
 }
 

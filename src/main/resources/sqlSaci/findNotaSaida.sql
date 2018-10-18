@@ -29,7 +29,7 @@ from sqldados.nf AS N
 where N.storeno  = :storeno
       and N.nfno = :nfno
       and N.nfse = :nfse AND
-      N.issuedate > DATE_SUB(current_date, INTERVAL 7 DAY)
+      N.issuedate > DATE_SUB(current_date, INTERVAL 60 DAY)
       AND N.status <> 1
 UNION
 select DISTINCT ''            as rota, N.storeno,
