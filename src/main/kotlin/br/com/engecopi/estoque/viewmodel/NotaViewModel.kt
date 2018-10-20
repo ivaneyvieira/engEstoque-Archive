@@ -30,6 +30,8 @@ import kotlin.reflect.KClass
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
+    if(bean.localizacao.isNullOrBlank())
+      throw EViewModel("Não foi especificado a localização do item")
     val nota = updateNota(bean)
     val produto = saveProduto(bean.produto)
 
@@ -37,6 +39,8 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   }
 
   override fun add(bean: VO) {
+    if(bean.localizacao.isNullOrBlank())
+      throw EViewModel("Não foi especificado a localização do item")
     val nota = insertNota(bean)
     val produtos = bean.produtos
     val usuario = bean.usuario
