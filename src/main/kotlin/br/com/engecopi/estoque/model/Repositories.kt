@@ -1,8 +1,13 @@
 package br.com.engecopi.estoque.model
 
-val viewProdutosLoc = ViewProdutoLoc.all()
+object Repositories {
+  var viewProdutosLoc = newViewProdutosLoc()
 
-fun updateViewProdutosLoc(){
-  viewProdutosLoc.clear()
-  viewProdutosLoc.addAll(ViewProdutoLoc.all())
+  fun updateViewProdutosLoc() {
+    viewProdutosLoc = newViewProdutosLoc()
+  }
+
+  private fun newViewProdutosLoc(): List<ViewProdutoLoc> {
+    return ViewProdutoLoc.all().toList()
+  }
 }

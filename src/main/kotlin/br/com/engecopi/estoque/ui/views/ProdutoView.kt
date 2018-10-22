@@ -16,6 +16,7 @@ import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.browserFrame
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
@@ -26,6 +27,7 @@ import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.HtmlRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
@@ -149,6 +151,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
         queryOnly = !RegistryUserInfo.usuarioDefault.admin
+        //grid.bodyRowHeight = 3 * 30.00
         column(ProdutoVo::codigoProduto) {
           expandRatio = 1
           caption = "Código"
@@ -166,6 +169,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
         column(ProdutoVo::localizacao) {
           expandRatio = 1
+          setRenderer({ e -> e?.replace(" - ", " / ") }, HtmlRenderer())
           caption = "Localização"
           setSortProperty("localizacao")
         }

@@ -54,7 +54,7 @@ class Produto : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(
     select = "LOC.localizacao",
-    join = "LEFT join (select produto_id, localizacao from v_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
+    join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao from v_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
           )
   var localizacao: String? = ""
   @Formula(
@@ -160,7 +160,7 @@ class Produto : BaseModel() {
 
   fun saldoLoja(localizacao: String?): Int {
     localizacao ?: return 0
-    if(localizacao == "")
+    if (localizacao == "")
       return 0
     val loja = RegistryUserInfo.lojaDefault
     refresh()
@@ -191,5 +191,23 @@ class Produto : BaseModel() {
   fun localizacoes(): List<String> {
     return ViewProdutoLoc.localizacoes(produto = this).sorted()
   }
+
+  fun prefixoLocalizacoes(): String {
+    val localizacoes = localizacoes()
+    val localizacoesSplit = localizacoes.map { it.split("[\\.\\-]".toRegex()) }
+    val ctParte = localizacoesSplit.asSequence().map { it.size - 1 }.min() ?: 0
+    for (i in ctParte downTo 0) {
+      val prefix =localizacoesSplit.asSequence()
+        .map { it.subList(0, i) }
+        .map { it.joinToString(separator = ".") }
+        .distinct()
+        .toList()
+
+      if(prefix.count() == 1)
+        return prefix[0]
+    }
+    return ""
+  }
 }
+
 

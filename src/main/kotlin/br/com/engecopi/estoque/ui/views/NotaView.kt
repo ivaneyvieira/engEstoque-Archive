@@ -13,6 +13,7 @@ import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
+import br.com.engecopi.utils.mid
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.addColumnFor
 import com.github.vok.karibudsl.bind
@@ -24,25 +25,25 @@ import com.github.vok.karibudsl.h
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.vaadin.data.Binder
+import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.patrik.FastNavigation
 
-
-
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
-  val lojaDefault= RegistryUserInfo.lojaDefault
+  val lojaDefault = RegistryUserInfo.lojaDefault
   val usuario = RegistryUserInfo.usuarioDefault
   val isAdmin = usuario.admin
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).notaFiscalField(
     operation: CrudOperation?,
     binder: Binder<V>
-  ) {
+                                                                            ) {
     textField("Nota Fiscal") {
       expandRatio = 2f
       isReadOnly = operation != ADD
@@ -54,7 +55,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).lojaField(
     operation: CrudOperation?,
     binder: Binder<V>
-  ) {
+                                                                      ) {
     comboBox<Loja>("Loja") {
       expandRatio = 2f
       default { it.sigla }
@@ -69,7 +70,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
   inline fun <reified V : NotaVo> VerticalLayout.produtoField(
     operation: CrudOperation?,
     binder: Binder<V>, tipo: String
-  ) {
+                                                             ) {
     row {
       this.bindVisible(binder, NotaVo::naoTemGrid.name)
       comboBox<Produto>("Código") {
@@ -139,7 +140,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         addColumnFor(ProdutoVO::localizacao) {
           expandRatio = 1
           caption = "Localizacao"
-
+          setRenderer({ loc -> loc.split("[\\-\\.]".toRegex()).lastOrNull() ?: loc }, TextRenderer())
           setEditorComponent(comboLoc)
         }
         addColumnFor(ProdutoVO::grade) {
@@ -151,12 +152,19 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Qtd ${tipo}"
         }
         bindItens(binder, "produtos")
-        editor.addOpenListener {
-          comboLoc.setItems(it.bean.produto?.localizacoes().orEmpty())
+        editor.addOpenListener { event ->
+          event.bean.produto?.let { produto ->
+            comboLoc.setItems(produto.localizacoes())
+            val prefixo = produto.prefixoLocalizacoes().length + 1
+            comboLoc.setItemCaptionGenerator { it.mid(prefixo) }
+          }
         }
         val nav = FastNavigation<ProdutoVO>(this, false, true)
         nav.changeColumnAfterLastRow = true
         nav.openEditorWithSingleClick = true
+        nav.allowArrowToChangeRow=true
+        nav.openEditorOnTyping=true
+        nav.addEditorSaveShortcut(ENTER)
         editor.cancelCaption = "Cancelar"
         editor.saveCaption = "Salvar"
         editor.isBuffered = false

@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
+import br.com.engecopi.estoque.model.Repositories.viewProdutosLoc
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
 import io.ebean.annotation.Cache
 import io.ebean.annotation.View
@@ -34,9 +35,18 @@ class ViewProdutoLoc(
       val abreviacao = RegistryUserInfo.abreviacaoDefault
       val lojaId = RegistryUserInfo.lojaDefault.id
       val produtoId = produto?.id ?: return false
-      return viewProdutosLoc.any {
+      return Repositories.viewProdutosLoc.any {
         it.loja.id == lojaId && it.produto.id == produtoId && it.abreviacao == abreviacao
       }
+    }
+
+    fun produtos(): List<Produto> {
+      val abreviacao = RegistryUserInfo.abreviacaoDefault
+      val lojaId = RegistryUserInfo.lojaDefault.id
+
+      return Repositories.viewProdutosLoc.asSequence().filter {
+        it.loja.id == lojaId  && it.abreviacao == abreviacao
+      }.map { it.produto }.distinct().toList()
     }
 
     fun find(produto: Produto?): List<ViewProdutoLoc> {
