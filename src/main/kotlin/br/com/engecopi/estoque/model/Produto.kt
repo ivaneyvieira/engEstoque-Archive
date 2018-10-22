@@ -215,6 +215,15 @@ class Produto : BaseModel() {
     val prefixo = prefixoLocalizacoes()
     return localizacoes.map { LocProduto(it, it.mid(prefixo.length + 1)) }
   }
+
 }
 
 data class LocProduto(val localizacao: String, val suflixo : String)
+
+fun List<LocProduto>.findLocalizacao(sufixo : String ) : String{
+  return asSequence().filter { it.suflixo == sufixo }.map { it.localizacao }.firstOrNull() ?: ""
+}
+
+fun List<LocProduto>.findSufixo(localizacao : String ) : String{
+  return asSequence().filter { it.localizacao == localizacao}.map { it.suflixo }.firstOrNull() ?: ""
+}
