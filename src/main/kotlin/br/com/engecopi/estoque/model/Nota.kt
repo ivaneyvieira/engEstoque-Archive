@@ -80,7 +80,7 @@ class Nota : BaseModel() {
 
     fun novoNumero(): Int {
       val regex = "[0-9]+".toRegex()
-      val max = where().findList().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
+      val max = where().findList().asSequence().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
       val numMax = max.toIntOrNull() ?: 0
       return numMax + 1
     }
@@ -90,7 +90,8 @@ class Nota : BaseModel() {
       val loja = RegistryUserInfo.lojaDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaEntrada(loja.numero, numero, serie)
+      val notas = saci.findNotaEntrada(loja.numero, numero, serie)
+      return notas
     }
 
     fun findNotaSaidaSaci(numeroNF: String?): List<NotaSaci> {
