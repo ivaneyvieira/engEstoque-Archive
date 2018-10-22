@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
+import br.com.engecopi.utils.mid
 import io.ebean.annotation.Cache
 import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Formula
@@ -208,6 +209,12 @@ class Produto : BaseModel() {
     }
     return ""
   }
+
+  fun sufixosLocalizacaoes() : List<LocProduto>{
+    val localizacoes = localizacoes()
+    val prefixo = prefixoLocalizacoes()
+    return localizacoes.map { LocProduto(it, it.mid(prefixo.length + 1)) }
+  }
 }
 
-
+data class LocProduto(val localizacao: String, val suflixo : String)
