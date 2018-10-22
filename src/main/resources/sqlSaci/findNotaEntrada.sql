@@ -11,7 +11,7 @@ select P.invno, N.storeno, nfname           as numero, invse as serie,
     WHEN type = 2 then "DEV_CLI"
     WHEN type = 10 AND N.remarks LIKE 'DEV%' then "DEV_CLI"
     ELSE "INVALIDA"
-  END                                       AS tipo, SUBSTRING_INDEX(IFNULL(L.localizacao, ''), '.', 1) AS localizacao
+  END                                       AS tipo
 from sqldados.inv AS N
   inner join sqldados.iprd AS P
   USING(invno)
@@ -19,10 +19,6 @@ from sqldados.inv AS N
     ON V.no = N.vendno
   left join sqldados.xfr AS X
     ON X.no = N.xfrno
-  left join sqldados.prdloc AS L
-    ON N.storeno = L.storeno
-    AND P.prdno = L.prdno
-    AND P.grade = L.grade
 where N.storeno = :storeno
       and nfname = :nfname
       and invse = :invse AND
@@ -37,7 +33,7 @@ select 0                    as invno, N.storeno, ordno as numero, '' as serie,
        N.date,
        P.prdno              AS prdno,
        P.grade, P.qtty/1000 as quant, C.name as vendName,
-       'PEDIDO_E'           AS tipo, L.localizacao
+       'PEDIDO_E'           AS tipo
 from sqldados.eord AS N
   inner join sqldados.eoprd AS P
   USING(storeno, ordno)
@@ -45,10 +41,6 @@ from sqldados.eord AS N
     ON E.codigo = P.prdno AND E.grade = P.grade
   left join sqldados.custp AS C
     ON C.no = N.custno
-  left join sqldados.prdloc AS L
-    ON N.storeno = L.storeno
-    AND P.prdno = L.prdno
-    AND P.grade = L.grade
 WHERE N.date > DATE_SUB(current_date, INTERVAL 6 MONTH) AND
       N.paymno = 290 AND
       N.storeno = :storeno

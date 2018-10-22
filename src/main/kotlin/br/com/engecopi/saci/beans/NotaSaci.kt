@@ -13,6 +13,5 @@ class NotaSaci(
   val vendName: String? = "",
   val clienteName: String? = "",
   val tipo: String?,
-  val localizacao: String?,
   val invno: Int?
 )
