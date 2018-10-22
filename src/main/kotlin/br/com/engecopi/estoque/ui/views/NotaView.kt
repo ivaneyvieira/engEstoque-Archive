@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.findSufixo
 import br.com.engecopi.estoque.viewmodel.NotaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
@@ -154,9 +155,9 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         bindItens(binder, "produtos")
         editor.addOpenListener { event ->
           event.bean.produto?.let { produto ->
-            comboLoc.setItems(produto.localizacoes())
-            val prefixo = produto.prefixoLocalizacoes().length + 1
-            comboLoc.setItemCaptionGenerator { it.mid(prefixo) }
+            val locSulfixos = produto.sufixosLocalizacaoes()
+            comboLoc.setItems(locSulfixos.map { it.localizacao })
+            comboLoc.setItemCaptionGenerator { locSulfixos.findSufixo(it) }
           }
         }
         val nav = FastNavigation<ProdutoVO>(this, false, true)
