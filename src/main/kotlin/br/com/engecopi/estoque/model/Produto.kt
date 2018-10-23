@@ -195,35 +195,50 @@ class Produto : BaseModel() {
 
   fun prefixoLocalizacoes(): String {
     val localizacoes = localizacoes()
-    val localizacoesSplit = localizacoes.map { it.split("[\\.\\-]".toRegex()) }
+    if (localizacoes.size == 1)
+      return localizacoes[0]
+    val localizacoesSplit = localizacoes.map { it.split("[.\\-]".toRegex()) }
     val ctParte = localizacoesSplit.asSequence().map { it.size - 1 }.min() ?: 0
     for (i in ctParte downTo 0) {
-      val prefix =localizacoesSplit.asSequence()
+      val prefix = localizacoesSplit.asSequence()
         .map { it.subList(0, i) }
         .map { it.joinToString(separator = ".") }
         .distinct()
         .toList()
 
-      if(prefix.count() == 1)
+      if (prefix.count() == 1)
         return prefix[0]
     }
     return ""
   }
 
-  fun sufixosLocalizacaoes() : List<LocProduto>{
+  fun sufixosLocalizacaoes(): List<LocProduto> {
     val localizacoes = localizacoes()
+    if (localizacoes.size == 1)
+      return listOf(LocProduto(localizacoes[0], localizacoes[0]))
     val prefixo = prefixoLocalizacoes()
-    return localizacoes.map { LocProduto(it, it.mid(prefixo.length + 1)) }
+
+    return localizacoes.map {
+      val sufixo = it.mid(prefixo.length + 1)
+      if (sufixo == "")
+        LocProduto(it, it)
+      else
+        LocProduto(it, sufixo)
+    }
   }
 
+  fun makeLocProduto(localizacao: String): LocProduto? {
+    return sufixosLocalizacaoes()
+      .find { it.localizacao == localizacao }
+  }
 }
 
-data class LocProduto(val localizacao: String, val suflixo : String)
+data class LocProduto(val localizacao: String, val suflixo: String)
 
-fun List<LocProduto>.findLocalizacao(sufixo : String ) : String{
+fun List<LocProduto>.findLocalizacao(sufixo: String): String {
   return asSequence().filter { it.suflixo == sufixo }.map { it.localizacao }.firstOrNull() ?: ""
 }
 
-fun List<LocProduto>.findSufixo(localizacao : String ) : String{
-  return asSequence().filter { it.localizacao == localizacao}.map { it.suflixo }.firstOrNull() ?: ""
+fun List<LocProduto>.findSufixo(localizacao: String): String {
+  return asSequence().filter { it.localizacao == localizacao }.map { it.suflixo }.firstOrNull() ?: ""
 }

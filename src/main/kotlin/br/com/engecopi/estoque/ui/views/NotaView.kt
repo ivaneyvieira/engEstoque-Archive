@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
@@ -88,13 +89,16 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         isReadOnly = true
         bind(binder).bind("descricaoProduto")
       }
-      comboBox<String>("Localizacao") {
+      comboBox<LocProduto>("Localizacao") {
         expandRatio = 2f
         isReadOnly = operation != ADD
-        default { it }
+        default { localizacao ->
+          localizacao.suflixo
+        }
         isTextInputAllowed = true
-        bindItens(binder, "localizacaoProduto")
-        bind(binder).bind("localizacao")
+
+        bindItens(binder, NotaVo::localizacaoProduto.name)
+        bind(binder).bind(NotaVo::localizacao.name)
       }
       textField("Grade") {
         expandRatio = 1f

@@ -28,7 +28,7 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
   override fun layoutForm(
     formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<EntradaVo>, readOnly: Boolean
-  ) {
+                         ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
       binder.bean.usuario = usuario
@@ -77,12 +77,11 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
       }
 
       grupo("Produto") {
-        produtoField( operation, binder, "Entrada")
+        produtoField(operation, binder, "Entrada")
       }
     }
     if (!isAdmin && operation == UPDATE) binder.setReadOnly(true)
   }
-
 
   init {
     form("Entrada de produtos") {
@@ -144,6 +143,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
+          setRenderer({ it?.suflixo }, TextRenderer())
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"

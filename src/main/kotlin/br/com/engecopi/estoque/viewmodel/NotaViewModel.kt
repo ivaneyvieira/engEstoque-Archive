@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
@@ -18,6 +19,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
+import br.com.engecopi.estoque.model.findLocalizacao
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -31,7 +33,7 @@ import kotlin.reflect.KClass
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
-    if(bean.localizacao.isNullOrBlank())
+    if (bean.localizacao?.localizacao.isNullOrBlank())
       throw EViewModel("Não foi especificado a localização do item")
     val nota = updateNota(bean)
     val produto = saveProduto(bean.produto)
@@ -45,7 +47,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     val usuario = bean.usuario
     if (bean.notaSaci == null) {
       val produto = saveProduto(bean.produto)
-      insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao)
+      insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
     } else {
       produtos.filter { it.selecionado && it.quantidade != 0 }
         .forEach { produto ->
@@ -62,12 +64,12 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
 
   private fun insertItemNota(nota: Nota, produto: Produto?, quantProduto: Int, usuario3: Usuario,
                              local: String?): ItemNota? {
-    if(local.isNullOrBlank())
+    if (local.isNullOrBlank())
       throw EViewModel("Não foi especificado a localização do item")
     val saldoLocal = produto?.saldoLoja(local) ?: 0
     return if (quantProduto != 0) {
       when {
-        Nota.existNumero(nota, produto, local)                                -> {
+        Nota.existNumero(nota, produto, local)                         -> {
           val msg = "O produto ${produto?.codigo} - ${produto?.descricao}. Já foi inserido na nota ${nota.numero}."
           view.showWarning(msg)
           null
@@ -102,7 +104,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         this.quantidade = bean.quantProduto ?: 0
       }
       item.update()
-      item.produto?.recalculaSaldos(bean.localizacao)
+      item.produto?.recalculaSaldos(bean.localizacao?.localizacao)
     }
   }
 
@@ -181,7 +183,8 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = itemNota.nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
-      this.localizacao = itemNota.localizacao
+      this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
+
     }
   }
 
@@ -340,7 +343,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var observacaoNota: String? = ""
   val produtoNota: List<Produto>
     get() {
-      if(entityVo != null)
+      if (entityVo != null)
         return emptyList()
       val nota = notaProdutoSaci
       val produtos = if (nota.isNotEmpty())
@@ -349,7 +352,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         }.filter { produto ->
           usuario.temProduto(produto)
         }.toList()
-      else  ViewProdutoLoc.produtos() // Produto.all().filter { usuario.temProduto(it) }
+      else ViewProdutoLoc.produtos() // Produto.all().filter { usuario.temProduto(it) }
       return produtos.sortedBy { it.codigo + it.grade }
     }
   val quantidadeReadOnly
@@ -372,13 +375,13 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
     get() = produto?.grade ?: ""
   var quantProduto: Int? = 0
   val saldo: Int
-    get() = produto?.saldoLoja(localizacao) ?: 0
-  var localizacao: String? = ""
+    get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
+  var localizacao: LocProduto? = null
   val localizacaoProduto
-    get() = produto?.localizacoes().orEmpty()
+    get() = produto?.sufixosLocalizacaoes().orEmpty()
 }
 
-class ProdutoVO(val produto : Produto?, val tipoMov: TipoMov) {
+class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov) {
   val codigo: String = produto?.codigo ?: ""
   val grade: String = produto?.grade ?: ""
   var quantidade: Int = 0
@@ -388,8 +391,7 @@ class ProdutoVO(val produto : Produto?, val tipoMov: TipoMov) {
       saldo < quantidade
     else
       false
-  var localizacao: String = ""
-
+  var localizacao: String = "" //TODO
   val saldo: Int
     get() = produto?.saldoLoja(localizacao) ?: 0
   val descricaoProduto: String
