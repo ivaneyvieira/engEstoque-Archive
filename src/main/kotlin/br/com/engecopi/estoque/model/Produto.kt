@@ -225,7 +225,7 @@ class Produto : BaseModel() {
       if (sufixo == "")
         LocProduto(it, it)
       else
-        LocProduto(it, sufixo)
+        LocProduto(it, it)
     }
   }
 
