@@ -1,9 +1,11 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
-import br.com.engecopi.estoque.model.Repositories.viewProdutosLoc
+import br.com.engecopi.estoque.model.Repositories.findByAbreviacao
+import br.com.engecopi.estoque.model.Repositories.findByLojaAbreviacao
+import br.com.engecopi.estoque.model.Repositories.findByProduto
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
+import com.vaadin.sass.internal.selector.ParentSelector.it
 import io.ebean.annotation.Cache
 import io.ebean.annotation.View
 import javax.persistence.Entity
@@ -32,48 +34,33 @@ class ViewProdutoLoc(
                     ) {
   companion object Find : ViewProdutoLocFinder() {
     fun exists(produto: Produto?): Boolean {
-      val abreviacao = RegistryUserInfo.abreviacaoDefault
-      val lojaId = RegistryUserInfo.lojaDefault.id
-      val produtoId = produto?.id ?: return false
-      return Repositories.viewProdutosLoc.any {
-        it.loja.id == lojaId && it.produto.id == produtoId && it.abreviacao == abreviacao
-      }
+      return Repositories.findByProduto(produto).count() > 0
     }
 
     fun produtos(): List<Produto> {
-      val abreviacao = RegistryUserInfo.abreviacaoDefault
-      val lojaId = RegistryUserInfo.lojaDefault.id
-
-      return Repositories.viewProdutosLoc.asSequence().filter {
-        it.loja.id == lojaId  && it.abreviacao == abreviacao
-      }.map { it.produto }.distinct().toList()
+      return Repositories.findByLojaAbreviacao()
+        .asSequence()
+        .map { it.produto }.distinct().toList()
     }
 
     fun find(produto: Produto?): List<ViewProdutoLoc> {
-      val loja = RegistryUserInfo.lojaDefault
       produto ?: return emptyList()
-      return viewProdutosLoc.filter {
-        it.loja.id == loja.id && it.produto.id == produto.id
-      }
+      return findByProduto(produto)
     }
 
-    fun localizacoes(abreviacao : String): List<String> {
-      return viewProdutosLoc
+    fun localizacoes(abreviacao: String): List<String> {
+      return findByAbreviacao(abreviacao)
         .asSequence()
-        .filter{ it.storeno == lojaDefault.numero && it.abreviacao == abreviacao}
         .mapNotNull { it.localizacao }.distinct()
         .toList()
     }
 
     fun localizacoes(produto: Produto?): List<String> {
-      produto?: return emptyList()
-      val abreviacao = abreviacaoDefault
-      val ret =  viewProdutosLoc
+      produto ?: return emptyList()
+      return findByProduto(produto)
         .asSequence()
-        .filter{ it.storeno == lojaDefault.numero && it.produto.id == produto.id && it.abreviacao == abreviacao}
-        .mapNotNull { it.localizacao }
+        .mapNotNull { it.localizacao }.distinct()
         .toList()
-      return ret.distinct()
     }
   }
 }

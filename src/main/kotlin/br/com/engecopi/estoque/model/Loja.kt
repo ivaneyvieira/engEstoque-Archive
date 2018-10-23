@@ -61,9 +61,8 @@ class Loja : BaseModel() {
   }
 
   fun findAbreviacores(): List<String> {
-    return Repositories.viewProdutosLoc
+    return Repositories.findByLoja(this)
       .asSequence()
-      .filter { it.storeno == numero }
       .map { it.abreviacao }
       .distinct()
       .toList()

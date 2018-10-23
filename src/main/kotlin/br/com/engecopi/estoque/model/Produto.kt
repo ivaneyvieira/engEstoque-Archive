@@ -81,9 +81,11 @@ class Produto : BaseModel() {
 
   @Transactional
   fun recalculaSaldos() {
-    ViewProdutoLoc.find(this).map { it.localizacao }.forEach { localizacao ->
-      recalculaSaldos(localizacao)
-    }
+    ViewProdutoLoc.find(this)
+      .map { it.localizacao }
+      .forEach { localizacao ->
+        recalculaSaldos(localizacao)
+      }
   }
 
   @Transactional
