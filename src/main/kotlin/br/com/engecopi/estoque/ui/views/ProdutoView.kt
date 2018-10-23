@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
@@ -94,10 +95,12 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             bind(binder).bind(ProdutoVo::filtroTipo)
             reloadBinderOnChange(binder)
           }
-          comboBox<String>("Local") {
-            default { it }
+          comboBox<LocProduto>("Local") {
+            default { it.sufixo }
+            isEmptySelectionAllowed = true
             id = "filtro"
             val itens = viewModel.localizacoes(binder.bean)
+            emptySelectionCaption = "Todos"
             setItems(itens)
             bind(binder).bind(ProdutoVo::filtroLocalizacao)
             value = itens.firstOrNull()
@@ -125,6 +128,10 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             addColumnFor(ItemNota::rota) {
               this.isSortable = false
               caption = "Rota"
+            }
+            addColumnFor(ItemNota::localizacao) {
+              this.isSortable = false
+              caption = "Local"
             }
             addColumnFor(ItemNota::quantidadeSaldo) {
               this.isSortable = false

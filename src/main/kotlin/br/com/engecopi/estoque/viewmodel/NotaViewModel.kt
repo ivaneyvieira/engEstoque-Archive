@@ -56,7 +56,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
                                                                 prd.produto,
                                                                 prd.quantidade,
                                                                 usuario,
-                                                                prd.localizacao)
+                                                                prd.localizacao?.localizacao)
           }
         }
     }
@@ -292,7 +292,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
           var quant = notaSaci.quant ?: 0
           val produtosLocais = localizacoes.asSequence().map { localizacao ->
             ProdutoVO(prd, tipoNota.tipoMov).apply {
-              this.localizacao = localizacao
+              this.localizacao = prd?.makeLocProduto(localizacao)
               val saldo = this.saldo
               if (quant > 0)
                 if (quant > saldo) {
@@ -314,7 +314,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
           produtosLocais
         } else
           listOf(ProdutoVO(prd, tipoNota.tipoMov).apply {
-            this.localizacao = if (localizacoes.size == 1) localizacoes[0] else ""
+            this.localizacao = if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null
             this.quantidade = notaSaci.quant ?: 0
           })
         prdLocs
@@ -391,9 +391,9 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov) {
       saldo < quantidade
     else
       false
-  var localizacao: String = "" //TODO
+  var localizacao: LocProduto? = null
   val saldo: Int
-    get() = produto?.saldoLoja(localizacao) ?: 0
+    get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
 }

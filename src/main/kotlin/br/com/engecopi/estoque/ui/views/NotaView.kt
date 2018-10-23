@@ -93,7 +93,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         expandRatio = 2f
         isReadOnly = operation != ADD
         default { localizacao ->
-          localizacao.suflixo
+          localizacao.sufixo
         }
         isTextInputAllowed = true
 
@@ -145,7 +145,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         addColumnFor(ProdutoVO::localizacao) {
           expandRatio = 1
           caption = "Localizacao"
-          setRenderer({ loc -> loc.split("[\\-\\.]".toRegex()).lastOrNull() ?: loc }, TextRenderer())
+          setRenderer({ loc -> loc?.sufixo}, TextRenderer())
           setEditorComponent(comboLoc)
         }
         addColumnFor(ProdutoVO::grade) {

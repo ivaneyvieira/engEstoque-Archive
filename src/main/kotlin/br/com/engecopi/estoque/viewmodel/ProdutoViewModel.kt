@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
@@ -82,8 +83,8 @@ class ProdutoViewModel(view: IView) :
       .localizacao.contains(text)
   }
 
-  fun localizacoes(bean: ProdutoVo?): List<String> {
-    return ViewProdutoLoc.localizacoes(bean?.produto)
+  fun localizacoes(bean: ProdutoVo?): List<LocProduto> {
+    return bean?.produto?.sufixosLocalizacaoes().orEmpty()
   }
 }
 
@@ -119,7 +120,7 @@ class ProdutoVo : EntityVo<Produto>() {
   var filtroDI: LocalDate? = null
   var filtroDF: LocalDate? = null
   var filtroTipo: TipoNota? = null
-  var filtroLocalizacao: String? = null
+  var filtroLocalizacao: LocProduto? = null
   val itensNota: List<ItemNota>
     get() {
       produto?.recalculaSaldos()
@@ -133,7 +134,7 @@ class ProdutoVo : EntityVo<Produto>() {
         &&
         (filtroTipo?.let { t -> it.nota?.tipoNota == t } ?: true)
         &&
-        (filtroLocalizacao?.let { loc -> it.localizacao == loc } ?: true)
-      }
+        (filtroLocalizacao?.let { loc -> it.localizacao == loc.localizacao } ?: true)
+      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::dataNota, ItemNota::id))
     }
 }

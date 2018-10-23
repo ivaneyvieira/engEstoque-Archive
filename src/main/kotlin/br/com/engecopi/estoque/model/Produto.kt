@@ -235,12 +235,16 @@ class Produto : BaseModel() {
   }
 }
 
-data class LocProduto(val localizacao: String, val suflixo: String)
+data class LocProduto(val localizacao: String, val sufixo: String) : Comparable<LocProduto> {
+  override fun compareTo(other: LocProduto): Int {
+    return localizacao.compareTo(other.localizacao)
+  }
+}
 
 fun List<LocProduto>.findLocalizacao(sufixo: String): String {
-  return asSequence().filter { it.suflixo == sufixo }.map { it.localizacao }.firstOrNull() ?: ""
+  return asSequence().filter { it.sufixo == sufixo }.map { it.localizacao }.firstOrNull() ?: ""
 }
 
 fun List<LocProduto>.findSufixo(localizacao: String): String {
-  return asSequence().filter { it.localizacao == localizacao }.map { it.suflixo }.firstOrNull() ?: ""
+  return asSequence().filter { it.localizacao == localizacao }.map { it.sufixo }.firstOrNull() ?: ""
 }
