@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.viewmodel.EtiquetaViewModel
 import br.com.engecopi.estoque.viewmodel.EtiquetaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.utils.SystemUtils
 import com.github.vok.karibudsl.AutoView
@@ -39,18 +40,18 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
       h = 600.px
       row {
         textField("Título") {
-          expandRatio = 4f
+          expand = 4
           bind(binder).bind(EtiquetaVo::titulo)
         }
         comboBox<TipoMov>("Tipo") {
-          expandRatio = 1f
+          expand = 1
           default { it.descricao }
           setItems(TipoMov.values().toList())
           bind(binder).bind(EtiquetaVo::tipoMov)
         }
         button("Ajuda") {
           alignment = Alignment.BOTTOM_RIGHT
-          expandRatio = 1f
+          expand = 1
           icon = VaadinIcons.BOOK
           addClickListener {
             showInfo(SystemUtils.readFile("/html/variaveis.html")?:"")
@@ -60,7 +61,7 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
       row {
         textArea("Template") {
           h = 400.px
-          expandRatio = 1f
+          expand = 1
           bind(binder).bind(EtiquetaVo::template)
         }
       }

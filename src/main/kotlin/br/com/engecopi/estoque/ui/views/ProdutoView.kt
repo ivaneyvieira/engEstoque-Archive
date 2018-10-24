@@ -9,6 +9,7 @@ import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
@@ -51,18 +52,18 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
       grupo("Produtos") {
         row {
           textField {
-            expandRatio = 1f
+            expand = 1
             caption = "Código"
             bind(binder).bind(ProdutoVo::codigoProduto)
             reloadBinderOnChange(binder)
           }
           textField("Descrição") {
-            expandRatio = 3f
+            expand = 3
             isReadOnly = true
             bind(binder).bind(ProdutoVo::descricaoProdutoSaci.name)
           }
           comboBox<String> {
-            expandRatio = 1f
+            expand = 1
             caption = "Grade"
             default { it }
             bind(binder).bind(ProdutoVo::gradeProduto)
@@ -74,18 +75,21 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
       grupo("Notas") {
         row {
           dateField("Data Inicial") {
+            expand = 1
             id = "filtro"
             value = null
             bind(binder).bind(ProdutoVo::filtroDI)
             reloadBinderOnChange(binder)
           }
           dateField("Data Final") {
+            expand = 1
             id = "filtro"
             value = null
             bind(binder).bind(ProdutoVo::filtroDF)
             reloadBinderOnChange(binder)
           }
           comboBox<TipoNota>("Tipo") {
+            expand = 1
             default { it.descricao2 }
             id = "filtro"
             setItems(TipoNota.values().toList())
@@ -96,6 +100,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             reloadBinderOnChange(binder)
           }
           comboBox<LocProduto>("Local") {
+            expand = 2
             default { it.sufixo }
             isEmptySelectionAllowed = true
             id = "filtro"
@@ -109,7 +114,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
         row {
           grid(ItemNota::class) {
-            expandRatio = 2f
+            expand = 2
             removeAllColumns()
             addColumnFor(ItemNota::numeroNota) {
               this.isSortable = false

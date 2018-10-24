@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.viewmodel.EntradaViewModel
 import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.integerField
@@ -39,37 +40,37 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           notaFiscalField(operation, binder)
           lojaField(operation, binder)
           comboBox<TipoNota>("Tipo") {
-            expandRatio = 2f
+            expand = 2
             default { it.descricao }
             isReadOnly = true
             setItems(TipoNota.valuesEntrada())
             bind(binder).bind(EntradaVo::tipoNota)
           }
           textField("Rota") {
-            expandRatio = 1f
+            expand = 1
             isReadOnly = true
             bind(binder).bind(EntradaVo::rota)
           }
         }
         row {
           textField("Observação") {
-            expandRatio = 2f
+            expand = 2
             bind(binder).bind(EntradaVo::observacaoNota)
           }
         }
         row {
           dateField("Data") {
-            expandRatio = 1f
+            expand = 1
             isReadOnly = true
             bind(binder).bind(EntradaVo::dataNota.name)
           }
           integerField("Número Interno") {
-            expandRatio = 1f
+            expand = 1
             isReadOnly = true
             this.bind(binder).bind(EntradaVo::numeroInterno.name)
           }
           textField("Fornecedor") {
-            expandRatio = 2f
+            expand = 2
             isReadOnly = true
             bind(binder).bind(EntradaVo::fornecedor.name)
           }

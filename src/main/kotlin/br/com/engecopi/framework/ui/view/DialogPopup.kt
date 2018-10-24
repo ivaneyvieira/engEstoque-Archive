@@ -91,10 +91,11 @@ fun VerticalLayout.grupo(caption: String = "", block: VerticalLayout.() -> Unit)
 
 fun VerticalLayout.row(block: HorizontalLayout.() -> Unit) {
   val horizontalLayout = HorizontalLayout()
-  horizontalLayout.w = 100.perc
+  horizontalLayout.setWidth("100%")
+
   horizontalLayout.block()
-  horizontalLayout.iterator().forEach { component ->
-    component.w = 100.perc
-  }
+  //horizontalLayout.iterator().forEach { component ->
+  //  component.setWidth("100%")
+ // }
   addComponent(horizontalLayout)
 }

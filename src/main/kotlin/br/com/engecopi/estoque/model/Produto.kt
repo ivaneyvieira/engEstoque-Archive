@@ -239,6 +239,10 @@ data class LocProduto(val localizacao: String, val sufixo: String) : Comparable<
   override fun compareTo(other: LocProduto): Int {
     return localizacao.compareTo(other.localizacao)
   }
+
+  override fun toString(): String {
+    return sufixo
+  }
 }
 
 fun List<LocProduto>.findLocalizacao(sufixo: String): String {

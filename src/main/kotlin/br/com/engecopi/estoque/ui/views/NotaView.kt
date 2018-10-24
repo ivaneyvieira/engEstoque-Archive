@@ -12,6 +12,7 @@ import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindVisible
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
@@ -47,7 +48,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     binder: Binder<V>
                                                                             ) {
     textField("Nota Fiscal") {
-      expandRatio = 2f
+      expand = 2
       isReadOnly = operation != ADD
       bind(binder).bind("numeroNF")
       reloadBinderOnChange(binder)
@@ -59,7 +60,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     binder: Binder<V>
                                                                       ) {
     comboBox<Loja>("Loja") {
-      expandRatio = 2f
+      expand = 2
       default { it.sigla }
       isReadOnly = operation != ADD
       setItems(viewModel.findLojas(lojaDefault))
@@ -76,7 +77,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     row {
       this.bindVisible(binder, NotaVo::naoTemGrid.name)
       comboBox<Produto>("Código") {
-        expandRatio = 2f
+        expand = 2
         isReadOnly = operation != ADD
         default { "${it.codigo.trim()} ${it.grade}".trim() }
         isTextInputAllowed = true
@@ -85,12 +86,12 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         reloadBinderOnChange(binder)
       }
       textField("Descrição") {
-        expandRatio = 5f
+        expand = 5
         isReadOnly = true
         bind(binder).bind("descricaoProduto")
       }
       comboBox<LocProduto>("Localizacao") {
-        expandRatio = 2f
+        expand = 3
         isReadOnly = operation != ADD
         default { localizacao ->
           localizacao.sufixo
@@ -101,12 +102,12 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         bind(binder).bind(NotaVo::localizacao.name)
       }
       textField("Grade") {
-        expandRatio = 1f
+        expand = 1
         isReadOnly = true
         bind(binder).bind("grade")
       }
       integerField("Qtd $tipo") {
-        expandRatio = 1f
+        expand = 1
         isReadOnly = (isAdmin == false) && (operation != ADD)
         this.bind(binder).bind("quantProduto")
       }
@@ -114,7 +115,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     row {
       this.bindVisible(binder, "temGrid")
       grid(ProdutoVO::class) {
-        expandRatio = 2f
+        expand = 2
         this.h = 200.px
         editor.isEnabled = true
         removeAllColumns()
@@ -129,7 +130,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
             }
           }
         }
-        val comboLoc = ComboBox<String>().apply {
+        val comboLoc = ComboBox<LocProduto>().apply {
           isEmptySelectionAllowed = false
           isTextInputAllowed = false
         }
@@ -143,9 +144,8 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Descrição"
         }
         addColumnFor(ProdutoVO::localizacao) {
-          expandRatio = 1
+          expandRatio = 3
           caption = "Localizacao"
-          setRenderer({ loc -> loc?.sufixo}, TextRenderer())
           setEditorComponent(comboLoc)
         }
         addColumnFor(ProdutoVO::grade) {
@@ -154,14 +154,14 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         }
         addColumnFor(ProdutoVO::quantidade) {
           expandRatio = 1
-          caption = "Qtd ${tipo}"
+          caption = "Qtd $tipo"
         }
         bindItens(binder, "produtos")
         editor.addOpenListener { event ->
           event.bean.produto?.let { produto ->
             val locSulfixos = produto.sufixosLocalizacaoes()
-            comboLoc.setItems(locSulfixos.map { it.localizacao })
-            comboLoc.setItemCaptionGenerator { locSulfixos.findSufixo(it) }
+            comboLoc.setItems(locSulfixos)
+            comboLoc.setItemCaptionGenerator { it.sufixo }
           }
         }
         val nav = FastNavigation<ProdutoVO>(this, false, true)

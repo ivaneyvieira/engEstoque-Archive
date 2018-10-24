@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItensSet
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.vok.karibudsl.AutoView
@@ -41,7 +42,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
     formLayout.apply {
       row {
         textField {
-          expandRatio = 1f
+          expand = 1
           caption = "Login Saci"
           isReadOnly = isAdmin == false
           bind(binder).bind(UsuarioCrudVo::loginName)
@@ -50,7 +51,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           }
         }
         textField {
-          expandRatio = 4f
+          expand = 4
           caption = "Nome"
           isReadOnly = true
           bind(binder).bind(UsuarioCrudVo::nome.name)
@@ -58,7 +59,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
       }
       row {
         comboBox<Loja> {
-          expandRatio = 1f
+          expand = 1
           caption = "Loja"
           isEmptySelectionAllowed = true
           isTextInputAllowed = false

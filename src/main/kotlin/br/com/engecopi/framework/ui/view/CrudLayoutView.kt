@@ -7,6 +7,7 @@ import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.init
+import com.github.vok.karibudsl.perc
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
@@ -184,7 +185,7 @@ class WindowsCrud : WindowBasedCrudLayout() {
     windowLayout.isResponsive = true
     
     formWindow = Window(caption, windowLayout)
-    //formWindow.setWidth(formWindowWidth)
+    //formWindow.setWidth("80%")
     formWindow.isClosable = true
     formWindow.isResizable = false
     formWindow.isModal = true

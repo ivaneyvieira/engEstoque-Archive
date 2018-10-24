@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.row
@@ -43,26 +44,26 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
             notaFiscalField(operation, binder)
             lojaField(operation, binder)
             comboBox<TipoNota>("Tipo") {
-              expandRatio = 2f
+              expand = 2
               default { it.descricao }
               isReadOnly = true
               setItems(TipoNota.valuesSaida())
               bind(binder).bind(SaidaVo::tipoNota)
             }
             dateField("Data") {
-              expandRatio = 1f
+              expand = 1
               isReadOnly = true
               bind(binder).bind(SaidaVo::dataNota.name)
             }
             textField("Rota") {
-              expandRatio = 1f
+              expand = 1
               isReadOnly = true
               bind(binder).bind(SaidaVo::rota)
             }
           }
           row {
             textField("Observação da nota fiscal") {
-              expandRatio = 1f
+              expand = 1
               bind(binder).bind(SaidaVo::observacaoNota)
             }
           }

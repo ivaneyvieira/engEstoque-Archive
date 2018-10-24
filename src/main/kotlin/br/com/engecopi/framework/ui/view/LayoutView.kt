@@ -8,6 +8,7 @@ import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
+import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.isMargin
@@ -24,6 +25,7 @@ import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.server.BrowserWindowOpener
 import com.vaadin.server.StreamResource
+import com.vaadin.ui.AbstractOrderedLayout
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
@@ -262,4 +264,11 @@ fun <T : Any> (@VaadinDsl HasComponents).filterGrid(
     this.caption = caption
     if (dataProvider != null) this.dataProvider = dataProvider
     block()
+  }
+
+var (@VaadinDsl Component).expand: Int
+  get() = this.expandRatio.toInt()
+  set(value) {
+    this.setWidth("100%")
+    this.expandRatio = value * 1f
   }
