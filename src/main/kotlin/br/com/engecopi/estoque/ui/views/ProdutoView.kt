@@ -24,10 +24,12 @@ import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.grid
 import com.github.vok.karibudsl.h
+import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.HtmlRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
@@ -47,7 +49,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
                          ) {
     binder.bean.lojaDefault = RegistryUserInfo.lojaDefault
     formLayout.apply {
-      w = 800.px
+      w = (UI.getCurrent().page.browserWindowWidth*0.8).toInt().px
       h = 300.px
       grupo("Produtos") {
         row {
@@ -181,7 +183,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
         column(ProdutoVo::localizacao) {
           expandRatio = 1
-          setRenderer({ e -> e?.replace(" - ", " / ") }, HtmlRenderer())
+          //setRenderer({ e -> e?.replace(" - ", " / ") }, HtmlRenderer())
           caption = "Localização"
           setSortProperty("localizacao")
         }

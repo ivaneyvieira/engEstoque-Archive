@@ -4,6 +4,7 @@ import com.github.vok.karibudsl.cssLayout
 import com.github.vok.karibudsl.perc
 import com.github.vok.karibudsl.verticalLayout
 import com.github.vok.karibudsl.w
+import com.github.vok.karibudsl.wrapContent
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.shared.Registration
 import com.vaadin.ui.Button
@@ -83,9 +84,12 @@ open class DialogPopup<BEAN : Any>(
 
 fun VerticalLayout.grupo(caption: String = "", block: VerticalLayout.() -> Unit) {
   cssLayout(caption) {
-    w = 100.perc
+    expand = 1
     addStyleName(ValoTheme.LAYOUT_CARD)
-    verticalLayout { this.block() }
+    verticalLayout {
+      w = 100.perc
+      this.block()
+    }
   }
 }
 

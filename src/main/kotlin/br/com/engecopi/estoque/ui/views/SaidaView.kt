@@ -14,11 +14,14 @@ import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.dateField
 import com.github.vok.karibudsl.expandRatio
+import com.github.vok.karibudsl.px
 import com.github.vok.karibudsl.textField
 import com.github.vok.karibudsl.verticalLayout
+import com.github.vok.karibudsl.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
@@ -38,6 +41,8 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
       binder.bean.usuario = usuario
     }
     formLayout.apply {
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
+
       grupo("Nota fiscal de saída") {
         verticalLayout {
           row {

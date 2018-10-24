@@ -17,8 +17,10 @@ import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.utils.mid
+import com.github.vok.karibudsl.VAlign
 import com.github.vok.karibudsl.VaadinDsl
 import com.github.vok.karibudsl.addColumnFor
+import com.github.vok.karibudsl.align
 import com.github.vok.karibudsl.bind
 import com.github.vok.karibudsl.comboBox
 import com.github.vok.karibudsl.expandRatio
@@ -144,8 +146,8 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Descrição"
         }
         addColumnFor(ProdutoVO::localizacao) {
-          expandRatio = 3
-          caption = "Localizacao"
+          expandRatio = 4
+          caption = "Localização"
           setEditorComponent(comboLoc)
         }
         addColumnFor(ProdutoVO::grade) {
@@ -155,6 +157,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         addColumnFor(ProdutoVO::quantidade) {
           expandRatio = 1
           caption = "Qtd $tipo"
+          align = VAlign.Right
         }
         bindItens(binder, "produtos")
         editor.addOpenListener { event ->

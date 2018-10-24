@@ -1,3 +1,4 @@
+
 select P.invno, N.storeno, nfname           as numero, invse as serie,
        CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        N.date,
@@ -19,13 +20,16 @@ from sqldados.inv AS N
     ON V.no = N.vendno
   left join sqldados.xfr AS X
     ON X.no = N.xfrno
-where N.storeno = :storeno
-      and nfname = :nfname
-      and invse = :invse AND
-      N.date > DATE_SUB(current_date, INTERVAL 6 MONTH)
-      AND N.bits & POW(2, 4) = 0
-      AND N.auxShort13 & pow(2, 15) = 0
-      AND invse <> ''
+where N.invno = (SELECT MAX(invno)
+                 FROM sqldados.inv AS N
+                 where N.storeno = :storeno
+                     and nfname = :nfname
+                     and invse = :invse AND
+                       N.date > DATE_SUB(current_date, INTERVAL 6 MONTH)
+                     AND N.bits & POW(2, 4) = 0
+                     AND N.auxShort13 & pow(2, 15) = 0
+                     AND invse <> ''
+)
 UNION
 select 0                    as invno, N.storeno, ordno as numero, '' as serie,
        ''                   AS rota,

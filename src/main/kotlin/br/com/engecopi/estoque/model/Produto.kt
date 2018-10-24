@@ -236,6 +236,8 @@ class Produto : BaseModel() {
 }
 
 data class LocProduto(val localizacao: String, val sufixo: String) : Comparable<LocProduto> {
+  val prefixo = localizacao.split("-").getOrNull(0) ?: localizacao
+
   override fun compareTo(other: LocProduto): Int {
     return localizacao.compareTo(other.localizacao)
   }

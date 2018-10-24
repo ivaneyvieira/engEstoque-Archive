@@ -104,7 +104,9 @@ class ProdutoVo : EntityVo<Produto>() {
     get() = ViewProdutoSaci.find(codigoProduto).mapNotNull { it.grade }
   val codebar: String?
     get() = produto?.codebar ?: ""
-  val localizacao get() = produto?.localizacao ?: ""
+  val localizacao get() = produto?.sufixosLocalizacaoes()
+    .orEmpty().asSequence()
+    .map { it.prefixo }.distinct().joinToString(" / ")
   val produto
     get() = toEntity()
   val saldo

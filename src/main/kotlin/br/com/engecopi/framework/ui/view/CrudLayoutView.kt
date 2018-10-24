@@ -8,6 +8,8 @@ import com.github.vok.karibudsl.addGlobalShortcutListener
 import com.github.vok.karibudsl.expandRatio
 import com.github.vok.karibudsl.init
 import com.github.vok.karibudsl.perc
+import com.github.vok.karibudsl.w
+import com.github.vok.karibudsl.wrapContent
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
@@ -185,7 +187,7 @@ class WindowsCrud : WindowBasedCrudLayout() {
     windowLayout.isResponsive = true
     
     formWindow = Window(caption, windowLayout)
-    //formWindow.setWidth("80%")
+    formWindow.w = wrapContent
     formWindow.isClosable = true
     formWindow.isResizable = false
     formWindow.isModal = true
