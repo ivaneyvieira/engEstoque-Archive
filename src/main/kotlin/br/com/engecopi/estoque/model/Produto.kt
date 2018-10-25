@@ -40,7 +40,7 @@ class Produto : BaseModel() {
   var dataCadastro: LocalDate = LocalDate.now()
   @OneToMany(
     mappedBy = "produto",
-    cascade = [PERSIST, MERGE, REFRESH]
+    cascade = [REFRESH]
             )
   val itensNota: List<ItemNota>? = null
   @OneToOne(cascade = [])
@@ -93,8 +93,8 @@ class Produto : BaseModel() {
     val loja = RegistryUserInfo.lojaDefault
     localizacao ?: return 0
     var saldo = 0
-    refresh()
-    val itensNotNull = itensNota ?: return 0
+
+    val itensNotNull = findItensNota()
     itensNotNull
       .asSequence()
       .filter {
@@ -166,28 +166,25 @@ class Produto : BaseModel() {
     if (localizacao == "")
       return 0
     val loja = RegistryUserInfo.lojaDefault
-    refresh()
-    return itensNota
-      .orEmpty().asSequence()
+    return findItensNota()
+      .asSequence()
       .filter { it.nota?.loja?.id == loja.id && it.localizacao == localizacao }
       .sumBy(this::somaSaldo)
   }
 
   fun saldoTotal(): Int {
-    refresh()
-    return itensNota.orEmpty()
+    return findItensNota()
       .sumBy(this::somaSaldo)
   }
 
   fun ultimaNota(): ItemNota? {
-    refresh()
-    return itensNota
-      ?.asSequence()
-      ?.sortedBy { it.id }
-      ?.lastOrNull()
+    return findItensNota()
+      .asSequence()
+      .sortedBy { it.id }
+      .lastOrNull()
   }
 
-  fun finItensNota(): List<ItemNota> {
+  fun findItensNota(): List<ItemNota> {
     return ItemNota.where().produto.id.eq(id).findList()
   }
 

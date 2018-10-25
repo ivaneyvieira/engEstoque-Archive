@@ -102,14 +102,11 @@ class Nota : BaseModel() {
       return saci.findNotaSaida(loja.numero, numero, serie)
     }
 
-    fun existNumero(nota: Nota?, produto: Produto?, local : String?): Boolean {
-      nota ?: return false
-      produto ?: return false
-      local ?: return false
-      val loja_id = nota.loja?.id
+    fun itemDuplicado(nota: Nota?, produto: Produto?, local : String?): Boolean {
+      val loja_id = nota?.loja?.id ?: return false
       val numero = nota.numero
       val tipoMov = nota.tipoMov
-      val produto_id = produto.id
+      val produto_id = produto?.id ?: return false
       return ItemNota.where()
                .nota.loja.id.eq(loja_id)
                .nota.numero.eq(numero)

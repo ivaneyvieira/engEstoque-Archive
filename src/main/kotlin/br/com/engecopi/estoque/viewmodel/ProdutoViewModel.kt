@@ -127,7 +127,7 @@ class ProdutoVo : EntityVo<Produto>() {
     get() {
       produto?.recalculaSaldos()
 
-      return produto?.finItensNota().orEmpty().filter {
+      return produto?.findItensNota().orEmpty().asSequence().filter {
         (lojaDefault?.let { lDef -> it.nota?.loja?.id == lDef.id } ?: true)
         &&
         (filtroDI?.let { di -> (it.nota?.data?.isAfter(di) ?: true) || (it.nota?.data?.isEqual(di) ?: true) } ?: true)
@@ -137,6 +137,6 @@ class ProdutoVo : EntityVo<Produto>() {
         (filtroTipo?.let { t -> it.nota?.tipoNota == t } ?: true)
         &&
         (filtroLocalizacao?.let { loc -> it.localizacao == loc.localizacao } ?: true)
-      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::dataNota, ItemNota::id))
+      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::dataNota, ItemNota::id)).toList()
     }
 }
