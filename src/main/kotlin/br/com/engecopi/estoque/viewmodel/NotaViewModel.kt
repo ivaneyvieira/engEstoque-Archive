@@ -184,7 +184,6 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = itemNota.nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
-
     }
   }
 
@@ -301,7 +300,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
                     quant = 0
                   } else {
                     this.quantidade = saldo
-                    quant = saldo - quant
+                    quant -= saldo
                   }
                 } else {
                   this.quantidade = quant
