@@ -41,13 +41,27 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
 
   override fun add(bean: VO) {
     val nota = insertNota(bean)
-    val produtos = bean.produtos
     val usuario = bean.usuario
     if (bean.notaSaci == null) {
       val produto = saveProduto(bean.produto)
-      insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
+      if (Nota.itemDuplicado(nota, produto)) {
+        val msg = "O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}."
+        view.showWarning(msg)
+      } else
+        insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
     } else {
-      produtos.filter { it.selecionado && it.quantidade != 0 }
+      val produtos = bean.produtos.filter { it.selecionado && it.quantidade != 0 }
+      val produtosJaInserido = produtos
+        .asSequence()
+        .distinctBy { it.produto?.id }
+        .filter { prd -> prd.produto?.let { Nota.itemDuplicado(nota, it) } ?: false }
+        .map { it.produto }
+        .filterNotNull()
+      produtosJaInserido.forEach { prd ->
+        val msg = "O produto ${prd.codigo} - ${prd.descricao}. Já foi inserido na nota ${nota.numero}."
+        view.showWarning(msg)
+      }
+      produtos.filter { it.produto !in produtosJaInserido }
         .forEach { produto ->
           produto.let { prd ->
             if (usuario.temProduto(prd.produto)) insertItemNota(nota,
@@ -67,11 +81,6 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     val saldoLocal = produto?.saldoLoja(local) ?: 0
     return if (quantProduto != 0) {
       when {
-        Nota.itemDuplicado(nota, produto, local)                       -> {
-          val msg = "O produto ${produto?.codigo} - ${produto?.descricao}. Já foi inserido na nota ${nota.numero}."
-          view.showWarning(msg)
-          null
-        }
         (saldoLocal + (nota.tipoMov.multiplicador * quantProduto)) < 0 -> {
           val msg = "Saldo insuficiente para o produto ${produto?.codigo} - ${produto?.descricao}."
           view.showWarning(msg)

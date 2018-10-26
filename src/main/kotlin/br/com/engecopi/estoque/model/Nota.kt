@@ -102,7 +102,7 @@ class Nota : BaseModel() {
       return saci.findNotaSaida(loja.numero, numero, serie)
     }
 
-    fun itemDuplicado(nota: Nota?, produto: Produto?, local : String?): Boolean {
+    fun itemDuplicado(nota: Nota?, produto: Produto?): Boolean {
       val loja_id = nota?.loja?.id ?: return false
       val numero = nota.numero
       val tipoMov = nota.tipoMov
@@ -112,7 +112,6 @@ class Nota : BaseModel() {
                .nota.numero.eq(numero)
                .nota.tipoMov.eq(tipoMov)
                .produto.id.eq(produto_id)
-               .localizacao.eq(local)
                .findCount() > 0
     }
   }
