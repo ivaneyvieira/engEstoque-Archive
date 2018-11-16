@@ -135,7 +135,10 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   VENDA(SAIDA, "Venda", "Venda"), TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"),
   ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"), DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"),
   ACERTO_S(SAIDA, "Acerto", "Acerto Saida"), PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
-  OUTROS_S(SAIDA, "Outros", "Outras Saidas", true);
+  OUTROS_S(SAIDA, "Outros", "Outras Saidas", true),
+  OUTRAS_NFS(SAIDA, "Outras NFS", "Outras NF Saida", true),
+  SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true),
+  ;
 
   companion object {
     fun valuesEntrada(): List<TipoNota> {

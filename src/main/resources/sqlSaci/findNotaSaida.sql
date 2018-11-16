@@ -18,7 +18,11 @@ SELECT CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
                  THEN 'TRANSFERENCIA_S'
             WHEN tipo = 2
                  THEN 'DEV_FOR'
-            ELSE 'INVALIDA'
+            WHEN tipo = 3
+                 THEN 'DEV_FOR'
+            WHEN tipo = 7
+                 THEN 'OUTRAS_NFS'
+            ELSE 'SP_REME'
            END                              AS tipo
 FROM sqldados.nf AS                      N
        INNER JOIN sqldados.xaprd AS      P USING (storeno, pdvno, xano)
