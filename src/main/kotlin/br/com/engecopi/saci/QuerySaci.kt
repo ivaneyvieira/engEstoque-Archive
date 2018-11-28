@@ -31,9 +31,8 @@ class QuerySaci : QueryDB(
       val nfs = findNotaSaidaNF(storeno, nfno, nfse)
       if (nfs.isNotEmpty())
         nfs
-      else {
+      else
         findNotaSaidaPXA(storeno, nfno, nfse)
-      }
     }
   }
 
