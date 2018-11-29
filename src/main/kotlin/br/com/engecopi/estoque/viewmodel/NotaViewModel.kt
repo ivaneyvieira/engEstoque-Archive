@@ -165,11 +165,12 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     get() {
       Repositories.updateViewProdutosLoc()
       val query = ItemNota.where()
-        .fetch("nota")
-        .fetch("usuario")
-        .fetch("produto")
-        .fetch("produto.vproduto")
-        .fetch("produto.viewProdutoLoc")
+        .setUseQueryCache(true)
+      //  .fetch("nota")
+      //  .fetch("usuario")
+      //  .fetch("produto")
+      //  .fetch("produto.vproduto")
+      //  .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
       return query
         .nota.loja.id.eq(lojaDefault.id)
@@ -188,7 +189,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.observacaoNota = nota?.observacao
       this.produto = itemNota.produto
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
-      this.rota = itemNota.nota?.rota
+      this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
     }

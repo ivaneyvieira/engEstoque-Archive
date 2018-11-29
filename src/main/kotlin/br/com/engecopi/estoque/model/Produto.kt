@@ -44,10 +44,10 @@ class Produto : BaseModel() {
             )
   val itensNota: List<ItemNota>? = null
   @OneToOne(cascade = [])
-  @FetchPreference(1)
+//  @FetchPreference(1)
   @JoinColumn(name = "id")
   var vproduto: ViewProduto? = null
-  @FetchPreference(2)
+  //@FetchPreference(2)
   @OneToMany(
     mappedBy = "produto",
     cascade = [REFRESH]

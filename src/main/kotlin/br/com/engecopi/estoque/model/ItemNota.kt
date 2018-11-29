@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
-import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
@@ -24,17 +23,17 @@ class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
-  @FetchPreference(1)
+ // @FetchPreference(1)
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  @FetchPreference(2)
+ // @FetchPreference(2)
   var nota: Nota? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  @FetchPreference(3)
+ // @FetchPreference(3)
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  @FetchPreference(4)
+ // @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
   var impresso: Boolean = false

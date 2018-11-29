@@ -1,18 +1,13 @@
 package br.com.engecopi.framework.model
 
 import io.ebean.Ebean
-import javax.persistence.RollbackException
-import io.ebean.config.ServerConfig
-import io.ebean.EbeanServerFactory
 import io.ebean.Query
 import io.ebean.SqlQuery
 import io.ebean.SqlUpdate
-import java.sql.ResultSet
-
-
+import javax.persistence.RollbackException
 
 object Transaction {
-  
+
   private fun inTransaction(): Boolean {
     return Ebean.currentTransaction() != null
   }
