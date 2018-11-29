@@ -104,7 +104,8 @@ dependencies {
   // workaround until https://youtrack.jetbrains.com/issue/IDEA-178071 is fixed
   compile "com.vaadin:vaadin-themes:${vaadin.version}"
   compile "com.vaadin:vaadin-client-compiled:${vaadin.version}"
-  compile "mysql:mysql-connector-java:5.1.45"
+  compile "mysql:mysql-connector-java:5.1.47"
+
   compile "org.apache.commons:commons-dbcp2:2.3.0"
   compile  "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
 

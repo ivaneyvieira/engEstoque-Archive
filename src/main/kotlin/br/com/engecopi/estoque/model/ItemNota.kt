@@ -2,6 +2,8 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
+import io.ebean.annotation.Cache
+import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
@@ -17,6 +19,8 @@ import javax.persistence.Transient
 import kotlin.reflect.full.memberProperties
 
 @Entity
+@Cache(enableQueryCache=true)
+@CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "itens_nota")
 @Index(unique = true, columnNames = ["nota_id", "produto_id", "localizacao"])
 class ItemNota : BaseModel() {

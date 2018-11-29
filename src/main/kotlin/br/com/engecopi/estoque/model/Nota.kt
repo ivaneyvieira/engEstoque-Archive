@@ -6,6 +6,8 @@ import br.com.engecopi.estoque.model.finder.NotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.saci
+import io.ebean.annotation.Cache
+import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
@@ -22,6 +24,8 @@ import javax.persistence.Table
 import javax.validation.constraints.Size
 
 @Entity
+@Cache(enableQueryCache=true)
+@CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "notas")
 @Index(columnNames = ["loja_id", "tipo_mov"])
 class Nota : BaseModel() {

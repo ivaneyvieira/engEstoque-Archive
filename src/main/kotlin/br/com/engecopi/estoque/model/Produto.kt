@@ -6,6 +6,7 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
 import br.com.engecopi.utils.mid
 import io.ebean.annotation.Cache
+import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
@@ -22,7 +23,8 @@ import javax.persistence.Table
 import javax.persistence.Transient
 import javax.validation.constraints.Size
 
-@Cache(enableQueryCache = true)
+@Cache(enableQueryCache=true)
+@CacheQueryTuning(maxSecsToLive = 30)
 @Entity
 @Table(name = "produtos")
 @Index(
