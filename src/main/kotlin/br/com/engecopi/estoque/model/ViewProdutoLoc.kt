@@ -40,7 +40,9 @@ class ViewProdutoLoc(
     fun produtos(): List<Produto> {
       return Repositories.findByLojaAbreviacao()
         .asSequence()
-        .map { it.produto }.distinct().toList()
+        .map { it.produto }
+        .distinct()
+        .toList()
     }
 
     fun find(produto: Produto?): List<ViewProdutoLoc> {

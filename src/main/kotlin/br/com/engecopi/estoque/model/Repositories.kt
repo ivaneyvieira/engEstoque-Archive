@@ -2,8 +2,10 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
+import java.time.LocalTime
 
 object Repositories {
+  private var time = 0
   private var viewProdutosLoc = newViewProdutosLoc()
   private lateinit var viewProdutosLocProdutoKey: Map<ProdutoKey, List<ViewProdutoLoc>>
   private lateinit var viewProdutosLocLojaAbreviacaoKey: Map<LojaAbreviacaoKey, List<ViewProdutoLoc>>
@@ -14,14 +16,17 @@ object Repositories {
     viewProdutosLoc = newViewProdutosLoc()
   }
 
+  private fun newViewProdutosLoc() {
+    val agora = LocalTime.now().toSecondOfDay()
+    if ((agora - time) > 5) {
+      val list = ViewProdutoLoc.all()
+      viewProdutosLocProdutoKey = list.groupBy { ProdutoKey(it.produto.id, it.storeno, it.abreviacao) }
+      viewProdutosLocLojaAbreviacaoKey = list.groupBy { LojaAbreviacaoKey(it.storeno, it.abreviacao) }
+      viewProdutosLocLojaKey = list.groupBy { it.storeno }
+      viewProdutosLocAbreviacaoKey = list.groupBy { it.abreviacao }
 
-  private fun newViewProdutosLoc(): List<ViewProdutoLoc> {
-    val list = ViewProdutoLoc.all()
-    viewProdutosLocProdutoKey = list.groupBy { ProdutoKey(it.produto.id, it.storeno, it.abreviacao) }
-    viewProdutosLocLojaAbreviacaoKey = list.groupBy { LojaAbreviacaoKey(it.storeno, it.abreviacao) }
-    viewProdutosLocLojaKey = list.groupBy { it.storeno }
-    viewProdutosLocAbreviacaoKey = list.groupBy { it.abreviacao }
-    return list
+      time = LocalTime.now().toSecondOfDay()
+    }
   }
 
   fun findByProduto(produto: Produto?): List<ViewProdutoLoc> {
