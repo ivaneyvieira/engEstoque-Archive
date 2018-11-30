@@ -78,19 +78,25 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
   }
 
   open fun findQuery(offset: Int, limit: Int, filter: String, sorts: List<Sort>): List<VO> = execList {
-    println("LAZY ==> offset = $offset limit = $limit filter = $filter")
-    val itens = query.filterBlank(filter)
-      .setFirstRow(offset)
-      .setMaxRows(limit)
-      .makeSort(sorts)
-      .findList()
-    val ret =itens.map { model ->
-      val vo = model.toVO()
-      vo.apply {
-        entityVo = model
+    val seq : Sequence<VO> =sequence{
+      val iterator = query.filterBlank(filter)
+        .setFirstRow(offset)
+        .setMaxRows(limit)
+        .makeSort(sorts)
+      .findIterate()
+
+      iterator.use { it ->
+        while (it.hasNext()) {
+          val model = it.next()
+          val vo = model.toVO()
+          vo.apply {
+            entityVo = model
+          }
+          yield(vo)
+        }
       }
     }
-    ret
+    seq.toList()
   }
 
   open fun countQuery(filter: String): Int = execInt {
@@ -103,6 +109,7 @@ data class Sort(val propertyName: String, val descending: Boolean = false)
 
 abstract class EntityVo<MODEL : BaseModel> {
   open var entityVo: MODEL? = null
+  var readOnly : Boolean = true
 
   fun toEntity(): MODEL? {
     return entityVo ?: findEntity()
