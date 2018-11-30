@@ -2,6 +2,7 @@ package br.com.engecopi.framework.ui.view
 
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
+import br.com.engecopi.framework.viewmodel.QueryView
 import br.com.engecopi.framework.viewmodel.Sort
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.vok.karibudsl.addGlobalShortcutListener
@@ -166,12 +167,14 @@ class ViewModelCrudListener<T : EntityVo<*>>(val crudViewModel: CrudViewModel<*,
     crudViewModel.delete()
   }
   
-  fun findQuery(offset: Int, limit: Int, filter: String, sorts: List<Sort>): List<T> {
-    return crudViewModel.findQuery(offset, limit, filter, sorts)
+  fun findQuery(query: QueryView): List<T> {
+    crudViewModel.updateQueryView(query)
+    return crudViewModel.findQuery()
   }
   
-  fun countQuery(filter: String): Int {
-    return crudViewModel.countQuery(filter)
+  fun countQuery(query: QueryView): Int {
+    crudViewModel.updateQueryView(query)
+    return crudViewModel.countQuery()
   }
 }
 
@@ -207,9 +210,11 @@ open class GridCrudFlex<T : EntityVo<*>>(
   val find = CallbackDataProvider.FetchCallback<T, String> { query ->
     findQuery(query)
   }
+
   val count = CallbackDataProvider.CountCallback<T, String> { query ->
-    countQuery(query)
+     countQuery(query)
   }
+
   private val dataProvider = DataProvider.fromFilteringCallbacks(find, count)
           .withConfigurableFilter()
   
@@ -307,7 +312,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
     readButton?.isEnabled = rowSelected
   }
   
-  protected fun readButtonClicked() {
+  private fun readButtonClicked() {
     val domainObject = grid.asSingleSelect().value
     showForm(CrudOperation.READ, domainObject, false, savedMessage) { _ ->
       try {
@@ -334,14 +339,18 @@ open class GridCrudFlex<T : EntityVo<*>>(
     grid.dataProvider.refreshAll()
   }
   
-  fun findQuery(query: Query<T, String>): Stream<T> {
-    val sorts = query.sortOrders.map {
-      Sort(it.sorted, it.direction == SortDirection.DESCENDING)
-    }
-    return crudListener.findQuery(query.offset, query.limit, query.filter.orElse(""), sorts).stream()
+  private fun findQuery(query: Query<T, String>): Stream<T> {
+    return crudListener.findQuery(query.viewQuery()).stream()
   }
   
-  fun countQuery(query: Query<T, String>): Int {
-    return crudListener.countQuery(query.filter.orElse(""))
+  private fun countQuery(query: Query<T, String>): Int {
+    return crudListener.countQuery(query.viewQuery())
   }
+}
+
+fun <T> Query<T, String>.viewQuery() : QueryView {
+  val sorts = this.sortOrders.map {
+    Sort(it.sorted, it.direction == SortDirection.DESCENDING)
+  }
+  return QueryView(this.offset, this.limit, this.filter.orElse(""), sorts)
 }

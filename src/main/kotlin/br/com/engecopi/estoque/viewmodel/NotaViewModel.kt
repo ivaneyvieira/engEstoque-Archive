@@ -93,7 +93,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
             this.produto = produto
             this.quantidade = quantProduto
             this.usuario = usuario3
-            this.localizacao = local ?: ""
+            this.localizacao = local
           }
           item.insert()
           item.produto?.recalculaSaldos(local)
