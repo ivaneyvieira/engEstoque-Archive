@@ -237,6 +237,11 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     }
     print?.print(template ?: "") ?: ""
   }
+
+  fun imprime(): String {
+    val list = query.impresso.eq(false).findList()
+    return list.joinToString(separator = "\n") { imprimir(it) }
+  }
 }
 
 abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
@@ -371,7 +376,6 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var produto: Produto? = null
     set(value) {
       field = value
-      if (!readOnly)
         quantProduto = toEntity()?.quantidade ?: notaProdutoSaci.firstOrNull { neSaci ->
           (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
         }?.quant ?: 0

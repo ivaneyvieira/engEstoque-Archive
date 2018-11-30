@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : EntityVo<MODEL>>
   (view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
   private var queryView: QueryView? = null
-  private var pagedList: PagedList<MODEL>? = null
+  protected var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
   override fun execUpdate() {}
 

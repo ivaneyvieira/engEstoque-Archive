@@ -89,9 +89,12 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
     if (!isAdmin && operation == UPDATE) binder.setReadOnly(true)
   }
 
+  override val viewModel: EntradaViewModel = EntradaViewModel(this)
+
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
+        addCustomToolBarComponent(btnImprimeTudo(this))
         addOnly = !isAdmin
         column(EntradaVo::numeroNF) {
           //isSortable = true
@@ -116,7 +119,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           }
 
           button
-        }
+        }.id = "btnPrint"
         column(EntradaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -167,8 +170,6 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
     }
   }
 
-  override val viewModel: EntradaViewModel
-    get() = EntradaViewModel(this)
 }
 
 

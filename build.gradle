@@ -92,7 +92,7 @@ dependencies {
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
   compile "io.ebean:ebean:11.28.1"
   // https://mvnrepository.com/artifact/io.ebean/ebean-ignite
-  //compile group: 'io.ebean', name: 'ebean-ignite', version: '11.10.1'
+  compile group: 'io.ebean', name: 'ebean-ignite', version: '11.10.1'
 
 //  compile "io.ebean:kotlin-querybean-generator:11.19.1"
   compile "io.ebean:querybean-generator:11.19.1"

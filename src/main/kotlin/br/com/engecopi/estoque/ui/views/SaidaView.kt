@@ -82,16 +82,19 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
+  override val viewModel : SaidaViewModel = SaidaViewModel(this)
 
   init {
     form("Expedição") {
       gridCrud(viewModel.crudClass.java) {
+        addCustomToolBarComponent(btnImprimeTudo(this))
         addOnly = !isAdmin
         column(SaidaVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
         grid.addComponentColumn { item ->
+
           val button = Button()
           print {
             item.itemNota?.recalculaSaldos()
@@ -107,7 +110,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
             refreshGrid()
           }
           button
-        }
+        }.id = "btnPrint"
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -156,8 +159,5 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
       }
     }
   }
-
-  override val viewModel
-    get() = SaidaViewModel(this)
 }
 
