@@ -168,10 +168,10 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       val query = ItemNota.where()
         .setUseQueryCache(true)
         .fetch("nota")
-        //  .fetch("usuario")
+          .fetch("usuario")
         .fetch("produto")
-        //  .fetch("produto.vproduto")
-        //  .fetch("produto.viewProdutoLoc")
+          .fetch("produto.vproduto")
+          .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
       return query
         .nota.loja.id.eq(lojaDefault.id)
