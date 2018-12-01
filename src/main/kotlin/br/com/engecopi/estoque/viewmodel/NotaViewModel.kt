@@ -25,6 +25,7 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
+import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import java.time.LocalDate
 import kotlin.reflect.KClass
 
@@ -182,6 +183,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   override fun ItemNota.toVO(): VO {
     val itemNota = this
     return createVo().apply {
+      readOnly = true
       entityVo = itemNota
       val nota = itemNota.nota
       this.numeroNF = nota?.numero
@@ -192,6 +194,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
+      readOnly = false
     }
   }
 

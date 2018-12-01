@@ -113,7 +113,7 @@ data class Sort(val propertyName: String, val descending: Boolean = false)
 
 abstract class EntityVo<MODEL : BaseModel> {
   open var entityVo: MODEL? = null
-  var readOnly: Boolean = true
+  var readOnly: Boolean = false
 
   fun toEntity(): MODEL? {
     return entityVo ?: findEntity()
