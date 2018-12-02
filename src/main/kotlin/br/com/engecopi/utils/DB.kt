@@ -1,5 +1,7 @@
 package br.com.engecopi.utils
 
+import java.io.File
+import java.io.FileReader
 import java.io.StringReader
 import java.util.*
 
@@ -12,12 +14,13 @@ class DB(banco: String) {
   val password = prop?.getProperty("datasource.$banco.password") ?: ""
 
   companion object {
-    private const val propertieFile = "/ebean.properties"
+    private  val propertieFile = System.getenv("EBEAN_PROPS")
     
     private fun properties(): Properties? {
       val properties = Properties()
-      val configFile = SystemUtils.readFile(propertieFile)
-      properties.load(StringReader(configFile))
+      val file = File(propertieFile)
+
+      properties.load(FileReader(file))
       return properties
     }
   }
