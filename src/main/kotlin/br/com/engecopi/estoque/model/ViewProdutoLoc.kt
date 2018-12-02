@@ -16,7 +16,7 @@ import javax.persistence.OneToOne
 
 @Cache(enableQueryCache = false)
 @Entity
-@View(name = "v_loc_produtos")
+@View(name = "t_loc_produtos")
 class ViewProdutoLoc(
   @Id
   val id: String,

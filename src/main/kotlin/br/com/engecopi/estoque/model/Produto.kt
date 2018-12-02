@@ -57,7 +57,7 @@ class Produto : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(
     select = "LOC.localizacao",
-    join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao from v_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
+    join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao from t_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
           )
   var localizacao: String? = ""
   @Formula(
