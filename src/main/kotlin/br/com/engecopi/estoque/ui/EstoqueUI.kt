@@ -158,6 +158,7 @@ class Bootstrap : ServletContextListener {
     log.info("Starting up")
     val fileName = System.getenv("EBEAN_PROPS_FILE")
     System.setProperty("ebean.props.file", fileName)
+    println("##################### $fileName")
   }
 }
 
