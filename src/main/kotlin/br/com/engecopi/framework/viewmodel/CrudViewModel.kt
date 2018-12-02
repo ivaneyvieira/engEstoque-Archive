@@ -3,7 +3,6 @@ package br.com.engecopi.framework.viewmodel
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.PagedList
 import io.ebean.typequery.TQRootBean
-import java.lang.Thread.yield
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
@@ -11,7 +10,7 @@ import kotlin.reflect.KClass
 abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : EntityVo<MODEL>>
   (view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
   private var queryView: QueryView? = null
-  protected var pagedList: PagedList<MODEL>? = null
+  private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
   override fun execUpdate() {}
 
