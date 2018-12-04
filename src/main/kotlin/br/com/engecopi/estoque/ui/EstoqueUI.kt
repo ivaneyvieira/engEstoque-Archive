@@ -156,7 +156,8 @@ class Bootstrap : ServletContextListener {
 
   override fun contextInitialized(sce: ServletContextEvent?) {
     log.info("Starting up")
-    val fileName = System.getenv("EBEAN_PROPS")
+    val home = System.getenv("HOME")
+    val fileName = System.getenv("EBEAN_PROPS") ?: "$home/ebean.properties"
     System.setProperty("ebean.props.file", fileName)
     println("##################### $fileName")
   }

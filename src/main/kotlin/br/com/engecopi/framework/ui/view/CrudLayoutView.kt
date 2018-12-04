@@ -249,7 +249,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
   }
 
   override fun initLayout() {
-    findAllButton = Button("") { _ -> findAllButtonClicked() }
+    findAllButton = Button("") { _ -> refreshGrid() }
     findAllButton.description = "Refresh list"
     findAllButton.icon = VaadinIcons.REFRESH
     crudLayout.addToolbarComponent(findAllButton)

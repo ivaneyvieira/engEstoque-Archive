@@ -14,7 +14,7 @@ class DB(banco: String) {
   val password = prop?.getProperty("datasource.$banco.password") ?: ""
 
   companion object {
-    private  val propertieFile = System.getenv("EBEAN_PROPS")
+    private  val propertieFile = System.getProperty("ebean.props.file")
     
     private fun properties(): Properties? {
       val properties = Properties()
