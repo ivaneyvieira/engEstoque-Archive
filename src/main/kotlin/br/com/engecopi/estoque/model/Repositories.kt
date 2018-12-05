@@ -2,7 +2,12 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
+import io.ebean.Ebean
 import java.time.LocalTime
+import io.ebean.Ebean.getServerCacheManager
+import io.ebean.cache.ServerCacheManager
+
+
 
 object Repositories {
   private var time = 0
@@ -19,6 +24,8 @@ object Repositories {
   private fun newViewProdutosLoc() {
     val agora = LocalTime.now().toSecondOfDay()
     if ((agora - time) > 5) {
+      val serverCacheManager = Ebean.getServerCacheManager()
+      serverCacheManager.clear(ViewProdutoLoc::class.java)
       val list = ViewProdutoLoc.all()
       viewProdutosLocProdutoKey = list.groupBy { ProdutoKey(it.produto.id, it.storeno, it.abreviacao) }
       viewProdutosLocLojaAbreviacaoKey = list.groupBy { LojaAbreviacaoKey(it.storeno, it.abreviacao) }
