@@ -53,8 +53,8 @@ gretty {
 
 vaadin {
   version "${vaadin8_version}"
-  manageDependencies false
-  manageRepositories false
+  //manageDependencies false
+  //manageRepositories false
   // push true
 }
 
