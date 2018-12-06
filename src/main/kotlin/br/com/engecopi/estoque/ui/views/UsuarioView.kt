@@ -10,12 +10,11 @@ import br.com.engecopi.framework.ui.view.bindItensSet
 import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.twinColSelect
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.twinColSelect
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
@@ -31,14 +30,14 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
     { _ -> viewModel.countProduto() }
-  )
+                                                               )
 
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,
     binder: Binder<UsuarioCrudVo>,
     readOnly: Boolean
-  ) {
+                         ) {
     formLayout.apply {
       row {
         textField {

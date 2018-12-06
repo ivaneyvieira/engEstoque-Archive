@@ -1,31 +1,22 @@
 package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
-import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.EtiquetaView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
-import br.com.engecopi.framework.ui.Session
 import br.com.engecopi.utils.SystemUtils
-import com.github.vok.karibudsl.autoViewProvider
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.fillParent
-import com.github.vok.karibudsl.onLeftClick
-import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.valoMenu
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.autoViewProvider
+import com.github.mvysny.karibudsl.v8.onLeftClick
+import com.github.mvysny.karibudsl.v8.valoMenu
 import com.vaadin.annotations.JavaScript
 import com.vaadin.annotations.PreserveOnRefresh
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
-import com.vaadin.icons.VaadinIcons
 import com.vaadin.icons.VaadinIcons.INBOX
 import com.vaadin.icons.VaadinIcons.OUT
 import com.vaadin.icons.VaadinIcons.OUTBOX
@@ -36,11 +27,9 @@ import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.Page
-import com.vaadin.server.Responsive
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
-import com.vaadin.shared.Position
 import com.vaadin.shared.Position.TOP_CENTER
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Notification
@@ -49,13 +38,11 @@ import com.vaadin.ui.UI
 import com.vaadin.ui.themes.ValoTheme
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
-import java.rmi.registry.Registry
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.Cookie
-import javax.swing.text.LabelView
 
 private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 

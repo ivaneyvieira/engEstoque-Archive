@@ -5,12 +5,11 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.QueryView
 import br.com.engecopi.framework.viewmodel.Sort
 import br.com.engecopi.framework.viewmodel.ViewModel
-import com.github.vok.karibudsl.addGlobalShortcutListener
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.init
-import com.github.vok.karibudsl.perc
-import com.github.vok.karibudsl.w
-import com.github.vok.karibudsl.wrapContent
+import com.github.mvysny.karibudsl.v8.addGlobalShortcutListener
+import com.github.mvysny.karibudsl.v8.expandRatio
+import com.github.mvysny.karibudsl.v8.init
+import com.github.mvysny.karibudsl.v8.w
+import com.github.mvysny.karibudsl.v8.wrapContent
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
@@ -30,6 +29,7 @@ import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
+import com.vaadin.ui.components.grid.GridSingleSelect
 import org.vaadin.crudui.crud.CrudListener
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
@@ -232,7 +232,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
     }
     grid.addItemClickListener { e ->
       if (e.mouseEventDetails.isDoubleClick)
-        if (!grid.asSingleSelect().isEmpty)
+        if (!grid.singleSelect().isEmpty)
           if (updateButton.isVisible)
             updateButtonClicked()
           else
@@ -246,6 +246,30 @@ open class GridCrudFlex<T : EntityVo<*>>(
 
   fun addCustomToolBarComponent(customToolBarComponent : Component){
     crudLayout.addToolbarComponent(customToolBarComponent)
+  }
+
+  fun Grid<T>.singleSelect() : GridSingleSelect<T>{
+    return GridSingleSelect<T>(this)
+  }
+
+   override fun updateButtonClicked() {
+    val domainObject = grid.singleSelect().value
+    showForm(CrudOperation.UPDATE, domainObject, false, savedMessage) { event ->
+      try {
+        val updatedObject = updateOperation.perform(domainObject)
+        grid.singleSelect().clear()
+        refreshGrid()
+        if (items.contains(updatedObject)) {
+          grid.singleSelect().value = updatedObject
+          // TODO: grid.scrollTo(updatedObject);
+        }
+      } catch (e1: CrudOperationException) {
+        refreshGrid()
+      } catch (e2: Exception) {
+        refreshGrid()
+        throw e2
+      }
+    }
   }
 
   override fun initLayout() {
@@ -305,20 +329,20 @@ open class GridCrudFlex<T : EntityVo<*>>(
     }
 
   override fun updateButtons() {
-    val rowSelected = !grid.asSingleSelect().isEmpty
+    val rowSelected = !grid.singleSelect().isEmpty
     updateButton.isEnabled = rowSelected
     deleteButton.isEnabled = rowSelected
     readButton?.isEnabled = rowSelected
   }
 
   private fun readButtonClicked() {
-    val domainObject = grid.asSingleSelect().value
+    val domainObject = grid.singleSelect().value
     showForm(CrudOperation.READ, domainObject, false, savedMessage) { _ ->
       try {
-        grid.asSingleSelect().clear()
+        grid.singleSelect().clear()
         refreshGrid()
         if (items.contains(domainObject)) {
-          grid.asSingleSelect().value = domainObject
+          grid.singleSelect().value = domainObject
           // grid.scrollTo(updatedObject);
         }
       } catch (e1: CrudOperationException) {

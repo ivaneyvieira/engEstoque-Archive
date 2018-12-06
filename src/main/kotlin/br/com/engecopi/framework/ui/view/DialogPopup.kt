@@ -1,15 +1,13 @@
 package br.com.engecopi.framework.ui.view
 
-import com.github.vok.karibudsl.cssLayout
-import com.github.vok.karibudsl.perc
-import com.github.vok.karibudsl.verticalLayout
-import com.github.vok.karibudsl.w
-import com.github.vok.karibudsl.wrapContent
+import com.github.mvysny.karibudsl.v8.cssLayout
+import com.github.mvysny.karibudsl.v8.perc
+import com.github.mvysny.karibudsl.v8.verticalLayout
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.shared.Registration
 import com.vaadin.ui.Button
 import com.vaadin.ui.Component
-import com.vaadin.ui.FormLayout
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.UI

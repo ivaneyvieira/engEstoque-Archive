@@ -7,18 +7,19 @@ import java.time.LocalTime
 import io.ebean.Ebean.getServerCacheManager
 import io.ebean.cache.ServerCacheManager
 
-
-
 object Repositories {
   private var time = 0
-  private var viewProdutosLoc = newViewProdutosLoc()
   private lateinit var viewProdutosLocProdutoKey: Map<ProdutoKey, List<ViewProdutoLoc>>
   private lateinit var viewProdutosLocLojaAbreviacaoKey: Map<LojaAbreviacaoKey, List<ViewProdutoLoc>>
   private lateinit var viewProdutosLocLojaKey: Map<Int, List<ViewProdutoLoc>>
   private lateinit var viewProdutosLocAbreviacaoKey: Map<String, List<ViewProdutoLoc>>
 
+  init {
+    newViewProdutosLoc()
+  }
+
   fun updateViewProdutosLoc() {
-    viewProdutosLoc = newViewProdutosLoc()
+    newViewProdutosLoc()
   }
 
   private fun newViewProdutosLoc() {

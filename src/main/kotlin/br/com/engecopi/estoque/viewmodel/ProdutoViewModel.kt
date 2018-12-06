@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
+import br.com.engecopi.estoque.model.Repositories
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
@@ -61,9 +62,12 @@ class ProdutoViewModel(view: IView) :
   }
 
   override val query: QProduto
-    get() = Produto
-      .where()
-      .filtroUsuario()
+    get() {
+      Repositories.updateViewProdutosLoc()
+      return Produto
+        .where()
+        .filtroUsuario()
+    }
 
   override fun Produto.toVO(): ProdutoVo {
     val produto = this
@@ -104,9 +108,10 @@ class ProdutoVo : EntityVo<Produto>() {
     get() = ViewProdutoSaci.find(codigoProduto).mapNotNull { it.grade }
   val codebar: String?
     get() = produto?.codebar ?: ""
-  val localizacao get() = produto?.sufixosLocalizacaoes()
-    .orEmpty().asSequence()
-    .map { it.prefixo }.distinct().joinToString(" / ")
+  val localizacao
+    get() = produto?.sufixosLocalizacaoes()
+      .orEmpty().asSequence()
+      .map { it.prefixo }.distinct().joinToString(" / ")
   val produto
     get() = toEntity()
   val saldo
