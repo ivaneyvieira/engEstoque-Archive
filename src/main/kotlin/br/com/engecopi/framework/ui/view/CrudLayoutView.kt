@@ -29,7 +29,6 @@ import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
-import com.vaadin.ui.components.grid.GridSingleSelect
 import org.vaadin.crudui.crud.CrudListener
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
@@ -232,7 +231,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
     }
     grid.addItemClickListener { e ->
       if (e.mouseEventDetails.isDoubleClick)
-        if (!grid.singleSelect().isEmpty)
+        if (!grid.asSingleSelect().isEmpty)
           if (updateButton.isVisible)
             updateButtonClicked()
           else
@@ -248,19 +247,19 @@ open class GridCrudFlex<T : EntityVo<*>>(
     crudLayout.addToolbarComponent(customToolBarComponent)
   }
 
-  fun Grid<T>.singleSelect() : GridSingleSelect<T>{
-    return GridSingleSelect<T>(this)
-  }
+  //fun Grid<T>.asSingleSelect() : GridSingleSelect<T> {
+  //  return GridSingleSelect<T>(this)
+  //}
 
    override fun updateButtonClicked() {
-    val domainObject = grid.singleSelect().value
+    val domainObject = grid.asSingleSelect().value
     showForm(CrudOperation.UPDATE, domainObject, false, savedMessage) { event ->
       try {
         val updatedObject = updateOperation.perform(domainObject)
-        grid.singleSelect().clear()
+        grid.asSingleSelect().clear()
         refreshGrid()
         if (items.contains(updatedObject)) {
-          grid.singleSelect().value = updatedObject
+          grid.asSingleSelect().value = updatedObject
           // TODO: grid.scrollTo(updatedObject);
         }
       } catch (e1: CrudOperationException) {
@@ -329,20 +328,20 @@ open class GridCrudFlex<T : EntityVo<*>>(
     }
 
   override fun updateButtons() {
-    val rowSelected = !grid.singleSelect().isEmpty
+    val rowSelected = !grid.asSingleSelect().isEmpty
     updateButton.isEnabled = rowSelected
     deleteButton.isEnabled = rowSelected
     readButton?.isEnabled = rowSelected
   }
 
   private fun readButtonClicked() {
-    val domainObject = grid.singleSelect().value
+    val domainObject = grid.asSingleSelect().value
     showForm(CrudOperation.READ, domainObject, false, savedMessage) { _ ->
       try {
-        grid.singleSelect().clear()
+        grid.asSingleSelect().clear()
         refreshGrid()
         if (items.contains(domainObject)) {
-          grid.singleSelect().value = domainObject
+          grid.asSingleSelect().value = domainObject
           // grid.scrollTo(updatedObject);
         }
       } catch (e1: CrudOperationException) {

@@ -48,11 +48,11 @@ apply plugin: 'io.ebean'
 gretty {
   contextPath = '/'
   servletContainer = "jetty9.4"
-
 }
 
 vaadin {
   version "${vaadin8_version}"
+  
   //manageDependencies false
   //manageRepositories false
   // push true
@@ -69,6 +69,7 @@ compileKotlin {
 }
 
 dependencies {
+  compile "com.github.mvysny.karibudsl:karibu-dsl-v8:$karibu_version"
   // Karibu-DSL dependency
   compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
   compile "org.jetbrains.kotlin:kotlin-reflect"
@@ -95,8 +96,8 @@ dependencies {
   //compile 'io.ebean:ebean-docker-run:1.5.1'
 
   // workaround until https://youtrack.jetbrains.com/issue/IDEA-178071 is fixed
-  compile "com.vaadin:vaadin-server:${vaadin8_version}"
-  compile "com.vaadin:vaadin-push:${vaadin8_version}"
+  //compile "com.vaadin:vaadin-server:${vaadin8_version}"
+  // compile "com.vaadin:vaadin-push:${vaadin8_version}"
   compile "com.vaadin:vaadin-themes:${vaadin8_version}"
   compile "com.vaadin:vaadin-client-compiled:${vaadin8_version}"
   providedCompile "javax.servlet:javax.servlet-api:3.1.0"
@@ -124,7 +125,9 @@ dependencies {
   compile 'com.fo0.advancedtokenfield:AdvancedTokenField:0.4.1'
   // heroku app runner
   testCompile "junit:junit:4.11"
-  compile "com.github.mvysny.karibudsl:karibu-dsl-v8:$karibu_version"
+
+
+
 }
 
 
