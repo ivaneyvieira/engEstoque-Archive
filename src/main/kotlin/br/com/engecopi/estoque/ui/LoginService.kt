@@ -121,7 +121,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   }
 
   fun abreviacaoes(username: String?): List<String> {
-    return Usuario.abreviacaoes(username)
+    return Usuario.abreviacaoes(username).sorted()
   }
 
   private fun login() {
