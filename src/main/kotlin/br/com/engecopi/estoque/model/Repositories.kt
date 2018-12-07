@@ -27,7 +27,10 @@ object Repositories {
     if ((agora - time) > 5) {
       val serverCacheManager = Ebean.getServerCacheManager()
       serverCacheManager.clear(ViewProdutoLoc::class.java)
-      val list = ViewProdutoLoc.all()
+      val list = ViewProdutoLoc
+        .where()
+        .fetch("produto")
+        .findList()
       viewProdutosLocProdutoKey = list.groupBy { ProdutoKey(it.produto.id, it.storeno, it.abreviacao) }
       viewProdutosLocLojaAbreviacaoKey = list.groupBy { LojaAbreviacaoKey(it.storeno, it.abreviacao) }
       viewProdutosLocLojaKey = list.groupBy { it.storeno }
