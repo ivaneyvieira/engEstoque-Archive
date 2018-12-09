@@ -30,7 +30,9 @@ object Repositories {
       val list = ViewProdutoLoc
         .where()
         .fetch("produto")
+        .fetch("loja")
         .findList()
+        .toList()
       viewProdutosLocProdutoKey = list.groupBy { ProdutoKey(it.produto.id, it.storeno, it.abreviacao) }
       viewProdutosLocLojaAbreviacaoKey = list.groupBy { LojaAbreviacaoKey(it.storeno, it.abreviacao) }
       viewProdutosLocLojaKey = list.groupBy { it.storeno }
