@@ -1,4 +1,4 @@
-SELECT DISTINCT ''            AS rota,
+SELECT DISTINCT CONCAT(N.paymno)     AS rota,
                 N.storeno,
                 N.ordno       AS numero,
                 ''            AS serie,
