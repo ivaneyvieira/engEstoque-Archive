@@ -111,7 +111,7 @@ class ProdutoVo : EntityVo<Produto>() {
   val localizacao
     get() = produto?.sufixosLocalizacaoes()
       .orEmpty().asSequence()
-      .map { it.prefixo }.distinct().joinToString(" / ")
+      .map { it.localizacao }.distinct().joinToString(" / ")
   val produto
     get() = toEntity()
   val saldo

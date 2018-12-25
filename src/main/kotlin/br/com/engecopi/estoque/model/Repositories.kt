@@ -6,9 +6,10 @@ import io.ebean.Ebean
 import java.time.LocalTime
 import io.ebean.Ebean.getServerCacheManager
 import io.ebean.cache.ServerCacheManager
+import java.time.LocalDateTime
 
 object Repositories {
-  private var time = 0
+  private var time: LocalDateTime = LocalDateTime.now().minusSeconds(100)
   private lateinit var viewProdutosLocProdutoKey: Map<ProdutoKey, List<ViewProdutoLoc>>
   private lateinit var viewProdutosLocLojaAbreviacaoKey: Map<LojaAbreviacaoKey, List<ViewProdutoLoc>>
   private lateinit var viewProdutosLocLojaKey: Map<Int, List<ViewProdutoLoc>>
@@ -23,8 +24,8 @@ object Repositories {
   }
 
   private fun newViewProdutosLoc() {
-    val agora = LocalTime.now().toSecondOfDay()
-    if ((agora - time) > 5) {
+    val agora = LocalDateTime.now().minusSeconds(10)
+    if (agora >= time) {
       val serverCacheManager = Ebean.getServerCacheManager()
       serverCacheManager.clear(ViewProdutoLoc::class.java)
       val list = ViewProdutoLoc
@@ -38,13 +39,14 @@ object Repositories {
       viewProdutosLocLojaKey = list.groupBy { it.storeno }
       viewProdutosLocAbreviacaoKey = list.groupBy { it.abreviacao }
 
-      time = LocalTime.now().toSecondOfDay()
+      time = LocalDateTime.now()
     }
   }
 
   fun findByProduto(produto: Produto?): List<ViewProdutoLoc> {
     produto ?: return emptyList()
-    return viewProdutosLocProdutoKey[ProdutoKey(produtoId = produto.id, storeno = lojaDefault.numero,
+    return viewProdutosLocProdutoKey[ProdutoKey(produtoId = produto.id,
+                                                storeno = lojaDefault.numero,
                                                 abreviacao = abreviacaoDefault)].orEmpty()
   }
 
