@@ -115,9 +115,9 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
-        column(SaidaVo::tipoNota) {
+        column(SaidaVo::tipoNotaDescricao) {
           caption = "TipoNota"
-          setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
+          setSortProperty("nota.tipo_nota")
         }
         column(SaidaVo::dataNota) {
           caption = "Data"
@@ -153,7 +153,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
-        column(SaidaVo::rota) {
+        column(SaidaVo::rotaDescricao) {
           caption = "Rota"
         }
         column(SaidaVo::cliente) {

@@ -16,6 +16,10 @@ import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.TipoNota.OUTROS_E
+import br.com.engecopi.estoque.model.TipoNota.PEDIDO_E
+import br.com.engecopi.estoque.model.TipoNota.PEDIDO_S
+import br.com.engecopi.estoque.model.TipoNota.TRANSFERENCIA_E
+import br.com.engecopi.estoque.model.TipoNota.TRANSFERENCIA_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QItemNota
@@ -273,6 +277,11 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val naoTemGrid
     get() = !temGrid
   var rota: String? = ""
+  val rotaDescricao : String?
+  get() = if(tipoNota == TRANSFERENCIA_E|| tipoNota == TRANSFERENCIA_S)
+    rota
+  else
+    ""
   private val notaProdutoSaci: List<NotaSaci>
     get() = if (entityVo == null)
       when (tipo) {
@@ -290,7 +299,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       ENTRADA -> Nota.findEntrada(numeroNF)
     }
 
-  fun atualizaNota() {
+  private fun atualizaNota() {
     if (!readOnly)
       if (entityVo == null) {
         val nota = notaSaci?.let { nota ->
@@ -347,6 +356,13 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       }
   }
 
+  val tipoNotaDescricao : String
+    get() {
+      return if(tipoNota == PEDIDO_E || tipoNota == PEDIDO_S)
+        "Pedido $rota".trim()
+      else
+        tipoNota.descricao
+    }
   val dataNota: LocalDate
     get() = toEntity()?.dataNota ?: notaSaci?.date?.localDate() ?: LocalDate.now()
   val dataEmissao: LocalDate

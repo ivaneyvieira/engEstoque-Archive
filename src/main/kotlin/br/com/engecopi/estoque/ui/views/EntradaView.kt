@@ -123,9 +123,9 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
-        column(EntradaVo::tipoNota) {
+        column(EntradaVo::tipoNotaDescricao) {
           caption = "TipoNota"
-          setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
+          setSortProperty("nota.tipo_nota")
         }
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
@@ -162,7 +162,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
-        column(EntradaVo::rota) {
+        column(EntradaVo::rotaDescricao) {
           caption = "Rota"
         }
         column(EntradaVo::fornecedor) {
