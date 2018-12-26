@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.dateFormat
@@ -113,6 +114,10 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
+        }
+        column(SaidaVo::tipoNota) {
+          caption = "TipoNota"
+          setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
         }
         column(SaidaVo::dataNota) {
           caption = "Data"

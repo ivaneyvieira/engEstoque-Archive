@@ -123,6 +123,10 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
+        column(EntradaVo::tipoNota) {
+          caption = "TipoNota"
+          setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
+        }
         column(EntradaVo::dataNota) {
           caption = "Data Nota"
           dateFormat()
