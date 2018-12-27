@@ -1,4 +1,3 @@
-
 select P.invno, N.storeno, nfname           as numero, invse as serie,
        CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        N.date,
