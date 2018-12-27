@@ -80,6 +80,15 @@ class QuerySaci : QueryDB(
               .firstOrNull()
     }
   }
+
+  fun findLoginUser() : List<String> {
+    val sql = "/sqlSaci/userSenha.sql"
+    return query(sql) { q ->
+      q.addParameter("login", "TODOS")
+        .executeAndFetch(UserSaci::class.java)
+        .mapNotNull{ it.login }
+    }
+  }
   
   companion object {
     private val db = DB("saci")

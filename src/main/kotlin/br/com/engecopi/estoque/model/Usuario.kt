@@ -89,6 +89,8 @@ class Usuario : BaseModel() {
         else locais
       } ?: emptyList()
     }
+
+    fun findLoginUser() = saci.findLoginUser()
   }
 }
 

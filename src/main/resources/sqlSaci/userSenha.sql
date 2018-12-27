@@ -12,4 +12,4 @@ SELECT users.no,
               CHAR(ascii(SUBSTRING(pswd, 8, 1)) + ascii(' ') - ascii('-')) )
       AS char) AS senha
 FROM users
-WHERE login = :login
+WHERE login = :login OR :login = 'TODOS'

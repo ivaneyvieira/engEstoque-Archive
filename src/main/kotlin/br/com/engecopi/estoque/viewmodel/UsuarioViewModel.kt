@@ -44,7 +44,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
   }
 
   override val query: QUsuario
-    get() = Usuario.where()
+    get() = Usuario.where().loginName.`in`(Usuario.findLoginUser())
 
   override fun Usuario.toVO(): UsuarioCrudVo {
     val usuario = this
