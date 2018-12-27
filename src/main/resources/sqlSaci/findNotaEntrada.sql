@@ -32,7 +32,7 @@ where N.invno = (SELECT MAX(invno)
 )
 UNION
 select 0                    as invno, N.storeno, ordno as numero, '' as serie,
-       CONCAT(N.paymno)     AS rota,
+       cast(CONCAT(N.paymno) as char)      AS rota,
        N.date,
        N.date,
        P.prdno              AS prdno,

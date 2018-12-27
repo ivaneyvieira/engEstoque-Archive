@@ -1,4 +1,4 @@
-SELECT DISTINCT CONCAT(N.paymno)     AS rota,
+SELECT DISTINCT cast(CONCAT(N.paymno) as char)     AS rota,
                 N.storeno,
                 N.ordno       AS numero,
                 ''            AS serie,
