@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
@@ -51,6 +52,8 @@ class Nota : BaseModel() {
   var loja: Loja? = null
   @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
+  @Enumerated(EnumType.STRING)
+  var status: StatusNota = ENTREGUE
 
   companion object Find : NotaFinder() {
     fun findEntrada(numero: String?): Nota? {
@@ -153,4 +156,8 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
       return values().filter { it.tipoMov == SAIDA }
     }
   }
+}
+
+enum class StatusNota(val descricao: String) {
+  INCLUIDA("Incluída"), CONFERIDA("Conferida"), ENTREGUE("Entregue")
 }

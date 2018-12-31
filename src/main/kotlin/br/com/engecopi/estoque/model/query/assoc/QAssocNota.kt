@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Nota
+import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.QNota
@@ -39,6 +40,7 @@ class QAssocNota<R>(name: String, root: R) : TQAssocBean<Nota,R>(name, root) {
   lateinit var observacao: PString<R>
   lateinit var loja: QAssocLoja<R>
   lateinit var itensNota: QAssocItemNota<R>
+  lateinit var status: PEnum<R,StatusNota>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }
