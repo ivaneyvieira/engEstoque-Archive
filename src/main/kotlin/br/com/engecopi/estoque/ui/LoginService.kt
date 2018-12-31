@@ -86,6 +86,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
           }
           abreviacao = comboBox("Localizacao") {
             isResponsive = true
+            isVisible = false
             expandRatio = 1f
             w = fillParent
             isEmptySelectionAllowed = false
@@ -116,6 +117,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
     if (::abreviacao.isInitialized) {
       val abreviacoes = abreviacaoes(value)
       abreviacao.setItems(abreviacoes)
+      abreviacao.isVisible = abreviacoes.isEmpty() == false
       abreviacao.value = abreviacoes.firstOrNull()
     }
   }

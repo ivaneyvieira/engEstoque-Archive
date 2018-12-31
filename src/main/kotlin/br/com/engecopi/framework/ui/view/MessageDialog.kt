@@ -51,6 +51,7 @@ object MessageDialog {
             .withMessage(message)
             .withYesButton({ execYes(message) }, arrayOf(ButtonOption.caption("Sim")))
             .withNoButton({ execNo(message) }, arrayOf(ButtonOption.caption("Não")))
-            .open()
+            .open().apply {
+      }
   }
 }
