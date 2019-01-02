@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
+import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
@@ -9,6 +11,8 @@ import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -30,6 +34,8 @@ class Usuario : BaseModel() {
     cascade = [PERSIST, MERGE, REFRESH]
             )
   val itensNota: List<ItemNota>? = null
+  @Enumerated(EnumType.STRING)
+  var tipoUsuario: TipoUsuario = ESTOQUE
   var locais: List<String>
     get() = localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
     set(value) {
@@ -84,13 +90,18 @@ class Usuario : BaseModel() {
     fun abreviacaoes(username: String?): List<String> {
       return findUsuario(loginName = username)?.let { usuario ->
         val locais = usuario.locais
-        if (locais.isEmpty())
+        if (locais.isEmpty() || usuario.tipoUsuario == EXPEDICAO)
           usuario.loja?.findAbreviacores()
-        else locais
+        else
+          locais
       } ?: emptyList()
     }
 
     fun findLoginUser() = saci.findLoginUser()
   }
+}
+
+enum class TipoUsuario(val descricao: String) {
+  ESTOQUE("Estoque"), EXPEDICAO("Expedição")
 }
 

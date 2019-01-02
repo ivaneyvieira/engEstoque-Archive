@@ -3,6 +3,9 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.TipoMov
+import br.com.engecopi.estoque.model.TipoUsuario
+import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -29,7 +32,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   val isAdmin = RegistryUserInfo.usuarioDefault.admin
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
-    { _ -> viewModel.countProduto() }
+    { viewModel.countProduto() }
                                                                )
 
   override fun layoutForm(
@@ -68,6 +71,17 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           bind(binder).bind(UsuarioCrudVo::loja)
           reloadBinderOnChange(binder)
         }
+        comboBox<TipoUsuario> {
+          expand = 1
+          caption = "Loja"
+          isEmptySelectionAllowed = false
+          isTextInputAllowed = false
+          //this.emptySelectionCaption = "Todas"
+          setItems(TipoUsuario.values().toList())
+          setItemCaptionGenerator { it.descricao }
+          bind(binder).bind(UsuarioCrudVo::tipoUsuario)
+          reloadBinderOnChange(binder)
+        }
       }
       row {
         twinColSelect<String>("Localizações") {
@@ -92,6 +106,11 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         column(UsuarioCrudVo::nome) {
           expandRatio = 5
           caption = "Nome"
+        }
+        column(UsuarioCrudVo::tipoUsuario) {
+          expandRatio = 1
+          caption = "Tipo de Usuário"
+          setRenderer({ user -> user?.descricao ?: "N/C" }, TextRenderer())
         }
         column(UsuarioCrudVo::loja) {
           expandRatio = 1
