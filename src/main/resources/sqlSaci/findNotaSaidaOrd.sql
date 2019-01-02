@@ -12,7 +12,11 @@ SELECT DISTINCT cast(CONCAT(N.paymno) as char)     AS rota,
 FROM sqldados.eord AS                    N
        INNER JOIN sqldados.eoprd AS      P USING (storeno, ordno)
        INNER JOIN engEstoque.produtos AS E
-         ON E.codigo = P.prdno AND E.grade = P.grade
+         ON E.codigo = P.prdno
+        AND E.grade = P.grade
+       INNER JOIN sqldados.paym AS M
+                  ON N.paymno = M.no
+                 AND M.sname  = :cd
        LEFT JOIN  sqldados.custp AS      C
          ON C.no = N.custno
 WHERE N.date > DATE_SUB(current_date, INTERVAL 7 DAY) AND

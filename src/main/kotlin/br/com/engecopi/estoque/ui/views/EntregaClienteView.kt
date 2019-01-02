@@ -94,7 +94,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
     form("Expedição") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        addCustomToolBarComponent(btnLerChaveNota(this))
+        addCustomToolBarComponent(btnLerChaveNota())
         addOnly = !isAdmin
         column(EntregaClienteVo::numeroNF) {
           caption = "Número NF"
@@ -200,7 +200,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
     return ButtonOptionDefault()
   }
 
-  private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<EntregaClienteVo>): Button {
+  private fun btnLerChaveNota(): Button {
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
