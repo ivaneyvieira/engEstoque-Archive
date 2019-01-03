@@ -172,10 +172,10 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       val query = ItemNota.where()
         .setUseQueryCache(true)
         .fetch("nota")
-          .fetch("usuario")
+        .fetch("usuario")
         .fetch("produto")
-          .fetch("produto.vproduto")
-          .fetch("produto.viewProdutoLoc")
+        .fetch("produto.vproduto")
+        .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
       return query
         .nota.loja.id.eq(lojaDefault.id)
@@ -277,18 +277,16 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val naoTemGrid
     get() = !temGrid
   var rota: String? = ""
-  val rotaDescricao : String?
-  get() = if(tipoNota == TRANSFERENCIA_E|| tipoNota == TRANSFERENCIA_S)
-    rota
-  else
-    ""
+  val rotaDescricao: String?
+    get() = if (tipoNota == TRANSFERENCIA_E || tipoNota == TRANSFERENCIA_S)
+      rota
+    else
+      ""
   private val notaProdutoSaci: List<NotaSaci>
     get() = if (entityVo == null)
       when (tipo) {
         SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
         ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
-      }.filter {
-        usuario.admin || ((it.tipo != "PEDIDO_S") && (it.tipo != "PEDIDO_E"))
       }
     else emptyList()
   val notaSaci
@@ -356,9 +354,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       }
   }
 
-  val tipoNotaDescricao : String
+  val tipoNotaDescricao: String
     get() {
-      return if(tipoNota == PEDIDO_E || tipoNota == PEDIDO_S)
+      return if (tipoNota == PEDIDO_E || tipoNota == PEDIDO_S)
         "Pedido $rota".trim()
       else
         tipoNota.descricao
@@ -368,7 +366,8 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val dataEmissao: LocalDate
     get() = toEntity()?.nota?.dataEmissao ?: notaSaci?.dt_emissao?.localDate() ?: LocalDate.now()
   val numeroInterno: Int
-    get() = if (entityVo == null) notaSaci?.invno ?: 0
+    get() = if (entityVo == null)
+      notaSaci?.invno ?: 0
     else 0
   val fornecedor: String
     get() = entityVo?.nota?.fornecedor ?: notaSaci?.vendName ?: ""
@@ -397,9 +396,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var produto: Produto? = null
     set(value) {
       field = value
-        quantProduto = toEntity()?.quantidade ?: notaProdutoSaci.firstOrNull { neSaci ->
-          (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
-        }?.quant ?: 0
+      quantProduto = toEntity()?.quantidade ?: notaProdutoSaci.firstOrNull { neSaci ->
+        (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
+      }?.quant ?: 0
     }
   val descricaoProduto: String
     get() = produto?.descricao ?: ""

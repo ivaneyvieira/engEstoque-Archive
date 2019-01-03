@@ -73,7 +73,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         }
         comboBox<TipoUsuario> {
           expand = 1
-          caption = "Loja"
+          caption = "Tipo Usuário"
           isEmptySelectionAllowed = false
           isTextInputAllowed = false
           //this.emptySelectionCaption = "Todas"
