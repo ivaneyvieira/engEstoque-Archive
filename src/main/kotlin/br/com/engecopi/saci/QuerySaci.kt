@@ -27,13 +27,13 @@ class QuerySaci : QueryDB(
   fun findNotaSaida(storeno: Int, nfno: String, nfse: String, cd : String): List<NotaSaci> {
     return if (nfno == "") emptyList()
     else if (nfse == "")
-      findNotaSaidaOrd(storeno, nfno)
+      findNotaSaidaOrd(storeno, nfno, cd)
     else {
       val nfs = findNotaSaidaNF(storeno, nfno, nfse)
       if (nfs.isNotEmpty())
         nfs
       else
-        findNotaSaidaPXA(storeno, nfno, nfse, cd)
+        findNotaSaidaPXA(storeno, nfno, nfse)
     }
   }
 
@@ -47,22 +47,22 @@ class QuerySaci : QueryDB(
     }
   }
 
-  fun findNotaSaidaOrd(storeno: Int, nfno: String): List<NotaSaci> {
+  fun findNotaSaidaOrd(storeno: Int, nfno: String, cd: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaOrd.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)
         .addParameter("nfno", nfno)
+        .addParameter("cd", cd)
         .executeAndFetch(NotaSaci::class.java)
     }
   }
 
-  fun findNotaSaidaPXA(storeno: Int, nfno: String, nfse: String, cd: String): List<NotaSaci> {
+  fun findNotaSaidaPXA(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaPXA.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)
         .addParameter("nfno", nfno)
         .addParameter("nfse", nfse)
-        .addParameter("cd", cd)
         .executeAndFetch(NotaSaci::class.java)
     }
   }
