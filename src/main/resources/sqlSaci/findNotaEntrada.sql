@@ -49,7 +49,6 @@ from sqldados.eord AS N
   left join sqldados.custp AS C
     ON C.no = N.custno
 WHERE N.date > DATE_SUB(current_date, INTERVAL 6 MONTH) AND
-      N.paymno = 290 AND
       N.storeno = :storeno
       and (N.ordno = :nfname)
       and (:invse = '')
