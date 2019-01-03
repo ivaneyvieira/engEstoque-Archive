@@ -287,7 +287,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       when (tipo) {
         SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
         ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
-      }
+      }.filter { usuario.admin || tipoNota != PEDIDO_S }
     else emptyList()
   val notaSaci
     get() = notaProdutoSaci.firstOrNull()
