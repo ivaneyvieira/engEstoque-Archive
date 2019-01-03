@@ -1,5 +1,8 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
+import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import io.ebean.annotation.Cache
@@ -13,6 +16,8 @@ import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.Transient
@@ -43,6 +48,8 @@ class ItemNota : BaseModel() {
   var impresso: Boolean = false
   @Length(60)
   var localizacao: String = ""
+  @Enumerated(EnumType.STRING)
+  var status: StatusNota = ENTREGUE
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
   val descricao: String?
@@ -127,5 +134,12 @@ class NotaPrint(item: ItemNota) {
       reduce.replace("[${prop.name}]", "${prop.get(this)}")
     }
   }
+}
+
+enum class StatusNota(val descricao: String, val tipoMov: TipoMov) {
+  RECEBIDO("Recebido", ENTRADA),
+  INCLUIDA("Incluída", SAIDA),
+  CONFERIDA("Conferida", SAIDA),
+  ENTREGUE("Entregue", SAIDA)
 }
 

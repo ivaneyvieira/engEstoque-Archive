@@ -11,6 +11,7 @@ import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
+import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -29,11 +30,11 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
-import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import java.time.LocalDate
 import kotlin.reflect.KClass
 
-abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov) :
+abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
+                                          val statusNota: List<StatusNota>) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     if (bean.localizacao?.localizacao.isNullOrBlank())
@@ -99,6 +100,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
             this.quantidade = quantProduto
             this.usuario = usuario3
             this.localizacao = local
+            this.status = statusNota.firstOrNull()!!
           }
           item.insert()
           item.produto?.recalculaSaldos(local)
@@ -114,6 +116,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         this.nota = nota
         this.produto = produto
         this.quantidade = bean.quantProduto ?: 0
+        this.status = bean.status!!
       }
       item.update()
       item.produto?.recalculaSaldos(bean.localizacao?.localizacao)
@@ -177,6 +180,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .fetch("produto.vproduto")
         .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
+        .status.`in`(statusNota)
       return query
         .nota.loja.id.eq(lojaDefault.id)
         .localizacao.startsWith(abreviacaoDefault)
@@ -198,6 +202,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
+      this.status = statusNota.firstOrNull()
       readOnly = false
     }
   }
@@ -412,6 +417,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var localizacao: LocProduto? = null
   val localizacaoProduto
     get() = produto?.sufixosLocalizacaoes().orEmpty()
+  var status: StatusNota? = null
 }
 
 class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov) {

@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
@@ -49,7 +48,6 @@ class QNota : TQRootBean<Nota, QNota> {
   lateinit var observacao: PString<QNota>
   lateinit var loja: QAssocLoja<QNota>
   lateinit var itensNota: QAssocItemNota<QNota>
-  lateinit var status: PEnum<QNota,StatusNota>
 
 
   /**

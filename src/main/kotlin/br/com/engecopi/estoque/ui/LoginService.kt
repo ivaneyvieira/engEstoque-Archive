@@ -120,7 +120,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
       val abreviacoes = abreviacaoes(loginName)
       val tipoUsuario = tipoUsuario(loginName)
       abreviacao.setItems(abreviacoes)
-      abreviacao.isVisible = abreviacoes.isEmpty() == false || tipoUsuario == ESTOQUE
+      abreviacao.isVisible = tipoUsuario == ESTOQUE
       abreviacao.value = abreviacoes.firstOrNull()
     }
   }

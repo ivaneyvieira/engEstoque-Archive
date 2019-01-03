@@ -52,8 +52,6 @@ class Nota : BaseModel() {
   var loja: Loja? = null
   @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
-  @Enumerated(EnumType.STRING)
-  var status: StatusNota = ENTREGUE
 
   companion object Find : NotaFinder() {
     fun findEntrada(numero: String?): Nota? {
@@ -160,6 +158,4 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   }
 }
 
-enum class StatusNota(val descricao: String) {
-  INCLUIDA("Incluída"), CONFERIDA("Conferida"), ENTREGUE("Entregue")
-}
+
