@@ -34,7 +34,7 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
-                                          val statusNota: List<StatusNota>) :
+                                          val statusDefault : StatusNota) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     if (bean.localizacao?.localizacao.isNullOrBlank())
@@ -100,7 +100,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
             this.quantidade = quantProduto
             this.usuario = usuario3
             this.localizacao = local
-            this.status = statusNota.firstOrNull()!!
+            this.status = statusDefault
           }
           item.insert()
           item.produto?.recalculaSaldos(local)
@@ -180,7 +180,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .fetch("produto.vproduto")
         .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
-        .status.`in`(statusNota)
+        .filtroStatus()
       return query
         .nota.loja.id.eq(lojaDefault.id)
         .localizacao.startsWith(abreviacaoDefault)
@@ -202,7 +202,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
-      this.status = statusNota.firstOrNull()
+      this.status = statusDefault
       readOnly = false
     }
   }
@@ -254,7 +254,11 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     val list = query.impresso.eq(false).order().id.desc().findList()
     return list.joinToString(separator = "\n") { imprimir(it) }
   }
+
+  abstract fun QItemNota.filtroStatus(): QItemNota
 }
+
+
 
 abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {

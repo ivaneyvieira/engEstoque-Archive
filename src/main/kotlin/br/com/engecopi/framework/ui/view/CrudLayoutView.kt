@@ -260,7 +260,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
         refreshGrid()
         if (items.contains(updatedObject)) {
           grid.asSingleSelect().value = updatedObject
-          // TODO: grid.scrollTo(updatedObject);
+          // grid.scrollTo(updatedObject);
         }
       } catch (e1: CrudOperationException) {
         refreshGrid()
