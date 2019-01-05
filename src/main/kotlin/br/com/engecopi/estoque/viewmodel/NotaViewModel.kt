@@ -29,7 +29,6 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
-import com.sun.jmx.snmp.SnmpStatusException.readOnly
 import java.time.LocalDate
 import kotlin.reflect.KClass
 
