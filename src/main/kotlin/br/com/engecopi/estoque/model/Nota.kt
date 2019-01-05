@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
@@ -92,18 +93,20 @@ class Nota : BaseModel() {
     fun findNotaEntradaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       val loja = RegistryUserInfo.lojaDefault
+      val cd = RegistryUserInfo.abreviacaoDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      val notas = saci.findNotaEntrada(loja.numero, numero, serie)
+      val notas = saci.findNotaEntrada(loja.numero, numero, serie, cd)
       return notas
     }
 
     fun findNotaSaidaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       val loja = RegistryUserInfo.lojaDefault
+      val cd = RegistryUserInfo.abreviacaoDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaSaida(loja.numero, numero, serie)
+      return saci.findNotaSaida(loja.numero, numero, serie, cd)
     }
 
     fun itemDuplicado(nota: Nota?, produto: Produto?): Boolean {
@@ -154,3 +157,5 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
     }
   }
 }
+
+

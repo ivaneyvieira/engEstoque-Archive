@@ -1,6 +1,8 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.viewmodel.NFExpedicaoViewModel
+import br.com.engecopi.estoque.viewmodel.NFExpedicaoVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.GridCrudFlex
@@ -20,7 +22,6 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
-import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
 import com.vaadin.ui.Image
@@ -34,12 +35,12 @@ import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
-@AutoView
-class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
+@AutoView("nf_expedicao")
+class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,
-    binder: Binder<SaidaVo>,
+    binder: Binder<NFExpedicaoVo>,
     readOnly: Boolean
                          ) {
     if (operation == ADD) {
@@ -59,23 +60,23 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
               default { it.descricao }
               isReadOnly = true
               setItems(TipoNota.valuesSaida())
-              bind(binder).bind(SaidaVo::tipoNota)
+              bind(binder).bind(NFExpedicaoVo::tipoNota)
             }
             dateField("Data") {
               expand = 1
               isReadOnly = true
-              bind(binder).bind(SaidaVo::dataNota.name)
+              bind(binder).bind(NFExpedicaoVo::dataNota.name)
             }
             textField("Rota") {
               expand = 1
               isReadOnly = true
-              bind(binder).bind(SaidaVo::rota)
+              bind(binder).bind(NFExpedicaoVo::rota)
             }
           }
           row {
             textField("Observação da nota fiscal") {
               expand = 1
-              bind(binder).bind(SaidaVo::observacaoNota)
+              bind(binder).bind(NFExpedicaoVo::observacaoNota)
             }
           }
         }
@@ -89,7 +90,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
       binder.setReadOnly(true)
   }
 
-  override val viewModel: SaidaViewModel = SaidaViewModel(this)
+  override val viewModel: NFExpedicaoViewModel = NFExpedicaoViewModel(this)
 
   init {
     form("Expedição") {
@@ -97,7 +98,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         addCustomToolBarComponent(btnImprimeTudo(this))
         addCustomToolBarComponent(btnLerChaveNota(this))
         addOnly = !isAdmin
-        column(SaidaVo::numeroNF) {
+        column(NFExpedicaoVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
@@ -118,52 +119,52 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           }
           button
         }.id = "btnPrint"
-        column(SaidaVo::lojaNF) {
+        column(NFExpedicaoVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
-        column(SaidaVo::tipoNotaDescricao) {
+        column(NFExpedicaoVo::tipoNotaDescricao) {
           caption = "TipoNota"
           setSortProperty("nota.tipo_nota")
         }
-        column(SaidaVo::dataNota) {
+        column(NFExpedicaoVo::dataNota) {
           caption = "Data"
           dateFormat()
           setSortProperty("nota.data", "data", "hora")
         }
-        column(SaidaVo::dataEmissao) {
+        column(NFExpedicaoVo::dataEmissao) {
           caption = "Emissao"
           dateFormat()
           setSortProperty("nota.dataEmissao", "data", "hora")
         }
-        column(SaidaVo::quantProduto) {
+        column(NFExpedicaoVo::quantProduto) {
           caption = "Quantidade"
           intFormat()
         }
-        column(SaidaVo::codigo) {
+        column(NFExpedicaoVo::codigo) {
           caption = "Código"
           setSortProperty("produto.codigo")
         }
-        column(SaidaVo::descricaoProduto) {
+        column(NFExpedicaoVo::descricaoProduto) {
           caption = "Descrição"
         }
-        column(SaidaVo::grade) {
+        column(NFExpedicaoVo::grade) {
           caption = "Grade"
           setSortProperty("produto.grade")
         }
-        column(SaidaVo::localizacao) {
+        column(NFExpedicaoVo::localizacao) {
           caption = "Localização"
           setRenderer({ it?.sufixo }, TextRenderer())
         }
-        column(SaidaVo::usuario) {
+        column(NFExpedicaoVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
-        column(SaidaVo::rotaDescricao) {
+        column(NFExpedicaoVo::rotaDescricao) {
           caption = "Rota"
         }
-        column(SaidaVo::cliente) {
+        column(NFExpedicaoVo::cliente) {
           caption = "Cliente"
           setSortProperty("nota.cliente")
         }
@@ -201,7 +202,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     return ButtonOptionDefault()
   }
 
-  private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<SaidaVo>): Button {
+  private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): Button {
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
@@ -212,10 +213,3 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     }
   }
 }
-
-class ButtonOptionDefault : ButtonOption() {
-  override fun apply(messageBox: MessageBox?, button: Button?) {
-    button?.setClickShortcut(KeyCode.ENTER)
-  }
-}
-

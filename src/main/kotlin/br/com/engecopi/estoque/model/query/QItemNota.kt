@@ -1,12 +1,14 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocEtiqueta
 import br.com.engecopi.estoque.model.query.assoc.QAssocNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
 import io.ebean.EbeanServer
 import io.ebean.typequery.PBoolean
+import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
@@ -46,6 +48,7 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var saldo: PInteger<QItemNota>
   lateinit var impresso: PBoolean<QItemNota>
   lateinit var localizacao: PString<QItemNota>
+  lateinit var status: PEnum<QItemNota,StatusNota>
 
 
   /**
