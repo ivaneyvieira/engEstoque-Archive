@@ -318,8 +318,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
           val prdLocs: List<ProdutoVO> = if (tipoNota.tipoMov == SAIDA) {
             var quant = notaSaci.quant ?: 0
             val produtosLocais = localizacoes.asSequence().map { localizacao ->
-              ProdutoVO(prd, tipoNota.tipoMov).apply {
-                this.localizacao = prd?.makeLocProduto(localizacao)
+              ProdutoVO(prd, tipoNota.tipoMov, prd?.makeLocProduto(localizacao)).apply {
                 val saldo = this.saldo
                 if (quant > 0)
                   if (quant > saldo) {
@@ -340,8 +339,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
             }.toList()
             produtosLocais
           } else
-            listOf(ProdutoVO(prd, tipoNota.tipoMov).apply {
-              this.localizacao = if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null
+            listOf(ProdutoVO(prd, tipoNota.tipoMov, if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
               this.quantidade = notaSaci.quant ?: 0
             })
           prdLocs
@@ -415,7 +413,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
     get() = produto?.sufixosLocalizacaoes().orEmpty()
 }
 
-class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov) {
+class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, val localizacao: LocProduto?) {
   val codigo: String = produto?.codigo ?: ""
   val grade: String = produto?.grade ?: ""
   var quantidade: Int = 0
@@ -425,10 +423,11 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov) {
       saldo < quantidade
     else
       false
-  var localizacao: LocProduto? = null
+
   val saldo: Int
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
-  val saldoFinal = saldo + if (tipoMov == SAIDA) -quantidade else quantidade
+  val saldoFinal
+    get()= saldo + if (tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
 }

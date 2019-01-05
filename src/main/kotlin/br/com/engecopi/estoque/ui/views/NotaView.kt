@@ -36,6 +36,7 @@ import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
