@@ -160,5 +160,10 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
       display: none;
     }
   }
-
+  .v-grid-row.error_row {
+    // Tried following elements and didn't work.
+    // background-color: red !important;
+    // color: blue !important; // This changed the color of the font.
+    background: lightsalmon !important;
+  }
 }

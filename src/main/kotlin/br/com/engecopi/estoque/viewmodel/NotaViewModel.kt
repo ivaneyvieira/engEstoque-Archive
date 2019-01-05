@@ -288,7 +288,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
         ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
       }.filter {
-        usuario.admin || ((it.tipo != "PEDIDO_S") && (it.tipo != "PEDIDO_E"))
+        usuario.admin || (it.tipo != "PEDIDO_E")
       }
     else emptyList()
   val notaSaci
@@ -428,6 +428,7 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov) {
   var localizacao: LocProduto? = null
   val saldo: Int
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
+  val saldoFinal = saldo + if (tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
 }

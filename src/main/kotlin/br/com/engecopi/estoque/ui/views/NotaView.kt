@@ -36,6 +36,7 @@ import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.patrik.FastNavigation
@@ -174,6 +175,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Qtd $tipo"
           align = VAlign.Right
         }
+        addColumnFor(ProdutoVO::saldoFinal) {
+          expandRatio = 1
+          caption = "Saldo"
+          align = VAlign.Right
+        }
         bindItens(binder, "produtos")
         editor.addOpenListener { event ->
           event.bean.produto?.let { produto ->
@@ -191,6 +197,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         editor.cancelCaption = "Cancelar"
         editor.saveCaption = "Salvar"
         editor.isBuffered = false
+        this.setStyleGenerator {
+           if(it.saldoFinal < 0)
+             "error_row"
+           else null
+        }
       }
     }
   }
