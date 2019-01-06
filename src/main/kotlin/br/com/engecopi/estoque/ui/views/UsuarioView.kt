@@ -14,14 +14,18 @@ import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.checkBox
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.twinColSelect
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.DataProvider
+import com.vaadin.ui.Alignment
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
+import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
@@ -72,7 +76,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           reloadBinderOnChange(binder)
         }
         comboBox<TipoUsuario> {
-          expand = 1
+          expand = 2
           caption = "Tipo Usuário"
           isEmptySelectionAllowed = false
           isTextInputAllowed = false
@@ -82,9 +86,16 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           bind(binder).bind(UsuarioCrudVo::tipoUsuario)
           reloadBinderOnChange(binder)
         }
+        checkBox("Administrador") {
+          expand = 1
+          bind(binder).bind(UsuarioCrudVo::admin)
+          //addStyleName(ValoTheme.CHECKBOX_LARGE)
+          alignment = Alignment.BOTTOM_RIGHT
+        }
       }
       row {
         twinColSelect<String>("Localizações") {
+          expand = 1
           bindItensSet(binder, UsuarioCrudVo::locaisLoja.name)
           bind(binder).bind(UsuarioCrudVo::localizacaoes)
         }

@@ -24,7 +24,7 @@ import javax.persistence.Transient
 import kotlin.reflect.full.memberProperties
 
 @Entity
-@Cache(enableQueryCache=true)
+@Cache(enableQueryCache = true)
 @CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "itens_nota")
 @Index(unique = true, columnNames = ["nota_id", "produto_id", "localizacao"])
@@ -32,17 +32,17 @@ class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
- // @FetchPreference(1)
+  // @FetchPreference(1)
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
- // @FetchPreference(2)
+  // @FetchPreference(2)
   var nota: Nota? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
- // @FetchPreference(3)
+  // @FetchPreference(3)
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
- // @FetchPreference(4)
+  // @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
   var impresso: Boolean = false
@@ -76,12 +76,7 @@ class ItemNota : BaseModel() {
       } ?: true
     }
   val template: String
-    @Transient get() = Etiqueta
-                         .where()
-                         .tipoMov
-                         .eq(tipoMov)
-                         .findList()
-                         .firstOrNull()?.template ?: ""
+    @Transient get() = Etiqueta.template(status)
 
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {

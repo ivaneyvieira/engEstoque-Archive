@@ -44,6 +44,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loja = bean.loja
       this.locais = bean.localizacaoes.toList()
       this.tipoUsuario = bean.tipoUsuario
+      this.admin = bean.admin ?: false
     }
     usuario.insert()
   }
@@ -59,6 +60,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loja = usuario.loja
       this.localizacaoes = usuario.locais.toHashSet()
       this.tipoUsuario = usuario.tipoUsuario
+      this.admin = usuario.admin
     }
   }
 
@@ -94,5 +96,6 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   var localizacaoes: Set<String> = HashSet()
   val localStr
     get() = localizacaoes.joinToString()
-  var tipoUsuario : TipoUsuario = ESTOQUE
+  var tipoUsuario: TipoUsuario = ESTOQUE
+  var admin: Boolean? = false
 }

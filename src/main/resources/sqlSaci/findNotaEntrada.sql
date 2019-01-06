@@ -1,3 +1,4 @@
+
 select P.invno, N.storeno, nfname           as numero, invse as serie,
        CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        N.date,
@@ -41,14 +42,11 @@ from sqldados.eord AS N
   inner join sqldados.eoprd AS P
   USING(storeno, ordno)
   inner join engEstoque.produtos AS E
-    ON  E.codigo = P.prdno
-    AND E.grade = P.grade
-  INNER JOIN sqldados.paym AS M
-             ON N.paymno = M.no
-            AND M.sname = :cd
+    ON E.codigo = P.prdno AND E.grade = P.grade
   left join sqldados.custp AS C
     ON C.no = N.custno
 WHERE N.date > DATE_SUB(current_date, INTERVAL 6 MONTH) AND
+      N.paymno = 290 AND
       N.storeno = :storeno
       and (N.ordno = :nfname)
       and (:invse = '')

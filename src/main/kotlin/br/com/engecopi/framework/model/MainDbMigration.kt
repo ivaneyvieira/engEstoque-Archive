@@ -14,9 +14,9 @@ object MainDbMigration {
     System.setProperty("ebean.props.file", fileName)
 
     System.setProperty("ddl.migration.name", "support end dating")
-    System.setProperty("ddl.migration.version", "1.31")
+    System.setProperty("ddl.migration.version", "1.34")
 
-    System.setProperty("ddl.migration.pendingDropsFor", "1.29")
+    //System.setProperty("ddl.migration.pendingDropsFor", "1.29")
     val migration = DbMigration.create()
     migration.setStrictMode(false)
     migration.setPlatform(Platform.MYSQL)

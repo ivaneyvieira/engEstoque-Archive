@@ -1,7 +1,6 @@
 package br.com.engecopi.saci
 
 import br.com.engecopi.saci.beans.LojaSaci
-import br.com.engecopi.saci.beans.NfsKey
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.utils.DB
@@ -12,22 +11,22 @@ class QuerySaci : QueryDB(
   username,
   password
                          ) {
-  fun findNotaEntrada(storeno: Int, nfname: String, invse: String, cd : String): List<NotaSaci> {
+
+  fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaEntrada.sql"
-    return if (nfname == "") emptyList()
+    return if(nfname == "") emptyList()
     else query(sql) { q ->
       q.addParameter("storeno", storeno)
         .addParameter("nfname", nfname)
         .addParameter("invse", invse)
-        .addParameter("cd", cd)
         .executeAndFetch(NotaSaci::class.java)
     }
   }
 
-  fun findNotaSaida(storeno: Int, nfno: String, nfse: String, cd : String): List<NotaSaci> {
-    return if (nfno == "") emptyList()
-    else if (nfse == "")
-      findNotaSaidaOrd(storeno, nfno, cd)
+  fun findNotaSaida(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
+    return if(nfno == "") emptyList()
+    else  if(nfse == "")
+      findNotaSaidaOrd(storeno, nfno)
     else {
       val nfs = findNotaSaidaNF(storeno, nfno, nfse)
       if (nfs.isNotEmpty())
@@ -47,12 +46,11 @@ class QuerySaci : QueryDB(
     }
   }
 
-  fun findNotaSaidaOrd(storeno: Int, nfno: String, cd: String): List<NotaSaci> {
+  fun findNotaSaidaOrd(storeno: Int, nfno: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaOrd.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)
         .addParameter("nfno", nfno)
-        .addParameter("cd", cd)
         .executeAndFetch(NotaSaci::class.java)
     }
   }
@@ -65,17 +63,6 @@ class QuerySaci : QueryDB(
         .addParameter("nfse", nfse)
         .executeAndFetch(NotaSaci::class.java)
     }
-  }
-
-  fun findNotaSaidaPXA(nfeKey: String): List<NotaSaci> {
-    val sql = "/sqlSaci/findNotaSaidaKey.sql"
-    return query(sql) { q ->
-      q.addParameter("nfekey", nfeKey)
-        .executeAndFetch(NfsKey::class.java)
-        .firstOrNull()
-    }?.let { key ->
-      findNotaSaida(key.storeno, key.nfno, key.nfse, cd = "N/C")
-    } ?: emptyList()
   }
 
   fun findLojas(storeno: Int): List<LojaSaci> {
@@ -94,12 +81,12 @@ class QuerySaci : QueryDB(
     }
   }
 
-  fun findLoginUser(): List<String> {
+  fun findLoginUser() : List<String> {
     val sql = "/sqlSaci/userSenha.sql"
     return query(sql) { q ->
       q.addParameter("login", "TODOS")
         .executeAndFetch(UserSaci::class.java)
-        .mapNotNull { it.login }
+        .mapNotNull{ it.login }
     }
   }
 
@@ -109,6 +96,7 @@ class QuerySaci : QueryDB(
     internal val url = db.url
     internal val username = db.username
     internal val password = db.password
+
     val ipServer = QuerySaci.db.url.split("/").getOrNull(2)
   }
 }

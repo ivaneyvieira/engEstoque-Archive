@@ -11,11 +11,13 @@ import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
+import org.simpleframework.xml.Default
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -52,6 +54,8 @@ class Nota : BaseModel() {
   var loja: Loja? = null
   @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
+  @Column(name = "sequencia", columnDefinition = "int(11) default 0")
+  var sequencia : Int = 0
 
   companion object Find : NotaFinder() {
     fun findEntrada(numero: String?): Nota? {
@@ -93,20 +97,18 @@ class Nota : BaseModel() {
     fun findNotaEntradaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       val loja = RegistryUserInfo.lojaDefault
-      val cd = RegistryUserInfo.abreviacaoDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      val notas = saci.findNotaEntrada(loja.numero, numero, serie, cd)
+      val notas = saci.findNotaEntrada(loja.numero, numero, serie)
       return notas
     }
 
     fun findNotaSaidaSaci(numeroNF: String?): List<NotaSaci> {
       numeroNF ?: return emptyList()
       val loja = RegistryUserInfo.lojaDefault
-      val cd = RegistryUserInfo.abreviacaoDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaSaida(loja.numero, numero, serie, cd)
+      return saci.findNotaSaida(loja.numero, numero, serie)
     }
 
     fun itemDuplicado(nota: Nota?, produto: Produto?): Boolean {

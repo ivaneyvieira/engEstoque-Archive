@@ -241,13 +241,13 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   }
 
   fun imprimir(itemNota: ItemNota?) = execString {
-    val template = Etiqueta.template(itemNota?.tipoMov)
+    val template = itemNota?.template ?: ""
     val print = itemNota?.printEtiqueta()
     itemNota?.let {
       it.impresso = true
       it.save()
     }
-    print?.print(template ?: "") ?: ""
+    return@execString print?.print(template) ?: ""
   }
 
   fun imprime(): String {
@@ -296,13 +296,10 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       when (tipo) {
         SAIDA   -> Nota.findNotaSaidaSaci(numeroNF)
         ENTRADA -> Nota.findNotaEntradaSaci(numeroNF)
-<<<<<<< HEAD
       }.filter {
         usuario.admin || (it.tipo != "PEDIDO_E")
       }
-=======
-      }.filter { usuario.admin || tipoNota != PEDIDO_S }
->>>>>>> 08b0957c8417db66f2523e654fc2f32b003ae813
+
     else emptyList()
   val notaSaci
     get() = notaProdutoSaci.firstOrNull()
