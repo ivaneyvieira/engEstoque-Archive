@@ -18,6 +18,7 @@ import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.px
+import com.github.mvysny.karibudsl.v8.refresh
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
@@ -208,6 +209,7 @@ class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
       addClickListener {
         readString("Chave da nota fiscal") { key ->
           viewModel.processaKey(key)
+          gridCrudFlex.grid.refresh()
         }
       }
     }

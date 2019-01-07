@@ -58,7 +58,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
   }
 
   fun <T : EntityVo<*>>btnImprimeTudo(grid : GridCrudFlex<T>) : Button{
-    val button = Button("Imprime Notas")
+    val button = Button("Imprime Etiquetas")
     button.let {
       it.icon = VaadinIcons.PRINT
       print {

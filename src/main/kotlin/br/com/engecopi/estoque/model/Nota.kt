@@ -1,19 +1,18 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.Nota.TipoMov.ENTRADA
-import br.com.engecopi.estoque.model.Nota.TipoMov.SAIDA
-import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
+import br.com.engecopi.estoque.model.query.QNota
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.saci
+import br.com.engecopi.utils.localDate
+import io.ebean.annotation.Aggregation
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
-import org.simpleframework.xml.Default
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.persistence.CascadeType.MERGE
@@ -58,13 +57,26 @@ class Nota : BaseModel() {
   val itensNota: List<ItemNota>? = null
   @Column(name = "sequencia", columnDefinition = "int(11) default 0")
   var sequencia : Int = 0
+  @Aggregation("max(sequencia)")
+  var maxSequencia : Int = 0
 
   companion object Find : NotaFinder() {
-    fun createNota(notasaci : NotaSaci) = Nota().apply {
-      numero = "${notasaci.numero}/${notasaci.serie}"
-      tipoNota = TipoNota.values().find { it.toString() == notasaci.serie }
-      tipoMov = tipoNota?.tipoMov ?: ENTRADA
-      rota = notasaci.rota ?: ""
+    fun createNota(notasaci : NotaSaci?) : Nota?{
+      notasaci ?: return null
+      return Nota().apply {
+        numero = "${notasaci.numero}/${notasaci.serie}"
+        tipoNota = TipoNota.values().find { it.toString() == notasaci.tipo }
+        tipoMov = tipoNota?.tipoMov ?: ENTRADA
+        rota = notasaci.rota ?: ""
+        fornecedor = notasaci.vendName ?: ""
+        cliente = notasaci.clienteName ?: ""
+        data = notasaci.date?.localDate() ?: LocalDate.now()
+        dataEmissao = notasaci.dt_emissao?.localDate() ?: LocalDate.now()
+        loja = Loja.findLoja(notasaci.storeno)
+      }
+    }
+    fun maxSequencia() : Int {
+      return where().select(QNota._alias.maxSequencia).findOne()?.maxSequencia ?: 0
     }
 
     fun findEntrada(numero: String?): Nota? {

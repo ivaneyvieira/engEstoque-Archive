@@ -5,6 +5,7 @@ import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
+import br.com.engecopi.saci.beans.NotaSaci
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
@@ -85,6 +86,26 @@ class ItemNota : BaseModel() {
       return ItemNota.where().nota.id.eq(nota.id)
         .produto.id.eq(produto.id)
         .findOne()
+    }
+
+    fun createItemNota(notaSaci: NotaSaci, notaPrd: Nota?) : ItemNota?{
+      notaPrd ?: return null
+      val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+      val locProduto =ViewProdutoLoc
+                        .where()
+                        .produto.id.eq(produtoSaci?.id)
+                        .findList()
+                        .sortedBy { it.localizacao }
+                        .firstOrNull()
+                        ?.localizacao
+                      ?:return null
+      return ItemNota().apply {
+        quantidade = notaSaci.quant ?: 0
+        produto =produtoSaci
+        nota = notaPrd
+        usuario = RegistryUserInfo.usuarioDefault
+        localizacao = locProduto
+      }
     }
   }
 

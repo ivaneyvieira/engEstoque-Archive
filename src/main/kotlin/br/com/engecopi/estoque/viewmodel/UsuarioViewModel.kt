@@ -34,6 +34,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       usuario.loja = bean.loja
       usuario.locais = bean.localizacaoes.toList()
       usuario.tipoUsuario = bean.tipoUsuario
+      usuario.admin = bean.admin ?: false
       usuario.update()
     }
   }
