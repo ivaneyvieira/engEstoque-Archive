@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.Nota.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.Nota.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -58,16 +60,31 @@ class Nota : BaseModel() {
   var sequencia : Int = 0
 
   companion object Find : NotaFinder() {
+    fun createNota(notasaci : NotaSaci) = Nota().apply {
+      numero = "${notasaci.numero}/${notasaci.serie}"
+      tipoNota = TipoNota.values().find { it.toString() == notasaci.serie }
+      tipoMov = tipoNota?.tipoMov ?: ENTRADA
+      rota = notasaci.rota ?: ""
+    }
+
     fun findEntrada(numero: String?): Nota? {
       val loja = RegistryUserInfo.lojaDefault
       return if (numero.isNullOrBlank()) null
-      else Nota.where().tipoMov.eq(ENTRADA).numero.eq(numero).loja.id.eq(loja.id).findOne()
+      else Nota.where()
+        .tipoMov.eq(ENTRADA)
+        .numero.eq(numero)
+        .loja.id.eq(loja.id)
+        .findOne()
     }
 
     fun findSaida(numero: String?): Nota? {
       val loja = RegistryUserInfo.lojaDefault
       return if (numero.isNullOrBlank()) null
-      else Nota.where().tipoMov.eq(SAIDA).numero.eq(numero).loja.id.eq(loja.id).findOne()
+      else Nota.where()
+        .tipoMov.eq(SAIDA)
+        .numero.eq(numero)
+        .loja.id.eq(loja.id)
+        .findOne()
     }
 
     fun findEntradas(): List<Nota> {
@@ -89,7 +106,12 @@ class Nota : BaseModel() {
 
     fun novoNumero(): Int {
       val regex = "[0-9]+".toRegex()
-      val max = where().findList().asSequence().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
+      val max = where()
+                  .findList()
+                  .asSequence()
+                  .map { it.numero }
+                  .filter { regex.matches(it) }
+                  .max() ?: "0"
       val numMax = max.toIntOrNull() ?: 0
       return numMax + 1
     }
@@ -123,6 +145,10 @@ class Nota : BaseModel() {
                .produto.id.eq(produto_id)
                .findCount() > 0
     }
+
+    fun findNotaSaidaPXA(nfeKey: String): List<NotaSaci>{
+      return saci.findNotaSaidaPXA(nfeKey)
+    }
   }
 
   fun findItem(produto: Produto): ItemNota? {
@@ -146,8 +172,8 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   ACERTO_S(SAIDA, "Acerto", "Acerto Saida"), PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
   OUTROS_S(SAIDA, "Outros", "Outras Saidas", true),
   OUTRAS_NFS(SAIDA, "Outras NFS", "Outras NF Saida", true),
-  SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true),
-  ;
+  SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true);
+
 
   companion object {
     fun valuesEntrada(): List<TipoNota> {

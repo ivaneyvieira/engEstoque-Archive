@@ -97,7 +97,7 @@ class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
         addCustomToolBarComponent(btnLerChaveNota(this))
-        addOnly = !isAdmin
+        reloadOnly = !isAdmin
         column(NFExpedicaoVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")

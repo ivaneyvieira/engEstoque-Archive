@@ -316,12 +316,24 @@ open class GridCrudFlex<T : EntityVo<*>>(
       readButton?.isVisible = value
       deleteButton.isVisible = !value
     }
+
   var addOnly: Boolean = false
     set(value) {
       field = value
 
       findAllButton.isVisible = true
       addButton.isVisible = true
+      updateButton.isVisible = !value
+      readButton?.isVisible = value
+      deleteButton.isVisible = !value
+    }
+
+  var reloadOnly: Boolean = false
+    set(value) {
+      field = value
+
+      findAllButton.isVisible = true
+      addButton.isVisible = !value
       updateButton.isVisible = !value
       readButton?.isVisible = value
       deleteButton.isVisible = !value
