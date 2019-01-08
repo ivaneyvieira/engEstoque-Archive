@@ -1,12 +1,10 @@
 package br.com.engecopi.estoque.model.query
 
-import br.com.engecopi.estoque.model.TipoUsuario
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
 import io.ebean.EbeanServer
 import io.ebean.typequery.PBoolean
-import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
@@ -38,7 +36,6 @@ class QUsuario : TQRootBean<Usuario, QUsuario> {
   lateinit var loja: QAssocLoja<QUsuario>
   lateinit var localizacaoes: PString<QUsuario>
   lateinit var itensNota: QAssocItemNota<QUsuario>
-  lateinit var tipoUsuario: PEnum<QUsuario,TipoUsuario>
   lateinit var admin: PBoolean<QUsuario>
 
 

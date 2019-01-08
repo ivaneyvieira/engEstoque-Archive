@@ -2,12 +2,8 @@ package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
-import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.ui.views.EntradaView
-import br.com.engecopi.estoque.ui.views.EntregaClienteView
 import br.com.engecopi.estoque.ui.views.EtiquetaView
-import br.com.engecopi.estoque.ui.views.NFExpedicaoView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
@@ -21,19 +17,15 @@ import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
-import com.vaadin.icons.VaadinIcons
 import com.vaadin.icons.VaadinIcons.INBOX
-import com.vaadin.icons.VaadinIcons.NEWSPAPER
 import com.vaadin.icons.VaadinIcons.OUT
 import com.vaadin.icons.VaadinIcons.OUTBOX
 import com.vaadin.icons.VaadinIcons.PACKAGE
 import com.vaadin.icons.VaadinIcons.PAPERCLIP
-import com.vaadin.icons.VaadinIcons.TRUCK
 import com.vaadin.icons.VaadinIcons.USER
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
-import com.vaadin.server.ErrorEvent
 import com.vaadin.server.Page
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinService
@@ -88,82 +80,49 @@ class EstoqueUI : UI() {
     } else {
       content = null
       val user = info.usuario
-      if (info.usuario.tipoUsuario == EXPEDICAO)
-        menuNFExpedicao(user, info)
-      else
-        menuEstoque(user, info)
+      valoMenu {
+        this.appTitle = title
+
+        section("Login") {
+          menuButton("Usuário:", badge = user.loginName)
+          menuButton("Localizacao:", badge = info.abreviacao)
+          menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
+          menuButton("Sair", icon = OUT) {
+            onLeftClick {
+              LoginService.logout()
+            }
+          }
+        }
+
+
+        section("Movimentação") {
+          menuButton("Entrada", INBOX, view = EntradaView::class.java)
+          menuButton("Saída", OUTBOX, view = SaidaView::class.java)
+        }
+        section("Consulta") {
+          menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
+          if (user.admin) {
+            menuButton("Usuários", USER, view = UsuarioView::class.java)
+            menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
+          }
+        }
+      }
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl
       navigator = Navigator(this, content as ViewDisplay)
       navigator.addProvider(autoViewProvider)
 
-
-      setErrorHandler { e -> errorHandler(e) }
-      if (info.usuario.tipoUsuario == EXPEDICAO)
-        navigator.navigateTo(if (contextPath == "") "nf_expedicao" else contextPath)
-      else
-        navigator.navigateTo(contextPath)
-    }
-  }
-
-  private fun errorHandler(e: ErrorEvent) {
-    log.error("Erro não identificado ${e.throwable}", e.throwable)
-    // when the exception occurs, show a nice notification
-    Notification("Oops", "\n" +
-                         "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
-                 ERROR_MESSAGE)
-      .apply {
-        styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
-        position = TOP_CENTER
-        show(Page.getCurrent())
-      }
-  }
-
-  private fun menuEstoque(user: Usuario, info: LoginInfo) {
-    valoMenu {
-      this.appTitle = title
-
-      section("Login") {
-        menuButton("Usuário:", badge = user.loginName)
-        menuButton("Localizacao:", badge = info.abreviacao)
-        menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
-        menuButton("Sair", icon = OUT) {
-          onLeftClick {
-            LoginService.logout()
+      navigator.navigateTo(contextPath)
+      setErrorHandler { e ->
+        log.error("Erro não identificado ${e.throwable}", e.throwable)
+        // when the exception occurs, show a nice notification
+        Notification("Oops", "\n" +
+                             "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
+                     ERROR_MESSAGE)
+          .apply {
+            styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
+            position = TOP_CENTER
+            show(Page.getCurrent())
           }
-        }
-      }
-
-      section("Movimentação") {
-        menuButton("Entrada", INBOX, view = EntradaView::class.java)
-        menuButton("Saída", OUTBOX, view = SaidaView::class.java)
-      }
-      section("Consulta") {
-        menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
-        if (user.admin) {
-          menuButton("Usuários", USER, view = UsuarioView::class.java)
-          menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
-        }
-      }
-    }
-  }
-
-  private fun menuNFExpedicao(user: Usuario, info: LoginInfo) {
-    valoMenu {
-      this.appTitle = title
-
-      section("Login") {
-        menuButton("Usuário:", badge = user.loginName)
-        menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
-        menuButton("Sair", icon = OUT) {
-          onLeftClick {
-            LoginService.logout()
-          }
-        }
-      }
-
-      section("Expedição") {
-        menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
-        menuButton("Entrega ao Cliente", TRUCK, view = EntregaClienteView::class.java)
       }
     }
   }

@@ -9,14 +9,10 @@ object MainDbMigration {
   @JvmStatic
   fun main(args: Array<String>) {
     // System.setProperty("ddl.migration.generate", "true")
-    val home = System.getenv("HOME")
-    val fileName = System.getenv("EBEAN_PROPS") ?: "$home/ebean.properties"
-    System.setProperty("ebean.props.file", fileName)
-
+    
     System.setProperty("ddl.migration.name", "support end dating")
-    System.setProperty("ddl.migration.version", "1.34")
-
-    //System.setProperty("ddl.migration.pendingDropsFor", "1.29")
+    //System.setProperty("ddl.migration.version", "V1.12")
+    //System.setProperty("ddl.migration.pendingDropsFor", "1.24")
     val migration = DbMigration.create()
     migration.setStrictMode(false)
     migration.setPlatform(Platform.MYSQL)

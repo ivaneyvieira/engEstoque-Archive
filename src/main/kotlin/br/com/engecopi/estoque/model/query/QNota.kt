@@ -48,8 +48,6 @@ class QNota : TQRootBean<Nota, QNota> {
   lateinit var observacao: PString<QNota>
   lateinit var loja: QAssocLoja<QNota>
   lateinit var itensNota: QAssocItemNota<QNota>
-  lateinit var sequencia: PInteger<QNota>
-  lateinit var maxSequencia: PInteger<QNota>
 
 
   /**

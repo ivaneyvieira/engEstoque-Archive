@@ -3,9 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.TipoMov
-import br.com.engecopi.estoque.model.TipoUsuario
-import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -14,18 +11,14 @@ import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import com.github.mvysny.karibudsl.v8.AutoView
-import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.bind
-import com.github.mvysny.karibudsl.v8.checkBox
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.twinColSelect
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.DataProvider
-import com.vaadin.ui.Alignment
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
@@ -36,7 +29,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   val isAdmin = RegistryUserInfo.usuarioDefault.admin
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
-    { viewModel.countProduto() }
+    { _ -> viewModel.countProduto() }
                                                                )
 
   override fun layoutForm(
@@ -75,27 +68,9 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           bind(binder).bind(UsuarioCrudVo::loja)
           reloadBinderOnChange(binder)
         }
-        comboBox<TipoUsuario> {
-          expand = 2
-          caption = "Tipo Usuário"
-          isEmptySelectionAllowed = false
-          isTextInputAllowed = false
-          //this.emptySelectionCaption = "Todas"
-          setItems(TipoUsuario.values().toList())
-          setItemCaptionGenerator { it.descricao }
-          bind(binder).bind(UsuarioCrudVo::tipoUsuario)
-          reloadBinderOnChange(binder)
-        }
-        checkBox("Administrador") {
-          expand = 1
-          bind(binder).bind(UsuarioCrudVo::admin)
-          //addStyleName(ValoTheme.CHECKBOX_LARGE)
-          alignment = Alignment.BOTTOM_RIGHT
-        }
       }
       row {
         twinColSelect<String>("Localizações") {
-          expand = 1
           bindItensSet(binder, UsuarioCrudVo::locaisLoja.name)
           bind(binder).bind(UsuarioCrudVo::localizacaoes)
         }
@@ -117,11 +92,6 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         column(UsuarioCrudVo::nome) {
           expandRatio = 5
           caption = "Nome"
-        }
-        column(UsuarioCrudVo::tipoUsuario) {
-          expandRatio = 1
-          caption = "Tipo de Usuário"
-          setRenderer({ user -> user?.descricao ?: "N/C" }, TextRenderer())
         }
         column(UsuarioCrudVo::loja) {
           expandRatio = 1

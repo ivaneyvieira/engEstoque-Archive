@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Etiqueta
-import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.query.QEtiqueta
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -14,7 +13,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
     bean.entityVo?.apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
-      this.statusNota = bean.statusNota ?: throw EViewModel("O tipo está vazio")
+      this.tipoMov = bean.tipoMov ?: throw EViewModel("O tipo está vazio")
       update()
     }
   }
@@ -23,7 +22,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
     Etiqueta().apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
-      this.statusNota = bean.statusNota ?: throw EViewModel("O tipo está vazio")
+      this.tipoMov = bean.tipoMov ?: throw EViewModel("O tipo está vazio")
       insert()
     }
   }
@@ -41,7 +40,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.entityVo = etiqueta
       this.titulo = etiqueta.titulo
       this.template = etiqueta.template
-      this.statusNota = etiqueta.statusNota
+      this.tipoMov = etiqueta.tipoMov
     }
   }
 
@@ -52,10 +51,10 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
 
 class EtiquetaVo : EntityVo<Etiqueta>() {
   override fun findEntity(): Etiqueta? {
-    return Etiqueta.find(titulo, statusNota)
+    return Etiqueta.find(titulo, tipoMov)
   }
 
   var titulo: String? = ""
   var template: String? = ""
-  var statusNota: StatusNota? = null
+  var tipoMov: TipoMov? = null
 }

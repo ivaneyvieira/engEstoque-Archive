@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.viewmodel.EtiquetaViewModel
 import br.com.engecopi.estoque.viewmodel.EtiquetaVo
@@ -43,11 +42,11 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
           expand = 4
           bind(binder).bind(EtiquetaVo::titulo)
         }
-        comboBox<StatusNota>("Tipo") {
+        comboBox<TipoMov>("Tipo") {
           expand = 1
           default { it.descricao }
-          setItems(StatusNota.values().toList())
-          bind(binder).bind(EtiquetaVo::statusNota)
+          setItems(TipoMov.values().toList())
+          bind(binder).bind(EtiquetaVo::tipoMov)
         }
         button("Ajuda") {
           alignment = Alignment.BOTTOM_RIGHT
@@ -77,10 +76,10 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
           caption = "Título"
           setSortProperty("titulo")
         }
-        column(EtiquetaVo::statusNota) {
+        column(EtiquetaVo::tipoMov) {
           setRenderer({ it?.descricao ?: "" }, TextRenderer())
           caption = "Tipo"
-          setSortProperty("statusNota")
+          setSortProperty("tipoMov")
         }
       }
     }

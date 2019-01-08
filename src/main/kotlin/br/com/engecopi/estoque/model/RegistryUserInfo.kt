@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
 import br.com.engecopi.framework.model.Transaction
 
 object RegistryUserInfo {
@@ -31,11 +30,13 @@ object RegistryUserInfo {
   val usuarioDefault
     get() = info.usuario
   val abreviacaoDefault
-    get() =  if(info.usuario.tipoUsuario == EXPEDICAO) "" else info.abreviacao
+    get() = info.abreviacao
   val lojaDefault
     get() = usuarioDefault.loja!!
   val userDefaultIsAdmin
     get() = usuarioDefault.admin
+//  val localizacaoesDefault
+  //  get() = ViewProdutoLoc.localizacoes(abreviacaoDefault)
 }
 
 data class LoginInfo(val usuario: Usuario, val abreviacao: String)

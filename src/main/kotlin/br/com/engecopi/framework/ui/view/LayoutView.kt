@@ -13,8 +13,6 @@ import com.github.mvysny.karibudsl.v8.fillParent
 import com.github.mvysny.karibudsl.v8.init
 import com.github.mvysny.karibudsl.v8.isMargin
 import com.github.mvysny.karibudsl.v8.label
-import com.github.mvysny.karibudsl.v8.px
-import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
@@ -32,7 +30,6 @@ import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
-import com.vaadin.ui.TextField
 import com.vaadin.ui.TwinColSelect
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
