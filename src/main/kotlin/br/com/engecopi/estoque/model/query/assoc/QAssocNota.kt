@@ -39,6 +39,8 @@ class QAssocNota<R>(name: String, root: R) : TQAssocBean<Nota,R>(name, root) {
   lateinit var observacao: PString<R>
   lateinit var loja: QAssocLoja<R>
   lateinit var itensNota: QAssocItemNota<R>
+  lateinit var sequencia: PInteger<R>
+  lateinit var maxSequencia: PInteger<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

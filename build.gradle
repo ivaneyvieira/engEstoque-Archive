@@ -84,14 +84,15 @@ dependencies {
   testCompile "com.github.mvysny.dynatest:dynatest:0.8"
   //Dependências do ebean
   //kapt 'io.ebean:kotlin-querybean-generator:11.1.2'
-  compile "io.ebean:ebean:11.28.1"
+  compile "io.ebean:ebean:11.31.1"
   // https://mvnrepository.com/artifact/io.ebean/ebean-ignite
   //compile group: 'io.ebean', name: 'ebean-ignite', version: '11.10.1'
 
-//  compile "io.ebean:kotlin-querybean-generator:11.19.1"
-  compile "io.ebean:querybean-generator:11.19.1"
-  compile "io.ebean:ebean-querybean:11.20.1"
-  compile "io.ebean:ebean-annotation:4.2"
+// https://mvnrepository.com/artifact/io.ebean/kotlin-querybean-generator
+  compile "io.ebean:kotlin-querybean-generator:11.27.1"
+
+  compile "io.ebean:ebean-querybean:11.30.1"
+  compile "io.ebean:ebean-annotation:4.4"
   compile "io.ebean.tools:finder-generator:4.2.2"
   //compile 'io.ebean:ebean-docker-run:1.5.1'
 

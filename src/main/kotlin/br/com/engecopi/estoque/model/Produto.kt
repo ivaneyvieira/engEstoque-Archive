@@ -23,7 +23,7 @@ import javax.persistence.Table
 import javax.persistence.Transient
 import javax.validation.constraints.Size
 
-@Cache(enableQueryCache=true)
+@Cache(enableQueryCache = true)
 @CacheQueryTuning(maxSecsToLive = 30)
 @Entity
 @Table(name = "produtos")
@@ -46,7 +46,7 @@ class Produto : BaseModel() {
             )
   val itensNota: List<ItemNota>? = null
   @OneToOne(cascade = [])
-//  @FetchPreference(1)
+  //  @FetchPreference(1)
   @JoinColumn(name = "id")
   var vproduto: ViewProduto? = null
   //@FetchPreference(2)
@@ -120,14 +120,10 @@ class Produto : BaseModel() {
 
     fun findProdutos(codigo: String?): List<Produto> {
       codigo ?: return emptyList()
-      return where().codigo.eq(
-        codigo.lpad(
-          16,
-          " "
-                   )
-                              ).findList()
+      return where().codigo.eq(codigo.lpad(16, " "))
+        .findList()
     }
-
+/*
     fun createProduto(produtoSaci: ViewProdutoSaci?): Produto? {
       produtoSaci ?: return null
       return Produto().apply {
@@ -146,6 +142,7 @@ class Produto : BaseModel() {
                                             )
       return createProduto(produtoSaci)
     }
+    */
   }
 
   fun somaSaldo(item: ItemNota): Int {

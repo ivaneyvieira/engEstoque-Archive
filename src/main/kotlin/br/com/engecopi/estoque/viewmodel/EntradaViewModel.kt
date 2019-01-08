@@ -1,10 +1,17 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.StatusNota.RECEBIDO
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.IView
 
-class EntradaViewModel(view: IView) : NotaViewModel<EntradaVo>(view, EntradaVo::class, ENTRADA) {
+class EntradaViewModel(view: IView) : NotaViewModel<EntradaVo>
+                                        (view, EntradaVo::class, ENTRADA, RECEBIDO) {
+  override fun QItemNota.filtroStatus(): QItemNota {
+    return status.eq(RECEBIDO)
+  }
+
   override fun createVo() = EntradaVo()
 }
 

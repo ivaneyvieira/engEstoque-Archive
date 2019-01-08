@@ -3,9 +3,12 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
+import br.com.engecopi.estoque.model.query.QNota
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.saci
+import br.com.engecopi.utils.localDate
+import io.ebean.annotation.Aggregation
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
@@ -15,6 +18,7 @@ import java.time.LocalTime
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -51,18 +55,48 @@ class Nota : BaseModel() {
   var loja: Loja? = null
   @OneToMany(mappedBy = "nota", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
+  @Column(name = "sequencia", columnDefinition = "int(11) default 0")
+  var sequencia : Int = 0
+  @Aggregation("max(sequencia)")
+  var maxSequencia : Int = 0
 
   companion object Find : NotaFinder() {
+    fun createNota(notasaci : NotaSaci?) : Nota?{
+      notasaci ?: return null
+      return Nota().apply {
+        numero = "${notasaci.numero}/${notasaci.serie}"
+        tipoNota = TipoNota.values().find { it.toString() == notasaci.tipo }
+        tipoMov = tipoNota?.tipoMov ?: ENTRADA
+        rota = notasaci.rota ?: ""
+        fornecedor = notasaci.vendName ?: ""
+        cliente = notasaci.clienteName ?: ""
+        data = notasaci.date?.localDate() ?: LocalDate.now()
+        dataEmissao = notasaci.dt_emissao?.localDate() ?: LocalDate.now()
+        loja = Loja.findLoja(notasaci.storeno)
+      }
+    }
+    fun maxSequencia() : Int {
+      return where().select(QNota._alias.maxSequencia).findOne()?.maxSequencia ?: 0
+    }
+
     fun findEntrada(numero: String?): Nota? {
       val loja = RegistryUserInfo.lojaDefault
       return if (numero.isNullOrBlank()) null
-      else Nota.where().tipoMov.eq(ENTRADA).numero.eq(numero).loja.id.eq(loja.id).findOne()
+      else Nota.where()
+        .tipoMov.eq(ENTRADA)
+        .numero.eq(numero)
+        .loja.id.eq(loja.id)
+        .findOne()
     }
 
     fun findSaida(numero: String?): Nota? {
       val loja = RegistryUserInfo.lojaDefault
       return if (numero.isNullOrBlank()) null
-      else Nota.where().tipoMov.eq(SAIDA).numero.eq(numero).loja.id.eq(loja.id).findOne()
+      else Nota.where()
+        .tipoMov.eq(SAIDA)
+        .numero.eq(numero)
+        .loja.id.eq(loja.id)
+        .findOne()
     }
 
     fun findEntradas(): List<Nota> {
@@ -84,7 +118,12 @@ class Nota : BaseModel() {
 
     fun novoNumero(): Int {
       val regex = "[0-9]+".toRegex()
-      val max = where().findList().asSequence().map { it.numero }.filter { regex.matches(it) }.max() ?: "0"
+      val max = where()
+                  .findList()
+                  .asSequence()
+                  .map { it.numero }
+                  .filter { regex.matches(it) }
+                  .max() ?: "0"
       val numMax = max.toIntOrNull() ?: 0
       return numMax + 1
     }
@@ -118,6 +157,10 @@ class Nota : BaseModel() {
                .produto.id.eq(produto_id)
                .findCount() > 0
     }
+
+    fun findNotaSaidaPXA(nfeKey: String): List<NotaSaci>{
+      return saci.findNotaSaidaPXA(nfeKey)
+    }
   }
 
   fun findItem(produto: Produto): ItemNota? {
@@ -141,8 +184,8 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   ACERTO_S(SAIDA, "Acerto", "Acerto Saida"), PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
   OUTROS_S(SAIDA, "Outros", "Outras Saidas", true),
   OUTRAS_NFS(SAIDA, "Outras NFS", "Outras NF Saida", true),
-  SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true),
-  ;
+  SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true);
+
 
   companion object {
     fun valuesEntrada(): List<TipoNota> {
@@ -154,3 +197,5 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
     }
   }
 }
+
+

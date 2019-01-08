@@ -1,7 +1,11 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
+import br.com.engecopi.estoque.model.TipoMov.ENTRADA
+import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
+import br.com.engecopi.saci.beans.NotaSaci
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
@@ -13,13 +17,15 @@ import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.Transient
 import kotlin.reflect.full.memberProperties
 
 @Entity
-@Cache(enableQueryCache=true)
+@Cache(enableQueryCache = true)
 @CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "itens_nota")
 @Index(unique = true, columnNames = ["nota_id", "produto_id", "localizacao"])
@@ -27,22 +33,24 @@ class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
- // @FetchPreference(1)
+  // @FetchPreference(1)
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
- // @FetchPreference(2)
+  // @FetchPreference(2)
   var nota: Nota? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
- // @FetchPreference(3)
+  // @FetchPreference(3)
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
- // @FetchPreference(4)
+  // @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
   var impresso: Boolean = false
   @Length(60)
   var localizacao: String = ""
+  @Enumerated(EnumType.STRING)
+  var status: StatusNota = ENTREGUE
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
   val descricao: String?
@@ -69,12 +77,7 @@ class ItemNota : BaseModel() {
       } ?: true
     }
   val template: String
-    @Transient get() = Etiqueta
-                         .where()
-                         .tipoMov
-                         .eq(tipoMov)
-                         .findList()
-                         .firstOrNull()?.template ?: ""
+    @Transient get() = Etiqueta.template(status)
 
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
@@ -83,6 +86,26 @@ class ItemNota : BaseModel() {
       return ItemNota.where().nota.id.eq(nota.id)
         .produto.id.eq(produto.id)
         .findOne()
+    }
+
+    fun createItemNota(notaSaci: NotaSaci, notaPrd: Nota?) : ItemNota?{
+      notaPrd ?: return null
+      val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+      val locProduto =ViewProdutoLoc
+                        .where()
+                        .produto.id.eq(produtoSaci?.id)
+                        .findList()
+                        .sortedBy { it.localizacao }
+                        .firstOrNull()
+                        ?.localizacao
+                      ?:return null
+      return ItemNota().apply {
+        quantidade = notaSaci.quant ?: 0
+        produto =produtoSaci
+        nota = notaPrd
+        usuario = RegistryUserInfo.usuarioDefault
+        localizacao = locProduto
+      }
     }
   }
 
@@ -127,5 +150,12 @@ class NotaPrint(item: ItemNota) {
       reduce.replace("[${prop.name}]", "${prop.get(this)}")
     }
   }
+}
+
+enum class StatusNota(val descricao: String, val tipoMov: TipoMov) {
+  RECEBIDO("Recebido", ENTRADA),
+  INCLUIDA("Incluída", SAIDA),
+  CONFERIDA("Conferida", SAIDA),
+  ENTREGUE("Entregue", SAIDA)
 }
 

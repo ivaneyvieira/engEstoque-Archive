@@ -19,23 +19,27 @@ class Etiqueta : BaseModel() {
   @Size(max = 60)
   var titulo: String = ""
   @Enumerated(EnumType.STRING)
-  var tipoMov: TipoMov? = null
+  var statusNota: StatusNota? = null
   @Lob
   var template: String = ""
   @OneToMany(mappedBy = "etiqueta", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
 
   companion object Find : EtiquetaFinder() {
-    fun find(titulo: String?, tipoMov: TipoMov?): Etiqueta? {
+    fun find(titulo: String?, statusNota: StatusNota?): Etiqueta? {
       titulo ?: return null
-      tipoMov ?: return null
+      statusNota ?: return null
       return where().titulo.eq(titulo)
-              .tipoMov.eq(tipoMov)
-              .findOne()
+        .statusNota.eq(statusNota)
+        .findOne()
     }
 
-    fun template(tipoMov : TipoMov?): String? {
-      return where().tipoMov.eq(tipoMov).findOne()?.template
+    fun template(statusNota: StatusNota?): String {
+      return where()
+               .statusNota.eq(statusNota)
+               .findList()
+               .firstOrNull()
+               ?.template ?: ""
     }
   }
 }

@@ -36,8 +36,6 @@ import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.renderers.NumberRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.patrik.FastNavigation
@@ -60,7 +58,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
   }
 
   fun <T : EntityVo<*>>btnImprimeTudo(grid : GridCrudFlex<T>) : Button{
-    val button = Button("Imprime Notas")
+    val button = Button("Imprime Etiquetas")
     button.let {
       it.icon = VaadinIcons.PRINT
       print {

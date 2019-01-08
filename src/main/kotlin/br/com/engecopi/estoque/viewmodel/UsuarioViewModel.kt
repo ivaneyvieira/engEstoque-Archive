@@ -2,6 +2,9 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.TipoMov
+import br.com.engecopi.estoque.model.TipoUsuario
+import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QUsuario
@@ -30,6 +33,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
         usuario.loginName = loginName
       usuario.loja = bean.loja
       usuario.locais = bean.localizacaoes.toList()
+      usuario.tipoUsuario = bean.tipoUsuario
+      usuario.admin = bean.admin ?: false
       usuario.update()
     }
   }
@@ -39,6 +44,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
       this.locais = bean.localizacaoes.toList()
+      this.tipoUsuario = bean.tipoUsuario
+      this.admin = bean.admin ?: false
     }
     usuario.insert()
   }
@@ -53,6 +60,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = usuario.loginName
       this.loja = usuario.loja
       this.localizacaoes = usuario.locais.toHashSet()
+      this.tipoUsuario = usuario.tipoUsuario
+      this.admin = usuario.admin
     }
   }
 
@@ -88,4 +97,6 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   var localizacaoes: Set<String> = HashSet()
   val localStr
     get() = localizacaoes.joinToString()
+  var tipoUsuario: TipoUsuario = ESTOQUE
+  var admin: Boolean? = false
 }
