@@ -171,10 +171,10 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       val query = ItemNota.where()
         .setUseQueryCache(true)
         .fetch("nota")
-          .fetch("usuario")
+        .fetch("usuario")
         .fetch("produto")
-          .fetch("produto.vproduto")
-          .fetch("produto.viewProdutoLoc")
+        .fetch("produto.vproduto")
+        .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
       return query
         .nota.loja.id.eq(lojaDefault.id)
@@ -276,11 +276,11 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   val naoTemGrid
     get() = !temGrid
   var rota: String? = ""
-  val rotaDescricao : String?
-  get() = if(tipoNota == TRANSFERENCIA_E|| tipoNota == TRANSFERENCIA_S)
-    rota
-  else
-    ""
+  val rotaDescricao: String?
+    get() = if (tipoNota == TRANSFERENCIA_E || tipoNota == TRANSFERENCIA_S)
+      rota
+    else
+      ""
   private val notaProdutoSaci: List<NotaSaci>
     get() = if (entityVo == null)
       when (tipo) {
@@ -301,11 +301,11 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   private fun atualizaNota() {
     if (!readOnly)
       if (entityVo == null) {
-        val nota = notaSaci?.let { nota ->
+        val nota = notaSaci
+        if (nota != null) {
           tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
           rota = nota.rota
-        }
-        if (nota == null) {
+        } else {
           tipoNota = OUTROS_E
           rota = ""
         }
@@ -338,14 +338,19 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
             }.toList()
             produtosLocais
           } else
-            listOf(ProdutoVO(prd, tipoNota.tipoMov, if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
+            listOf(ProdutoVO(prd, tipoNota.tipoMov,
+                             if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
               this.quantidade = notaSaci.quant ?: 0
             })
-          prdLocs
+          return@flatMap prdLocs
         }
         produtos.addAll(
           produtosVo.asSequence()
-            .filter { it.quantidade != 0 && it.codigo != "" }
+            .filter {
+              it.quantidade != 0
+              && it.codigo != ""
+              && it.localizacao?.localizacao?.startsWith(RegistryUserInfo.abreviacaoDefault) ?: false
+            }
             .sortedWith(compareBy(ProdutoVO::codigo,
                                   ProdutoVO::grade,
                                   ProdutoVO::localizacao))
@@ -353,9 +358,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       }
   }
 
-  val tipoNotaDescricao : String
+  val tipoNotaDescricao: String
     get() {
-      return if(tipoNota == PEDIDO_E || tipoNota == PEDIDO_S)
+      return if (tipoNota == PEDIDO_E || tipoNota == PEDIDO_S)
         "Pedido $rota".trim()
       else
         tipoNota.descricao
@@ -394,9 +399,9 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   var produto: Produto? = null
     set(value) {
       field = value
-        quantProduto = toEntity()?.quantidade ?: notaProdutoSaci.firstOrNull { neSaci ->
-          (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
-        }?.quant ?: 0
+      quantProduto = toEntity()?.quantidade ?: notaProdutoSaci.firstOrNull { neSaci ->
+        (neSaci.prdno ?: "") == (value?.codigo?.trim() ?: "") && (neSaci.grade ?: "") == (value?.grade ?: "")
+      }?.quant ?: 0
     }
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
@@ -422,11 +427,10 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, val localizacao: Lo
       saldo < quantidade
     else
       false
-
   val saldo: Int
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   val saldoFinal
-    get()= saldo + if (tipoMov == SAIDA) -quantidade else quantidade
+    get() = saldo + if (tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
 }
