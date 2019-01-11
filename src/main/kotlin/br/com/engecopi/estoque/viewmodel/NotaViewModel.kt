@@ -312,11 +312,11 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   private fun atualizaNota() {
     if (!readOnly)
       if (entityVo == null) {
-        val nota = notaSaci?.let { nota ->
+        val nota = notaSaci
+        if (nota != null) {
           tipoNota = TipoNota.values().find { it.toString() == nota.tipo } ?: OUTROS_E
           rota = nota.rota
-        }
-        if (nota == null) {
+        } else {
           tipoNota = OUTROS_E
           rota = ""
         }
@@ -349,14 +349,19 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
             }.toList()
             produtosLocais
           } else
-            listOf(ProdutoVO(prd, tipoNota.tipoMov, if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
+            listOf(ProdutoVO(prd, tipoNota.tipoMov,
+                             if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
               this.quantidade = notaSaci.quant ?: 0
             })
-          prdLocs
+          return@flatMap prdLocs
         }
         produtos.addAll(
           produtosVo.asSequence()
-            .filter { it.quantidade != 0 && it.codigo != "" }
+            .filter {
+              it.quantidade != 0
+              && it.codigo != ""
+              && it.localizacao?.localizacao?.startsWith(RegistryUserInfo.abreviacaoDefault) ?: false
+            }
             .sortedWith(compareBy(ProdutoVO::codigo,
                                   ProdutoVO::grade,
                                   ProdutoVO::localizacao))
@@ -435,11 +440,10 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, val localizacao: Lo
       saldo < quantidade
     else
       false
-
   val saldo: Int
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   val saldoFinal
-    get()= saldo + if (tipoMov == SAIDA) -quantidade else quantidade
+    get() = saldo + if (tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
 }
