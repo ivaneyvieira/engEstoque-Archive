@@ -118,7 +118,7 @@ class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
             it.button.isEnabled = print == false || isAdmin
             refreshGrid()
           }
-          button
+          return@addComponentColumn button
         }.id = "btnPrint"
         column(NFExpedicaoVo::lojaNF) {
           caption = "Loja NF"

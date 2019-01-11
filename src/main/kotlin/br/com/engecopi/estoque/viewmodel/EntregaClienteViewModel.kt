@@ -11,6 +11,7 @@ class EntregaClienteViewModel(view: IView) : NotaViewModel<EntregaClienteVo>(vie
                                                                              ENTREGUE) {
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.`in`(ENTREGUE, CONFERIDA)
+      .nota.usuario.isNotNull
   }
 
   override fun createVo() = EntregaClienteVo()

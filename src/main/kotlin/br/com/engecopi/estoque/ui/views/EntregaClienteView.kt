@@ -95,7 +95,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
         addCustomToolBarComponent(btnLerChaveNota())
-        addOnly = !isAdmin
+        reloadOnly = !isAdmin
         column(EntregaClienteVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")

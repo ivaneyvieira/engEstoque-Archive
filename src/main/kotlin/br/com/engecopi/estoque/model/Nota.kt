@@ -57,6 +57,8 @@ class Nota : BaseModel() {
   val itensNota: List<ItemNota>? = null
   @Column(name = "sequencia", columnDefinition = "int(11) default 0")
   var sequencia : Int = 0
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
+  var usuario: Usuario? = null
   @Aggregation("max(sequencia)")
   var maxSequencia : Int = 0
 
