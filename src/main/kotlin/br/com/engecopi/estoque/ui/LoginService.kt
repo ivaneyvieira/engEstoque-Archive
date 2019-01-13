@@ -4,8 +4,12 @@ import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.TipoUsuario
 import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
+import br.com.engecopi.framework.ui.view.expand
+import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.saci.saci
 import com.github.mvysny.karibudsl.v8.alignment
+import com.github.mvysny.karibudsl.v8.bind
 import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.expandRatio
@@ -50,6 +54,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   private lateinit var username: TextField
   private lateinit var password: TextField
   private lateinit var abreviacao: ComboBox<String>
+  private lateinit var tipoUsuario: ComboBox<TipoUsuario>
 
   init {
     setSizeFull()
@@ -78,12 +83,31 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
           isResponsive = true
           username = textField("Usuário") {
             isResponsive = true
-            expandRatio = 1f
+            expand = 1
             w = fillParent
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
             addValueChangeListener {
-              changeUserName(it.value)
+              val usuario = Usuario.findUsuario(it.value)
+              if(usuario == null){
+                tipoUsuario.isVisible = false
+
+              }
+              changeUserName(it.value, tipoUsuario.value)
+            }
+          }
+          tipoUsuario = comboBox {
+            expand = 1
+            caption = "Tipo Usuário"
+            isEmptySelectionAllowed = false
+            isVisible = false
+            isTextInputAllowed = false
+            //this.emptySelectionCaption = "Todas"
+            setItems(TipoUsuario.values().toList())
+            value = ESTOQUE
+            setItemCaptionGenerator { it.descricao }
+            addValueChangeListener {
+              changeUserName(username.value, it.value)
             }
           }
           abreviacao = comboBox("Localizacao") {
@@ -93,7 +117,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             w = fillParent
             isEmptySelectionAllowed = false
             isTextInputAllowed = false
-            val abreviacoes = abreviacaoes(username.value)
+            val abreviacoes = abreviacaoes(username.value, tipoUsuario.value)
             this.setItems(abreviacoes)
             this.value = abreviacoes.firstOrNull()
           }
@@ -115,22 +139,17 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
     }
   }
 
-  private fun changeUserName(loginName:  String?) {
+  private fun changeUserName(loginName:  String?, tipoUsuario: TipoUsuario) {
     if (::abreviacao.isInitialized) {
-      val abreviacoes = abreviacaoes(loginName)
-      val tipoUsuario = tipoUsuario(loginName)
+      val abreviacoes = abreviacaoes(loginName, tipoUsuario)
       abreviacao.setItems(abreviacoes)
       abreviacao.isVisible = tipoUsuario == ESTOQUE
       abreviacao.value = abreviacoes.firstOrNull()
     }
   }
 
-  fun abreviacaoes(username: String?): List<String> {
-    return Usuario.abreviacaoes(username).sorted()
-  }
-
-  fun tipoUsuario(username: String?): TipoUsuario? {
-    return Usuario.findUsuario(username)?.tipoUsuario
+  fun abreviacaoes(username: String?, tipoUsuario: TipoUsuario?): List<String> {
+    return Usuario.abreviacaoes(username, tipoUsuario).sorted()
   }
 
   private fun login() {
@@ -146,7 +165,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
         Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
         LoginService.logout()
       } else {
-        val loginInfo = LoginInfo(usuario, abrev)
+        val loginInfo = LoginInfo(usuario, abrev, tipoUsuario.value)
         LoginService.login(loginInfo)
       }
     }

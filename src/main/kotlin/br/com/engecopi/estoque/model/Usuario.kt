@@ -34,8 +34,6 @@ class Usuario : BaseModel() {
     cascade = [PERSIST, MERGE, REFRESH]
             )
   val itensNota: List<ItemNota>? = null
-  @Enumerated(EnumType.STRING)
-  var tipoUsuario: TipoUsuario = ESTOQUE
   var locais: List<String>
     get() = localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
     set(value) {
@@ -44,6 +42,8 @@ class Usuario : BaseModel() {
 
   fun usuarioSaci() = saci.findUser(loginName)
   var admin: Boolean = false
+  var estoque : Boolean = true
+  var expedicao : Boolean = false
   val nome: String?
     @Transient
     get() = usuarioSaci()?.name
@@ -87,10 +87,10 @@ class Usuario : BaseModel() {
       return saci.findUser(value)?.name ?: ""
     }
 
-    fun abreviacaoes(username: String?): List<String> {
+    fun abreviacaoes(username: String?, tipoUsuario: TipoUsuario?): List<String> {
       return findUsuario(loginName = username)?.let { usuario ->
         val locais = usuario.locais
-        if (locais.isEmpty() || usuario.tipoUsuario == EXPEDICAO)
+        if (locais.isEmpty() || tipoUsuario == EXPEDICAO)
           usuario.loja?.findAbreviacores()
         else
           locais
@@ -99,9 +99,5 @@ class Usuario : BaseModel() {
 
     fun findLoginUser() = saci.findLoginUser()
   }
-}
-
-enum class TipoUsuario(val descricao: String) {
-  ESTOQUE("Estoque"), EXPEDICAO("Expedição")
 }
 

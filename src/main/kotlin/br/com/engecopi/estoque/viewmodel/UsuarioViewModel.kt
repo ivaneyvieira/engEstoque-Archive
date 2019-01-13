@@ -33,7 +33,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
         usuario.loginName = loginName
       usuario.loja = bean.loja
       usuario.locais = bean.localizacaoes.toList()
-      usuario.tipoUsuario = bean.tipoUsuario
+      usuario.estoque = bean.estoque
+      usuario.expedicao = bean.expedicao
       usuario.admin = bean.admin ?: false
       usuario.update()
     }
@@ -44,7 +45,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
       this.locais = bean.localizacaoes.toList()
-      this.tipoUsuario = bean.tipoUsuario
+      this.estoque = bean.estoque
+      this.expedicao = bean.expedicao
       this.admin = bean.admin ?: false
     }
     usuario.insert()
@@ -60,7 +62,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = usuario.loginName
       this.loja = usuario.loja
       this.localizacaoes = usuario.locais.toHashSet()
-      this.tipoUsuario = usuario.tipoUsuario
+      this.estoque = usuario.estoque
+      this.expedicao = usuario.expedicao
       this.admin = usuario.admin
     }
   }
@@ -97,6 +100,12 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   var localizacaoes: Set<String> = HashSet()
   val localStr
     get() = localizacaoes.joinToString()
-  var tipoUsuario: TipoUsuario = ESTOQUE
+  var estoque: Boolean = true
+  var expedicao: Boolean = false
   var admin: Boolean? = false
+  val tipoUsuarioStr = if (estoque)
+    if (expedicao) "Estoque/Expedição"
+    else "Estoque"
+  else if (expedicao) "Expedição"
+  else ""
 }

@@ -88,7 +88,7 @@ class EstoqueUI : UI() {
     } else {
       content = null
       val user = info.usuario
-      if (info.usuario.tipoUsuario == EXPEDICAO)
+      if (info.tipoUsuario == EXPEDICAO)
         menuNFExpedicao(user, info)
       else
         menuEstoque(user, info)
@@ -98,7 +98,7 @@ class EstoqueUI : UI() {
 
 
       setErrorHandler { e -> errorHandler(e) }
-      if (info.usuario.tipoUsuario == EXPEDICAO)
+      if (info.tipoUsuario == EXPEDICAO)
         navigator.navigateTo(if (contextPath == "") "nf_expedicao" else contextPath)
       else
         navigator.navigateTo(contextPath)
