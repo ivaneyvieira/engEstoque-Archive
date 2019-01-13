@@ -75,21 +75,20 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           bind(binder).bind(UsuarioCrudVo::loja)
           reloadBinderOnChange(binder)
         }
-        comboBox<TipoUsuario> {
-          expand = 2
-          caption = "Tipo Usuário"
-          isEmptySelectionAllowed = false
-          isTextInputAllowed = false
-          //this.emptySelectionCaption = "Todas"
-          setItems(TipoUsuario.values().toList())
-          setItemCaptionGenerator { it.descricao }
-          bind(binder).bind(UsuarioCrudVo::tipoUsuario)
-          reloadBinderOnChange(binder)
-        }
+
         checkBox("Administrador") {
           expand = 1
           bind(binder).bind(UsuarioCrudVo::admin)
-          //addStyleName(ValoTheme.CHECKBOX_LARGE)
+          alignment = Alignment.BOTTOM_RIGHT
+        }
+        checkBox("Expedição") {
+          expand = 1
+          bind(binder).bind(UsuarioCrudVo::expedicao)
+          alignment = Alignment.BOTTOM_RIGHT
+        }
+        checkBox("Estoque") {
+          expand = 1
+          bind(binder).bind(UsuarioCrudVo::estoque)
           alignment = Alignment.BOTTOM_RIGHT
         }
       }
@@ -118,10 +117,9 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           expandRatio = 5
           caption = "Nome"
         }
-        column(UsuarioCrudVo::tipoUsuario) {
+        column(UsuarioCrudVo::tipoUsuarioStr) {
           expandRatio = 1
           caption = "Tipo de Usuário"
-          setRenderer({ user -> user?.descricao ?: "N/C" }, TextRenderer())
         }
         column(UsuarioCrudVo::loja) {
           expandRatio = 1
