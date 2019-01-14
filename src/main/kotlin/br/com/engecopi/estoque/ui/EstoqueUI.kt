@@ -51,6 +51,7 @@ import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.Cookie
+import kotlin.text.Typography.section
 
 private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
 
@@ -88,17 +89,49 @@ class EstoqueUI : UI() {
     } else {
       content = null
       val user = info.usuario
-      if (info.tipoUsuario == EXPEDICAO)
-        menuNFExpedicao(user, info)
-      else
-        menuEstoque(user, info)
+
+      valoMenu {
+        this.appTitle = title
+        section("Login") {
+          menuButton("Usuário:", badge = user.loginName)
+          if (user.estoque || user.admin)
+            menuButton("Localizacao:", badge = info.abreviacao)
+          menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
+          menuButton("Sair", icon = OUT) {
+            onLeftClick {
+              LoginService.logout()
+            }
+          }
+        }
+
+        if (user.expedicao || user.admin) {
+          section("Expedição") {
+            menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
+            menuButton("Entrega ao Cliente", TRUCK, view = EntregaClienteView::class.java)
+          }
+        }
+
+        if (user.estoque || user.admin) {
+          section("Movimentação") {
+            menuButton("Entrada", INBOX, view = EntradaView::class.java)
+            menuButton("Saída", OUTBOX, view = SaidaView::class.java)
+          }
+          section("Consulta") {
+            menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
+            if (user.admin) {
+              menuButton("Usuários", USER, view = UsuarioView::class.java)
+              menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
+            }
+          }
+        }
+      }
       // Read more about navigators here: https://github.com/mvysny/karibu-dsl
       navigator = Navigator(this, content as ViewDisplay)
       navigator.addProvider(autoViewProvider)
 
 
       setErrorHandler { e -> errorHandler(e) }
-      if (info.tipoUsuario == EXPEDICAO)
+      if (user.expedicao)
         navigator.navigateTo(if (contextPath == "") "nf_expedicao" else contextPath)
       else
         navigator.navigateTo(contextPath)
@@ -116,56 +149,6 @@ class EstoqueUI : UI() {
         position = TOP_CENTER
         show(Page.getCurrent())
       }
-  }
-
-  private fun menuEstoque(user: Usuario, info: LoginInfo) {
-    valoMenu {
-      this.appTitle = title
-
-      section("Login") {
-        menuButton("Usuário:", badge = user.loginName)
-        menuButton("Localizacao:", badge = info.abreviacao)
-        menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
-        menuButton("Sair", icon = OUT) {
-          onLeftClick {
-            LoginService.logout()
-          }
-        }
-      }
-
-      section("Movimentação") {
-        menuButton("Entrada", INBOX, view = EntradaView::class.java)
-        menuButton("Saída", OUTBOX, view = SaidaView::class.java)
-      }
-      section("Consulta") {
-        menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
-        if (user.admin) {
-          menuButton("Usuários", USER, view = UsuarioView::class.java)
-          menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
-        }
-      }
-    }
-  }
-
-  private fun menuNFExpedicao(user: Usuario, info: LoginInfo) {
-    valoMenu {
-      this.appTitle = title
-
-      section("Login") {
-        menuButton("Usuário:", badge = user.loginName)
-        menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
-        menuButton("Sair", icon = OUT) {
-          onLeftClick {
-            LoginService.logout()
-          }
-        }
-      }
-
-      section("Expedição") {
-        menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
-        menuButton("Entrega ao Cliente", TRUCK, view = EntregaClienteView::class.java)
-      }
-    }
   }
 
   companion object {

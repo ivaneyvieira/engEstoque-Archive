@@ -54,7 +54,6 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   private lateinit var username: TextField
   private lateinit var password: TextField
   private lateinit var abreviacao: ComboBox<String>
-  private lateinit var tipoUsuario: ComboBox<TipoUsuario>
 
   init {
     setSizeFull()
@@ -88,26 +87,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
             addValueChangeListener {
-              val usuario = Usuario.findUsuario(it.value)
-              if(usuario == null){
-                tipoUsuario.isVisible = false
-
-              }
-              changeUserName(it.value, tipoUsuario.value)
-            }
-          }
-          tipoUsuario = comboBox {
-            expand = 1
-            caption = "Tipo Usuário"
-            isEmptySelectionAllowed = false
-            isVisible = false
-            isTextInputAllowed = false
-            //this.emptySelectionCaption = "Todas"
-            setItems(TipoUsuario.values().toList())
-            value = ESTOQUE
-            setItemCaptionGenerator { it.descricao }
-            addValueChangeListener {
-              changeUserName(username.value, it.value)
+              changeUserName(it.value)
             }
           }
           abreviacao = comboBox("Localizacao") {
@@ -117,7 +97,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             w = fillParent
             isEmptySelectionAllowed = false
             isTextInputAllowed = false
-            val abreviacoes = abreviacaoes(username.value, tipoUsuario.value)
+            val abreviacoes = abreviacaoes(username.value)
             this.setItems(abreviacoes)
             this.value = abreviacoes.firstOrNull()
           }
@@ -139,17 +119,18 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
     }
   }
 
-  private fun changeUserName(loginName:  String?, tipoUsuario: TipoUsuario) {
+  private fun changeUserName(loginName:  String?) {
     if (::abreviacao.isInitialized) {
-      val abreviacoes = abreviacaoes(loginName, tipoUsuario)
+      val abreviacoes = abreviacaoes(loginName)
+
       abreviacao.setItems(abreviacoes)
-      abreviacao.isVisible = tipoUsuario == ESTOQUE
       abreviacao.value = abreviacoes.firstOrNull()
+      abreviacao.isVisible = abreviacoes.isEmpty()
     }
   }
 
-  fun abreviacaoes(username: String?, tipoUsuario: TipoUsuario?): List<String> {
-    return Usuario.abreviacaoes(username, tipoUsuario).sorted()
+  fun abreviacaoes(username: String?): List<String> {
+    return Usuario.abreviacaoes(username).sorted()
   }
 
   private fun login() {
@@ -165,7 +146,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
         Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
         LoginService.logout()
       } else {
-        val loginInfo = LoginInfo(usuario, abrev, tipoUsuario.value)
+        val loginInfo = LoginInfo(usuario, abrev)
         LoginService.login(loginInfo)
       }
     }

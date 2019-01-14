@@ -87,13 +87,15 @@ class Usuario : BaseModel() {
       return saci.findUser(value)?.name ?: ""
     }
 
-    fun abreviacaoes(username: String?, tipoUsuario: TipoUsuario?): List<String> {
+    fun abreviacaoes(username: String?): List<String> {
       return findUsuario(loginName = username)?.let { usuario ->
-        val locais = usuario.locais
-        if (locais.isEmpty() || tipoUsuario == EXPEDICAO)
-          usuario.loja?.findAbreviacores()
-        else
-          locais
+        if(usuario.estoque) {
+          val locais = usuario.locais
+          if (locais.isEmpty())
+            usuario.loja?.findAbreviacores()
+          else
+            locais
+        } else emptyList()
       } ?: emptyList()
     }
 

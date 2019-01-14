@@ -34,7 +34,7 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
-                                          val statusDefault : StatusNota) :
+                                          val statusDefault: StatusNota) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     if (bean.localizacao?.localizacao.isNullOrBlank())
@@ -70,11 +70,12 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       produtos.filter { it.produto !in produtosJaInserido }
         .forEach { produto ->
           produto.let { prd ->
-            if (usuario.temProduto(prd.produto)) insertItemNota(nota,
-                                                                prd.produto,
-                                                                prd.quantidade,
-                                                                usuario,
-                                                                prd.localizacao?.localizacao)
+            if (usuario.temProduto(prd.produto))
+              insertItemNota(nota,
+                             prd.produto,
+                             prd.quantidade,
+                             usuario,
+                             prd.localizacao?.localizacao)
           }
         }
     }
@@ -258,8 +259,6 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   abstract fun QItemNota.filtroStatus(): QItemNota
 }
 
-
-
 abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {
     return ItemNota.find(nota, produto)
@@ -299,7 +298,6 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
       }.filter {
         usuario.admin || (it.tipo != "PEDIDO_E")
       }
-
     else emptyList()
   val notaSaci
     get() = notaProdutoSaci.firstOrNull()

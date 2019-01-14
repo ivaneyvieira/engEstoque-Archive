@@ -30,14 +30,14 @@ object RegistryUserInfo {
   val usuarioDefault
     get() = info.usuario
   val abreviacaoDefault
-    get() = if (info.tipoUsuario == EXPEDICAO) "" else info.abreviacao
+    get() = info.abreviacao
   val lojaDefault
     get() = usuarioDefault.loja!!
   val userDefaultIsAdmin
     get() = usuarioDefault.admin
 }
 
-data class LoginInfo(val usuario: Usuario, val abreviacao: String, val tipoUsuario: TipoUsuario)
+data class LoginInfo(val usuario: Usuario, val abreviacao: String)
 
 enum class TipoUsuario(val descricao: String) {
   ESTOQUE("Estoque"), EXPEDICAO("Expedição")
