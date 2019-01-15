@@ -13,7 +13,7 @@ import jdk.nashorn.internal.objects.NativeArray.forEach
 
 class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
                                             (view, NFExpedicaoVo::class, SAIDA,
-                                             INCLUIDA) {
+                                             INCLUIDA, "") {
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.eq(INCLUIDA)
   }
@@ -36,4 +36,4 @@ class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
   }
 }
 
-class NFExpedicaoVo : NotaVo(SAIDA)
+class NFExpedicaoVo : NotaVo(SAIDA, "")

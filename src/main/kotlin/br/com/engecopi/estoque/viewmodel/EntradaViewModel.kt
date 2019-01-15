@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.StatusNota.RECEBIDO
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.Usuario
@@ -7,7 +9,8 @@ import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.IView
 
 class EntradaViewModel(view: IView) : NotaViewModel<EntradaVo>
-                                        (view, EntradaVo::class, ENTRADA, RECEBIDO) {
+                                        (view, EntradaVo::class, ENTRADA, RECEBIDO,
+                                         abreviacaoDefault) {
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.eq(RECEBIDO)
   }
@@ -15,4 +18,4 @@ class EntradaViewModel(view: IView) : NotaViewModel<EntradaVo>
   override fun createVo() = EntradaVo()
 }
 
-class EntradaVo : NotaVo(ENTRADA)
+class EntradaVo : NotaVo(ENTRADA, abreviacaoDefault)

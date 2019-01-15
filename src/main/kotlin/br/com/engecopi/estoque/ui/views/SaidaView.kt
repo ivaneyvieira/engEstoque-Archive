@@ -92,7 +92,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
   override val viewModel: SaidaViewModel = SaidaViewModel(this)
 
   init {
-    form("Expedição") {
+    form("Saída de produtos") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
         addCustomToolBarComponent(btnLerChaveNota(this))

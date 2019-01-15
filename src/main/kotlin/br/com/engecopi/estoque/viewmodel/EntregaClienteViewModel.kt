@@ -8,7 +8,7 @@ import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.IView
 
 class EntregaClienteViewModel(view: IView) : NotaViewModel<EntregaClienteVo>(view, EntregaClienteVo::class, SAIDA,
-                                                                             ENTREGUE) {
+                                                                             ENTREGUE, "") {
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.`in`(ENTREGUE, CONFERIDA)
       .nota.usuario.isNotNull
@@ -20,4 +20,4 @@ class EntregaClienteViewModel(view: IView) : NotaViewModel<EntregaClienteVo>(vie
   }
 }
 
-class EntregaClienteVo : NotaVo(SAIDA)
+class EntregaClienteVo : NotaVo(SAIDA, "")

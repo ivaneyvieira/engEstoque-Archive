@@ -125,7 +125,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
 
       abreviacao.setItems(abreviacoes)
       abreviacao.value = abreviacoes.firstOrNull()
-      abreviacao.isVisible = abreviacoes.isEmpty()
+      abreviacao.isVisible = abreviacoes.isNotEmpty()
     }
   }
 

@@ -1,13 +1,11 @@
 package br.com.engecopi.estoque.viewmodel
 
-import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
@@ -34,7 +32,8 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
-                                          val statusDefault: StatusNota) :
+                                          val statusDefault: StatusNota,
+                                          val abreviacaoNota : String) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     if (bean.localizacao?.localizacao.isNullOrBlank())
@@ -184,7 +183,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .filtroStatus()
       return query
         .nota.loja.id.eq(lojaDefault.id)
-        .localizacao.startsWith(abreviacaoDefault)
+        .localizacao.startsWith(abreviacaoNota)
     }
 
   abstract fun createVo(): VO
@@ -238,7 +237,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   }
 
   fun localizacaoes(): List<String> {
-    return ViewProdutoLoc.localizacoes(abreviacaoDefault)
+    return ViewProdutoLoc.localizacoes(abreviacaoNota)
   }
 
   fun imprimir(itemNota: ItemNota?) = execString {
@@ -259,7 +258,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   abstract fun QItemNota.filtroStatus(): QItemNota
 }
 
-abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
+abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {
     return ItemNota.find(nota, produto)
   }
@@ -358,7 +357,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
             .filter {
               it.quantidade != 0
               && it.codigo != ""
-              && it.localizacao?.localizacao?.startsWith(RegistryUserInfo.abreviacaoDefault) ?: false
+              && it.localizacao?.localizacao?.startsWith(abreviacaoNota) ?: false
             }
             .sortedWith(compareBy(ProdutoVO::codigo,
                                   ProdutoVO::grade,
