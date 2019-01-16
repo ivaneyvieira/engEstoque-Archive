@@ -169,6 +169,12 @@ class Nota : BaseModel() {
     refresh()
     return itensNota?.firstOrNull { it.produto == produto }
   }
+
+  fun existe() : Boolean{
+    return where().loja.equalTo(loja)
+      .numero.eq(numero)
+      .findCount() > 0
+  }
 }
 
 enum class TipoMov(val multiplicador: Int, val descricao: String) {

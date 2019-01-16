@@ -8,6 +8,7 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaSaci
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
+import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
@@ -33,17 +34,13 @@ class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
-  // @FetchPreference(1)
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  // @FetchPreference(2)
   var nota: Nota? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  // @FetchPreference(3)
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  // @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
   var impresso: Boolean = false
@@ -53,6 +50,13 @@ class ItemNota : BaseModel() {
   var status: StatusNota = ENTREGUE
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
+
+
+  val codigoBarraConferencia : ViewCodBarConferencia?
+    @Transient get() = ViewCodBarConferencia.byId(id)
+  val codigoBarraEntrega : ViewCodBarEntrega?
+    @Transient get() = ViewCodBarEntrega.byId(id)
+
   val descricao: String?
     @Transient get() = produto?.descricao
   val codigo: String?
@@ -116,7 +120,7 @@ class ItemNota : BaseModel() {
   }
 }
 
-class NotaPrint(item: ItemNota) {
+class NotaPrint(val item: ItemNota) {
   val notaSaci = item.nota
   val rota = notaSaci?.rota ?: ""
   val nota = notaSaci?.numero ?: ""
@@ -144,6 +148,10 @@ class NotaPrint(item: ItemNota) {
   val un
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
+  val codigoBarraEntrega
+    get() = item.codigoBarraEntrega?.codbar ?: ""
+  val codigoBarraConferencia
+    get() = item.codigoBarraConferencia?.codbar ?: ""
 
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

@@ -6,6 +6,7 @@ import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.query.QItemNota
+import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
 class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
@@ -23,11 +24,15 @@ class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
     val notasSaci = Nota.findNotaSaidaPXA(key)
     if (notasSaci.isNotEmpty()) {
       val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
-        sequencia = Nota.maxSequencia() + 1
-        save()
+        if(this.existe())
+          throw EViewModel("Essa nota já está cadastrada")
+        else {
+          sequencia = Nota.maxSequencia() + 1
+          save()
+        }
       }
       if (nota == null)
-        view.showError("Nota não encontrada")
+        throw EViewModel("Nota não encontrada")
       else {
         val itens = notasSaci.mapNotNull { notaSaci ->
           ItemNota.createItemNota(notaSaci, nota)?.apply {
@@ -36,9 +41,10 @@ class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
           }
         }
         if (itens.isEmpty())
-          view.showError("Essa nota não possui itens com localização")
+          throw EViewModel("Essa nota não possui itens com localização")
       }
-    } else view.showError("Chave não encontrada")
+    } else
+      throw EViewModel("Chave não encontrada")
   }
 }
 
