@@ -206,11 +206,9 @@ open class GridCrudFlex<T : EntityVo<*>>(
   val find = CallbackDataProvider.FetchCallback<T, String> { query ->
     findQuery(query)
   }
-
   val count = CallbackDataProvider.CountCallback<T, String> { query ->
     countQuery(query)
   }
-
   private val dataProvider = DataProvider.fromFilteringCallbacks(find, count)
     .withConfigurableFilter()
   var readButton: Button? = null
@@ -243,15 +241,13 @@ open class GridCrudFlex<T : EntityVo<*>>(
     crudLayout.addFilterComponent(filtroEdt)
   }
 
-  fun addCustomToolBarComponent(customToolBarComponent : Component){
+  fun addCustomToolBarComponent(customToolBarComponent: Component) {
     crudLayout.addToolbarComponent(customToolBarComponent)
   }
-
   //fun Grid<T>.asSingleSelect() : GridSingleSelect<T> {
   //  return GridSingleSelect<T>(this)
   //}
-
-   override fun updateButtonClicked() {
+  override fun updateButtonClicked() {
     val domainObject = grid.asSingleSelect().value
     showForm(CrudOperation.UPDATE, domainObject, false, savedMessage) { event ->
       try {
@@ -316,7 +312,6 @@ open class GridCrudFlex<T : EntityVo<*>>(
       readButton?.isVisible = value
       deleteButton.isVisible = !value
     }
-
   var addOnly: Boolean = false
     set(value) {
       field = value
@@ -327,7 +322,6 @@ open class GridCrudFlex<T : EntityVo<*>>(
       readButton?.isVisible = value
       deleteButton.isVisible = !value
     }
-
   var reloadOnly: Boolean = false
     set(value) {
       field = value
@@ -378,7 +372,8 @@ open class GridCrudFlex<T : EntityVo<*>>(
   }
 
   private fun countQuery(query: Query<T, String>): Int {
-    return crudListener.countQuery(query.viewQuery())
+    val ret = crudListener.countQuery(query.viewQuery())
+    return ret
   }
 }
 

@@ -181,9 +181,10 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
         .filtroStatus()
-      return query
         .nota.loja.id.eq(lojaDefault.id)
         .localizacao.startsWith(abreviacaoNota)
+      //query.findList()
+      return query
     }
 
   abstract fun createVo(): VO
@@ -201,7 +202,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
-      this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
+      this.localizacao = LocProduto(itemNota.localizacao)
       this.status = statusDefault
       readOnly = false
     }

@@ -155,7 +155,7 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
-          setRenderer({ it?.sufixo }, TextRenderer())
+          setRenderer({ it?.toString() }, TextRenderer())
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"

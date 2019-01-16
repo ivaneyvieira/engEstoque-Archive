@@ -152,7 +152,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
         }
         column(EntregaClienteVo::localizacao) {
           caption = "Localização"
-          setRenderer({ it?.sufixo }, TextRenderer())
+          setRenderer({ it?.toString() }, TextRenderer())
         }
         column(EntregaClienteVo::usuario) {
           caption = "Usuário"

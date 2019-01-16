@@ -155,7 +155,7 @@ class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
         }
         column(NFExpedicaoVo::localizacao) {
           caption = "Localização"
-          setRenderer({ it?.sufixo }, TextRenderer())
+          setRenderer({ it?.toString() }, TextRenderer())
         }
         column(NFExpedicaoVo::usuario) {
           caption = "Usuário"

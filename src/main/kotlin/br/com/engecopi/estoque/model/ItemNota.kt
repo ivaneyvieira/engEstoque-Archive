@@ -88,20 +88,20 @@ class ItemNota : BaseModel() {
         .findOne()
     }
 
-    fun createItemNota(notaSaci: NotaSaci, notaPrd: Nota?) : ItemNota?{
+    fun createItemNota(notaSaci: NotaSaci, notaPrd: Nota?): ItemNota? {
       notaPrd ?: return null
-      val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-      val locProduto =ViewProdutoLoc
-                        .where()
-                        .produto.id.eq(produtoSaci?.id)
-                        .findList()
-                        .sortedBy { it.localizacao }
-                        .firstOrNull()
-                        ?.localizacao
-                      ?:return null
+      val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return null
+      val locProduto = ViewProdutoLoc
+                         .where()
+                         .produto.id.eq(produtoSaci.id)
+                         .findList()
+                         .sortedBy { it.localizacao }
+                         .firstOrNull()
+                         ?.localizacao
+                       ?: return null
       return ItemNota().apply {
         quantidade = notaSaci.quant ?: 0
-        produto =produtoSaci
+        produto = produtoSaci
         nota = notaPrd
         usuario = RegistryUserInfo.usuarioDefault
         localizacao = locProduto
