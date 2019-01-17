@@ -172,16 +172,9 @@ class Nota : BaseModel() {
   }
 
   fun existe() : Boolean{
-<<<<<<< HEAD
-    return where()
-             .loja.id.eq(loja?.id)
-             .numero.eq(numero)
-             .findCount() > 0
-=======
     return where().loja.equalTo(loja)
       .numero.eq(numero)
       .findCount() > 0
->>>>>>> 338240fea4e483b8aceaf988f3545d630bb57533
   }
 }
 
