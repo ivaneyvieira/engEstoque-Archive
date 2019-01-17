@@ -9,54 +9,55 @@ import javax.persistence.PersistenceException
 
 abstract class ViewModel(val view: IView) {
   private var inExcection = false
-  
-  protected abstract fun execUpdate()
-  
+
   private fun updateView(exception: EViewModel? = null) {
-    if (exception == null)
-      execUpdate()
-    
+    exception?.let { e ->
+      e.message?.let {
+        view.showError(e.message)
+      }
+    }
     view.updateView(this)
   }
-  
+
   private fun updateModel() {
     view.updateModel()
   }
-  
+
   @Throws(EViewModel::class)
   fun <T> execValue(block: () -> T): T? {
-    return transaction {
+    var ret : T? = null
+     transaction {
       try {
-        block()
+        ret= block()
       } catch (e: EViewModel) {
         updateView(e)
-        null
       }
     }
+    return ret
   }
-  
+
   @Throws(EViewModel::class)
   fun execString(block: () -> String): String {
     return execValue(block) ?: ""
   }
-  
+
   @Throws(EViewModel::class)
   fun execInt(block: () -> Int): Int {
     return execValue(block) ?: 0
   }
-  
+
   @Throws(EViewModel::class)
   fun exec(block: () -> Unit) {
-    return transaction {
+     transaction {
       try {
         if (inExcection)
           block()
         else {
           inExcection = true
           updateModel()
-          
+
           block()
-          
+
           updateView()
           inExcection = false
         }
@@ -66,18 +67,20 @@ abstract class ViewModel(val view: IView) {
       }
     }
   }
-  
+
   @Throws(EViewModel::class)
   fun <T> execList(block: () -> List<T>): List<T> {
     return execValue(block).orEmpty()
   }
-  
-  private fun <T> transaction(block: () -> T): T {
+
+  private fun <T> transaction(block: () -> T) {
     return try {
-      val ret = block()
+      block()
       Transaction.commit()
-      ret
-    } catch (e: Throwable) {
+    }catch (ev : EViewModel){
+      Transaction.rollback()
+    }
+    catch (e: Throwable) {
       Transaction.rollback()
       throw e
     }
@@ -88,13 +91,13 @@ class EViewModel(msg: String) : Exception(msg)
 
 interface IView {
   fun updateView(viewModel: ViewModel)
-  
+
   fun updateModel()
-  
+
   fun showWarning(msg: String)
-  
+
   fun showError(msg: String)
-  
+
   fun showInfo(msg: String)
 }
 

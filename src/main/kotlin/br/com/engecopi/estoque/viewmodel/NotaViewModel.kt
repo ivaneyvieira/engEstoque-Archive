@@ -183,7 +183,6 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .filtroStatus()
         .nota.loja.id.eq(lojaDefault.id)
         .localizacao.startsWith(abreviacaoNota)
-      //query.findList()
       return query
     }
 
@@ -245,8 +244,9 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     val template = itemNota?.template ?: ""
     val print = itemNota?.printEtiqueta()
     itemNota?.let {
+      it.refresh()
       it.impresso = true
-      it.save()
+      it.update()
     }
     return@execString print?.print(template) ?: ""
   }

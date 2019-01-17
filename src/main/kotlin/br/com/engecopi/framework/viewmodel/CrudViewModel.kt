@@ -12,7 +12,6 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
   private var queryView: QueryView? = null
   private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
-  override fun execUpdate() {}
 
   abstract fun update(bean: VO)
   abstract fun add(bean: VO)

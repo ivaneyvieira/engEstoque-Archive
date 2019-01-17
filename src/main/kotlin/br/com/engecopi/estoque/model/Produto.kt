@@ -123,26 +123,6 @@ class Produto : BaseModel() {
       return where().codigo.eq(codigo.lpad(16, " "))
         .findList()
     }
-    /*
-        fun createProduto(produtoSaci: ViewProdutoSaci?): Produto? {
-          produtoSaci ?: return null
-          return Produto().apply {
-            produtoSaci.let { pSaci ->
-              codigo = pSaci.codigo ?: codigo
-              grade = pSaci.grade ?: grade
-              codebar = pSaci.codebar ?: codebar
-            }
-          }
-        }
-
-        fun createProduto(codigoProduto: String?, gradeProduto: String?): Produto? {
-          val produtoSaci = ViewProdutoSaci.find(
-            codigoProduto,
-            gradeProduto
-                                                )
-          return createProduto(produtoSaci)
-        }
-        */
   }
 
   fun somaSaldo(item: ItemNota): Int {
