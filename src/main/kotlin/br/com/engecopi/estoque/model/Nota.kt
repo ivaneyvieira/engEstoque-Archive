@@ -77,6 +77,7 @@ class Nota : BaseModel() {
         loja = Loja.findLoja(notasaci.storeno)
       }
     }
+
     fun maxSequencia() : Int {
       return where().select(QNota._alias.maxSequencia).findOne()?.maxSequencia ?: 0
     }
@@ -168,6 +169,13 @@ class Nota : BaseModel() {
   fun findItem(produto: Produto): ItemNota? {
     refresh()
     return itensNota?.firstOrNull { it.produto == produto }
+  }
+
+  fun existe() : Boolean{
+    return where()
+             .loja.id.eq(loja?.id)
+             .numero.eq(numero)
+             .findCount() > 0
   }
 }
 

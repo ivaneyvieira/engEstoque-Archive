@@ -23,8 +23,12 @@ class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
     val notasSaci = Nota.findNotaSaidaPXA(key)
     if (notasSaci.isNotEmpty()) {
       val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
-        sequencia = Nota.maxSequencia() + 1
-        save()
+        if(this.existe())
+          view.showError("A Nota já existe")
+        else {
+          sequencia = Nota.maxSequencia() + 1
+          save()
+        }
       }
       if (nota == null)
         view.showError("Nota não encontrada")
