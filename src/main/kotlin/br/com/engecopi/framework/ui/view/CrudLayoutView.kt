@@ -45,9 +45,14 @@ import java.util.stream.*
 import kotlin.reflect.KProperty1
 
 abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
-  override fun updateView(viewModel: ViewModel) {}
 
-  override fun updateModel() {}
+  override fun updateView(viewModel: ViewModel) {
+
+  }
+
+  override fun updateModel() {
+
+  }
 
   fun HasComponents.gridCrud(
     domainType: Class<C>,
@@ -244,9 +249,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
   fun addCustomToolBarComponent(customToolBarComponent: Component) {
     crudLayout.addToolbarComponent(customToolBarComponent)
   }
-  //fun Grid<T>.asSingleSelect() : GridSingleSelect<T> {
-  //  return GridSingleSelect<T>(this)
-  //}
+
   override fun updateButtonClicked() {
     val domainObject = grid.asSingleSelect().value
     showForm(CrudOperation.UPDATE, domainObject, false, savedMessage) { event ->

@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
+import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
@@ -99,6 +100,7 @@ class Produto : BaseModel() {
     itensNotNull
       .asSequence()
       .filter { it.nota?.loja?.id == loja.id && it.localizacao == localizacao }
+      .filter { it.status == ENTREGUE }
       .sortedWith(compareBy(ItemNota::dataNota, ItemNota::id))
       .forEach { item ->
         item.refresh()

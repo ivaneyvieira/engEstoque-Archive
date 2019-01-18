@@ -444,4 +444,5 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, val localizacao: Lo
     get() = saldo + if (tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
+   var value: ItemNota? = null
 }
