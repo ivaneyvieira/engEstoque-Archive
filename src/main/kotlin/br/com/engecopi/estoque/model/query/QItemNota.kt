@@ -49,6 +49,8 @@ class QItemNota : TQRootBean<ItemNota, QItemNota> {
   lateinit var impresso: PBoolean<QItemNota>
   lateinit var localizacao: PString<QItemNota>
   lateinit var status: PEnum<QItemNota,StatusNota>
+  lateinit var codigoBarraConferencia: PString<QItemNota>
+  lateinit var codigoBarraEntrega: PString<QItemNota>
 
 
   /**

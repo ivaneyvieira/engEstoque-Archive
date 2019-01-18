@@ -1,10 +1,9 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.LocProduto
-import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
-import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
+import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
@@ -16,7 +15,6 @@ import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
-import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.AutoView
@@ -30,7 +28,6 @@ import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.getAll
 import com.github.mvysny.karibudsl.v8.grid
-import com.github.mvysny.karibudsl.v8.gridLayout
 import com.github.mvysny.karibudsl.v8.horizontalLayout
 import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textField
@@ -40,7 +37,6 @@ import com.vaadin.data.Binder
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.icons.VaadinIcons
-import com.vaadin.ui.Alignment
 import com.vaadin.ui.Alignment.BOTTOM_RIGHT
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
@@ -304,12 +300,14 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel) : Window("Nota
       grupo("Produto") {
         row {
           gridProdutos = grid(ProdutoVO::class) {
+            val abreviacao = RegistryUserInfo.abreviacaoDefault
             val itens = nota.itensNota
-              ?.filter {it.status == CONFERIDA  }
+              ?.filter { it.status == INCLUIDA }
+              ?.filter { it.localizacao.startsWith(abreviacao) }
               .orEmpty()
             this.dataProvider = ListDataProvider(itens.map { item ->
               ProdutoVO(item.produto, item.tipoMov ?: SAIDA, LocProduto(item.localizacao)).apply {
-                quantidade = item.quantidade
+                this.quantidade = item.quantidade
                 this.value = item
               }
             })
@@ -368,7 +366,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel) : Window("Nota
           button("Confirma") {
             alignment = BOTTOM_RIGHT
             addStyleName(ValoTheme.BUTTON_PRIMARY)
-            addClickListener { it ->
+            addClickListener {
               val itens = gridProdutos
                 .selectedItems
                 .toList()

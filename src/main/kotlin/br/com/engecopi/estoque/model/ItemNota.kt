@@ -23,6 +23,7 @@ import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.Transient
+import javax.validation.constraints.Size
 import kotlin.reflect.full.memberProperties
 
 @Entity
@@ -48,15 +49,16 @@ class ItemNota : BaseModel() {
   var localizacao: String = ""
   @Enumerated(EnumType.STRING)
   var status: StatusNota = ENTREGUE
+  @Size(max = 60)
+  var codigoBarraConferencia: String? = ""
+  @Size(max = 60)
+  var codigoBarraEntrega: String? = ""
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
-
-
-  val codigoBarraConferencia : ViewCodBarConferencia?
+  val viewCodigoBarraConferencia: ViewCodBarConferencia?
     @Transient get() = ViewCodBarConferencia.byId(id)
-  val codigoBarraEntrega : ViewCodBarEntrega?
+  val viewCodigoBarraEntrega: ViewCodBarEntrega?
     @Transient get() = ViewCodBarEntrega.byId(id)
-
   val descricao: String?
     @Transient get() = produto?.descricao
   val codigo: String?
@@ -118,6 +120,24 @@ class ItemNota : BaseModel() {
   fun recalculaSaldos() {
     produto?.recalculaSaldos(localizacao = localizacao)
   }
+
+  override fun save() {
+    super.save()
+    if (codigoBarraConferencia.isNullOrEmpty())
+      codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
+    if (codigoBarraEntrega.isNullOrEmpty())
+      codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
+    super.save()
+  }
+
+  override fun insert() {
+    super.insert()
+    if (codigoBarraConferencia.isNullOrEmpty())
+      codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
+    if (codigoBarraEntrega.isNullOrEmpty())
+      codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
+    super.save()
+  }
 }
 
 class NotaPrint(val item: ItemNota) {
@@ -149,9 +169,9 @@ class NotaPrint(val item: ItemNota) {
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
   val codigoBarraEntrega
-    get() = item.codigoBarraEntrega?.codbar ?: ""
+    get() = item.codigoBarraEntrega ?: ""
   val codigoBarraConferencia
-    get() = item.codigoBarraConferencia?.codbar ?: ""
+    get() = item.codigoBarraConferencia ?: ""
 
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

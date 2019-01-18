@@ -38,6 +38,8 @@ class QAssocItemNota<R>(name: String, root: R) : TQAssocBean<ItemNota,R>(name, r
   lateinit var impresso: PBoolean<R>
   lateinit var localizacao: PString<R>
   lateinit var status: PEnum<R,StatusNota>
+  lateinit var codigoBarraConferencia: PString<R>
+  lateinit var codigoBarraEntrega: PString<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

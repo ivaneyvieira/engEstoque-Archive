@@ -26,7 +26,6 @@ class NFExpedicaoViewModel(view: IView) : NotaViewModel<NFExpedicaoVo>
       val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
         if(this.existe())
           throw EViewModel("Essa nota já está cadastrada")
-
         else {
           sequencia = Nota.maxSequencia() + 1
           save()

@@ -33,7 +33,7 @@ import javax.validation.constraints.Size
 @Table(name = "notas")
 @Index(columnNames = ["loja_id", "tipo_mov"])
 class Nota : BaseModel() {
-  @Size(max = 15)
+  @Size(max = 40)
   @Index(unique = false)
   var numero: String = ""
   @Enumerated(EnumType.STRING)

@@ -1,11 +1,13 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ViewCodBarConferenciaFinder
+import io.ebean.annotation.Cache
 import io.ebean.annotation.View
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 
+@Cache(enableQueryCache = false)
 @Entity
 @View(name = "v_codigo_barra_conferencia")
 class ViewCodBarConferencia {
