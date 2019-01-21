@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
+import br.com.engecopi.estoque.model.StatusNota.RECEBIDO
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
@@ -63,7 +64,7 @@ class Produto : BaseModel() {
   var localizacao: String? = ""
   @Formula(
     select = "SAL.saldo_total",
-    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
+    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(status = 'RECEBIDO', 1, if(status = 'ENTREGUE', -1, 0)))) AS saldo_total from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
           )
   var saldo_total: Int? = 0
   val descricao: String?
@@ -92,15 +93,16 @@ class Produto : BaseModel() {
   }
 
   @Transactional
-  fun recalculaSaldos(localizacao: String?): Int {
+  fun recalculaSaldos(localizacao: String): Int {
     val loja = RegistryUserInfo.lojaDefault
-    localizacao ?: return 0
     var saldo = 0
-    val itensNotNull = findItensNota()
+    val itensNotNull = ItemNota.where()
+      .produto.id.eq(id)
+      .nota.loja.equalTo(loja)
+      .localizacao.like(if(localizacao == "") "%" else localizacao)
+      .findList()
     itensNotNull
       .asSequence()
-      .filter { it.nota?.loja?.id == loja.id && it.localizacao == localizacao }
-      .filter { it.status == ENTREGUE }
       .sortedWith(compareBy(ItemNota::dataNota, ItemNota::id))
       .forEach { item ->
         item.refresh()
@@ -128,7 +130,7 @@ class Produto : BaseModel() {
   }
 
   fun somaSaldo(item: ItemNota): Int {
-    val multiplicador = item.nota?.tipoMov?.multiplicador ?: 0
+    val multiplicador = item.status.multiplicador
     return multiplicador * item.quantidade
   }
 
@@ -208,12 +210,3 @@ data class LocProduto(val localizacao: String) : Comparable<LocProduto> {
     return localizacao
   }
 }
-/*
-fun List<LocProduto>.findLocalizacao(sufixo: String): String {
-  return asSequence().filter { it.sufixo == sufixo }.map { it.localizacao }.firstOrNull() ?: ""
-}
-
-fun List<LocProduto>.findSufixo(localizacao: String): String {
-  return asSequence().filter { it.localizacao == localizacao }.map { it.sufixo }.firstOrNull() ?: ""
-}
-*/

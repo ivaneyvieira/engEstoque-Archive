@@ -53,7 +53,7 @@ class ItemNota : BaseModel() {
   @Size(max = 60)
   var codigoBarraEntrega: String? = ""
   val quantidadeSaldo: Int
-    get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
+    get() = (status.multiplicador) * quantidade
   val viewCodigoBarraConferencia: ViewCodBarConferencia?
     @Transient get() = ViewCodBarConferencia.byId(id)
   val viewCodigoBarraEntrega: ViewCodBarEntrega?
@@ -93,8 +93,8 @@ class ItemNota : BaseModel() {
         .findOne()
     }
 
-    fun find(notaSaci : NotaSaci?) : ItemNota? {
-      notaSaci?: return null
+    fun find(notaSaci: NotaSaci?): ItemNota? {
+      notaSaci ?: return null
       val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return null
       return where()
         .nota.numero.eq("${notaSaci.numero}/${notaSaci.serie}")
@@ -190,10 +190,10 @@ class NotaPrint(val item: ItemNota) {
   }
 }
 
-enum class StatusNota(val descricao: String, val tipoMov: TipoMov) {
-  RECEBIDO("Recebido", ENTRADA),
-  INCLUIDA("Incluída", SAIDA),
-  CONFERIDA("Conferida", SAIDA),
-  ENTREGUE("Entregue", SAIDA)
+enum class StatusNota(val descricao: String, val tipoMov: TipoMov, val multiplicador: Int) {
+  RECEBIDO("Recebido", ENTRADA, 1),
+  INCLUIDA("Incluída", SAIDA, 0),
+  CONFERIDA("Conferida", SAIDA, 0),
+  ENTREGUE("Entregue", SAIDA, -1)
 }
 

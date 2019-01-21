@@ -181,8 +181,8 @@ class Nota : BaseModel() {
   }
 }
 
-enum class TipoMov(val multiplicador: Int, val descricao: String) {
-  ENTRADA(1, "Entrada"), SAIDA(-1, "Saida")
+enum class TipoMov(val descricao: String) {
+  ENTRADA("Entrada"), SAIDA("Saida")
 }
 
 enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2: String, val isFree: Boolean = false) {

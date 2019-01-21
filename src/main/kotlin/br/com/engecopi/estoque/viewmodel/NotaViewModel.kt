@@ -87,7 +87,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     val saldoLocal = produto?.saldoLoja(local) ?: 0
     return if (quantProduto != 0) {
       when {
-        (saldoLocal + (nota.tipoMov.multiplicador * quantProduto)) < 0 -> {
+        (saldoLocal + (statusDefault.multiplicador * quantProduto)) < 0 -> {
           val msg = "Saldo insuficiente para o produto ${produto?.codigo} - ${produto?.descricao}."
           view.showWarning(msg)
           null
@@ -119,7 +119,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         this.status = bean.status!!
       }
       item.update()
-      item.produto?.recalculaSaldos(bean.localizacao?.localizacao)
+      item.produto?.recalculaSaldos(bean.localizacao?.localizacao ?: "")
     }
   }
 
