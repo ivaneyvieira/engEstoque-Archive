@@ -24,6 +24,7 @@ import javax.validation.constraints.Size
 @Entity
 @View(name = "v_nota_expedicao", dependentTables = ["notas"])
 class ViewNotaExpedicao : BaseModel() {
+  var notaId: Long = 0
   var numero: String = ""
   @Enumerated(EnumType.STRING)
   var tipoMov: TipoMov = ENTRADA
@@ -57,7 +58,7 @@ class ViewNotaExpedicao : BaseModel() {
 
   fun findItens() : List<ItemNota>{
     return ItemNota.where()
-      .nota.id.eq(id)
+      .nota.id.eq(notaId)
       .localizacao.startsWith(abreviacao)
       .findList()
   }

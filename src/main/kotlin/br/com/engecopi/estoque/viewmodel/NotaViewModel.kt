@@ -195,6 +195,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       entityVo = itemNota
       val nota = itemNota.nota
       this.numeroNF = nota?.numero
+      this.numeroCodigo = itemNota.codigoBarraConferencia
       this.lojaNF = nota?.loja
       this.observacaoNota = nota?.observacao
       this.produto = itemNota.produto
@@ -202,7 +203,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = LocProduto(itemNota.localizacao)
-      this.status = statusDefault
+      this.status = itemNota.status
       readOnly = false
     }
   }
@@ -265,6 +266,7 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo
   }
 
   var usuario: Usuario = RegistryUserInfo.usuarioDefault
+  var numeroCodigo : String? = ""
   var numeroNF: String? = ""
     set(value) {
       if (field != value) {

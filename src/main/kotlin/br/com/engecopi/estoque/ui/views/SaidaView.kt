@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
@@ -118,9 +119,9 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         addCustomToolBarComponent(btnImprimeTudo(this))
         addCustomToolBarComponent(btnLerChaveNota(this))
         addOnly = !isAdmin
-        column(SaidaVo::numeroNF) {
-          caption = "Número NF"
-          setSortProperty("nota.numero")
+        column(SaidaVo::numeroCodigo) {
+          caption = "Número Conferencia"
+          setSortProperty("codigo_barra_conferencia")
         }
         grid.addComponentColumn { item ->
           val button = Button()
@@ -187,6 +188,11 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::cliente) {
           caption = "Cliente"
           setSortProperty("nota.cliente")
+        }
+        grid.setStyleGenerator{saida ->
+          if(saida.status == CONFERIDA)
+            "pendente"
+          else null
         }
       }
     }

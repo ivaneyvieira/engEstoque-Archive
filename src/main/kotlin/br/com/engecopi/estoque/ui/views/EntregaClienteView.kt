@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
 import br.com.engecopi.estoque.viewmodel.EntregaClienteVo
@@ -165,6 +166,11 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
         column(EntregaClienteVo::cliente) {
           caption = "Cliente"
           setSortProperty("nota.cliente")
+        }
+        grid.setStyleGenerator{saida ->
+          if(saida.status == CONFERIDA)
+            "pendente"
+          else null
         }
       }
     }

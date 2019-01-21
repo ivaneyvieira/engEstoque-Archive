@@ -47,7 +47,10 @@ import java.util.stream.*
 import kotlin.reflect.KProperty1
 
 abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
+  lateinit var gridCrud: GridCrudFlex<C>
   override fun updateView(viewModel: ViewModel) {
+    if (::gridCrud.isInitialized)
+      gridCrud.refreshGrid()
   }
 
   override fun updateModel() {
@@ -63,7 +66,7 @@ abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : Lay
     val crudFormFactory = CustomCrudFormFactory(domainType, ::layoutForm)
     crudFormFactory.defaults()
     val crudListener = ViewModelCrudListener(viewModel)
-    val gridCrud = GridCrudFlex(domainType, crudLayout, crudFormFactory, crudListener)
+    gridCrud = GridCrudFlex(domainType, crudLayout, crudFormFactory, crudListener)
     gridCrud.defaults()
 
     return init(gridCrud) {

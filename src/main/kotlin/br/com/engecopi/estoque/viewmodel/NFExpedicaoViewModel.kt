@@ -94,7 +94,6 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
 
   fun imprimir(itemNota: ItemNota?) : String {
     itemNota ?: return ""
-    if(itemNota.impresso) return ""
     val template = itemNota.template
     val print = itemNota.printEtiqueta()
     itemNota.let {
@@ -111,7 +110,11 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   }
 
   fun imprime(): String {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    val itens = ItemNota.where()
+      .impresso.eq(false)
+      .status.eq(INCLUIDA)
+      .findList()
+    return itens.map{imprimir(it)}.distinct().joinToString(separator = "\n")
   }
 }
 

@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoViewModel
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoVo
+import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.dateFormat
@@ -135,6 +136,10 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
         }
         column(NFExpedicaoVo::rota) {
           caption = "Rota"
+        }
+        column(NFExpedicaoVo::cliente) {
+          caption = "Cliente"
+          setSortProperty("cliente")
         }
       }
     }
