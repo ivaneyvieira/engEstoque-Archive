@@ -78,8 +78,11 @@ class Nota : BaseModel() {
       }
     }
 
-    fun maxSequencia() : Int {
-      return where().select(QNota._alias.maxSequencia).findOne()?.maxSequencia ?: 0
+    fun maxSequencia(serie : String) : Int {
+      return where().select(QNota._alias.maxSequencia)
+               .numero.endsWith("/$serie")
+               .findOne()
+               ?.maxSequencia ?: 0
     }
 
     fun findEntrada(numero: String?): Nota? {

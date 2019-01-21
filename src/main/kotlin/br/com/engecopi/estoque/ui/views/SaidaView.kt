@@ -16,6 +16,7 @@ import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.row
+import br.com.engecopi.framework.ui.view.showDialog
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.VAlign
@@ -231,9 +232,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
             showError("A nota não foi encontrada")
           else {
             val dlg = DlgNotaSaida(nota, viewModel)
-            dlg.center()
-            dlg.isModal = true
-            UI.getCurrent().addWindow(dlg)
+            dlg.showDialog()
           }
         }
       }

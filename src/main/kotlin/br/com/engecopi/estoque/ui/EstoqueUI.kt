@@ -53,7 +53,7 @@ import javax.servlet.annotation.WebServlet
 import javax.servlet.http.Cookie
 import kotlin.text.Typography.section
 
-private val log = LoggerFactory.getLogger(EstoqueUI::class.java)
+
 
 @Theme("mytheme")
 @Title("Controle de estoque")
@@ -139,7 +139,7 @@ class EstoqueUI : UI() {
   }
 
   private fun errorHandler(e: ErrorEvent) {
-    log.error("Erro não identificado ${e.throwable}", e.throwable)
+    log.error("Erro não identificado ${e.throwable.message}", e.throwable)
     // when the exception occurs, show a nice notification
     Notification("Oops", "\n" +
                          "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
@@ -204,3 +204,5 @@ fun UI.getCokies(name: String): String? {
   }
   return cookie?.value
 }
+
+val log = LoggerFactory.getLogger(EstoqueUI::class.java)

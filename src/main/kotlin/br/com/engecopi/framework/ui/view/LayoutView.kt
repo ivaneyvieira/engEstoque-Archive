@@ -23,6 +23,7 @@ import com.vaadin.data.HasValue
 import com.vaadin.data.ReadOnlyHasValue
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.server.BrowserWindowOpener
@@ -34,7 +35,9 @@ import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.TextField
 import com.vaadin.ui.TwinColSelect
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Window
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
@@ -274,3 +277,13 @@ var (@VaadinDsl Component).expand: Int
     this.setWidth("100%")
     this.expandRatio = value * 1f
   }
+
+fun Window.showDialog() {
+  isClosable = true
+  isResizable = false
+  isModal = true
+  styleName = "modal"
+  center()
+  addCloseShortcut(KeyCode.ESCAPE)
+  UI.getCurrent().addWindow(this)
+}

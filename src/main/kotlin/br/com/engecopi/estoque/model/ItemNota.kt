@@ -8,7 +8,6 @@ import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaSaci
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
-import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
@@ -92,6 +91,17 @@ class ItemNota : BaseModel() {
       return ItemNota.where().nota.id.eq(nota.id)
         .produto.id.eq(produto.id)
         .findOne()
+    }
+
+    fun find(notaSaci : NotaSaci?) : ItemNota? {
+      notaSaci?: return null
+      val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return null
+      return where()
+        .nota.numero.eq("${notaSaci.numero}/${notaSaci.serie}")
+        .nota.loja.equalTo(RegistryUserInfo.lojaDefault)
+        .produto.equalTo(produtoSaci)
+        .findList()
+        .firstOrNull()
     }
 
     fun createItemNota(notaSaci: NotaSaci, notaPrd: Nota?): ItemNota? {

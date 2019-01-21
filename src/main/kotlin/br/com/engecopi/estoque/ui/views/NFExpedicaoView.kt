@@ -1,21 +1,18 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoViewModel
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoVo
-import br.com.engecopi.estoque.viewmodel.SaidaViewModel
-import br.com.engecopi.estoque.viewmodel.SaidaVo
+import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.dateFormat
-import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
-import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.row
+import br.com.engecopi.framework.viewmodel.EntityVo
+import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.AutoView
-import com.github.mvysny.karibudsl.v8.bind
 import com.github.mvysny.karibudsl.v8.button
-import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.refresh
@@ -33,145 +30,124 @@ import com.vaadin.ui.themes.ValoTheme
 import de.steinwedel.messagebox.ButtonOption
 import de.steinwedel.messagebox.MessageBox
 import org.vaadin.crudui.crud.CrudOperation
-import org.vaadin.crudui.crud.CrudOperation.ADD
-import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView("nf_expedicao")
-class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
-  override fun layoutForm(
-    formLayout: VerticalLayout,
-    operation: CrudOperation?,
-    binder: Binder<NFExpedicaoVo>,
-    readOnly: Boolean
-                         ) {
-    if (operation == ADD) {
-      binder.bean.lojaNF = lojaDefault
-      binder.bean.usuario = usuario
-    }
+class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
+  val isAdmin
+    get() = RegistryUserInfo.userDefaultIsAdmin
+
+  override fun layoutForm(formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<NFExpedicaoVo>,
+                          readOnly: Boolean) {
     formLayout.apply {
       w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
-
+      val nota = binder.bean
       grupo("Nota fiscal de saída") {
         verticalLayout {
           row {
-            notaFiscalField(operation, binder)
-            lojaField(operation, binder)
-            comboBox<TipoNota>("Tipo") {
+            textField("Nota Fiscal") {
               expand = 2
-              default { it.descricao }
               isReadOnly = true
-              setItems(TipoNota.valuesSaida())
-              bind(binder).bind(NFExpedicaoVo::tipoNota)
+              value = nota.numero
+            }
+            textField("Loja") {
+              expand = 2
+              isReadOnly = true
+              value = nota.loja?.sigla
+            }
+            textField("Tipo") {
+              expand = 2
+              isReadOnly = true
+              value = nota.tipoNota?.descricao
             }
             dateField("Data") {
               expand = 1
               isReadOnly = true
-              bind(binder).bind(NFExpedicaoVo::dataNota.name)
+              value = nota.data
             }
             textField("Rota") {
               expand = 1
               isReadOnly = true
-              bind(binder).bind(NFExpedicaoVo::rota)
+              value = nota.rota
             }
           }
           row {
             textField("Observação da nota fiscal") {
               expand = 1
-              bind(binder).bind(NFExpedicaoVo::observacaoNota)
+              isReadOnly = true
+              value = nota.observacao
             }
           }
         }
       }
-
-      grupo("Produto") {
-        produtoField(operation, binder, "Saída")
-      }
     }
-    if (!isAdmin && operation == UPDATE)
-      binder.setReadOnly(true)
   }
 
-  override val viewModel: NFExpedicaoViewModel = NFExpedicaoViewModel(this)
-
   init {
-    form("Expedição") {
+    form("Nota Fiscal (Expedição)") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
         addCustomToolBarComponent(btnLerChaveNota(this))
-        reloadOnly = !isAdmin
-        column(NFExpedicaoVo::numeroNF) {
+        setUpdateOperationVisible(false)
+        setAddOperationVisible(false)
+        setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
+        column(NFExpedicaoVo::numero) {
           caption = "Número NF"
-          setSortProperty("nota.numero")
+          setSortProperty("numero")
         }
         grid.addComponentColumn { item ->
           val button = Button()
           print {
-            item.itemNota?.recalculaSaldos()
-            val print = viewModel.imprimir(item.itemNota)
+            val print = viewModel.imprimir(item)
             print
           }.extend(button)
-          val impresso = item?.entityVo?.impresso ?: true
+          val impresso = item?.impresso ?: true
           button.isEnabled = impresso == false || isAdmin
           button.icon = VaadinIcons.PRINT
           button.addClickListener {
-            val print = item?.entityVo?.impresso ?: true
+            val print = item?.impresso ?: true
             it.button.isEnabled = print == false || isAdmin
             refreshGrid()
           }
-          return@addComponentColumn button
+          button
         }.id = "btnPrint"
-        column(NFExpedicaoVo::lojaNF) {
+        column(NFExpedicaoVo::loja) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
         }
-        column(NFExpedicaoVo::tipoNotaDescricao) {
+        column(NFExpedicaoVo::tipoNota) {
           caption = "TipoNota"
-          setSortProperty("nota.tipo_nota")
-        }
-        column(NFExpedicaoVo::dataNota) {
-          caption = "Data"
-          dateFormat()
-          setSortProperty("nota.data", "data", "hora")
+          setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
+          setSortProperty("tipo_nota")
         }
         column(NFExpedicaoVo::dataEmissao) {
           caption = "Emissao"
           dateFormat()
-          setSortProperty("nota.dataEmissao", "data", "hora")
+          setSortProperty("dataEmissao", "data", "hora")
         }
-        column(NFExpedicaoVo::quantProduto) {
-          caption = "Quantidade"
-          intFormat()
-        }
-        column(NFExpedicaoVo::codigo) {
-          caption = "Código"
-          setSortProperty("produto.codigo")
-        }
-        column(NFExpedicaoVo::descricaoProduto) {
-          caption = "Descrição"
-        }
-        column(NFExpedicaoVo::grade) {
-          caption = "Grade"
-          setSortProperty("produto.grade")
-        }
-        column(NFExpedicaoVo::localizacao) {
+        column(NFExpedicaoVo::abreviacao) {
           caption = "Localização"
-          setRenderer({ it?.toString() }, TextRenderer())
+          setSortProperty("abreviacao")
         }
         column(NFExpedicaoVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
-        column(NFExpedicaoVo::rotaDescricao) {
+        column(NFExpedicaoVo::rota) {
           caption = "Rota"
-        }
-        column(NFExpedicaoVo::cliente) {
-          caption = "Cliente"
-          setSortProperty("nota.cliente")
         }
       }
     }
   }
+
+  override fun updateView(viewModel: ViewModel) {
+  }
+
+  override fun updateModel() {
+  }
+
+  override val viewModel: NFExpedicaoViewModel
+    get() = NFExpedicaoViewModel(this)
 
   fun readString(msg: String, processaleitura: (String) -> Unit) {
     if (msg.isNotBlank()) {
@@ -213,5 +189,20 @@ class NFExpedicaoView : NotaView<NFExpedicaoVo, NFExpedicaoViewModel>() {
         }
       }
     }
+  }
+
+  fun btnImprimeTudo(grid : GridCrudFlex<NFExpedicaoVo>) : Button{
+    val button = Button("Imprime Etiquetas")
+    button.let {
+      it.icon = VaadinIcons.PRINT
+      print {
+        val print = viewModel.imprime()
+        print
+      }.extend(it)
+      it.addClickListener{
+        grid.refreshGrid()
+      }
+    }
+    return button
   }
 }
