@@ -313,7 +313,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
         val produtosVo = notaProdutoSaci.flatMap { notaSaci ->
           val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
           val localizacoes = prd?.localizacoes().orEmpty().sorted()
-          val ultimaLocalizacao = localizacoes.lastOrNull()
+          val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
           val prdLocs: List<ProdutoVO> = if (tipoNota.tipoMov == SAIDA) {
             var quant = notaSaci.quant ?: 0
             val produtosLocais = localizacoes.asSequence().map { localizacao ->
@@ -338,8 +338,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
             }.toList()
             produtosLocais
           } else
-            listOf(ProdutoVO(prd, tipoNota.tipoMov,
-                             if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
+            listOf(ProdutoVO(prd, tipoNota.tipoMov, prd?.makeLocProduto(ultimaLocalizacao)).apply {
               this.quantidade = notaSaci.quant ?: 0
             })
           return@flatMap prdLocs
