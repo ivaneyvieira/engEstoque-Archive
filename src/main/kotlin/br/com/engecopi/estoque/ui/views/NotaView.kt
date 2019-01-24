@@ -113,7 +113,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         expand = 3
         isReadOnly = operation != ADD
         default { localizacao ->
-          localizacao.sufixo
+          localizacao.localizacao
         }
         isTextInputAllowed = true
 
@@ -184,9 +184,10 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         bindItens(binder, "produtos")
         editor.addOpenListener { event ->
           event.bean.produto?.let { produto ->
-            val locSulfixos = produto.sufixosLocalizacaoes()
+            val locSulfixos = produto.localizacoes().map { LocProduto(it) }
             comboLoc.setItems(locSulfixos)
-            comboLoc.setItemCaptionGenerator { it.sufixo }
+            comboLoc.setItemCaptionGenerator { it.localizacao }
+            comboLoc.value = event.bean.localizacao
           }
         }
         val nav = FastNavigation<ProdutoVO>(this, false, true)

@@ -202,29 +202,9 @@ class Produto : BaseModel() {
     }
     return ""
   }
-
-  fun sufixosLocalizacaoes(): List<LocProduto> {
-    val localizacoes = localizacoes()
-    if (localizacoes.size == 1)
-      return listOf(LocProduto(localizacoes[0], localizacoes[0]))
-    val prefixo = prefixoLocalizacoes()
-
-    return localizacoes.map {
-      val sufixo = it.mid(prefixo.length + 1)
-      if (sufixo == "")
-        LocProduto(it, it)
-      else
-        LocProduto(it, it)
-    }
-  }
-
-  fun makeLocProduto(localizacao: String): LocProduto? {
-    return sufixosLocalizacaoes()
-      .find { it.localizacao == localizacao }
-  }
 }
 
-data class LocProduto(val localizacao: String, val sufixo: String) : Comparable<LocProduto> {
+data class LocProduto(val localizacao: String) : Comparable<LocProduto> {
   val prefixo = localizacao.split("-").getOrNull(0) ?: localizacao
 
   override fun compareTo(other: LocProduto): Int {
@@ -232,14 +212,6 @@ data class LocProduto(val localizacao: String, val sufixo: String) : Comparable<
   }
 
   override fun toString(): String {
-    return sufixo
+    return localizacao
   }
-}
-
-fun List<LocProduto>.findLocalizacao(sufixo: String): String {
-  return asSequence().filter { it.sufixo == sufixo }.map { it.localizacao }.firstOrNull() ?: ""
-}
-
-fun List<LocProduto>.findSufixo(localizacao: String): String {
-  return asSequence().filter { it.localizacao == localizacao }.map { it.sufixo }.firstOrNull() ?: ""
 }

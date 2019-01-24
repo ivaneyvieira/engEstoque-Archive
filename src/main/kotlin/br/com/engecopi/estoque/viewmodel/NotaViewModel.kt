@@ -196,7 +196,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.tipoNota = itemNota.nota?.tipoNota ?: OUTROS_E
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
-      this.localizacao = this.produto?.makeLocProduto(itemNota.localizacao)
+      this.localizacao = LocProduto(itemNota.localizacao)
       readOnly = false
     }
   }
@@ -317,7 +317,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
           val prdLocs: List<ProdutoVO> = if (tipoNota.tipoMov == SAIDA) {
             var quant = notaSaci.quant ?: 0
             val produtosLocais = localizacoes.asSequence().map { localizacao ->
-              ProdutoVO(prd, tipoNota.tipoMov, prd?.makeLocProduto(localizacao)).apply {
+              ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao)).apply {
                 val saldo = this.saldo
                 if (quant > 0)
                   if (quant > saldo) {
@@ -338,7 +338,7 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
             }.toList()
             produtosLocais
           } else
-            listOf(ProdutoVO(prd, tipoNota.tipoMov, prd?.makeLocProduto(ultimaLocalizacao)).apply {
+            listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
               this.quantidade = notaSaci.quant ?: 0
             })
           return@flatMap prdLocs
@@ -413,10 +413,10 @@ abstract class NotaVo(val tipo: TipoMov) : EntityVo<ItemNota>() {
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   var localizacao: LocProduto? = null
   val localizacaoProduto
-    get() = produto?.sufixosLocalizacaoes().orEmpty()
+    get() = produto?.localizacoes().orEmpty()
 }
 
-class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, val localizacao: LocProduto?) {
+class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?) {
   val codigo: String = produto?.codigo ?: ""
   val grade: String = produto?.grade ?: ""
   var quantidade: Int = 0

@@ -99,7 +99,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           }
           comboBox<LocProduto>("Local") {
             expand = 2
-            default { it.sufixo }
+            default { it.localizacao }
             isEmptySelectionAllowed = true
             id = "filtro"
             val itens = viewModel.localizacoes(binder.bean)
