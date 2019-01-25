@@ -155,11 +155,8 @@ class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
         }
         column(EntradaVo::localizacao) {
           caption = "Local"
-<<<<<<< HEAD
-          setRenderer({ it?.toString() }, TextRenderer())
-=======
+
           setRenderer({ it?.localizacao }, TextRenderer())
->>>>>>> mudancasAntigas
         }
         column(EntradaVo::usuario) {
           caption = "Usuário"

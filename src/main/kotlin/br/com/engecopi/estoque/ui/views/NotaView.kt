@@ -184,12 +184,8 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           event.bean.produto?.let { produto ->
             val locSulfixos = produto.localizacoes().map { LocProduto(it) }
             comboLoc.setItems(locSulfixos)
-<<<<<<< HEAD
-            comboLoc.setItemCaptionGenerator { it.toString() }
-=======
             comboLoc.setItemCaptionGenerator { it.localizacao }
             comboLoc.value = event.bean.localizacao
->>>>>>> mudancasAntigas
           }
         }
         val nav = FastNavigation<ProdutoVO>(this, false, true)

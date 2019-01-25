@@ -183,23 +183,6 @@ class Produto : BaseModel() {
     }
     return ""
   }
-<<<<<<< HEAD
-
-  fun sufixosLocalizacaoes(): List<LocProduto> {
-    val localizacoes = localizacoes()
-    if (localizacoes.size == 1)
-      return listOf(LocProduto(localizacoes[0]))
-    return localizacoes.map { loc ->
-      LocProduto(loc)
-    }
-  }
-
-  fun makeLocProduto(localizacao: String): LocProduto? {
-    return sufixosLocalizacaoes()
-      .find { it.localizacao == localizacao }
-  }
-=======
->>>>>>> mudancasAntigas
 }
 
 data class LocProduto(val localizacao: String) : Comparable<LocProduto> {

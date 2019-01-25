@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
 
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
                                           val statusDefault: StatusNota,
-                                          val abreviacaoNota : String) :
+                                          val abreviacaoNota: String) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     if (bean.localizacao?.localizacao.isNullOrBlank())
@@ -92,7 +92,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
           view.showWarning(msg)
           null
         }
-        else                                                           -> {
+        else                                                            -> {
           val item = ItemNota()
           item.apply {
             this.nota = nota
@@ -203,10 +203,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = LocProduto(itemNota.localizacao)
-<<<<<<< HEAD
       this.status = itemNota.status
-=======
->>>>>>> mudancasAntigas
       readOnly = false
     }
   }
@@ -257,19 +254,19 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
 
   fun imprime(): String {
     val list = query.impresso.eq(false).order().id.desc().findList()
-    return list.map{imprimir(it)}.distinct().joinToString(separator = "\n")
+    return list.map { imprimir(it) }.distinct().joinToString(separator = "\n")
   }
 
   abstract fun QItemNota.filtroStatus(): QItemNota
 }
 
-abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo<ItemNota>() {
+abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota: String) : EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {
     return ItemNota.find(nota, produto)
   }
 
   var usuario: Usuario = RegistryUserInfo.usuarioDefault
-  var numeroCodigo : String? = ""
+  var numeroCodigo: String? = ""
   var numeroNF: String? = ""
     set(value) {
       if (field != value) {
@@ -428,12 +425,8 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   var localizacao: LocProduto? = null
   val localizacaoProduto
-<<<<<<< HEAD
-    get() = produto?.sufixosLocalizacaoes().orEmpty()
-  var status: StatusNota? = null
-=======
     get() = produto?.localizacoes().orEmpty()
->>>>>>> mudancasAntigas
+  var status: StatusNota? = null
 }
 
 class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?) {
@@ -452,5 +445,5 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: Lo
     get() = saldo + if (tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
-   var value: ItemNota? = null
+  var value: ItemNota? = null
 }

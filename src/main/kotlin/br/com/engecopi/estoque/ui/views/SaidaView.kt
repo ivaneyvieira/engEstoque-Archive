@@ -175,11 +175,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         }
         column(SaidaVo::localizacao) {
           caption = "Localização"
-<<<<<<< HEAD
-          setRenderer({ it?.toString() }, TextRenderer())
-=======
           setRenderer({ it?.localizacao }, TextRenderer())
->>>>>>> mudancasAntigas
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"
