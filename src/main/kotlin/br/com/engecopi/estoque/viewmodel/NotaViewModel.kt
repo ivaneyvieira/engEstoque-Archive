@@ -203,7 +203,10 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = LocProduto(itemNota.localizacao)
+<<<<<<< HEAD
       this.status = itemNota.status
+=======
+>>>>>>> mudancasAntigas
       readOnly = false
     }
   }
@@ -324,11 +327,11 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo
         val produtosVo = notaProdutoSaci.flatMap { notaSaci ->
           val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
           val localizacoes = prd?.localizacoes().orEmpty().sorted()
-          val ultimaLocalizacao = localizacoes.lastOrNull()
+          val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
           val prdLocs: List<ProdutoVO> = if (tipoNota.tipoMov == SAIDA) {
             var quant = notaSaci.quant ?: 0
             val produtosLocais = localizacoes.asSequence().map { localizacao ->
-              ProdutoVO(prd, tipoNota.tipoMov, prd?.makeLocProduto(localizacao)).apply {
+              ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao)).apply {
                 val saldo = this.saldo
                 if (quant > 0)
                   if (quant > saldo) {
@@ -349,8 +352,7 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo
             }.toList()
             produtosLocais
           } else
-            listOf(ProdutoVO(prd, tipoNota.tipoMov,
-                             if (localizacoes.size == 1) prd?.makeLocProduto(localizacoes[0]) else null).apply {
+            listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
               this.quantidade = notaSaci.quant ?: 0
             })
           return@flatMap prdLocs
@@ -426,11 +428,15 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota : String) : EntityVo
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   var localizacao: LocProduto? = null
   val localizacaoProduto
+<<<<<<< HEAD
     get() = produto?.sufixosLocalizacaoes().orEmpty()
   var status: StatusNota? = null
+=======
+    get() = produto?.localizacoes().orEmpty()
+>>>>>>> mudancasAntigas
 }
 
-class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, val localizacao: LocProduto?) {
+class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?) {
   val codigo: String = produto?.codigo ?: ""
   val grade: String = produto?.grade ?: ""
   var quantidade: Int = 0

@@ -88,7 +88,7 @@ class ProdutoViewModel(view: IView) :
   }
 
   fun localizacoes(bean: ProdutoVo?): List<LocProduto> {
-    return bean?.produto?.sufixosLocalizacaoes().orEmpty()
+    return bean?.produto?.localizacoes().orEmpty().map { LocProduto(it) }
   }
 }
 
@@ -109,9 +109,9 @@ class ProdutoVo : EntityVo<Produto>() {
   val codebar: String?
     get() = produto?.codebar ?: ""
   val localizacao
-    get() = produto?.sufixosLocalizacaoes()
+    get() = produto?.localizacoes()
       .orEmpty().asSequence()
-      .map { it.localizacao }.distinct().joinToString(" / ")
+      .distinct().joinToString(" / ")
   val produto
     get() = toEntity()
   val saldo

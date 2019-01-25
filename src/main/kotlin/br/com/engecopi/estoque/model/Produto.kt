@@ -183,6 +183,7 @@ class Produto : BaseModel() {
     }
     return ""
   }
+<<<<<<< HEAD
 
   fun sufixosLocalizacaoes(): List<LocProduto> {
     val localizacoes = localizacoes()
@@ -197,6 +198,8 @@ class Produto : BaseModel() {
     return sufixosLocalizacaoes()
       .find { it.localizacao == localizacao }
   }
+=======
+>>>>>>> mudancasAntigas
 }
 
 data class LocProduto(val localizacao: String) : Comparable<LocProduto> {
