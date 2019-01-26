@@ -1,7 +1,0 @@
-[org.jetbrains.exposed.sql](../index.md) / [Database](index.md) / [connect](.)
-
-# connect
-
-`fun connect(datasource: `[`DataSource`](http://docs.oracle.com/javase/6/docs/api/javax/sql/DataSource.html)`, setupConnection: (`[`Connection`](http://docs.oracle.com/javase/6/docs/api/java/sql/Connection.html)`) -> Unit = {}, manager: (`[`Database`](index.md)`) -> `[`TransactionManager`](../../org.jetbrains.exposed.sql.transactions/-transaction-manager/index.md)` = { ThreadLocalTransactionManager(it, DEFAULT_ISOLATION_LEVEL) }): `[`Database`](index.md)
-`fun connect(getNewConnection: () -> `[`Connection`](http://docs.oracle.com/javase/6/docs/api/java/sql/Connection.html)`, manager: (`[`Database`](index.md)`) -> `[`TransactionManager`](../../org.jetbrains.exposed.sql.transactions/-transaction-manager/index.md)` = { ThreadLocalTransactionManager(it, DEFAULT_ISOLATION_LEVEL) }): `[`Database`](index.md)
-`fun connect(url: String, driver: String, user: String = "", password: String = "", setupConnection: (`[`Connection`](http://docs.oracle.com/javase/6/docs/api/java/sql/Connection.html)`) -> Unit = {}, manager: (`[`Database`](index.md)`) -> `[`TransactionManager`](../../org.jetbrains.exposed.sql.transactions/-transaction-manager/index.md)` = { ThreadLocalTransactionManager(it, DEFAULT_ISOLATION_LEVEL) }): `[`Database`](index.md)
