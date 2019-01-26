@@ -68,6 +68,7 @@ compileKotlin {
   }
 }
 
+
 dependencies {
   compile "com.github.mvysny.karibudsl:karibu-dsl-v8:$karibu_version"
   // Karibu-DSL dependency
@@ -125,9 +126,6 @@ dependencies {
   compile 'com.fo0.advancedtokenfield:AdvancedTokenField:0.4.1'
   // heroku app runner
   testCompile "junit:junit:4.11"
-
-
-
 }
 
 
