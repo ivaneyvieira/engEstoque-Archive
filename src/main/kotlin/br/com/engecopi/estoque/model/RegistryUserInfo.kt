@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
 import br.com.engecopi.framework.model.Transaction
+import com.vaadin.server.Page
 
 object RegistryUserInfo {
   const val LOJA_FIELD = "LOJA_DEFAULT"
@@ -35,6 +36,8 @@ object RegistryUserInfo {
     get() = usuarioDefault.loja!!
   val userDefaultIsAdmin
     get() = usuarioDefault.admin
+  val endereco
+    get() = Page.getCurrent().webBrowser.address ?: ""
 }
 
 data class LoginInfo(val usuario: Usuario, val abreviacao: String)

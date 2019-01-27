@@ -53,8 +53,6 @@ import javax.servlet.annotation.WebServlet
 import javax.servlet.http.Cookie
 import kotlin.text.Typography.section
 
-
-
 @Theme("mytheme")
 @Title("Controle de estoque")
 @Viewport("width=device-width, initial-scale=1.0")
@@ -97,6 +95,7 @@ class EstoqueUI : UI() {
           if (user.estoque || user.admin)
             menuButton("Localizacao:", badge = info.abreviacao)
           menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
+          menuButton(caption = "Endereco: ", badge = RegistryUserInfo.endereco)
           menuButton("Sair", icon = OUT) {
             onLeftClick {
               LoginService.logout()
