@@ -171,6 +171,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           expandRatio = 1
           caption = "Grade"
         }
+        addColumnFor(ProdutoVO::saldo) {
+          expandRatio = 1
+          caption = "Saldo Atual"
+          align = VAlign.Right
+        }
         addColumnFor(ProdutoVO::quantidade) {
           expandRatio = 1
           caption = "Qtd $tipo"
@@ -178,7 +183,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         }
         addColumnFor(ProdutoVO::saldoFinal) {
           expandRatio = 1
-          caption = "Saldo"
+          caption = "Saldo Final"
           align = VAlign.Right
         }
         bindItens(binder, "produtos")
