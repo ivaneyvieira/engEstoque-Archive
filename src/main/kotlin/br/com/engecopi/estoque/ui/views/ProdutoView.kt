@@ -120,7 +120,12 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             }
             addColumnFor(ItemNota::dataNota) {
               this.isSortable = false
-              caption = "Data"
+              caption = "Data Nota"
+              setRenderer(LocalDateRenderer("dd/MM/yy"))
+            }
+            addColumnFor(ItemNota::data) {
+              this.isSortable = false
+              caption = "Data Inserção"
               setRenderer(LocalDateRenderer("dd/MM/yy"))
             }
             addColumnFor(ItemNota::tipoNota) {

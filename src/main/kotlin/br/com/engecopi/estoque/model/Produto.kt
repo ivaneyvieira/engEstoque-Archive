@@ -103,7 +103,8 @@ class Produto : BaseModel() {
       .findList()
     itensNotNull
       .asSequence()
-      .sortedWith(compareBy(ItemNota::dataNota, ItemNota::id))
+      .filter { it.nota?.loja?.id == loja.id && it.localizacao == localizacao }
+      .sortedWith(compareBy(ItemNota::data, ItemNota::id))
       .forEach { item ->
         item.refresh()
         saldo += item.quantidadeSaldo
