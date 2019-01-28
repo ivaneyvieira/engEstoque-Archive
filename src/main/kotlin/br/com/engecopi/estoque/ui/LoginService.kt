@@ -1,56 +1,59 @@
 package br.com.engecopi.estoque.ui
 
-import br.com.engecopi.framework.ui.Session
-import br.com.engecopi.saci.beans.UserSaci
+import br.com.engecopi.estoque.model.LoginInfo
+import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.saci.saci
-import com.github.vok.karibudsl.alignment
-import com.github.vok.karibudsl.button
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.fillParent
-import com.github.vok.karibudsl.horizontalLayout
-import com.github.vok.karibudsl.label
-import com.github.vok.karibudsl.onLeftClick
-import com.github.vok.karibudsl.panel
-import com.github.vok.karibudsl.passwordField
-import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.setPrimary
-import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.verticalLayout
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.alignment
+import com.github.mvysny.karibudsl.v8.button
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.expandRatio
+import com.github.mvysny.karibudsl.v8.fillParent
+import com.github.mvysny.karibudsl.v8.horizontalLayout
+import com.github.mvysny.karibudsl.v8.label
+import com.github.mvysny.karibudsl.v8.onLeftClick
+import com.github.mvysny.karibudsl.v8.panel
+import com.github.mvysny.karibudsl.v8.passwordField
+import com.github.mvysny.karibudsl.v8.px
+import com.github.mvysny.karibudsl.v8.setPrimary
+import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.verticalLayout
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.icons.VaadinIcons
-import com.vaadin.server.Page
-import com.vaadin.server.VaadinSession
 import com.vaadin.shared.ui.ContentMode.HTML
 import com.vaadin.ui.Alignment
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Notification
 import com.vaadin.ui.TextField
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
 object LoginService {
-  fun login(user: UserSaci) {
-    Session[UserSaci::class] = user
-    Page.getCurrent().reload()
+  fun login(loginInfo: LoginInfo) {
+    EstoqueUI.current?.loginInfo = loginInfo
+    //Session[LoginInfo::class] = loginInfo
+    //Page.getCurrent().reload()
   }
-  
-  val currentUser: UserSaci?
-    get() = Session[UserSaci::class]
-  
+
+  val currentUser: LoginInfo?
+    get() = EstoqueUI.current?.loginInfo
+
   fun logout() {
-    VaadinSession.getCurrent().close()
-    Page.getCurrent()?.reload()
+    EstoqueUI.current?.loginInfo = null
+    // VaadinSession.getCurrent().close()
+    // Page.getCurrent()?.reload()
   }
 }
 
 class LoginForm(private val appTitle: String) : VerticalLayout() {
   private lateinit var username: TextField
   private lateinit var password: TextField
-  
+  private lateinit var abreviacao: ComboBox<String>
+
   init {
     setSizeFull()
-    isResponsive=true
+    isResponsive = true
     panel {
-      isResponsive=true
+      isResponsive = true
       w = 500.px
       alignment = Alignment.MIDDLE_CENTER
       verticalLayout {
@@ -70,23 +73,36 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
         }
         horizontalLayout {
           w = fillParent
-          isResponsive=true
+          isResponsive = true
           username = textField("Usuário") {
-            isResponsive=true
+            isResponsive = true
             expandRatio = 1f
             w = fillParent
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
+            addValueChangeListener {
+              changeUserName(it.value)
+            }
+          }
+          abreviacao = comboBox("Localizacao") {
+            isResponsive = true
+            expandRatio = 1f
+            w = fillParent
+            isEmptySelectionAllowed = false
+            isTextInputAllowed = false
+            val abreviacoes = abreviacaoes(username.value)
+            this.setItems(abreviacoes)
+            this.value = abreviacoes.firstOrNull()
           }
           password = passwordField("Senha") {
-            isResponsive=true
+            isResponsive = true
             expandRatio = 1f
             w = fillParent
             icon = VaadinIcons.LOCK
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
           }
           button("Login") {
-            isResponsive=true
+            isResponsive = true
             alignment = Alignment.BOTTOM_RIGHT
             setPrimary()
             onLeftClick { login() }
@@ -95,14 +111,35 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
       }
     }
   }
-  
+
+  private fun changeUserName(value: String?) {
+    if (::abreviacao.isInitialized) {
+      val abreviacoes = abreviacaoes(value)
+      abreviacao.setItems(abreviacoes)
+      abreviacao.value = abreviacoes.firstOrNull()
+    }
+  }
+
+  fun abreviacaoes(username: String?): List<String> {
+    return Usuario.abreviacaoes(username).sorted()
+  }
+
   private fun login() {
     val user = saci.findUser(username.value)
     val pass = password.value
+    val abrev = abreviacao.value
     if (user == null || user.senha != pass) {
       Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
       LoginService.logout()
-    } else
-      LoginService.login(user)
+    } else {
+      val usuario = Usuario.findUsuario(user.login)
+      if (usuario == null) {
+        Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
+        LoginService.logout()
+      } else {
+        val loginInfo = LoginInfo(usuario, abrev)
+        LoginService.login(loginInfo)
+      }
+    }
   }
 }

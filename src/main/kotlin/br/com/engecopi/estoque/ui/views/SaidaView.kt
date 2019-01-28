@@ -1,31 +1,27 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.ui.EstoqueUI
+import br.com.engecopi.estoque.viewmodel.EntradaVo
 import br.com.engecopi.estoque.viewmodel.SaidaViewModel
 import br.com.engecopi.estoque.viewmodel.SaidaVo
-import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.bindItens
-import br.com.engecopi.framework.ui.view.bindReadOnly
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
-import br.com.engecopi.framework.ui.view.integerField
-import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.dateField
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.verticalLayout
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.dateField
+import com.github.mvysny.karibudsl.v8.px
+import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.verticalLayout
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
@@ -42,34 +38,37 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
   ) {
     if (operation == ADD) {
       binder.bean.lojaNF = lojaDefault
+      binder.bean.usuario = usuario
     }
     formLayout.apply {
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
+
       grupo("Nota fiscal de saída") {
         verticalLayout {
           row {
             notaFiscalField(operation, binder)
             lojaField(operation, binder)
             comboBox<TipoNota>("Tipo") {
-              expandRatio = 2f
+              expand = 2
               default { it.descricao }
               isReadOnly = true
               setItems(TipoNota.valuesSaida())
               bind(binder).bind(SaidaVo::tipoNota)
             }
             dateField("Data") {
-              expandRatio = 1f
+              expand = 1
               isReadOnly = true
               bind(binder).bind(SaidaVo::dataNota.name)
             }
             textField("Rota") {
-              expandRatio = 1f
+              expand = 1
               isReadOnly = true
               bind(binder).bind(SaidaVo::rota)
             }
           }
           row {
             textField("Observação da nota fiscal") {
-              expandRatio = 1f
+              expand = 1
               bind(binder).bind(SaidaVo::observacaoNota)
             }
           }
@@ -83,19 +82,22 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     if (!isAdmin && operation == UPDATE)
       binder.setReadOnly(true)
   }
+  override val viewModel : SaidaViewModel = SaidaViewModel(this)
 
   init {
     form("Expedição") {
       gridCrud(viewModel.crudClass.java) {
+        addCustomToolBarComponent(btnImprimeTudo(this))
         addOnly = !isAdmin
         column(SaidaVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
         grid.addComponentColumn { item ->
+
           val button = Button()
           print {
-            item.itemNota?.produto?.recalculaSaldos()
+            item.itemNota?.recalculaSaldos()
             val print = viewModel.imprimir(item.itemNota)
             print
           }.extend(button)
@@ -108,15 +110,24 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
             refreshGrid()
           }
           button
-        }
+        }.id = "btnPrint"
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
+        }
+        column(SaidaVo::tipoNotaDescricao) {
+          caption = "TipoNota"
+          setSortProperty("nota.tipo_nota")
         }
         column(SaidaVo::dataNota) {
           caption = "Data"
           dateFormat()
           setSortProperty("nota.data", "data", "hora")
+        }
+        column(SaidaVo::dataEmissao) {
+          caption = "Emissao"
+          dateFormat()
+          setSortProperty("nota.dataEmissao", "data", "hora")
         }
         column(SaidaVo::quantProduto) {
           caption = "Quantidade"
@@ -134,15 +145,15 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           setSortProperty("produto.grade")
         }
         column(SaidaVo::localizacao) {
-          caption = "Local"
-          setSortProperty("localizacao")
+          caption = "Localização"
+          setRenderer({ it?.localizacao }, TextRenderer())
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"
           setRenderer({ it?.loginName ?: "" }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
-        column(SaidaVo::rota) {
+        column(SaidaVo::rotaDescricao) {
           caption = "Rota"
         }
         column(SaidaVo::cliente) {
@@ -152,8 +163,5 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
       }
     }
   }
-
-  override val viewModel
-    get() = SaidaViewModel(this, usuario)
 }
 

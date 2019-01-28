@@ -1,30 +1,32 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.LocProduto
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
 import br.com.engecopi.estoque.viewmodel.ProdutoVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.VAlign
-import com.github.vok.karibudsl.addColumnFor
-import com.github.vok.karibudsl.align
-import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.dateField
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.grid
-import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.VAlign
+import com.github.mvysny.karibudsl.v8.addColumnFor
+import com.github.mvysny.karibudsl.v8.align
+import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.dateField
+import com.github.mvysny.karibudsl.v8.grid
+import com.github.mvysny.karibudsl.v8.h
+import com.github.mvysny.karibudsl.v8.px
+import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
@@ -35,36 +37,31 @@ import java.text.DecimalFormat
 
 @AutoView
 class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
-  val lojaDefault
-    get() = EstoqueUI.loja
-  val isAdmin
-    get() = EstoqueUI.user?.admin ?: false
-
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,
     binder: Binder<ProdutoVo>,
     readOnly: Boolean
-  ) {
-    binder.bean.lojaDefault = lojaDefault
+                         ) {
+    binder.bean.lojaDefault = RegistryUserInfo.lojaDefault
     formLayout.apply {
-      w = 800.px
+      w = (UI.getCurrent().page.browserWindowWidth*0.8).toInt().px
       h = 300.px
       grupo("Produtos") {
         row {
           textField {
-            expandRatio = 1f
+            expand = 1
             caption = "Código"
             bind(binder).bind(ProdutoVo::codigoProduto)
             reloadBinderOnChange(binder)
           }
           textField("Descrição") {
-            expandRatio = 3f
+            expand = 3
             isReadOnly = true
             bind(binder).bind(ProdutoVo::descricaoProdutoSaci.name)
           }
           comboBox<String> {
-            expandRatio = 1f
+            expand = 1
             caption = "Grade"
             default { it }
             bind(binder).bind(ProdutoVo::gradeProduto)
@@ -76,18 +73,21 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
       grupo("Notas") {
         row {
           dateField("Data Inicial") {
+            expand = 1
             id = "filtro"
             value = null
             bind(binder).bind(ProdutoVo::filtroDI)
             reloadBinderOnChange(binder)
           }
           dateField("Data Final") {
+            expand = 1
             id = "filtro"
             value = null
             bind(binder).bind(ProdutoVo::filtroDF)
             reloadBinderOnChange(binder)
           }
           comboBox<TipoNota>("Tipo") {
+            expand = 1
             default { it.descricao2 }
             id = "filtro"
             setItems(TipoNota.values().toList())
@@ -97,10 +97,22 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             bind(binder).bind(ProdutoVo::filtroTipo)
             reloadBinderOnChange(binder)
           }
+          comboBox<LocProduto>("Local") {
+            expand = 2
+            default { it.localizacao }
+            isEmptySelectionAllowed = true
+            id = "filtro"
+            val itens = viewModel.localizacoes(binder.bean)
+            emptySelectionCaption = "Todos"
+            setItems(itens)
+            bind(binder).bind(ProdutoVo::filtroLocalizacao)
+            value = itens.firstOrNull()
+            reloadBinderOnChange(binder)
+          }
         }
         row {
           grid(ItemNota::class) {
-            expandRatio = 2f
+            expand = 2
             removeAllColumns()
             addColumnFor(ItemNota::numeroNota) {
               this.isSortable = false
@@ -108,7 +120,12 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             }
             addColumnFor(ItemNota::dataNota) {
               this.isSortable = false
-              caption = "Data"
+              caption = "Data Nota"
+              setRenderer(LocalDateRenderer("dd/MM/yy"))
+            }
+            addColumnFor(ItemNota::data) {
+              this.isSortable = false
+              caption = "Data Inserção"
               setRenderer(LocalDateRenderer("dd/MM/yy"))
             }
             addColumnFor(ItemNota::tipoNota) {
@@ -141,14 +158,15 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
       }
     }
-    if (!isAdmin && operation == UPDATE)
+    if (!RegistryUserInfo.usuarioDefault.admin && operation == UPDATE)
       binder.setReadOnly(true)
   }
 
   init {
     form("Entrada de produtos") {
       gridCrud(viewModel.crudClass.java) {
-        queryOnly = !isAdmin
+        queryOnly = !RegistryUserInfo.usuarioDefault.admin
+        //grid.bodyRowHeight = 3 * 30.00
         column(ProdutoVo::codigoProduto) {
           expandRatio = 1
           caption = "Código"
@@ -166,6 +184,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
         column(ProdutoVo::localizacao) {
           expandRatio = 1
+          //setRenderer({ e -> e?.replace(" - ", " / ") }, HtmlRenderer())
           caption = "Localização"
           setSortProperty("localizacao")
         }
@@ -176,12 +195,40 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           setRenderer(NumberRenderer(DecimalFormat("0")))
           align = VAlign.Right
         }
+        column(ProdutoVo::comprimento) {
+          expandRatio = 1
+          caption = "Comprimento"
+          setSortProperty("vproduto.comp")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+        column(ProdutoVo::lagura) {
+          expandRatio = 1
+          caption = "Largura"
+          setSortProperty("vproduto.larg")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+        column(ProdutoVo::altura) {
+          expandRatio = 1
+          caption = "Altura"
+          setSortProperty("vproduto.alt")
+          setRenderer(NumberRenderer(DecimalFormat("0")))
+          align = VAlign.Right
+        }
+        column(ProdutoVo::cubagem) {
+          expandRatio = 1
+          caption = "Cubagem"
+          setSortProperty("vproduto.cubagem")
+          setRenderer(NumberRenderer(DecimalFormat("0.000000")))
+          align = VAlign.Right
+        }
       }
     }
   }
 
   override val viewModel: ProdutoViewModel
-    get() = ProdutoViewModel(this, EstoqueUI.user!!)
+    get() = ProdutoViewModel(this)
 }
 
 

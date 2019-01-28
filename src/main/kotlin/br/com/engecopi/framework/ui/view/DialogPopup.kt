@@ -1,14 +1,13 @@
 package br.com.engecopi.framework.ui.view
 
-import com.github.vok.karibudsl.cssLayout
-import com.github.vok.karibudsl.perc
-import com.github.vok.karibudsl.verticalLayout
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.cssLayout
+import com.github.mvysny.karibudsl.v8.perc
+import com.github.mvysny.karibudsl.v8.verticalLayout
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.shared.Registration
 import com.vaadin.ui.Button
 import com.vaadin.ui.Component
-import com.vaadin.ui.FormLayout
 import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Label
 import com.vaadin.ui.UI
@@ -83,18 +82,22 @@ open class DialogPopup<BEAN : Any>(
 
 fun VerticalLayout.grupo(caption: String = "", block: VerticalLayout.() -> Unit) {
   cssLayout(caption) {
-    w = 100.perc
+    expand = 1
     addStyleName(ValoTheme.LAYOUT_CARD)
-    verticalLayout { this.block() }
+    verticalLayout {
+      w = 100.perc
+      this.block()
+    }
   }
 }
 
 fun VerticalLayout.row(block: HorizontalLayout.() -> Unit) {
   val horizontalLayout = HorizontalLayout()
-  horizontalLayout.w = 100.perc
+  horizontalLayout.setWidth("100%")
+
   horizontalLayout.block()
-  horizontalLayout.iterator().forEach { component ->
-    component.w = 100.perc
-  }
+  //horizontalLayout.iterator().forEach { component ->
+  //  component.setWidth("100%")
+ // }
   addComponent(horizontalLayout)
 }

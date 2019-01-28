@@ -6,12 +6,12 @@ class NotaSaci(
   val numero: String?,
   val serie: String?,
   val date: Int?,
+  val dt_emissao: Int?,
   val prdno: String?,
   val grade: String?,
   val quant: Int?,
   val vendName: String? = "",
   val clienteName: String? = "",
   val tipo: String?,
-  val localizacao: String?,
   val invno: Int?
 )

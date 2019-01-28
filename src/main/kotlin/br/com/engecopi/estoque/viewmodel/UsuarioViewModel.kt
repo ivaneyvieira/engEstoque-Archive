@@ -14,9 +14,9 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
 
   fun findProduto(offset: Int, limit: Int): List<Produto> {
     return queryProduto
-            .setFirstRow(offset)
-            .setMaxRows(limit)
-            .findList()
+      .setFirstRow(offset)
+      .setMaxRows(limit)
+      .findList()
   }
 
   fun countProduto(): Int {
@@ -29,7 +29,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       if (loginName.isNotBlank())
         usuario.loginName = loginName
       usuario.loja = bean.loja
-      usuario.impressora = bean.impressora ?: ""
       usuario.locais = bean.localizacaoes.toList()
       usuario.update()
     }
@@ -39,14 +38,13 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
     val usuario = Usuario().apply {
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
-      this.impressora = bean.impressora ?: ""
       this.locais = bean.localizacaoes.toList()
     }
     usuario.insert()
   }
 
   override val query: QUsuario
-    get() = Usuario.where()
+    get() = Usuario.where().loginName.`in`(Usuario.findLoginUser())
 
   override fun Usuario.toVO(): UsuarioCrudVo {
     val usuario = this
@@ -54,7 +52,6 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       entityVo = usuario
       this.loginName = usuario.loginName
       this.loja = usuario.loja
-      this.impressora = usuario.impressora
       this.localizacaoes = usuario.locais.toHashSet()
     }
   }
@@ -78,13 +75,11 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   }
 
   var loginName: String? = ""
-  var impressora: String? = ""
   var loja: Loja? = null
     set(value) {
       field = value
       locaisLoja.clear()
-      val sets = ViewProdutoLoc.where().loja.id.eq(value?.id).findList()
-              .map { it.abreviacao }.distinct().toMutableSet()
+      val sets = value?.findAbreviacores().orEmpty().toMutableSet()
       locaisLoja.addAll(sets)
     }
   val nome

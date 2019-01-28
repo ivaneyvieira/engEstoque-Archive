@@ -3,22 +3,18 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.framework.printer.ZPLPreview
 import br.com.engecopi.utils.SystemUtils
 import br.com.engecopi.utils.makeResource
-import com.github.vok.karibudsl.button
-import com.github.vok.karibudsl.label
-import com.github.vok.karibudsl.link
-import com.github.vok.karibudsl.perc
-import com.github.vok.karibudsl.verticalLayout
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.label
+import com.github.mvysny.karibudsl.v8.link
+import com.github.mvysny.karibudsl.v8.perc
+import com.github.mvysny.karibudsl.v8.verticalLayout
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.annotations.Theme
 import com.vaadin.server.VaadinRequest
-import com.vaadin.server.VaadinSession
 import com.vaadin.shared.ui.ContentMode
-import com.vaadin.ui.Button
 import com.vaadin.ui.JavaScript
 import com.vaadin.ui.Label
 import com.vaadin.ui.Link
 import com.vaadin.ui.UI
-import java.util.concurrent.*
 
 @Theme("xxx")
 class DialogEtiqueta : UI() {

@@ -34,6 +34,7 @@ class QAssocNota<R>(name: String, root: R) : TQAssocBean<Nota,R>(name, root) {
   lateinit var fornecedor: PString<R>
   lateinit var cliente: PString<R>
   lateinit var data: PLocalDate<R>
+  lateinit var dataEmissao: PLocalDate<R>
   lateinit var hora: PLocalTime<R>
   lateinit var observacao: PString<R>
   lateinit var loja: QAssocLoja<R>

@@ -1,64 +1,90 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.ui.EstoqueUI
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.NotaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
+import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindVisible
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import com.github.vok.karibudsl.VaadinDsl
-import com.github.vok.karibudsl.addColumnFor
-import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.getAll
-import com.github.vok.karibudsl.grid
-import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.textField
+import br.com.engecopi.framework.viewmodel.EntityVo
+import com.github.mvysny.karibudsl.v8.VAlign
+import com.github.mvysny.karibudsl.v8.VaadinDsl
+import com.github.mvysny.karibudsl.v8.addColumnFor
+import com.github.mvysny.karibudsl.v8.align
+import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.getAll
+import com.github.mvysny.karibudsl.v8.grid
+import com.github.mvysny.karibudsl.v8.h
+import com.github.mvysny.karibudsl.v8.px
+import com.github.mvysny.karibudsl.v8.textField
 import com.vaadin.data.Binder
+import com.vaadin.event.ShortcutAction.KeyCode.ENTER
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.ui.Button
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.NumberRenderer
+import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
+import org.vaadin.patrik.FastNavigation
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
-  val lojaDefault
-    get() = EstoqueUI.loja
-  val usuario = EstoqueUI.user!!
+  val lojaDefault = RegistryUserInfo.lojaDefault
+  val usuario = RegistryUserInfo.usuarioDefault
   val isAdmin = usuario.admin
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).notaFiscalField(
     operation: CrudOperation?,
     binder: Binder<V>
-  ) {
+                                                                            ) {
     textField("Nota Fiscal") {
-      expandRatio = 2f
+      expand = 2
       isReadOnly = operation != ADD
       bind(binder).bind("numeroNF")
       reloadBinderOnChange(binder)
     }
   }
 
+  fun <T : EntityVo<*>>btnImprimeTudo(grid : GridCrudFlex<T>) : Button{
+    val button = Button("Imprime Notas")
+    button.let {
+      it.icon = VaadinIcons.PRINT
+      print {
+        val print = viewModel.imprime()
+        print
+      }.extend(it)
+      it.addClickListener{
+        grid.refreshGrid()
+      }
+    }
+    return button
+  }
+
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).lojaField(
     operation: CrudOperation?,
     binder: Binder<V>
-  ) {
+                                                                      ) {
     comboBox<Loja>("Loja") {
-      expandRatio = 2f
+      expand = 2
       default { it.sigla }
       isReadOnly = operation != ADD
       setItems(viewModel.findLojas(lojaDefault))
 
-      bind(binder).asRequired("A loja deve ser informada").bind("lojaNF")
+      bind(binder).asRequired("A lojaDefault deve ser informada").bind("lojaNF")
       reloadBinderOnChange(binder)
     }
   }
@@ -66,11 +92,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
   inline fun <reified V : NotaVo> VerticalLayout.produtoField(
     operation: CrudOperation?,
     binder: Binder<V>, tipo: String
-  ) {
+                                                             ) {
     row {
       this.bindVisible(binder, NotaVo::naoTemGrid.name)
       comboBox<Produto>("Código") {
-        expandRatio = 2f
+        expand = 2
         isReadOnly = operation != ADD
         default { "${it.codigo.trim()} ${it.grade}".trim() }
         isTextInputAllowed = true
@@ -79,17 +105,28 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         reloadBinderOnChange(binder)
       }
       textField("Descrição") {
-        expandRatio = 5f
+        expand = 5
         isReadOnly = true
         bind(binder).bind("descricaoProduto")
       }
+      comboBox<LocProduto>("Localizacao") {
+        expand = 3
+        isReadOnly = operation != ADD
+        default { localizacao ->
+          localizacao.localizacao
+        }
+        isTextInputAllowed = true
+
+        bindItens(binder, NotaVo::localizacaoProduto.name)
+        bind(binder).bind(NotaVo::localizacao.name)
+      }
       textField("Grade") {
-        expandRatio = 1f
+        expand = 1
         isReadOnly = true
         bind(binder).bind("grade")
       }
-      integerField("Qtd ${tipo}") {
-        expandRatio = 1f
+      integerField("Qtd $tipo") {
+        expand = 1
         isReadOnly = (isAdmin == false) && (operation != ADD)
         this.bind(binder).bind("quantProduto")
       }
@@ -97,8 +134,9 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     row {
       this.bindVisible(binder, "temGrid")
       grid(ProdutoVO::class) {
-        expandRatio = 2f
+        expand = 2
         this.h = 200.px
+        editor.isEnabled = true
         removeAllColumns()
         val selectionModel = setSelectionMode(MULTI)
         selectionModel.addSelectionListener { select ->
@@ -111,6 +149,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
             }
           }
         }
+        val comboLoc = ComboBox<LocProduto>().apply {
+          isEmptySelectionAllowed = false
+          isTextInputAllowed = false
+        }
+
         addColumnFor(ProdutoVO::codigo) {
           expandRatio = 1
           caption = "Código"
@@ -119,15 +162,53 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           expandRatio = 5
           caption = "Descrição"
         }
+        addColumnFor(ProdutoVO::localizacao) {
+          expandRatio = 4
+          caption = "Localização"
+          setEditorComponent(comboLoc)
+        }
         addColumnFor(ProdutoVO::grade) {
           expandRatio = 1
           caption = "Grade"
         }
+        addColumnFor(ProdutoVO::saldo) {
+          expandRatio = 1
+          caption = "Saldo Atual"
+          align = VAlign.Right
+        }
         addColumnFor(ProdutoVO::quantidade) {
           expandRatio = 1
-          caption = "Qtd ${tipo}"
+          caption = "Qtd $tipo"
+          align = VAlign.Right
+        }
+        addColumnFor(ProdutoVO::saldoFinal) {
+          expandRatio = 1
+          caption = "Saldo Final"
+          align = VAlign.Right
         }
         bindItens(binder, "produtos")
+        editor.addOpenListener { event ->
+          event.bean.produto?.let { produto ->
+            val locSulfixos = produto.localizacoes().map { LocProduto(it) }
+            comboLoc.setItems(locSulfixos)
+            comboLoc.setItemCaptionGenerator { it.localizacao }
+            comboLoc.value = event.bean.localizacao
+          }
+        }
+        val nav = FastNavigation<ProdutoVO>(this, false, true)
+        nav.changeColumnAfterLastRow = true
+        nav.openEditorWithSingleClick = true
+        nav.allowArrowToChangeRow=true
+        nav.openEditorOnTyping=true
+        nav.addEditorSaveShortcut(ENTER)
+        editor.cancelCaption = "Cancelar"
+        editor.saveCaption = "Salvar"
+        editor.isBuffered = false
+        this.setStyleGenerator {
+           if(it.saldoFinal < 0)
+             "error_row"
+           else null
+        }
       }
     }
   }

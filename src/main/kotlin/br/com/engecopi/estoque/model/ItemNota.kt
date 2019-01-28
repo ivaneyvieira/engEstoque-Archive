@@ -2,7 +2,8 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
-import io.ebean.annotation.FetchPreference
+import io.ebean.annotation.Cache
+import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
@@ -18,78 +19,78 @@ import javax.persistence.Transient
 import kotlin.reflect.full.memberProperties
 
 @Entity
+@Cache(enableQueryCache=true)
+@CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "itens_nota")
-@Index(unique = true, columnNames = ["nota_id", "produto_id"])
+@Index(unique = true, columnNames = ["nota_id", "produto_id", "localizacao"])
 class ItemNota : BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
-  @FetchPreference(1)
+ // @FetchPreference(1)
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var produto: Produto? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  @FetchPreference(2)
+ // @FetchPreference(2)
   var nota: Nota? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  @FetchPreference(3)
+ // @FetchPreference(3)
   var etiqueta: Etiqueta? = null
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
-  @FetchPreference(4)
+ // @FetchPreference(4)
   var usuario: Usuario? = null
   var saldo: Int? = 0
-  var impresso : Boolean = false
+  var impresso: Boolean = false
   @Length(60)
-  var localizacao : String=""
-  
+  var localizacao: String = ""
   val quantidadeSaldo: Int
     get() = (nota?.tipoMov?.multiplicador ?: 0) * quantidade
-  
   val descricao: String?
     @Transient get() = produto?.descricao
-  
   val codigo: String?
     @Transient get() = produto?.codigo
-  
   val grade: String?
     @Transient get() = produto?.grade
-  
   val numeroNota: String?
     @Transient get() = nota?.numero
-  
   val rota: String?
     @Transient get() = nota?.rota
-  
   val tipoMov: TipoMov?
     @Transient get() = nota?.tipoMov
-  
   val tipoNota: TipoNota?
     @Transient get() = nota?.tipoNota
-  
   val dataNota: LocalDate?
     @Transient get() = nota?.data
-  
-/*  val ultilmaMovimentacao: Boolean
+  val ultilmaMovimentacao: Boolean
     @Transient
     get() {
       return produto?.ultimaNota()?.let {
         it.id == this.id
       } ?: true
     }
-    */
   val template: String
-    @Transient get() = Etiqueta.where().tipoMov.eq(tipoMov).findOne()?.template ?: ""
-  
+    @Transient get() = Etiqueta
+                         .where()
+                         .tipoMov
+                         .eq(tipoMov)
+                         .findList()
+                         .firstOrNull()?.template ?: ""
+
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
       nota ?: return null
       produto ?: return null
       return ItemNota.where().nota.id.eq(nota.id)
-              .produto.id.eq(produto.id)
-              .findOne()
+        .produto.id.eq(produto.id)
+        .findOne()
     }
   }
-  
+
   fun printEtiqueta() = NotaPrint(this)
+
+  fun recalculaSaldos() {
+    produto?.recalculaSaldos(localizacao = localizacao)
+  }
 }
 
 class NotaPrint(item: ItemNota) {
@@ -109,7 +110,6 @@ class NotaPrint(item: ItemNota) {
   val dataLocal = if (isNotaSaci)
     notaSaci?.data
   else item.data
-  
   val data = dataLocal?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
   val produto = item.produto
   val sd = item.saldo ?: 0
@@ -121,7 +121,7 @@ class NotaPrint(item: ItemNota) {
   val un
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
-  
+
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->
       reduce.replace("[${prop.name}]", "${prop.get(this)}")

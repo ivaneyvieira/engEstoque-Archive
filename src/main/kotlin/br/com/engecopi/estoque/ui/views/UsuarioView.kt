@@ -2,20 +2,19 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.ui.EstoqueUI
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
-import br.com.engecopi.framework.printer.printerSaci
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.bindItensSet
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.twinColSelect
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.twinColSelect
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.VerticalLayout
@@ -27,22 +26,22 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
-  val isAdmin = EstoqueUI.user?.admin ?: false
+  val isAdmin = RegistryUserInfo.usuarioDefault.admin
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
     { _ -> viewModel.countProduto() }
-  )
+                                                               )
 
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,
     binder: Binder<UsuarioCrudVo>,
     readOnly: Boolean
-  ) {
+                         ) {
     formLayout.apply {
       row {
         textField {
-          expandRatio = 1f
+          expand = 1
           caption = "Login Saci"
           isReadOnly = isAdmin == false
           bind(binder).bind(UsuarioCrudVo::loginName)
@@ -51,7 +50,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           }
         }
         textField {
-          expandRatio = 4f
+          expand = 4
           caption = "Nome"
           isReadOnly = true
           bind(binder).bind(UsuarioCrudVo::nome.name)
@@ -59,7 +58,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
       }
       row {
         comboBox<Loja> {
-          expandRatio = 1f
+          expand = 1
           caption = "Loja"
           isEmptySelectionAllowed = true
           isTextInputAllowed = false
@@ -68,15 +67,6 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           setItemCaptionGenerator { it.sigla }
           bind(binder).bind(UsuarioCrudVo::loja)
           reloadBinderOnChange(binder)
-        }
-        comboBox<String> {
-          expandRatio = 1f
-          caption = "Impressora"
-          isEmptySelectionAllowed = false
-          isTextInputAllowed = false
-          setItems(printerSaci.printers.map { it.name })
-          setItemCaptionGenerator { it }
-          bind(binder).bind(UsuarioCrudVo::impressora)
         }
       }
       row {
@@ -93,7 +83,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   init {
     form("Usuários") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(EstoqueUI.user?.admin ?: false)
+        setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
         column(UsuarioCrudVo::loginName) {
           expandRatio = 1
           caption = "Usuário"
@@ -111,11 +101,7 @@ class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         column(UsuarioCrudVo::localStr) {
           expandRatio = 1
           caption = "Localização"
-          setSortProperty("localizacaoes")
-        }
-        column(UsuarioCrudVo::impressora) {
-          expandRatio = 1
-          caption = "Impressora"
+          setSortProperty("localizacaoesDefault")
         }
       }
     }

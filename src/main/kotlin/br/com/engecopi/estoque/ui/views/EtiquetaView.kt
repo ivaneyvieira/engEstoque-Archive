@@ -1,24 +1,24 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.TipoMov
-import br.com.engecopi.estoque.ui.EstoqueUI
 import br.com.engecopi.estoque.viewmodel.EtiquetaViewModel
 import br.com.engecopi.estoque.viewmodel.EtiquetaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.default
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.utils.SystemUtils
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.alignment
-import com.github.vok.karibudsl.bind
-import com.github.vok.karibudsl.button
-import com.github.vok.karibudsl.comboBox
-import com.github.vok.karibudsl.expandRatio
-import com.github.vok.karibudsl.h
-import com.github.vok.karibudsl.px
-import com.github.vok.karibudsl.textArea
-import com.github.vok.karibudsl.textField
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.alignment
+import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.button
+import com.github.mvysny.karibudsl.v8.comboBox
+import com.github.mvysny.karibudsl.v8.h
+import com.github.mvysny.karibudsl.v8.px
+import com.github.mvysny.karibudsl.v8.textArea
+import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Alignment
@@ -39,18 +39,18 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
       h = 600.px
       row {
         textField("Título") {
-          expandRatio = 4f
+          expand = 4
           bind(binder).bind(EtiquetaVo::titulo)
         }
         comboBox<TipoMov>("Tipo") {
-          expandRatio = 1f
+          expand = 1
           default { it.descricao }
           setItems(TipoMov.values().toList())
           bind(binder).bind(EtiquetaVo::tipoMov)
         }
         button("Ajuda") {
           alignment = Alignment.BOTTOM_RIGHT
-          expandRatio = 1f
+          expand = 1
           icon = VaadinIcons.BOOK
           addClickListener {
             showInfo(SystemUtils.readFile("/html/variaveis.html")?:"")
@@ -60,7 +60,7 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
       row {
         textArea("Template") {
           h = 400.px
-          expandRatio = 1f
+          expand = 1
           bind(binder).bind(EtiquetaVo::template)
         }
       }
@@ -70,7 +70,7 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
   init {
     form("Etiquetas") {
       gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(EstoqueUI.user?.admin ?: false)
+        setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
         column(EtiquetaVo::titulo) {
           expandRatio = 1
           caption = "Título"

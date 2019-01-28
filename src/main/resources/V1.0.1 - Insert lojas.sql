@@ -1,4 +1,4 @@
-insert into lojas(numero, created_at, updated_at, version)
+nsert into lojas(numero, created_at, updated_at, version)
 values(1, current_date, current_date, 0);
 
 insert into lojas(numero, created_at, updated_at, version)

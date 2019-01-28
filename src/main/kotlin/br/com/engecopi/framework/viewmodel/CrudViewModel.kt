@@ -1,51 +1,53 @@
 package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.BaseModel
+import io.ebean.PagedList
 import io.ebean.typequery.TQRootBean
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
 abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : EntityVo<MODEL>>
-(view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
+  (view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
+  private var queryView: QueryView? = null
+  private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
   override fun execUpdate() {}
-  
+
   abstract fun update(bean: VO)
   abstract fun add(bean: VO)
   abstract fun delete(bean: VO)
-  
+
   fun update() = exec {
     crudBean?.let { bean -> update(bean) }
   }
-  
+
   fun add() = exec {
     crudBean?.let { bean -> add(bean) }
   }
-  
+
   fun delete() = exec {
     crudBean?.let { bean -> delete(bean) }
   }
-  
+
   //Query Lazy
-  
   abstract val query: Q
-  
+
   abstract fun MODEL.toVO(): VO
-  
+
   open fun Q.filterString(text: String): Q {
     return this
   }
-  
+
   open fun Q.filterInt(int: Int): Q {
     return this
   }
-  
+
   open fun Q.filterDate(date: LocalDate): Q {
     return this
   }
-  
-  fun Q.filterBlank(filter: String): Q {
+
+  private fun Q.filterBlank(filter: String): Q {
     return if (filter.isBlank()) this
     else {
       val date = parserDate(filter)
@@ -56,11 +58,11 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
       q3.endOr()
     }
   }
-  
+
   open fun Q.orderQuery(): Q {
     return this
   }
-  
+
   private fun parserDate(filter: String): LocalDate? {
     val frm = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     return try {
@@ -69,8 +71,8 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
       null
     }
   }
-  
-  fun Q.makeSort(sorts: List<Sort>): Q {
+
+  private fun Q.makeSort(sorts: List<Sort>): Q {
     return if (sorts.isEmpty())
       this.orderQuery()
     else {
@@ -78,24 +80,31 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
       orderBy(orderByClause)
     }
   }
-  
-  open fun findQuery(offset: Int, limit: Int, filter: String, sorts: List<Sort>): List<VO> = execList {
-    println("LAZY ==> offset = $offset limit = $limit filter = $filter")
-    query.filterBlank(filter)
-            .setFirstRow(offset)
-            .setMaxRows(limit)
-            .makeSort(sorts)
-            .findList()
-            .map { model->
-              model.toVO().apply {
-                entityVo = model
-              }
-            }
+
+  open fun findQuery(): List<VO> = execList {
+    val list = pagedList?.list.orEmpty()
+    list.map { model ->
+      val vo = model.toVO()
+      vo.apply {
+        entityVo = model
+      }
+    }
   }
-  
-  open fun countQuery(filter: String): Int = execInt {
-    query.filterBlank(filter)
-            .findCount()
+
+  open fun countQuery(): Int = execInt {
+    pagedList?.totalCount ?: 0
+  }
+
+  fun updateQueryView(queryView: QueryView) {
+    if (this.queryView != queryView) {
+      this.queryView = queryView
+      pagedList = query.filterBlank(queryView.filter)
+        .makeSort(queryView.sorts)
+        .setFirstRow(queryView.offset)
+        .setMaxRows(queryView.limit)
+        .findPagedList()
+      pagedList?.loadCount()
+    }
   }
 }
 
@@ -103,10 +112,18 @@ data class Sort(val propertyName: String, val descending: Boolean = false)
 
 abstract class EntityVo<MODEL : BaseModel> {
   open var entityVo: MODEL? = null
-  
+  var readOnly: Boolean = false
+
   fun toEntity(): MODEL? {
     return entityVo ?: findEntity()
   }
-  
+
   abstract fun findEntity(): MODEL?
 }
+
+data class QueryView(
+  val offset: Int,
+  val limit: Int,
+  val filter: String, val
+  sorts: List<Sort>
+                    )
