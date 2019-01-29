@@ -10,7 +10,6 @@ src/main/webapp/VAADIN/themes/mytheme/addons.scss
 src/main/webapp/VAADIN/themes/mytheme/styles.css
 src/main/webapp/VAADIN/themes/mytheme/styles.css.gz
 .designer
-.gradle
 .settings
 .vscode
 .classpath
@@ -19,3 +18,4 @@ src/main/webapp/VAADIN/themes/mytheme/styles.css.gz
 Procfile
 deploy.sh
 
+/.gradle/

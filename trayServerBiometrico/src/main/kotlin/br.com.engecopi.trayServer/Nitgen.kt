@@ -3,14 +3,12 @@ package br.com.engecopi.trayServer
 import com.nitgen.SDK.BSP.NBioBSPJNI
 
 class Nitgen {
-  private val errors = arrayOf("Nenhum erro", // 0
-                               "Invalid handle") // 1
-  private var objIndex: NBioBSPJNI.IndexSearch? = null
+  private val errors = mapOf(0 ->"Nenhum erro",
+                              1 -> "Invalid handle")
   var statusMessage: String? = null
     private set
   var fingerkey: String? = null
     private set
-  private var operacaoExecutada: Boolean = false
   private var digitalCapturadaStatusDispositivo: Int = 0
   private val UserID: Int
   private val bsp: NBioBSPJNI
@@ -20,23 +18,20 @@ class Nitgen {
   private var hardwareInicializado = false
   private var dispositivoAberto = false
   val deviceNameID: Short
-    get() = if (this.hardwareInicializado) {
+    get() = if (this.hardwareInicializado)
       this.deviceEnumInfo!!.DeviceInfo[0].NameID
-    } else {
+    else
       0
-    }
-  val deviceName: String
-    get() = if (this.hardwareInicializado) {
+  val deviceName: String?
+    get() = if (this.hardwareInicializado)
       this.deviceEnumInfo!!.DeviceInfo[0].Name
-    } else {
-      "Dispositivo não está aberto"
-    }
+    else
+      null
   val lastErrorCode: Int
-    get() = if (this.hasError) {
+    get() = if (this.hasError)
       this.bsp.GetErrorCode()
-    } else {
+    else
       0
-    }
   val lastErrorMessage: String
     get() = this.errors[this.bsp.GetErrorCode()]
   val version: String
@@ -53,11 +48,10 @@ class Nitgen {
 
     this.bsp = NBioBSPJNI()
     if (checkError()) {
-      println(Nitgen.DEBUG_PREFIX + "Erro ao criar objeto NBioBSPJNI")
-      throw Exception()
+      expection(Nitgen.DEBUG_PREFIX + "Erro ao criar objeto NBioBSPJNI")
     }
 
-    this.deviceEnumInfo = this.bsp.DEVICE_ENUM_INFO()
+    this.deviceEnumInfo = this.bsp.DEVICE_ENUM_INFO7777()
     this.bsp.EnumerateDevice(this.deviceEnumInfo)
 
     if (checkError()) {
@@ -118,18 +112,6 @@ class Nitgen {
         this.digitalCapturadaStatusDispositivo = this.bsp.GetTextFIRFromHandle(fir_handle, textSavedFIR)
         this.fingerkey = textSavedFIR.TextFIR
         this.operacaoExecutada = true
-        //                NBioBSPJNI.INPUT_FIR inputFIR = this.bsp.new INPUT_FIR();
-        //                inputFIR.SetFIRHandle(fir_handle);
-        //                NBioBSPJNI.IndexSearch.FP_INFO fpInfo = objIndex.new FP_INFO();
-        //                objIndex.Identify(inputFIR, 6, fpInfo, 5000);
-        //
-        //                if (fpInfo.ID > 0) {
-        //                    setUserID(fpInfo.ID);
-        //                    this.setMensagemStatus("Cliente encontrado!");
-        //                } else {
-        //                    setUserID(0);
-        //                    this.setMensagemStatus("Nenhum cliente encontrado!");
-        //                }
       } else {
         this.operacaoExecutada = false
         println("Erro na captura e/ou dispositivo")

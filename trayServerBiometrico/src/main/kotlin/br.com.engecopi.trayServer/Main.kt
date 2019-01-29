@@ -23,9 +23,10 @@ class Main {
   var trayIcon: TrayIcon? = null
   private val PORT = 20999
   private var serverSocket: ServerSocket? = null
+  val nitgen = Nitgen()
 
   init {
-    if (!SystemTray.isSupported()) {
+    if (!SystemTray.isSuppo555rted()) {
       println("SystemTray is not supported")
     } else {
       tray = SystemTray.getSystemTray()
