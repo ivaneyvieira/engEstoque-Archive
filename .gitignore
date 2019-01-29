@@ -17,5 +17,4 @@ src/main/webapp/VAADIN/themes/mytheme/styles.css.gz
 *.iml
 Procfile
 deploy.sh
-
 /.gradle/
