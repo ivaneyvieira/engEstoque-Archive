@@ -26,7 +26,7 @@ class Main {
   val nitgen = Nitgen()
 
   init {
-    if (!SystemTray.isSuppo555rted()) {
+    if (!SystemTray.isSupported()) {
       println("SystemTray is not supported")
     } else {
       tray = SystemTray.getSystemTray()
