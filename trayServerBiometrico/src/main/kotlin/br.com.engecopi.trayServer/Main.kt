@@ -1,5 +1,13 @@
 package br.com.engecopi.trayServer
 
+import br.com.engecopi.trayServer.Comando.ComparaDigital
+import br.com.engecopi.trayServer.Comando.LerDigital
+import br.com.engecopi.trayServer.Comando.RegistraDigital
+import br.com.engecopi.trayServer.Comando.ResultadoErro
+import br.com.engecopi.trayServer.Comando.ResultadoOk
+import br.com.engecopi.trayServer.Mensagem.Companion
+import br.com.engecopi.trayServer.Mensagem.Companion.erro
+import br.com.engecopi.trayServer.Protocolo.PORT
 import com.nitgen.SDK.BSP.NBioBSPJNI
 import java.awt.AWTException
 import java.awt.CheckboxMenuItem
@@ -12,6 +20,9 @@ import java.io.IOException
 import java.io.PrintWriter
 import java.net.ServerSocket
 import javax.swing.ImageIcon
+import java.io.InputStreamReader
+import java.io.BufferedReader
+import com.sun.xml.internal.ws.streaming.XMLStreamWriterUtil.getOutputStream
 
 fun main(args: Array<String>) {
   val main = Main()
@@ -21,7 +32,6 @@ fun main(args: Array<String>) {
 class Main {
   var tray: SystemTray? = null
   var trayIcon: TrayIcon? = null
-  private val PORT = 20999
   private var serverSocket: ServerSocket? = null
   val nitgen = Nitgen()
 
@@ -74,11 +84,10 @@ class Main {
           println("Accept ....")
           val socket = serverSocket.accept()
           println("New client connected")
-          val output = socket.getOutputStream()
-          val writer = PrintWriter(output, true)
-          val template = lerDigital()
-          writer.println(template)
-          socket.close()
+          val output = PrintWriter(socket.getOutputStream(), true)
+          val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+          val template = processa(input.readLine())
+          output.println(template)
         }
       }
     } catch (ex: IOException) {
@@ -87,85 +96,32 @@ class Main {
     }
   }
 
-  private fun lerDigital(): String? {
-    val bsp = NBioBSPJNI()
-    println("bsp iniciado")
-    if (bsp.IsErrorOccured())
-      "NBioBSP Error Occured [" + bsp.GetErrorCode() + "]"
-    val deviceEnumInfo = bsp.DEVICE_ENUM_INFO()
-    bsp.EnumerateDevice(deviceEnumInfo)
-    // Device Open
-    val nameId = deviceEnumInfo.DeviceInfo[0].NameID
-    val instance = deviceEnumInfo.DeviceInfo[0].Instance
-    bsp.OpenDevice(nameId, instance)
-    /*
-      val inputFIR = bsp.INPUT_FIR()
-      val bResult = false
-      val payload = bsp.FIR_PAYLOAD()
-      val result = payload.GetText()
-      */
-
-    /*
-   val  hSavedFIR = bsp.FIR_HANDLE()
-
-    bsp.Enroll(hSavedFIR, null)
-    bsp.Capture(hSavedFIR)
-
-    var textSavedFIR: NBioBSPJNI.FIR_TEXTENCODE? = null
-    var result : String? = ""
-    if (bsp.IsErrorOccured() == false) {
-      val textSavedFIR = bsp.FIR_TEXTENCODE ()
-      bsp.GetTextFIRFromHandle(hSavedFIR, textSavedFIR)
-      result = textSavedFIR.TextFIR
-    }*/
-/*
-    var result : String? = null
-    val textSavedFIR = bsp.FIR_TEXTENCODE ()
-    val inputFIR = bsp.INPUT_FIR()
-    val bResult = false
-    val payload = bsp.FIR_PAYLOAD()
-    // Set stored textFIR data.
-    inputFIR.SetTextFIR(textSavedFIR)
-    bsp.Verify(inputFIR, bResult, payload)
-
-    if (bsp.IsErrorOccured() == false) {
-
-        result = "Verify OK - Payload: " + payload.GetText()
-
-    }
-*/
-
-    var result : String? = ""
-
-    val fir_handle = bsp.FIR_HANDLE()
-    var textSavedFIR: NBioBSPJNI.FIR_TEXTENCODE? = null
-    var fingerPlaced: Boolean = true
-    bsp.CheckFinger(fingerPlaced)
-    if (fingerPlaced) {
-      //Captura a digital
-      bsp.Capture(fir_handle)
-      //Obtem a digital capturada em modo texto
-      if (!bsp.IsErrorOccured()) {
-        textSavedFIR = bsp.FIR_TEXTENCODE()
-        val digitalCapturadaStatusDispositivo = bsp.GetTextFIRFromHandle(fir_handle, textSavedFIR)
-        result = textSavedFIR.TextFIR
-        //                }
-      } else {
-        result = "Erro na captura e/ou dispositivo"
+  private fun processa(text: String): String? {
+    return Mensagem.mensagem(text)?.let { mensagem ->
+      val retorno = when (mensagem.comando) {
+        ComparaDigital  -> comparaDigiral(mensagem.msg)
+        RegistraDigital -> registraDigital(mensagem.msg)
+        LerDigital      -> lerDigital(mensagem.msg)
+        ResultadoOk     -> Mensagem.erro("Comando Inválido")
+        ResultadoErro   -> Mensagem.erro("Comando Inválido")
       }
-    } else {
-      result = "Erro na captura e/ou dispositivo"
+      return@let retorno.toText()
     }
+  }
 
+  private fun lerDigital(msg: String): Mensagem {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
 
-    // Device Close
-    bsp.CloseDevice(nameId, instance)
+  private fun registraDigital(loginName: String): Mensagem {
+    return Nitgen { nitgen ->
+      val msg = nitgen.fingerprintEnrollment(loginName) ?: return@Nitgen erro("Registro inválido")
+      return@Nitgen Mensagem.ok(msg)
+    }.execute()
+  }
 
-    println("Name $nameId")
-    println("Instance $instance")
-
-    bsp.dispose()
-    return result
+  private fun comparaDigiral(msg: String): Mensagem {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
   }
 
   fun createPopup() = PopupMenu().apply {

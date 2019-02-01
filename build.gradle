@@ -70,6 +70,7 @@ compileKotlin {
 
 
 dependencies {
+  compile project(':trayServerBiometrico')
   compile "com.github.mvysny.karibudsl:karibu-dsl-v8:$karibu_version"
   // Karibu-DSL dependency
   compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

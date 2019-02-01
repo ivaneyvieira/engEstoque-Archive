@@ -1,10 +1,11 @@
 package br.com.engecopi.trayServer
 
+import br.com.engecopi.trayServer.Mensagem.Companion.erro
 import com.nitgen.SDK.BSP.NBioBSPJNI
 import com.nitgen.SDK.BSP.NBioBSPJNI.FIR_PAYLOAD
 import com.nitgen.SDK.BSP.NBioBSPJNI.INPUT_FIR
 
-class Nitgen() {
+class Nitgen(val processamento: (Nitgen) -> Mensagem) {
   private val errors = mapOf(0 to "Nenhum erro",
                              1 to "Invalid handle")
   //private var digitalCapturadaStatusDispositivo: Int = 0
@@ -75,7 +76,7 @@ class Nitgen() {
     this.dispositivoAberto = false
   }
 
-  fun enrollStringKey(): String? {
+  fun captureDigial(): String? {
     if (!this.dispositivoAberto)
       throw exception("Dispositivo não está conectado")
     val fingerPlaced = true
@@ -97,11 +98,13 @@ class Nitgen() {
       throw exception("Não foi detectada presença de digitais no dispositivo")
   }
 
-  fun fingerprintEnrollment(): String? {
+  fun fingerprintEnrollment(loginName: String): String? {
     if (!this.dispositivoAberto)
       throw exception("Dispositivo não está conectado")
     val hSavedFIR = bsp.FIR_HANDLE()
-    bsp.Enroll(hSavedFIR, null)
+    val payload = bsp.FIR_PAYLOAD()
+    payload.SetText(loginName)
+    bsp.Enroll(hSavedFIR, payload)
     bsp.Capture(hSavedFIR)
     return if (bsp.IsErrorOccured()) {
       throw exception("Erro na captura da digital")
@@ -123,7 +126,7 @@ class Nitgen() {
     return erroCode == 0
   }
 
-  fun verifyMatch(textSaved: String?, textCaptured: String?): Boolean {
+  fun verifyMatch(textCaptured: String?, textSaved: String?): Boolean {
     textSaved ?: return false
     textCaptured ?: return false
     val inputFIR1 = bsp.INPUT_FIR()
@@ -150,6 +153,17 @@ class Nitgen() {
     if (this.hasError)
       System.err.println(Nitgen.DEBUG_PREFIX + this.lastErrorMessage)
     return this.hasError
+  }
+
+  fun execute(): Mensagem {
+    return try {
+      openDevice()
+      val mensagem = processamento(this)
+      closeDevice()
+      mensagem
+    }catch(e : Throwable){
+      erro(e.localizedMessage)
+    }
   }
 
   companion object {
