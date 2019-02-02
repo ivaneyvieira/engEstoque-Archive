@@ -33,7 +33,6 @@ class Main {
   var tray: SystemTray? = null
   var trayIcon: TrayIcon? = null
   private var serverSocket: ServerSocket? = null
-  val nitgen = Nitgen()
 
   init {
     if (!SystemTray.isSupported()) {
