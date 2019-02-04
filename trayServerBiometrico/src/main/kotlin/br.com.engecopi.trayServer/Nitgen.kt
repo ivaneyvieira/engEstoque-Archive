@@ -29,7 +29,7 @@ class Nitgen(val processamento: (Nitgen) -> Mensagem) {
   val lastErrorMessage: String
     get() {
       val numErro = this.bsp.GetErrorCode()
-      return this.errors[numErro] ?: "Erro desconhecido $numErro"
+      return this.errors[numErro] ?: "Erro desconhecido: $numErro"
     }
   val version: String
     get() = this.bsp.GetVersion()
