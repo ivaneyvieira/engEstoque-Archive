@@ -100,7 +100,7 @@ class Main {
       val retorno = when (mensagem.comando) {
         ComparaDigital  -> comparaDigiral(mensagem.msg)
         RegistraDigital -> registraDigital(mensagem.msg)
-        LerDigital      -> lerDigital(mensagem.msg)
+        LerDigital      -> lerDigital()
         ResultadoOk     -> Mensagem.erro("Comando Inválido")
         ResultadoErro   -> Mensagem.erro("Comando Inválido")
       }
@@ -108,8 +108,11 @@ class Main {
     }
   }
 
-  private fun lerDigital(msg: String): Mensagem {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  private fun lerDigital(): Mensagem {
+    return Nitgen { nitgen ->
+      val msg = nitgen.captureDigial() ?: return@Nitgen erro("Erro na captura da digital")
+      return@Nitgen Mensagem.ok(msg)
+    }.execute()
   }
 
   private fun registraDigital(loginName: String): Mensagem {
@@ -120,7 +123,13 @@ class Main {
   }
 
   private fun comparaDigiral(msg: String): Mensagem {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    val sep = '\t'
+    val dig1 = msg.split("$sep").getOrNull(0) ?: ""
+    val dig2 =msg.split("$sep").getOrNull(0) ?: ""
+    return Nitgen { nitgen ->
+      val match = nitgen.verifyMatch(dig1, dig2)
+      return@Nitgen Mensagem.ok(match.toString())
+    }.execute()
   }
 
   fun createPopup() = PopupMenu().apply {

@@ -71,6 +71,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
         else {
           val serie = numero.split("/").getOrNull(1) ?: ""
           sequencia = Nota.maxSequencia(serie) + 1
+          usuario = RegistryUserInfo.usuarioDefault
           save()
         }
       }
