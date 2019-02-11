@@ -12,7 +12,7 @@ select P.invno, N.storeno, nfname           as numero, invse as serie,
     WHEN type = 2 then "DEV_CLI"
     WHEN type = 8 then "RECLASSIFICACAO_E"
     WHEN type = 10 AND N.remarks LIKE 'DEV%' then "DEV_CLI"
-    ELSE "OUTROS_E"
+    ELSE "NOTA_E"
   END                                       AS tipo
 from sqldados.inv AS N
   inner join sqldados.iprd AS P
