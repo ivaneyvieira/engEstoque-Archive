@@ -135,7 +135,8 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   COMPRA(ENTRADA, "Compra", "Compra"),
   TRANSFERENCIA_E(ENTRADA, "Transferencia", "Transferencia Entrada"), DEV_CLI(ENTRADA, "Dev Cliente", "Dev Cliente"),
   ACERTO_E(ENTRADA, "Acerto", "Acerto Entrada"), PEDIDO_E(ENTRADA, "Pedido", "Pedido Entrada"),
-  OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true), //Saída
+  OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true),
+  NOTA_E(ENTRADA, "Entradas", "Entradas", true),
   RECLASSIFICACAO_E(ENTRADA, "Reclassificação", "Reclassificação Entrada"),
   VENDA(SAIDA, "Venda", "Venda"), TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"),
   ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"), DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"),
