@@ -170,6 +170,10 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
     background-color: khaki;
   }
 
+  .v-grid-row.pendente2 > td {
+    background-color: DarkKhaki ;
+  }
+
   .v-grid-row.ok > td {
     background-color: lightgreen;
   }

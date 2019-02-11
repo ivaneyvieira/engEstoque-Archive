@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
@@ -18,17 +19,24 @@ class EntregaClienteViewModel(view: IView) : NotaViewModel<EntregaClienteVo>(vie
   }
 
   override fun createVo() = EntregaClienteVo()
-  fun processaKey(key: String)= exec {
+  fun processaKey(key: String) = exec {
     val item = ViewCodBarEntrega.findNota(key) ?: throw EViewModel("Produto não encontrado")
-    if(item.status != CONFERIDA){
-      if(item.status == ENTREGUE)
+    if (item.status != CONFERIDA) {
+      if (item.status == ENTREGUE)
         throw  EViewModel("Produto já foi entregue")
       else
-        if(item.status == INCLUIDA)
+        if (item.status == INCLUIDA)
           throw  EViewModel("Produto ainda não foi conferido")
     }
     item.status = ENTREGUE
     item.save()
+  }
+
+  fun notasConferidas(): List<EntregaClienteVo> {
+    return ItemNota.where()
+      .status.eq(CONFERIDA)
+      .findList()
+      .map { it.toVO() }
   }
 }
 

@@ -188,7 +188,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
 
   abstract fun createVo(): VO
 
-  override fun ItemNota.toVO(): VO {
+  open override fun ItemNota.toVO(): VO {
     val itemNota = this
     return createVo().apply {
       readOnly = true

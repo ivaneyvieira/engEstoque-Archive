@@ -125,7 +125,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       }
       integerField("Qtd $tipo") {
         expand = 1
-        isReadOnly = (isAdmin == false) && (operation != ADD)
+        isReadOnly = (!this@NotaView.isAdmin) && (operation != ADD)
         this.bind(binder).bind("quantProduto")
       }
     }

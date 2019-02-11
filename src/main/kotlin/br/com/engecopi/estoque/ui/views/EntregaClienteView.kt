@@ -4,7 +4,6 @@ import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
 import br.com.engecopi.estoque.viewmodel.EntregaClienteVo
-import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.expand
@@ -21,6 +20,7 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
+import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
 import com.vaadin.ui.Image
@@ -30,6 +30,7 @@ import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
 import de.steinwedel.messagebox.ButtonOption
 import de.steinwedel.messagebox.MessageBox
+import javafx.beans.property.ListProperty
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
@@ -105,8 +106,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
           val button = Button()
           print {
             item.itemNota?.recalculaSaldos()
-            val print = viewModel.imprimir(item.itemNota)
-            print
+            return@print viewModel.imprimir(item.itemNota)
           }.extend(button)
           val impresso = item?.entityVo?.impresso ?: true
           button.isEnabled = impresso == false || isAdmin
@@ -116,7 +116,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
             it.button.isEnabled = print == false || isAdmin
             refreshGrid()
           }
-          button
+          return@addComponentColumn button
         }.id = "btnPrint"
         column(EntregaClienteVo::lojaNF) {
           caption = "Loja NF"
@@ -167,9 +167,26 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
           caption = "Cliente"
           setSortProperty("nota.cliente")
         }
-        grid.setStyleGenerator{saida ->
-          if(saida.status == CONFERIDA)
+
+        val itens = viewModel.notasConferidas()
+          .groupBy { it.numeroNF }
+          .entries
+          .sortedBy { entry ->
+            entry.value
+              .map { it.entityVo?.id ?: 0 }
+              .max()
+          }.mapNotNull { it.key }
+
+        grid.setStyleGenerator { saida ->
+          if (saida.status == CONFERIDA){
+            val numero = saida.numeroNF
+            val index = itens.indexOf(numero)
+            if(index % 2 == 0)
             "pendente"
+            else
+              "pendente2"
+          }
+
           else null
         }
       }
