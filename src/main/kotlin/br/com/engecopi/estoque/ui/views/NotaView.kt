@@ -1,7 +1,9 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.NotaViewModel
@@ -21,21 +23,35 @@ import com.github.mvysny.karibudsl.v8.VAlign
 import com.github.mvysny.karibudsl.v8.VaadinDsl
 import com.github.mvysny.karibudsl.v8.addColumnFor
 import com.github.mvysny.karibudsl.v8.align
+import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.getAll
 import com.github.mvysny.karibudsl.v8.grid
 import com.github.mvysny.karibudsl.v8.h
+import com.github.mvysny.karibudsl.v8.horizontalLayout
+import com.github.mvysny.karibudsl.v8.isMargin
+import com.github.mvysny.karibudsl.v8.perc
 import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textField
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
+import com.vaadin.event.FieldEvents.FocusEvent
+import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
+import com.vaadin.ui.TextField
+import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Window
+import com.vaadin.ui.themes.ValoTheme
+import org.hibernate.validator.constraints.br.TituloEleitoral
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.patrik.FastNavigation
@@ -57,7 +73,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     }
   }
 
-  fun <T : EntityVo<*>>btnImprimeTudo(grid : GridCrudFlex<T>) : Button{
+  fun <T : EntityVo<*>> btnImprimeTudo(grid: GridCrudFlex<T>): Button {
     val button = Button("Imprime Etiquetas")
     button.let {
       it.icon = VaadinIcons.PRINT
@@ -65,7 +81,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         val print = viewModel.imprime()
         print
       }.extend(it)
-      it.addClickListener{
+      it.addClickListener {
         grid.refreshGrid()
       }
     }
@@ -196,18 +212,74 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         val nav = FastNavigation<ProdutoVO>(this, false, true)
         nav.changeColumnAfterLastRow = true
         nav.openEditorWithSingleClick = true
-        nav.allowArrowToChangeRow=true
-        nav.openEditorOnTyping=true
+        nav.allowArrowToChangeRow = true
+        nav.openEditorOnTyping = true
         nav.addEditorSaveShortcut(ENTER)
         editor.cancelCaption = "Cancelar"
         editor.saveCaption = "Salvar"
         editor.isBuffered = false
         this.setStyleGenerator {
-           if(it.saldoFinal < 0)
-             "error_row"
-           else null
+          if (it.saldoFinal < 0)
+            "error_row"
+          else null
         }
       }
     }
+  }
+
+  fun dlgCodigoBarras(textField: TextField, processaleitura: (Nota?, String) -> ItemNota?) {
+    val dlg = DlgCodigoBarras(textField, processaleitura)
+    UI.getCurrent().addWindow(dlg)
+    textField.focus()
+  }
+}
+
+class DlgCodigoBarras(textField: TextField, processaleitura: (Nota?, String) -> ItemNota?) : Window(titulo) {
+  private var nota: Nota? = null
+
+  init {
+    center()
+    isClosable = false
+    w = 400.px
+    isModal = true
+    isResizable = false
+    content = VerticalLayout().apply {
+      isMargin = true
+      isSpacing = true
+      textField.w = 100.perc
+      addComponent(textField)
+      horizontalLayout {
+        alignment = Alignment.BOTTOM_RIGHT
+        button("Fecha") {
+          setClickShortcut(KeyCode.ESCAPE)
+          alignment = Alignment.BOTTOM_RIGHT
+          addClickListener {
+            close()
+          }
+        }
+        button("Confirma") {
+          addStyleName(ValoTheme.BUTTON_PRIMARY)
+          setClickShortcut(KeyCode.ENTER)
+          alignment = Alignment.BOTTOM_RIGHT
+          addClickListener {
+            val item = processaleitura(nota, textField.value)
+            if (item == null) {
+              textField.selectAll()
+            } else {
+              textField.value = ""
+              nota = item.nota
+            }
+          }
+        }
+      }
+    }
+
+    addFocusListener {
+      textField.focus()
+    }
+  }
+
+  companion object {
+    const val titulo = "Leitura"
   }
 }

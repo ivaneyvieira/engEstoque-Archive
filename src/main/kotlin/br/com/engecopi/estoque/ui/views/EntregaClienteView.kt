@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
@@ -20,17 +22,13 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
-import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
-import com.vaadin.ui.Image
+import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import de.steinwedel.messagebox.ButtonOption
-import de.steinwedel.messagebox.MessageBox
-import javafx.beans.property.ListProperty
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
@@ -167,7 +165,6 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
           caption = "Cliente"
           setSortProperty("nota.cliente")
         }
-
         val itens = viewModel.notasConferidas()
           .groupBy { it.numeroNF }
           .entries
@@ -178,44 +175,26 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
           }.mapNotNull { it.key }
 
         grid.setStyleGenerator { saida ->
-          if (saida.status == CONFERIDA){
+          if (saida.status == CONFERIDA) {
             val numero = saida.numeroNF
             val index = itens.indexOf(numero)
-            if(index % 2 == 0)
-            "pendente"
+            if (index % 2 == 0)
+              "pendente"
             else
               "pendente2"
-          }
-
-          else null
+          } else null
         }
       }
     }
   }
 
-  fun readString(msg: String, processaleitura: (String) -> Unit) {
+  fun readString(msg: String, processaleitura: (Nota?, String) -> ItemNota?) {
     if (msg.isNotBlank()) {
-      val textField = textField(msg) {
+      val textField = TextField(msg).apply {
         this.w = 400.px
       }
 
-      MessageBox.createQuestion()
-        .withCaption("Leitura")
-        .withIcon(Image().apply {
-          icon = VaadinIcons.BARCODE
-          focus()
-        })
-        .withMessage(textField)
-        .withNoButton({ },
-                      arrayOf(ButtonOption.caption("Cancela")))
-        .withYesButton({ processaleitura(textField.value) },
-                       arrayOf(ButtonOption.caption("Confirma"),
-                               ButtonOption.style(ValoTheme.BUTTON_PRIMARY),
-                               buttonDefault()))
-        .withWidth("300px")
-        .open().apply {
-          textField.focus()
-        }
+      dlgCodigoBarras(textField, processaleitura)
     }
   }
 
@@ -227,8 +206,8 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
-        readString("Chave da nota fiscal") { key ->
-          viewModel.processaKey(key)
+        readString("Chave da nota fiscal") { nota, key ->
+          viewModel.processaKey(nota, key)
         }
       }
     }
