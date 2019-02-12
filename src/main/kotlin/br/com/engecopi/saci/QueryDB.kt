@@ -11,7 +11,7 @@ open class QueryDB(
   val url: String,
   val username: String,
   val password: String
-) {
+                  ) {
   private val sql2o: Sql2o
 
   init {
@@ -20,10 +20,11 @@ open class QueryDB(
     ds.jdbcUrl = url
     ds.username = username
     ds.password = password
-   // ds.minConnectionsPerPartition = 20
-   // ds.maxConnectionsPerPartition = 10
-   // ds.partitionCount = 2
-    this.sql2o = Sql2o(ds)
+    // ds.minConnectionsPerPartition = 20
+    // ds.maxConnectionsPerPartition = 10
+    // ds.partitionCount = 2
+    //this.sql2o = Sql2o(ds)
+    this.sql2o = Sql2o(url, username, password)
   }
 
   private fun registerDriver(driver: String) {
@@ -51,14 +52,14 @@ open class QueryDB(
   protected fun execute(
     file: String, vararg params: Pair<String, String>,
     monitor: (String, Int, Int) -> Unit = { _, _, _ -> }
-  ) {
+                       ) {
     var sqlScript = SystemUtils.readFile(file)
     sql2o.beginTransaction().trywr { con ->
       params.forEach {
         sqlScript = sqlScript?.replace(
           ":${it.first}",
           it.second
-        )
+                                      )
       }
       val sqls = sqlScript?.split(";").orEmpty()
       val count = sqls.size
@@ -72,13 +73,13 @@ open class QueryDB(
           caption,
           parte,
           count
-        )
+               )
       }
       monitor(
         "",
         count,
         count
-      )
+             )
       con.commit()
     }
   }
@@ -91,7 +92,7 @@ open class QueryDB(
       return proc(
         con,
         query
-      )
+                 )
     }
   }
 }

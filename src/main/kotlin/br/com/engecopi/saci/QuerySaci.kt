@@ -102,7 +102,7 @@ class QuerySaci : QueryDB(driver, url, username, password) {
     internal val url = db.url
     internal val username = db.username
     internal val password = db.password
-    val ipServer = QuerySaci.db.url.split("/").getOrNull(2)
+    val ipServer = url.split("/").getOrNull(2)
   }
 }
 

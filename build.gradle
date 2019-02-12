@@ -115,7 +115,7 @@ dependencies {
   compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
 
   compile "org.xerial:sqlite-jdbc:3.21.0.1"
-  compile "org.sql2o:sql2o:1.5.4"
+  compile "org.sql2o:sql2o:1.6.0"
   // https://mvnrepository.com/artifact/com.jolbox/bonecp
   compile group: 'com.jolbox', name: 'bonecp', version: '0.8.0.RELEASE'
 
