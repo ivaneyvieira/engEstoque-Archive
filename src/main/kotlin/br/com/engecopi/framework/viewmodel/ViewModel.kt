@@ -28,7 +28,17 @@ abstract class ViewModel(val view: IView) {
     var ret : T? = null
      transaction {
       try {
-        ret= block()
+        if (inExcection)
+          ret= block()
+        else {
+          inExcection = true
+          updateModel()
+
+          ret= block()
+
+          updateView()
+          inExcection = false
+        }
       } catch (e: EViewModel) {
         updateView(e)
       }
