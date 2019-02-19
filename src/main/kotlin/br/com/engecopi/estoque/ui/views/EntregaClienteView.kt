@@ -91,16 +91,16 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
   override val viewModel: EntregaClienteViewModel = EntregaClienteViewModel(this)
 
   init {
-    form("Expedição") {
+    form("Entrega ao CLiente") {
       gridCrud(viewModel.crudClass.java) {
-        addCustomToolBarComponent(btnImprimeTudo(this))
+       /* addCustomToolBarComponent(btnImprimeTudo(this))*/
         addCustomToolBarComponent(btnLerChaveNota())
         reloadOnly = !isAdmin
         column(EntregaClienteVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
-        grid.addComponentColumn { item ->
+       /* grid.addComponentColumn { item ->
           val button = Button()
           print {
             item.itemNota?.recalculaSaldos()
@@ -115,7 +115,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
             refreshGrid()
           }
           return@addComponentColumn button
-        }.id = "btnPrint"
+        }.id = "btnPrint"*/
         column(EntregaClienteVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
