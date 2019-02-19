@@ -42,6 +42,10 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   override val query: QViewNotaExpedicao
     get() = ViewNotaExpedicao.where()
 
+  override fun QViewNotaExpedicao.orderQuery(): QViewNotaExpedicao {
+    return this.order().id.desc()
+  }
+
   override fun ViewNotaExpedicao.toVO(): NFExpedicaoVo {
     val bean = this
     return NFExpedicaoVo().apply {
