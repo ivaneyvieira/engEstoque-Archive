@@ -253,9 +253,11 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   }
 
   fun imprime(): String {
-    val list = query.impresso.eq(false).order().id.desc().findList()
-    return list.sortBy { -it.id }
-      .map { imprimir(it) }
+    val list = query
+      .impresso.eq(false)
+      .order().id.desc().findList()
+    return list
+      .map { nota -> imprimir(nota) }
       .distinct().joinToString(separator = "\n")
   }
 
