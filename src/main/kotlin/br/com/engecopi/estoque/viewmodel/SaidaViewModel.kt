@@ -30,6 +30,7 @@ class SaidaViewModel(view: IView) : NotaViewModel<SaidaVo>(view, SaidaVo::class,
     itens.forEach {itemNota ->
       itemNota.refresh()
       itemNota.status = CONFERIDA
+      itemNota.impresso = false
       itemNota.update()
       itemNota.recalculaSaldos()
     }

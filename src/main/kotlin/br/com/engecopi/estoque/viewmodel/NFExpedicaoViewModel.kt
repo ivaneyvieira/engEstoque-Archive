@@ -82,6 +82,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
           val item = ItemNota.find(notaSaci) ?: ItemNota.createItemNota(notaSaci, nota)
           return@mapNotNull item?.apply {
             status = INCLUIDA
+            impresso = false
             usuario = RegistryUserInfo.usuarioDefault
             save()
           }
