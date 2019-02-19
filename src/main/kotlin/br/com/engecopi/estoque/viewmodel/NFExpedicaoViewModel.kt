@@ -53,6 +53,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
       cliente = bean.cliente
       data = bean.data
       dataEmissao = bean.dataEmissao
+      lancamento = bean.lancamento
       hora = bean.hora
       observacao = bean.observacao
       loja = bean.loja
@@ -133,6 +134,7 @@ class NFExpedicaoVo : EntityVo<ViewNotaExpedicao>() {
   var cliente: String = ""
   var data: LocalDate = LocalDate.now()
   var dataEmissao: LocalDate = LocalDate.now()
+  var lancamento: LocalDate =  LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var observacao: String = ""
   var loja: Loja? = null

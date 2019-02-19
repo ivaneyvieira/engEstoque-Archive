@@ -381,6 +381,8 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota: String) : EntityVo<
     }
   val dataNota: LocalDate
     get() = toEntity()?.dataNota ?: notaSaci?.date?.localDate() ?: LocalDate.now()
+  val lancamento: LocalDate
+    get() = toEntity()?.nota?.lancamento ?: LocalDate.now()
   val dataEmissao: LocalDate
     get() = toEntity()?.nota?.dataEmissao ?: notaSaci?.dt_emissao?.localDate() ?: LocalDate.now()
   val numeroInterno: Int

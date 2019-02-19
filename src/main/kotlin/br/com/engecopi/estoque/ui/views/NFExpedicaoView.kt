@@ -120,7 +120,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
           setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
           setSortProperty("tipo_nota")
         }
-        column(NFExpedicaoVo::data) {
+        column(NFExpedicaoVo::lancamento) {
           caption = "Lançamento"
           dateFormat()
           setSortProperty("data", "hora")

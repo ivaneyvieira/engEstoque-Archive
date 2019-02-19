@@ -46,6 +46,7 @@ class Nota : BaseModel() {
   var fornecedor: String = ""
   @Length(60)
   var cliente: String = ""
+  var lancamento: LocalDate = LocalDate.now()
   var data: LocalDate = LocalDate.now()
   var dataEmissao: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()

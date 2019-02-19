@@ -35,6 +35,7 @@ class ViewNotaExpedicao : BaseModel() {
   var cliente: String = ""
   var data: LocalDate = LocalDate.now()
   var dataEmissao: LocalDate = LocalDate.now()
+  var lancamento: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var observacao: String = ""
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])

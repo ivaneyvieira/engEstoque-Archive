@@ -91,7 +91,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
   override val viewModel: EntregaClienteViewModel = EntregaClienteViewModel(this)
 
   init {
-    form("Entrega ao CLiente") {
+    form("Entrega ao Cliente") {
       gridCrud(viewModel.crudClass.java) {
        /* addCustomToolBarComponent(btnImprimeTudo(this))*/
         addCustomToolBarComponent(btnLerChaveNota())
@@ -124,10 +124,10 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
           caption = "TipoNota"
           setSortProperty("nota.tipo_nota")
         }
-        column(EntregaClienteVo::dataNota) {
-          caption = "Data"
+        column(EntregaClienteVo::lancamento) {
+          caption = "Lançamento"
           dateFormat()
-          setSortProperty("nota.data", "data", "hora")
+          setSortProperty("nota.lancamento", "data", "hora")
         }
         column(EntregaClienteVo::dataEmissao) {
           caption = "Emissao"

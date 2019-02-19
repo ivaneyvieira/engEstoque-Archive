@@ -43,6 +43,7 @@ class QNota : TQRootBean<Nota, QNota> {
   lateinit var rota: PString<QNota>
   lateinit var fornecedor: PString<QNota>
   lateinit var cliente: PString<QNota>
+  lateinit var lancamento: PLocalDate<QNota>
   lateinit var data: PLocalDate<QNota>
   lateinit var dataEmissao: PLocalDate<QNota>
   lateinit var hora: PLocalTime<QNota>
