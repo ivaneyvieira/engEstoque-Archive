@@ -10,22 +10,21 @@ import de.steinwedel.messagebox.MessageBox
 object MessageDialog {
   val ui = UI.getCurrent()
   fun info(caption: String = "Informação", message: String) {
-    if (ui.windows.isNotEmpty())
-      Notification(caption, message, Notification.Type.HUMANIZED_MESSAGE).apply {
-        delayMsec = 2000
-      }.show(Page.getCurrent())
-    else
-      MessageBox.createInfo()
-        .withCaption(caption)
-        .withHtmlMessage(message)
-        .withCloseButton(ButtonOption.caption("Fechar"))
-        .asModal(true)
-        .open()
+    //  if (ui.windows.isNotEmpty())
+    //   Notification(caption, message, Notification.Type.HUMANIZED_MESSAGE, true)
+    //      .show(Page.getCurrent())
+    //  else
+    MessageBox.createInfo()
+      .withCaption(caption)
+      .withHtmlMessage(message)
+      .withCloseButton(ButtonOption.caption("Fechar"))
+      .asModal(true)
+      .open()
   }
 
   fun warning(caption: String = "Aviso", message: String) {
     if (ui.windows.isNotEmpty())
-      Notification(caption, message, Notification.Type.WARNING_MESSAGE).apply {
+      Notification(caption, message, Notification.Type.WARNING_MESSAGE, true).apply {
         delayMsec = 2000
       }.show(Page.getCurrent())
     else
@@ -39,7 +38,7 @@ object MessageDialog {
 
   fun error(caption: String = "Erro", message: String) {
     if (ui.windows.isNotEmpty())
-      Notification(caption, message, Notification.Type.ERROR_MESSAGE).apply {
+      Notification(caption, message, Notification.Type.ERROR_MESSAGE, true).apply {
         delayMsec = 2000
       }.show(Page.getCurrent())
     else
