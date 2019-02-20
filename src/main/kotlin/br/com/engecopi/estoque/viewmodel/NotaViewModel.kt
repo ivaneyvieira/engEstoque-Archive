@@ -22,6 +22,7 @@ import br.com.engecopi.estoque.model.TipoNota.TRANSFERENCIA_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QItemNota
+import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
@@ -42,6 +43,12 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     val produto = saveProduto(bean.produto)
 
     updateItemNota(bean, nota, produto)
+  }
+
+  override fun QItemNota.orderQuery(): QItemNota {
+    return this.order()
+      .nota.lancamento.desc()
+      .nota.id.desc()
   }
 
   override fun add(bean: VO) {
@@ -206,10 +213,6 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
       this.status = itemNota.status
       readOnly = false
     }
-  }
-
-  override fun QItemNota.orderQuery(): QItemNota {
-    return this.order().id.desc()
   }
 
   override fun QItemNota.filterString(text: String): QItemNota {

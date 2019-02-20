@@ -5,6 +5,9 @@ import com.jolbox.bonecp.BoneCPDataSource
 import org.sql2o.Connection
 import org.sql2o.Query
 import org.sql2o.Sql2o
+import io.ebean.datasource.DataSourceFactory
+import io.ebean.datasource.DataSourceConfig
+import io.ebean.datasource.DataSourcePool
 
 open class QueryDB(
   val driver: String,
@@ -16,15 +19,25 @@ open class QueryDB(
 
   init {
     registerDriver(driver)
-    val ds = BoneCPDataSource()
-    ds.jdbcUrl = url
-    ds.username = username
-    ds.password = password
+    //val ds = BoneCPDataSource()
+    //ds.jdbcUrl = url
+    //ds.username = username
+    //ds.password = password
     // ds.minConnectionsPerPartition = 20
     // ds.maxConnectionsPerPartition = 10
     // ds.partitionCount = 2
     //this.sql2o = Sql2o(ds)
     this.sql2o = Sql2o(url, username, password)
+    //this.sql2o = Sql2o(dataSourceConfig())
+  }
+
+  private fun dataSourceConfig(): DataSourcePool? {
+    val config = DataSourceConfig()
+    config.driver = driver
+    config.url = url
+    config.username = username
+    config.password = password
+    return DataSourceFactory.get().createPool("app", config)
   }
 
   private fun registerDriver(driver: String) {

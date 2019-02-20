@@ -4,8 +4,9 @@ import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QUsuario
 import io.ebean.Finder
 
-open class UsuarioFinder : Finder<Long, Usuario>(Usuario::class.java)
+open class UsuarioFinder : Finder<Long, Usuario>(Usuario::class.java) {
 
+  val alias = QUsuario._alias
 
   /**
    * Start a new typed query.
@@ -20,3 +21,4 @@ open class UsuarioFinder : Finder<Long, Usuario>(Usuario::class.java)
   fun text(): QUsuario {
      return QUsuario(db()).text()
   }
+}

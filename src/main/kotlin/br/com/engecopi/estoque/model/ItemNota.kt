@@ -83,6 +83,8 @@ class ItemNota : BaseModel() {
     }
   val template: String
     @Transient get() = Etiqueta.template(status)
+  val abreviacao: String
+    @Transient get() = localizacao.split('.').getOrNull(0) ?: ""
 
   companion object Find : ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
@@ -182,6 +184,8 @@ class NotaPrint(val item: ItemNota) {
     get() = item.codigoBarraEntrega ?: ""
   val codigoBarraConferencia
     get() = item.codigoBarraConferencia ?: ""
+  val dataLancamento
+    get() = item.nota?.lancamento?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
 
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

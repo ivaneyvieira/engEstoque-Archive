@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
@@ -44,6 +45,7 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.Image
+import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
@@ -117,7 +119,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     form("Saída de produtos") {
       gridCrudFlex = gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        addCustomToolBarComponent(btnLerChaveNota(this))
+        addCustomToolBarComponent(btnLerChaveNota())
         addOnly = !isAdmin
         column(SaidaVo::numeroCodigo) {
           caption = "Número Conferencia"
@@ -189,8 +191,8 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           caption = "Cliente"
           setSortProperty("nota.cliente")
         }
-        grid.setStyleGenerator{saida ->
-          if(saida.status == CONFERIDA)
+        grid.setStyleGenerator { saida ->
+          if (saida.status == CONFERIDA)
             "pendente"
           else null
         }
@@ -198,41 +200,11 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     }
   }
 
-  private fun readString(msg: String, processaleitura: (String) -> Unit) {
-    if (msg.isNotBlank()) {
-      val textField = textField(msg) {
-        this.w = 400.px
-      }
-
-      MessageBox.createQuestion()
-        .withCaption("Leitura")
-        .withIcon(Image().apply {
-          icon = VaadinIcons.BARCODE
-          focus()
-        })
-        .withMessage(textField)
-        .withNoButton({ },
-                      arrayOf(ButtonOption.caption("Cancela")))
-        .withYesButton({ processaleitura(textField.value) },
-                       arrayOf(ButtonOption.caption("Confirma"),
-                               ButtonOption.style(ValoTheme.BUTTON_PRIMARY),
-                               buttonDefault()))
-        .withWidth("300px")
-        .open().apply {
-          textField.focus()
-        }
-    }
-  }
-
-  private fun buttonDefault(): ButtonOption {
-    return ButtonOptionDefault()
-  }
-
-  private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<SaidaVo>): Button {
-    return button("Ler Código de barra do CD") {
+  private fun btnLerChaveNota(): Button {
+    return button("Ler Código") {
       icon = VaadinIcons.BARCODE
       addClickListener {
-        readString("Chave da nota fiscal") { key ->
+        readString("Chave da nota fiscal", true) { _, key ->
           val nota = viewModel.processaKey(key)
           if (nota == null)
             showError("A nota não foi encontrada")
@@ -240,6 +212,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
             val dlg = DlgNotaSaida(nota, viewModel)
             dlg.showDialog()
           }
+          return@readString null
         }
       }
     }
@@ -247,12 +220,6 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
 
   override fun updateView(viewModel: ViewModel) {
     gridCrudFlex.refreshGrid()
-  }
-}
-
-class ButtonOptionDefault : ButtonOption() {
-  override fun apply(messageBox: MessageBox?, button: Button?) {
-    button?.setClickShortcut(KeyCode.ENTER)
   }
 }
 
@@ -310,12 +277,14 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel) : Window("Nota
               ?.filter { it.status == INCLUIDA }
               ?.filter { it.localizacao.startsWith(abreviacao) }
               .orEmpty()
-            this.dataProvider = ListDataProvider(itens.map { item ->
-              ProdutoVO(item.produto, item.tipoMov ?: SAIDA, LocProduto(item.localizacao)).apply {
-                this.quantidade = item.quantidade
-                this.value = item
-              }
-            })
+            this.dataProvider = ListDataProvider(itens
+                                                   .map { item ->
+                                                     ProdutoVO(item.produto, item.tipoMov ?: SAIDA,
+                                                               LocProduto(item.localizacao)).apply {
+                                                       this.quantidade = item.quantidade
+                                                       this.value = item
+                                                     }
+                                                   })
             removeAllColumns()
             val selectionModel = setSelectionMode(MULTI)
             selectionModel.addSelectionListener { select ->

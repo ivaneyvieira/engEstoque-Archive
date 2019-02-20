@@ -188,25 +188,11 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
     }
   }
 
-  fun readString(msg: String, processaleitura: (Nota?, String) -> ItemNota?) {
-    if (msg.isNotBlank()) {
-      val textField = TextField(msg).apply {
-        this.w = 400.px
-      }
-
-      dlgCodigoBarras(textField, processaleitura)
-    }
-  }
-
-  private fun buttonDefault(): ButtonOption {
-    return ButtonOptionDefault()
-  }
-
   private fun btnLerChaveNota(): Button {
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
-        readString("Chave da nota fiscal") { nota, key ->
+        readString("Chave da nota fiscal", false) { nota, key ->
           viewModel.processaKey(nota, key)
         }
       }
