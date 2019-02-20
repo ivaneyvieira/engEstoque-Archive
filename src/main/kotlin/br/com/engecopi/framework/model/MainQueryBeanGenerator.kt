@@ -1,7 +1,6 @@
 package br.com.engecopi.framework.model
 
-import io.ebean.typequery.generator.Generator
-import io.ebean.typequery.generator.GeneratorConfig
+
 import java.io.IOException
 
 object MainQueryBeanGenerator {

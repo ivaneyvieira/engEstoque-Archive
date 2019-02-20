@@ -4,9 +4,8 @@ import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import io.ebean.Finder
 
-open class ViewNotaExpedicaoFinder : Finder<Long, ViewNotaExpedicao>(ViewNotaExpedicao::class.java) {
+open class ViewNotaExpedicaoFinder : Finder<Long, ViewNotaExpedicao>(ViewNotaExpedicao::class.java)
 
-  val alias = QViewNotaExpedicao._alias
 
   /**
    * Start a new typed query.
@@ -21,4 +20,3 @@ open class ViewNotaExpedicaoFinder : Finder<Long, ViewNotaExpedicao>(ViewNotaExp
   fun text(): QViewNotaExpedicao {
      return QViewNotaExpedicao(db()).text()
   }
-}

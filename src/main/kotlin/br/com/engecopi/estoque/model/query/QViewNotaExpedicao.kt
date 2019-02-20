@@ -45,6 +45,7 @@ class QViewNotaExpedicao : TQRootBean<ViewNotaExpedicao, QViewNotaExpedicao> {
   lateinit var cliente: PString<QViewNotaExpedicao>
   lateinit var data: PLocalDate<QViewNotaExpedicao>
   lateinit var dataEmissao: PLocalDate<QViewNotaExpedicao>
+  lateinit var lancamento: PLocalDate<QViewNotaExpedicao>
   lateinit var hora: PLocalTime<QViewNotaExpedicao>
   lateinit var observacao: PString<QViewNotaExpedicao>
   lateinit var loja: QAssocLoja<QViewNotaExpedicao>

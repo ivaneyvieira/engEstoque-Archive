@@ -36,6 +36,7 @@ class QAssocViewNotaExpedicao<R>(name: String, root: R) : TQAssocBean<ViewNotaEx
   lateinit var cliente: PString<R>
   lateinit var data: PLocalDate<R>
   lateinit var dataEmissao: PLocalDate<R>
+  lateinit var lancamento: PLocalDate<R>
   lateinit var hora: PLocalTime<R>
   lateinit var observacao: PString<R>
   lateinit var loja: QAssocLoja<R>
@@ -43,5 +44,25 @@ class QAssocViewNotaExpedicao<R>(name: String, root: R) : TQAssocBean<ViewNotaEx
   lateinit var usuario: QAssocUsuario<R>
   lateinit var abreviacao: PString<R>
 
-  // type safe fetch(properties) using varargs not supported yet ...
+  /**
+   * Eagerly fetch this association loading the specified properties.
+   */
+  fun fetch(vararg properties: TQProperty<QViewNotaExpedicao>) : R {
+    return fetchProperties(*properties)
+  }
+
+  /**
+   * Eagerly fetch this association using a 'query join' loading the specified properties.
+   */
+  fun fetchQuery(vararg properties: TQProperty<QViewNotaExpedicao>) : R {
+    return fetchQueryProperties(*properties)
+  }
+
+  /**
+   * Use lazy loading for this association loading the specified properties.
+   */
+  fun fetchLazy(vararg properties: TQProperty<QViewNotaExpedicao>) : R {
+    return fetchLazyProperties(*properties)
+  }
+
 }
