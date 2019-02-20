@@ -12,22 +12,16 @@ object MainDbMigration {
     val home = System.getenv("HOME")
     val fileName = System.getenv("EBEAN_PROPS") ?: "$home/ebean.properties"
     System.setProperty("ebean.props.file", fileName)
-
     System.setProperty("ddl.migration.name", "support end dating")
-    System.setProperty("ddl.migration.version", "1.42")
+    //System.setProperty("ddl.migration.version", "1.42")
 
     //System.setProperty("ddl.migration.pendingDropsFor", "1.39")
     val migration = DbMigration.create()
     migration.setStrictMode(false)
     migration.setPlatform(Platform.MYSQL)
-    //migration.setVersion("1.12")
     System.setProperty("disableTestProperties", "true")
     migration.generateMigration()
-    
-    // starting EbeanServer triggers the apply of migrations
-    // ... when ebean.migration.run=true
-    //Transaction.server
-    
+
     System.out.println("done")
   }
 }
