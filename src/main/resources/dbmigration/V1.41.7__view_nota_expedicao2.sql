@@ -19,8 +19,8 @@ SELECT MAX(`I`.`id`)                                AS `id`,
   `N`.`sequencia`                          AS `sequencia`,
   `N`.`usuario_id`                         AS `usuario_id`,
   substring_index(`I`.`localizacao`,'.',1) AS `abreviacao` 
-FROM (`engEstoque`.`notas` `N` 
-  JOIN `engEstoque`.`itens_nota` `I` 
+FROM (`notas` `N`
+  JOIN `itens_nota` `I`
   ON((`I`.`nota_id` = `N`.`id`))) 
 WHERE (`I`.`status` = 'INCLUIDA') 
 GROUP BY `N`.`id`, `abreviacao`
