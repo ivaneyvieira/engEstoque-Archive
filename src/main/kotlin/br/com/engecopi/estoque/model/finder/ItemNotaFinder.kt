@@ -12,13 +12,13 @@ open class ItemNotaFinder : Finder<Long, ItemNota>(ItemNota::class.java) {
    * Start a new typed query.
    */
   fun where(): QItemNota {
-     return QItemNota()
+     return QItemNota(db())
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QItemNota {
-     return QItemNota().text()
+     return QItemNota(db()).text()
   }
 }

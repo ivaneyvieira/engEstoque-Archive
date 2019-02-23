@@ -4,8 +4,9 @@ import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QViewProdutoLoc
 import io.ebean.Finder
 
-open class ViewProdutoLocFinder : Finder<String, ViewProdutoLoc>(ViewProdutoLoc::class.java)
+open class ViewProdutoLocFinder : Finder<String, ViewProdutoLoc>(ViewProdutoLoc::class.java) {
 
+  val alias = QViewProdutoLoc._alias
 
   /**
    * Start a new typed query.
@@ -20,3 +21,4 @@ open class ViewProdutoLocFinder : Finder<String, ViewProdutoLoc>(ViewProdutoLoc:
   fun text(): QViewProdutoLoc {
      return QViewProdutoLoc(db()).text()
   }
+}

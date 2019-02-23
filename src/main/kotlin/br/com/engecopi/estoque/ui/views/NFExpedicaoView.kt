@@ -1,5 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
+import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoViewModel
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoVo
@@ -24,6 +26,7 @@ import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
 import com.vaadin.ui.Image
+import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -159,49 +162,50 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   override val viewModel: NFExpedicaoViewModel
     get() = NFExpedicaoViewModel(this)
 
-  fun readString(msg: String, processaleitura: (String) -> Unit) {
-    if (msg.isNotBlank()) {
-      val textField = textField(msg) {
-        this.w = 400.px
-      }
 
-      MessageBox.createQuestion()
-        .withCaption("Leitura")
-        .withIcon(Image().apply {
-          icon = VaadinIcons.BARCODE
-          focus()
-        })
-        .withMessage(textField)
-        .withNoButton({ },
-                      arrayOf(ButtonOption.caption("Cancela")))
-        .withYesButton({ processaleitura(textField.value) },
-                       arrayOf(ButtonOption.caption("Confirma"),
-                               ButtonOption.style(ValoTheme.BUTTON_PRIMARY),
-                               buttonDefault()))
-        .withWidth("300px")
-        .open().apply {
-          textField.focus()
-        }
-    }
-  }
 
-  private fun buttonDefault(): ButtonOption {
-    return ButtonOptionDefault()
-  }
+  /*
+   fun readString(msg: String, processaleitura: (String) -> Unit) {
+     if (msg.isNotBlank()) {
+       val textField = textField(msg) {
+         this.w = 400.px
+       }
+
+       MessageBox.createQuestion()
+         .withCaption("Leitura")
+         .withIcon(Image().apply {
+           icon = VaadinIcons.BARCODE
+           focus()
+         })
+         .withMessage(textField)
+         .withNoButton({ },
+                       arrayOf(ButtonOption.caption("Cancela")))
+         .withYesButton({ processaleitura(textField.value) },
+                        arrayOf(ButtonOption.caption("Confirma"),
+                                ButtonOption.style(ValoTheme.BUTTON_PRIMARY),
+                                buttonDefault()))
+         .withWidth("300px")
+         .open().apply {
+           textField.focus()
+         }
+     }
+   }
+ */
 
   private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): Button {
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
-        readString("Chave da nota fiscal") { key ->
+        readString("Chave da nota fiscal", true) { _, key ->
           viewModel.processaKey(key)
           gridCrudFlex.grid.refresh()
+          null
         }
       }
     }
   }
 
-  fun btnImprimeTudo(grid : GridCrudFlex<NFExpedicaoVo>) : Button{
+  fun btnImprimeTudo(grid: GridCrudFlex<NFExpedicaoVo>): Button {
     val button = Button("Imprime Etiquetas")
     button.let {
       it.icon = VaadinIcons.PRINT
@@ -209,7 +213,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
         val print = viewModel.imprime()
         print
       }.extend(it)
-      it.addClickListener{
+      it.addClickListener {
         grid.refreshGrid()
       }
     }

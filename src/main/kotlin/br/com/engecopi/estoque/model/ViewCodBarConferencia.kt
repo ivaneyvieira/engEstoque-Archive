@@ -17,13 +17,12 @@ class ViewCodBarConferencia {
   val codbar : String? = ""
 
   companion object Find : ViewCodBarConferenciaFinder() {
-    fun findNota(key: String): Nota? {
+    fun findNota(key: String): ItemNota? {
       val id = where().codbar.eq(key)
         .findList()
         .firstOrNull()
         ?.id ?: return null
-      val item = ItemNota.byId(id) ?: return null
-      return item.nota
+      return ItemNota.byId(id) ?: return null
     }
   }
 }

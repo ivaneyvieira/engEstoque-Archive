@@ -11,6 +11,7 @@ import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
 import br.com.engecopi.estoque.model.query.QItemNota
+import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 import com.vaadin.ui.Grid
 
@@ -22,12 +23,15 @@ class SaidaViewModel(view: IView) : NotaViewModel<SaidaVo>(view, SaidaVo::class,
 
   override fun createVo() = SaidaVo()
 
-  fun processaKey(key: String) : Nota? {
-   return ViewCodBarConferencia.findNota(key)
+  fun processaKey(key: String) = execValue {
+    val item = ViewCodBarConferencia.findNota(key) ?: return@execValue null
+    if (item.abreviacao == RegistryUserInfo.abreviacaoDefault)
+      throw EViewModel("Código de barras inválido")
+    return@execValue item.nota
   }
 
   fun confirmaProdutos(itens: List<ItemNota>) = exec {
-    itens.forEach {itemNota ->
+    itens.forEach { itemNota ->
       itemNota.refresh()
       itemNota.status = CONFERIDA
       itemNota.impresso = false

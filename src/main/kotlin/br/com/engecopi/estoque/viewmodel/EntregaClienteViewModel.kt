@@ -21,6 +21,7 @@ class EntregaClienteViewModel(view: IView) : NotaViewModel<EntregaClienteVo>(vie
   }
 
   override fun createVo() = EntregaClienteVo()
+
   fun processaKey(nota: Nota?, key: String) = execValue {
     val item = ViewCodBarEntrega.findNota(key) ?: throw EViewModel("Produto não encontrado")
 

@@ -43,7 +43,9 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
     get() = ViewNotaExpedicao.where()
 
   override fun QViewNotaExpedicao.orderQuery(): QViewNotaExpedicao {
-    return this.order().id.desc()
+    return this.order()
+      .lancamento.desc()
+      .id.desc()
   }
 
   override fun ViewNotaExpedicao.toVO(): NFExpedicaoVo {
@@ -67,7 +69,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
     }
   }
 
-  fun processaKey(key: String) = exec {
+  fun processaKey(key: String) = execValue<ItemNota?> {
     val notasSaci = Nota.findNotaSaidaPXA(key)
     if (notasSaci.isNotEmpty()) {
       val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
@@ -94,6 +96,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
         }
         if (itens.isEmpty())
           throw EViewModel("Essa nota não possui itens com localização")
+        null
       }
     } else
       throw EViewModel("Chave não encontrada")

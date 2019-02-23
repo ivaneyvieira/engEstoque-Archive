@@ -12,13 +12,13 @@ open class LojaFinder : Finder<Long, Loja>(Loja::class.java) {
    * Start a new typed query.
    */
   fun where(): QLoja {
-     return QLoja()
+     return QLoja(db())
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QLoja {
-     return QLoja().text()
+     return QLoja(db()).text()
   }
 }

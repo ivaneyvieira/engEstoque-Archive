@@ -12,13 +12,13 @@ open class EtiquetaFinder : Finder<Long, Etiqueta>(Etiqueta::class.java) {
    * Start a new typed query.
    */
   fun where(): QEtiqueta {
-     return QEtiqueta()
+     return QEtiqueta(db())
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QEtiqueta {
-     return QEtiqueta().text()
+     return QEtiqueta(db()).text()
   }
 }
