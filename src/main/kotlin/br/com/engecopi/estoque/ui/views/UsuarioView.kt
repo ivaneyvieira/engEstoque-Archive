@@ -3,9 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.TipoMov
-import br.com.engecopi.estoque.model.TipoUsuario
-import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
 import br.com.engecopi.framework.ui.view.CrudLayoutView
@@ -25,7 +22,6 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
@@ -33,11 +29,11 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 class UsuarioView : CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
   override val viewModel
     get() = UsuarioViewModel(this)
-  val isAdmin = RegistryUserInfo.usuarioDefault.admin
+  private val isAdmin = RegistryUserInfo.usuarioDefault.admin
   val produtoDataProvider = DataProvider.fromCallbacks<Produto>(
     { query -> viewModel.findProduto(query.offset, query.limit).stream() },
     { viewModel.countProduto() }
-                                                               )
+                                                               )!!
 
   override fun layoutForm(
     formLayout: VerticalLayout,

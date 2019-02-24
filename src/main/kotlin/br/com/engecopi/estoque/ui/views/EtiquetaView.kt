@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.StatusNota
-import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.viewmodel.EtiquetaViewModel
 import br.com.engecopi.estoque.viewmodel.EtiquetaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView

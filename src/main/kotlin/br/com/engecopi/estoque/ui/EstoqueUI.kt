@@ -2,8 +2,6 @@ package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
-import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.ui.views.EntradaView
 import br.com.engecopi.estoque.ui.views.EntregaClienteView
 import br.com.engecopi.estoque.ui.views.EtiquetaView
@@ -21,7 +19,6 @@ import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.annotations.Viewport
-import com.vaadin.icons.VaadinIcons
 import com.vaadin.icons.VaadinIcons.INBOX
 import com.vaadin.icons.VaadinIcons.NEWSPAPER
 import com.vaadin.icons.VaadinIcons.OUT
@@ -39,11 +36,11 @@ import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
 import com.vaadin.shared.Position.TOP_CENTER
-import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Notification
 import com.vaadin.ui.Notification.Type.ERROR_MESSAGE
 import com.vaadin.ui.UI
 import com.vaadin.ui.themes.ValoTheme
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.servlet.ServletContextEvent
@@ -51,7 +48,6 @@ import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.Cookie
-import kotlin.text.Typography.section
 
 @Theme("mytheme")
 @Title("Controle de estoque")
@@ -62,8 +58,8 @@ import kotlin.text.Typography.section
 @PreserveOnRefresh
 class EstoqueUI : UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
-  val versao = SystemUtils.readFile("/versao.txt")
-  lateinit var comboLocalizacao: ComboBox<String>
+  private val versao = SystemUtils.readFile("/versao.txt")
+
   var loginInfo: LoginInfo? = null
     set(value) {
       field = value
@@ -138,7 +134,7 @@ class EstoqueUI : UI() {
   }
 
   private fun errorHandler(e: ErrorEvent) {
-    log.error("Erro não identificado ${e.throwable.message}", e.throwable)
+    log?.error("Erro não identificado ${e.throwable.message}", e.throwable)
     // when the exception occurs, show a nice notification
     Notification("Oops", "\n" +
                          "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
@@ -159,13 +155,13 @@ class EstoqueUI : UI() {
 @WebListener
 class Bootstrap : ServletContextListener {
   override fun contextDestroyed(sce: ServletContextEvent?) {
-    log.info("Shutting down");
-    log.info("Destroying VaadinOnKotlin")
-    log.info("Shutdown complete")
+    log?.info("Shutting down")
+    log?.info("Destroying VaadinOnKotlin")
+    log?.info("Shutdown complete")
   }
 
   override fun contextInitialized(sce: ServletContextEvent?) {
-    log.info("Starting up")
+    log?.info("Starting up")
     val home = System.getenv("HOME")
     val fileName = System.getenv("EBEAN_PROPS") ?: "$home/ebean.properties"
     System.setProperty("ebean.props.file", fileName)
@@ -185,7 +181,7 @@ class MyUIServlet : VaadinServlet() {
   }
 }
 
-fun UI.setCookie(nome: String, valor: String) {
+fun setCookie(nome: String, valor: String) {
   // Create a new cookie
   val myCookie = Cookie(nome, valor)
   // Make cookie expire in 2 minutes
@@ -196,7 +192,7 @@ fun UI.setCookie(nome: String, valor: String) {
   VaadinService.getCurrentResponse().addCookie(myCookie)
 }
 
-fun UI.getCokies(name: String): String? {
+fun getCokies(name: String): String? {
   val cookie = VaadinService.getCurrentRequest().cookies.toList().firstOrNull { it.name == name }
   cookie?.let {
     setCookie(it.name, it.value)
@@ -204,4 +200,4 @@ fun UI.getCokies(name: String): String? {
   return cookie?.value
 }
 
-val log = LoggerFactory.getLogger(EstoqueUI::class.java)
+val log: Logger? = LoggerFactory.getLogger(EstoqueUI::class.java)

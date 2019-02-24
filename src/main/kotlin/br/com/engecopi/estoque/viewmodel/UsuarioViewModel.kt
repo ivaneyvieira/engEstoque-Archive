@@ -2,18 +2,14 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Produto
-import br.com.engecopi.estoque.model.TipoMov
-import br.com.engecopi.estoque.model.TipoUsuario
-import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.model.Usuario
-import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QUsuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 
 class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCrudVo>(view, UsuarioCrudVo::class) {
-  val queryProduto get() = Produto.where()
+  private val queryProduto get() = Produto.where()
 
   fun findProduto(offset: Int, limit: Int): List<Produto> {
     return queryProduto

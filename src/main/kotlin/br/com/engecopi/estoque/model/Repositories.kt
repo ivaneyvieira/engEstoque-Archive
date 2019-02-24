@@ -3,9 +3,6 @@ package br.com.engecopi.estoque.model
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import io.ebean.Ebean
-import java.time.LocalTime
-import io.ebean.Ebean.getServerCacheManager
-import io.ebean.cache.ServerCacheManager
 import java.time.LocalDateTime
 
 object Repositories {

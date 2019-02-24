@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.StatusNota
-import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.query.QEtiqueta
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel

@@ -1,11 +1,6 @@
 package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.Transaction
-import br.com.engecopi.framework.model.UserException
-import io.ebean.AcquireLockException
-import io.ebean.DataIntegrityException
-import io.ebean.DuplicateKeyException
-import javax.persistence.PersistenceException
 
 abstract class ViewModel(val view: IView) {
   private var inExcection = false

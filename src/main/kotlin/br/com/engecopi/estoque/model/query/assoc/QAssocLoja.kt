@@ -1,13 +1,11 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.query.QLoja
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
-import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
 
 /**

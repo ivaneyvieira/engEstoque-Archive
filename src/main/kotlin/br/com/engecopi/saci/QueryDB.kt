@@ -1,16 +1,15 @@
 package br.com.engecopi.saci
 
 import br.com.engecopi.utils.SystemUtils
-import com.jolbox.bonecp.BoneCPDataSource
+import io.ebean.datasource.DataSourceConfig
+import io.ebean.datasource.DataSourceFactory
+import io.ebean.datasource.DataSourcePool
 import org.sql2o.Connection
 import org.sql2o.Query
 import org.sql2o.Sql2o
-import io.ebean.datasource.DataSourceFactory
-import io.ebean.datasource.DataSourceConfig
-import io.ebean.datasource.DataSourcePool
 
 open class QueryDB(
-  val driver: String,
+  private val driver: String,
   val url: String,
   val username: String,
   val password: String

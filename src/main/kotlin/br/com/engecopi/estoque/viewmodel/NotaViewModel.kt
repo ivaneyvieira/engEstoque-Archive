@@ -22,7 +22,6 @@ import br.com.engecopi.estoque.model.TipoNota.TRANSFERENCIA_S
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QItemNota
-import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
@@ -33,8 +32,8 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 
 abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
-                                          val statusDefault: StatusNota,
-                                          val abreviacaoNota: String) :
+                                          private val statusDefault: StatusNota,
+                                          private val abreviacaoNota: String) :
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
   override fun update(bean: VO) {
     if (bean.localizacao?.localizacao.isNullOrBlank())
@@ -179,7 +178,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   override val query: QItemNota
     get() {
       Repositories.updateViewProdutosLoc()
-      val query = ItemNota.where()
+      return ItemNota.where()
         .setUseQueryCache(true)
         .fetch("nota")
         .fetch("usuario")
@@ -190,12 +189,11 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
         .filtroStatus()
         .nota.loja.id.eq(lojaDefault.id)
         .localizacao.startsWith(abreviacaoNota)
-      return query
     }
 
   abstract fun createVo(): VO
 
-  open override fun ItemNota.toVO(): VO {
+  override fun ItemNota.toVO(): VO {
     val itemNota = this
     return createVo().apply {
       readOnly = true
@@ -267,7 +265,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
   abstract fun QItemNota.filtroStatus(): QItemNota
 }
 
-abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota: String) : EntityVo<ItemNota>() {
+abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String) : EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {
     return ItemNota.find(nota, produto)
   }
@@ -289,7 +287,7 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota: String) : EntityVo<
       }
     }
   var tipoNota: TipoNota = OUTROS_E
-  val temGrid
+  private val temGrid
     get() = (tipoNota != OUTROS_E) && (entityVo == null)
   val naoTemGrid
     get() = !temGrid
@@ -332,34 +330,33 @@ abstract class NotaVo(val tipo: TipoMov, val abreviacaoNota: String) : EntityVo<
           val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
           val localizacoes = prd?.localizacoes().orEmpty().sorted()
           val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
-          val prdLocs: List<ProdutoVO> = if (tipoNota.tipoMov == SAIDA) {
+          return@flatMap if (tipoNota.tipoMov == SAIDA) {
             var quant = notaSaci.quant ?: 0
             val produtosLocais = localizacoes.asSequence().map { localizacao ->
               ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao)).apply {
-                val saldo = this.saldo
+                val saldo = saldo
                 if (quant > 0)
                   if (quant > saldo) {
                     if (localizacao == ultimaLocalizacao) {
-                      this.quantidade = quant
+                      quantidade = quant
                       quant = 0
                     } else {
-                      this.quantidade = saldo
+                      quantidade = saldo
                       quant -= saldo
                     }
                   } else {
-                    this.quantidade = quant
+                    quantidade = quant
                     quant = 0
                   }
                 else
-                  this.quantidade = 0
+                  quantidade = 0
               }
             }.toList()
             produtosLocais
           } else
             listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
-              this.quantidade = notaSaci.quant ?: 0
+              quantidade = notaSaci.quant ?: 0
             })
-          return@flatMap prdLocs
         }
         produtos.addAll(
           produtosVo.asSequence()

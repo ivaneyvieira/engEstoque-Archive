@@ -1,21 +1,15 @@
 package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
-import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
-import br.com.engecopi.estoque.model.StatusNota.RECEBIDO
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
-import br.com.engecopi.utils.mid
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
-import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Transactional
 import java.time.LocalDate
-import javax.persistence.CascadeType.MERGE
-import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
@@ -63,10 +57,10 @@ class Produto : BaseModel() {
           )
   var localizacao: String? = ""
   @Formula(
-    select = "SAL.saldo_total",
-    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(status = 'RECEBIDO', 1, if(status = 'ENTREGUE', -1, 0)))) AS saldo_total from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
+    select = "SAL.saldoTotal",
+    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(status = 'RECEBIDO', 1, if(status = 'ENTREGUE', -1, 0)))) AS saldoTotal from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
           )
-  var saldo_total: Int? = 0
+  var saldoTotal: Int? = 0
   val descricao: String?
     @Transient get() = vproduto?.nome
 
@@ -130,7 +124,7 @@ class Produto : BaseModel() {
     }
   }
 
-  fun somaSaldo(item: ItemNota): Int {
+  private fun somaSaldo(item: ItemNota): Int {
     val multiplicador = item.status.multiplicador
     return multiplicador * item.quantidade
   }

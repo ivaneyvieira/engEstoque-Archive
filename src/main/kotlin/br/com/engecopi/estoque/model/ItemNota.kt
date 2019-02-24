@@ -54,9 +54,9 @@ class ItemNota : BaseModel() {
   var codigoBarraEntrega: String? = ""
   val quantidadeSaldo: Int
     get() = (status.multiplicador) * quantidade
-  val viewCodigoBarraConferencia: ViewCodBarConferencia?
+  private val viewCodigoBarraConferencia: ViewCodBarConferencia?
     @Transient get() = ViewCodBarConferencia.byId(id)
-  val viewCodigoBarraEntrega: ViewCodBarEntrega?
+  private val viewCodigoBarraEntrega: ViewCodBarEntrega?
     @Transient get() = ViewCodBarEntrega.byId(id)
   val descricao: String?
     @Transient get() = produto?.descricao
@@ -153,11 +153,11 @@ class ItemNota : BaseModel() {
 }
 
 class NotaPrint(val item: ItemNota) {
-  val notaSaci = item.nota
+  private val notaSaci = item.nota
   val rota = notaSaci?.rota ?: ""
   val nota = notaSaci?.numero ?: ""
-  val tipoObservacao = notaSaci?.observacao?.split(" ")?.get(0) ?: ""
-  val isNotaSaci = when (notaSaci?.tipoNota) {
+  private val tipoObservacao = notaSaci?.observacao?.split(" ")?.get(0) ?: ""
+  private val isNotaSaci = when (notaSaci?.tipoNota) {
     TipoNota.OUTROS_E -> false
     TipoNota.OUTROS_S -> false
     null              -> false
@@ -166,7 +166,7 @@ class NotaPrint(val item: ItemNota) {
   val tipoNota = if (isNotaSaci)
     notaSaci?.tipoNota?.descricao ?: ""
   else tipoObservacao
-  val dataLocal = if (isNotaSaci)
+  private val dataLocal = if (isNotaSaci)
     notaSaci?.data
   else item.data
   val data = dataLocal?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""

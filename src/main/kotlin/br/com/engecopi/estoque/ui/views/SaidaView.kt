@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
@@ -38,28 +37,23 @@ import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Alignment.BOTTOM_RIGHT
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.SelectionMode.MULTI
-import com.vaadin.ui.Image
-import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
-import de.steinwedel.messagebox.ButtonOption
-import de.steinwedel.messagebox.MessageBox
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView
 class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
-  lateinit var gridCrudFlex: GridCrudFlex<SaidaVo>
+  private lateinit var gridCrudFlex: GridCrudFlex<SaidaVo>
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,

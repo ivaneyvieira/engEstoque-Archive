@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA

@@ -9,7 +9,6 @@ import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -55,7 +54,7 @@ class ProdutoViewModel(view: IView) :
     }
   }
 
-  fun QProduto.filtroUsuario(): QProduto {
+  private fun QProduto.filtroUsuario(): QProduto {
     return this
       .viewProdutoLoc.localizacao.startsWith(abreviacaoDefault)
       .viewProdutoLoc.loja.id.eq(lojaDefault.id)
@@ -115,7 +114,7 @@ class ProdutoVo : EntityVo<Produto>() {
   val produto
     get() = toEntity()
   val saldo
-    get() = produto?.saldo_total ?: 0
+    get() = produto?.saldoTotal ?: 0
   val comprimento: Int?
     get() = produto?.vproduto?.comp
   val lagura: Int?

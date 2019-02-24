@@ -1,7 +1,5 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
@@ -24,11 +22,9 @@ import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
-import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import de.steinwedel.messagebox.ButtonOption
 import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE

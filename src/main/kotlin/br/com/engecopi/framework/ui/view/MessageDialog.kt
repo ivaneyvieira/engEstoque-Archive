@@ -8,7 +8,7 @@ import de.steinwedel.messagebox.ButtonOption
 import de.steinwedel.messagebox.MessageBox
 
 object MessageDialog {
-  val ui = UI.getCurrent()
+  val ui = UI.getCurrent()!!
   fun info(caption: String = "Informação", message: String) {
     //  if (ui.windows.isNotEmpty())
     //   Notification(caption, message, Notification.Type.HUMANIZED_MESSAGE, true)

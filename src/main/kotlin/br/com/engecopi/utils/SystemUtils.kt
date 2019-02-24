@@ -1,6 +1,7 @@
 package br.com.engecopi.utils
 
 
+import com.google.gwt.util.tools.shared.StringUtils.HEX_CHARS
 import org.imgscalr.Scalr
 import org.imgscalr.Scalr.Method
 import org.imgscalr.Scalr.Mode
@@ -98,7 +99,6 @@ object SystemUtils {
   }
   
   private fun hashString(type: String, input: String): String {
-    val HEX_CHARS = "0123456789ABCDEF"
     val bytes = MessageDigest
             .getInstance(type)
             .digest(input.toByteArray())

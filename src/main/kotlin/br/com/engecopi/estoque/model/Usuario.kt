@@ -1,7 +1,5 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
-import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
 import br.com.engecopi.estoque.model.finder.UsuarioFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.saci
@@ -11,8 +9,6 @@ import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -40,7 +36,7 @@ class Usuario : BaseModel() {
       localizacaoes = value.asSequence().sorted().joinToString()
     }
 
-  fun usuarioSaci() = saci.findUser(loginName)
+  private fun usuarioSaci() = saci.findUser(loginName)
   var admin: Boolean = false
   var estoque : Boolean = true
   var expedicao : Boolean = false

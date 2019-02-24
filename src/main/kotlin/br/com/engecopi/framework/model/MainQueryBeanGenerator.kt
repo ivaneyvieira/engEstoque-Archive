@@ -7,7 +7,7 @@ import java.io.IOException
 object MainQueryBeanGenerator {
   @Throws(IOException::class)
   @JvmStatic
-  fun main(args: Array<String>) {
+  fun main() {
     val config = GeneratorConfig()
     config.lang = "kt"
     config.classesDirectory = "./out/production/classes/"

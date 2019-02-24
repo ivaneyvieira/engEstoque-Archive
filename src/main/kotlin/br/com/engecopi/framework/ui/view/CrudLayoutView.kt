@@ -14,7 +14,6 @@ import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.Query
-import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.shared.data.sort.SortDirection
@@ -26,7 +25,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.TextField
-import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
 import org.vaadin.crudui.crud.CrudListener
@@ -45,7 +43,7 @@ import java.util.stream.*
 import kotlin.reflect.KProperty1
 
 abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
-  lateinit var gridCrud: GridCrudFlex<C>
+  private lateinit var gridCrud: GridCrudFlex<C>
   override fun updateView(viewModel: ViewModel) {
     if (::gridCrud.isInitialized)
       gridCrud.refreshGrid()
@@ -133,9 +131,7 @@ class CustomCrudFormFactory<T>(
     if (operation == DELETE || operation == READ)
       binder.fields.forEach {
         val com = it as? Component
-        it.isReadOnly = com?.let {
-          it.id != "filtro"
-        } ?: true
+        it.isReadOnly = if(com == null) true else com.id != "filtro"
       }
     val footerLayout = buildFooter(operation, domainObject,
                                    cancelButtonClickListener,
@@ -150,7 +146,7 @@ class CustomCrudFormFactory<T>(
   }
 }
 
-class ViewModelCrudListener<T : EntityVo<*>>(val crudViewModel: CrudViewModel<*, *, T>) : CrudListener<T> {
+class ViewModelCrudListener<T : EntityVo<*>>(private val crudViewModel: CrudViewModel<*, *, T>) : CrudListener<T> {
   override fun update(domainObjectToUpdate: T): T {
     crudViewModel.crudBean = domainObjectToUpdate
     crudViewModel.update()
@@ -204,7 +200,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
   domainType: Class<T>,
   crudLayout: CrudLayout,
   crudFormFactory: CrudFormFactory<T>,
-  val crudListener: ViewModelCrudListener<T>
+  private val crudListener: ViewModelCrudListener<T>
                                         ) : GridCrud<T>(domainType, crudLayout, crudFormFactory, crudListener) {
   val find = CallbackDataProvider.FetchCallback<T, String> { query ->
     findQuery(query)
@@ -214,8 +210,8 @@ open class GridCrudFlex<T : EntityVo<*>>(
   }
   private val dataProvider = DataProvider.fromFilteringCallbacks(find, count)
     .withConfigurableFilter()
-  var readButton: Button? = null
-  val filtroEdt = TextField {
+  private var readButton: Button? = null
+  private val filtroEdt = TextField {
     val value = if (it.value.isNullOrBlank()) null else it.value
     dataProvider.setFilter(value)
     refreshGrid()
@@ -268,28 +264,34 @@ open class GridCrudFlex<T : EntityVo<*>>(
     }
   }
 
+  fun button(cmd: () -> Unit): Button {
+    return Button().apply {
+      addClickListener { cmd() }
+    }
+  }
+
   override fun initLayout() {
-    findAllButton = Button("") { _ -> refreshGrid() }
+    findAllButton = button { refreshGrid() }
     findAllButton.description = "Refresh list"
     findAllButton.icon = VaadinIcons.REFRESH
     crudLayout.addToolbarComponent(findAllButton)
 
-    addButton = Button("") { _ -> addButtonClicked() }
+    addButton = button { addButtonClicked() }
     addButton.description = "Add"
     addButton.icon = VaadinIcons.PLUS
     crudLayout.addToolbarComponent(addButton)
 
-    updateButton = Button("") { _ -> updateButtonClicked() }
+    updateButton = button { updateButtonClicked() }
     updateButton.description = "Update"
     updateButton.icon = VaadinIcons.PENCIL
     crudLayout.addToolbarComponent(updateButton)
 
-    readButton = Button("") { _ -> readButtonClicked() }
+    readButton = button { readButtonClicked() }
     readButton?.description = "Read"
     readButton?.icon = VaadinIcons.SEARCH
     crudLayout?.addToolbarComponent(readButton)
 
-    deleteButton = Button("") { _ -> deleteButtonClicked() }
+    deleteButton = button { deleteButtonClicked() }
     deleteButton.description = "Delete"
     deleteButton.icon = VaadinIcons.TRASH
     crudLayout.addToolbarComponent(deleteButton)
@@ -343,7 +345,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
 
   private fun readButtonClicked() {
     val domainObject = grid.asSingleSelect().value
-    showForm(CrudOperation.READ, domainObject, false, savedMessage) { _ ->
+    showForm(CrudOperation.READ, domainObject, false, savedMessage) {
       try {
         grid.asSingleSelect().clear()
         refreshGrid()

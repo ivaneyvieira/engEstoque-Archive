@@ -22,11 +22,11 @@ import java.time.LocalTime
 class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QViewNotaExpedicao, NFExpedicaoVo>
                                             (view, NFExpedicaoVo::class) {
   override fun update(bean: NFExpedicaoVo) {
-    log.error("Atualização não permitida")
+    log?.error("Atualização não permitida")
   }
 
   override fun add(bean: NFExpedicaoVo) {
-    log.error("Inserssão não permitida")
+    log?.error("Inserssão não permitida")
   }
 
   override fun delete(bean: NFExpedicaoVo) {
@@ -102,7 +102,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
       throw EViewModel("Chave não encontrada")
   }
 
-  fun imprimir(itemNota: ItemNota?) : String {
+  private fun imprimir(itemNota: ItemNota?) : String {
     itemNota ?: return ""
     val template = itemNota.template
     val print = itemNota.printEtiqueta()

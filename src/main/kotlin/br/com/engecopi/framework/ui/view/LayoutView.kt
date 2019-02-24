@@ -13,8 +13,6 @@ import com.github.mvysny.karibudsl.v8.fillParent
 import com.github.mvysny.karibudsl.v8.init
 import com.github.mvysny.karibudsl.v8.isMargin
 import com.github.mvysny.karibudsl.v8.label
-import com.github.mvysny.karibudsl.v8.px
-import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.data.Binder.Binding
@@ -33,7 +31,6 @@ import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
-import com.vaadin.ui.TextField
 import com.vaadin.ui.TwinColSelect
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
@@ -117,11 +114,13 @@ fun <V, T> HasItems<T>.bindItens(binder: Binder<V>, propertyList: String) {
   bind<V, Collection<T>>(binder, propertyList) { itens ->
     val oldValue = hasValue?.value
     if (itensOld != itens) {
-      if (this is ComboBox<T>) setItems({ itemCaption, filterText ->
-                                          itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
-                                        }, itens)
-      else if (this is TwinColSelect<T>) setItems(itens)
-      else setItems(itens)
+      when {
+        this is ComboBox<T>      -> setItems({ itemCaption, filterText ->
+                                               itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
+                                             }, itens)
+        this is TwinColSelect<T> -> setItems(itens)
+        else                     -> setItems(itens)
+      }
     }
     @Suppress("UNCHECKED_CAST")
     val contains = itens.contains(oldValue as? T)

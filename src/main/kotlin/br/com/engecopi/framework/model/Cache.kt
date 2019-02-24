@@ -1,6 +1,5 @@
 package br.com.engecopi.framework.model
 
-import br.com.engecopi.framework.model.BaseModel
 import kotlin.reflect.KProperty
 
 val mapCache = mutableMapOf<String, Any?>()
@@ -10,13 +9,12 @@ open class Cache<T>(val initializer: () -> T?) {
   
   protected fun composeKey(thisRef: Any?, property: KProperty<*>): String {
     val classe = thisRef?.javaClass?.simpleName
-    val key = if (thisRef is BaseModel) {
+    return if (thisRef is BaseModel) {
       val id = thisRef.id
       "$classe:$id:${property.name}"
     } else {
       "$classe:${property.name}"
     }
-    return key
   }
   
   private fun calculeDelay(): Long {
@@ -53,7 +51,3 @@ class DelegadeCacheList<T>(initializer: () -> List<T>) : Cache<List<T>>(initiali
     return getValue(key).orEmpty()
   }
 }
-
-fun <T : Any> cacheValue(initializer: () -> T?) = DelegadeCacheValue(initializer)
-
-fun <T : Any> cacheList(initializer: () -> List<T>) = DelegadeCacheList(initializer)

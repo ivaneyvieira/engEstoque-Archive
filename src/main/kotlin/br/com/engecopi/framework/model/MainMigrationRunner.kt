@@ -9,7 +9,7 @@ import java.util.*
 object MainMigrationRunner {
   @Throws(IOException::class)
   @JvmStatic
-  fun main(args: Array<String>) {
+  fun main() {
     // System.setProperty("ddl.migration.generate", "true")
     val home = System.getenv("HOME")
     val fileName = System.getenv("EBEAN_PROPS") ?: "$home/ebean.properties"

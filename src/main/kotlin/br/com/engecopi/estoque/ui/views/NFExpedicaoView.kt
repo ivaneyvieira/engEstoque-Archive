@@ -1,18 +1,14 @@
 package br.com.engecopi.estoque.ui.views
 
-import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoViewModel
 import br.com.engecopi.estoque.viewmodel.NFExpedicaoVo
-import br.com.engecopi.estoque.viewmodel.SaidaVo
 import br.com.engecopi.framework.ui.view.CrudLayoutView
 import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.row
-import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.button
@@ -25,19 +21,14 @@ import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
-import com.vaadin.ui.Image
-import com.vaadin.ui.TextField
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
-import de.steinwedel.messagebox.ButtonOption
-import de.steinwedel.messagebox.MessageBox
 import org.vaadin.crudui.crud.CrudOperation
 
 @AutoView("nf_expedicao")
 class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
-  val isAdmin
+  private val isAdmin
     get() = RegistryUserInfo.userDefaultIsAdmin
 
   override fun layoutForm(formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<NFExpedicaoVo>,
@@ -205,7 +196,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     }
   }
 
-  fun btnImprimeTudo(grid: GridCrudFlex<NFExpedicaoVo>): Button {
+  private fun btnImprimeTudo(grid: GridCrudFlex<NFExpedicaoVo>): Button {
     val button = Button("Imprime Etiquetas")
     button.let {
       it.icon = VaadinIcons.PRINT

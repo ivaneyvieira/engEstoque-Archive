@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.model.query.assoc
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
-import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
@@ -12,7 +11,6 @@ import io.ebean.typequery.PLocalTime
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
-import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
 
 /**

@@ -1,15 +1,10 @@
 package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
-import br.com.engecopi.estoque.model.TipoUsuario
-import br.com.engecopi.estoque.model.TipoUsuario.ESTOQUE
 import br.com.engecopi.estoque.model.Usuario
-import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.framework.ui.view.expand
-import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.saci.saci
 import com.github.mvysny.karibudsl.v8.alignment
-import com.github.mvysny.karibudsl.v8.bind
 import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.expandRatio
@@ -129,7 +124,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
     }
   }
 
-  fun abreviacaoes(username: String?): List<String> {
+  private fun abreviacaoes(username: String?): List<String> {
     return Usuario.abreviacaoes(username).sorted()
   }
 

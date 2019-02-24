@@ -1,13 +1,12 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.TipoUsuario.EXPEDICAO
 import br.com.engecopi.framework.model.Transaction
 import com.vaadin.server.Page
 
 object RegistryUserInfo {
   const val LOJA_FIELD = "LOJA_DEFAULT"
-  const val USER_FIELD = "USER_DEFAULT"
-  const val ABREV_FIELD = "ABREV_DEFAULT"
+  private const val USER_FIELD = "USER_DEFAULT"
+  private const val ABREV_FIELD = "ABREV_DEFAULT"
   private var loginInfo: () -> LoginInfo? = { null }
 
   fun register(loginInfoReg: () -> LoginInfo?) {

@@ -31,7 +31,7 @@ class QuerySaci : QueryDB(driver, url, username, password) {
     }
   }
 
-  fun findNotaSaidaNF(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
+  private fun findNotaSaidaNF(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaNF.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)
@@ -41,7 +41,7 @@ class QuerySaci : QueryDB(driver, url, username, password) {
     }
   }
 
-  fun findNotaSaidaOrd(storeno: Int, nfno: String): List<NotaSaci> {
+  private fun findNotaSaidaOrd(storeno: Int, nfno: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaOrd.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)
@@ -50,7 +50,7 @@ class QuerySaci : QueryDB(driver, url, username, password) {
     }
   }
 
-  fun findNotaSaidaPXA(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
+  private fun findNotaSaidaPXA(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaPXA.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)

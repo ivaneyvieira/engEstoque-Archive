@@ -22,8 +22,7 @@ class ViewCodBarEntrega {
                  .findList()
                  .firstOrNull()
                  ?.id ?: return null
-      val item = ItemNota.byId(id) ?: return null
-      return item
+      return ItemNota.byId(id) ?: return null
     }
   }
 }

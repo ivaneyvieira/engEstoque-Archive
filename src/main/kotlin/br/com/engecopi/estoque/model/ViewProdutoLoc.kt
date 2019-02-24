@@ -1,11 +1,8 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.Repositories.findByAbreviacao
-import br.com.engecopi.estoque.model.Repositories.findByLojaAbreviacao
 import br.com.engecopi.estoque.model.Repositories.findByProduto
 import br.com.engecopi.estoque.model.finder.ViewProdutoLocFinder
-import com.vaadin.sass.internal.selector.ParentSelector.it
 import io.ebean.annotation.Cache
 import io.ebean.annotation.View
 import javax.persistence.Entity

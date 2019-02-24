@@ -14,6 +14,7 @@ fun causaSqlException(causa: Throwable?): SQLException? {
 }
 
 open class AppException(causa: Throwable?,  menssagem: String) : Exception(menssagem) {
+  //TODO Verificar o uso disso
   val causaSqlException = causaSqlException(causa)
 }
 

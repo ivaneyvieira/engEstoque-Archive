@@ -29,23 +29,23 @@ open class DialogPopup<BEAN : Any>(
   }
   private val btnCancel = Button("Cancela")
   
-  val toolBar = buildToolBar()
+  private val toolBar = buildToolBar()
   
   init {
     isClosable = false
     isResizable = false
     isModal = true
-    addStyleName(ValoTheme.PANEL_WELL)
   }
   
   fun show() {
     center()
     content = VerticalLayout(form, toolBar)
+    addStyleName(ValoTheme.PANEL_WELL)
     UI.getCurrent().addWindow(this)
   }
   
-  fun initForm(condigForm: (VerticalLayout) -> Unit) {
-    condigForm(form)
+  fun initForm(configForm: (VerticalLayout) -> Unit) {
+    configForm(form)
   }
   
   private fun buildToolBar(): Component {
@@ -56,8 +56,8 @@ open class DialogPopup<BEAN : Any>(
     tool.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR)
     tool.addComponents(espaco, btnOk, btnCancel)
     tool.setExpandRatio(espaco, 1f)
-    btnOk.addClickListener({ this.btnOkClick() })
-    btnCancel.addClickListener({ this.btnCancelClick() })
+    btnOk.addClickListener { this.btnOkClick() }
+    btnCancel.addClickListener { this.btnCancelClick() }
     return tool
   }
   

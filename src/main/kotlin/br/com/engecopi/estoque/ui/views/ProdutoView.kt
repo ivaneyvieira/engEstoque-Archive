@@ -191,7 +191,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         column(ProdutoVo::saldo) {
           expandRatio = 1
           caption = "Saldo"
-          setSortProperty("saldo_total")
+          setSortProperty("saldoTotal")
           setRenderer(NumberRenderer(DecimalFormat("0")))
           align = VAlign.Right
         }
