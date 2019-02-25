@@ -13,16 +13,18 @@ import javax.persistence.Id
 class ViewCodBarConferencia {
   @Id
   @Column(name = "id_itens_nota")
-  val id : Long? = null
-  val codbar : String? = ""
+  val id: Long = 0
+  val codbar: String = ""
+  val storeno: Int = 0
+  val numero: String = ""
+  val sequencia: Int = 0
+  val abreviacao: String = ""
 
   companion object Find : ViewCodBarConferenciaFinder() {
-    fun findNota(key: String): ItemNota? {
-      val id = where().codbar.eq(key)
+    fun findNota(key: String): ViewCodBarConferencia? {
+      return where().codbar.eq(key)
         .findList()
         .firstOrNull()
-        ?.id ?: return null
-      return ItemNota.byId(id) ?: return null
     }
   }
 }

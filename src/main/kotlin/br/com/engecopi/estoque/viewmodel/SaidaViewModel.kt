@@ -1,6 +1,8 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Nota
+import br.com.engecopi.estoque.model.Nota.Find
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
@@ -21,9 +23,9 @@ class SaidaViewModel(view: IView) : NotaViewModel<SaidaVo>(view, SaidaVo::class,
 
   fun processaKey(key: String) = execValue {
     val item = ViewCodBarConferencia.findNota(key) ?: return@execValue null
-    if (item.abreviacao == RegistryUserInfo.abreviacaoDefault)
+    if (item.abreviacao != RegistryUserInfo.abreviacaoDefault)
       throw EViewModel("Código de barras inválido")
-    return@execValue item.nota
+    return@execValue Nota.findSaida(item.numero)
   }
 
   fun confirmaProdutos(itens: List<ItemNota>) = exec {

@@ -13,8 +13,15 @@ import javax.persistence.Id
 class ViewCodBarEntrega {
   @Id
   @Column(name = "id_itens_nota")
-  val id : Long? = null
-  val codbar : String? = ""
+  val id: Long = 0
+  val codbar: String = ""
+  val storeno: Int = 0
+  val numero: String = ""
+  val sequencia: Int = 0
+  val abreviacao: String = ""
+  val codigo: String = ""
+  val grade: String = ""
+  val quantidade: Int = 0
 
   companion object Find : ViewCodBarEntregaFinder(){
     fun findNota(key: String): ItemNota? {

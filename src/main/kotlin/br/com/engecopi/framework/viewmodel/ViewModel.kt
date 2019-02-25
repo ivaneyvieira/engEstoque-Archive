@@ -35,6 +35,7 @@ abstract class ViewModel(val view: IView) {
           inExcection = false
         }
       } catch (e: EViewModel) {
+        inExcection = false
         updateView(e)
       }
     }
@@ -68,6 +69,7 @@ abstract class ViewModel(val view: IView) {
         }
       } catch (e: EViewModel) {
         updateView(e)
+        inExcection = false
         throw e
       }
     }

@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui
 import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.ui.views.EntradaView
+import br.com.engecopi.estoque.ui.views.EntregaClienteEditorView
 import br.com.engecopi.estoque.ui.views.EntregaClienteView
 import br.com.engecopi.estoque.ui.views.EtiquetaView
 import br.com.engecopi.estoque.ui.views.NFExpedicaoView
@@ -103,6 +104,7 @@ class EstoqueUI : UI() {
           section("Expedição") {
             menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
             menuButton("Entrega ao Cliente", TRUCK, view = EntregaClienteView::class.java)
+            menuButton("Editor de Entrega", TRUCK, view = EntregaClienteEditorView::class.java)
           }
         }
 

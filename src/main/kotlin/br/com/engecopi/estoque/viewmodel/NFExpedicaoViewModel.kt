@@ -74,7 +74,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
     if (notasSaci.isNotEmpty()) {
       val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
         if (this.existe())
-          EViewModel("Essa nota já está cadastrada")
+          throw EViewModel("Essa nota já está cadastrada")
         else {
           val serie = numero.split("/").getOrNull(1) ?: ""
           sequencia = Nota.maxSequencia(serie) + 1
