@@ -28,7 +28,8 @@ class ViewProdutoSaci {
       return where()
         .codigo.eq(codigo.lpad(16, " "))
         .grade.eq(gradeN)
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
 
     fun find(codigo: String?): List<ViewProdutoSaci> {

@@ -76,7 +76,8 @@ class Usuario : BaseModel() {
   companion object Find : UsuarioFinder() {
     fun findUsuario(loginName: String?): Usuario? {
       if (loginName.isNullOrBlank()) return null
-      return where().loginName.eq(loginName).findOne()
+      return where().loginName.eq(loginName).findList()
+        .firstOrNull()
     }
 
     fun nomeSaci(value: String): String {

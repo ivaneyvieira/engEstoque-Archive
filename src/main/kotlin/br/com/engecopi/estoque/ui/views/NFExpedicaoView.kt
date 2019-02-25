@@ -145,6 +145,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   }
 
   override fun updateView(viewModel: ViewModel) {
+    gridCrud.refreshGrid()
   }
 
   override fun updateModel() {
@@ -152,36 +153,6 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
 
   override val viewModel: NFExpedicaoViewModel
     get() = NFExpedicaoViewModel(this)
-
-
-
-  /*
-   fun readString(msg: String, processaleitura: (String) -> Unit) {
-     if (msg.isNotBlank()) {
-       val textField = textField(msg) {
-         this.w = 400.px
-       }
-
-       MessageBox.createQuestion()
-         .withCaption("Leitura")
-         .withIcon(Image().apply {
-           icon = VaadinIcons.BARCODE
-           focus()
-         })
-         .withMessage(textField)
-         .withNoButton({ },
-                       arrayOf(ButtonOption.caption("Cancela")))
-         .withYesButton({ processaleitura(textField.value) },
-                        arrayOf(ButtonOption.caption("Confirma"),
-                                ButtonOption.style(ValoTheme.BUTTON_PRIMARY),
-                                buttonDefault()))
-         .withWidth("300px")
-         .open().apply {
-           textField.focus()
-         }
-     }
-   }
- */
 
   private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): Button {
     return button("Ler Nota") {

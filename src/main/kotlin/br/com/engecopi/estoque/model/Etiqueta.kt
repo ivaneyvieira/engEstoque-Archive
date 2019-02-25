@@ -31,7 +31,8 @@ class Etiqueta : BaseModel() {
       statusNota ?: return null
       return where().titulo.eq(titulo)
         .statusNota.eq(statusNota)
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
 
     fun template(statusNota: StatusNota?): String {

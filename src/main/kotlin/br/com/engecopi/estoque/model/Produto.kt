@@ -114,7 +114,8 @@ class Produto : BaseModel() {
       return where()
         .codigo.eq(codigo.lpad(16, " "))
         .grade.eq(grade ?: "")
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
 
     fun findProdutos(codigo: String?): List<Produto> {

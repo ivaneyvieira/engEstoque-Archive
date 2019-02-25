@@ -92,7 +92,8 @@ class ItemNota : BaseModel() {
       produto ?: return null
       return ItemNota.where().nota.id.eq(nota.id)
         .produto.id.eq(produto.id)
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
 
     fun find(notaSaci: NotaSaci?): ItemNota? {

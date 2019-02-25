@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne
 
 @Cache(enableQueryCache = false)
 @Entity
-@View(name = "v_nota_expedicao", dependentTables = ["notas"])
+@View(name = "v_nota_expedicao", dependentTables = ["notas", "itens_nota"])
 class ViewNotaExpedicao : BaseModel() {
   private var notaId: Long = 0
   var numero: String = ""
@@ -48,7 +48,8 @@ class ViewNotaExpedicao : BaseModel() {
         .numero.eq(numero)
         .loja.equalTo(RegistryUserInfo.lojaDefault)
         .abreviacao.eq(abreviacao)
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
   }
 

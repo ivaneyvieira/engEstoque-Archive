@@ -43,7 +43,7 @@ import java.util.stream.*
 import kotlin.reflect.KProperty1
 
 abstract class CrudLayoutView<C : EntityVo<*>, V : CrudViewModel<*, *, C>> : LayoutView<V>() {
-  private lateinit var gridCrud: GridCrudFlex<C>
+  lateinit var gridCrud: GridCrudFlex<C>
   override fun updateView(viewModel: ViewModel) {
     if (::gridCrud.isInitialized)
       gridCrud.refreshGrid()
@@ -131,7 +131,7 @@ class CustomCrudFormFactory<T>(
     if (operation == DELETE || operation == READ)
       binder.fields.forEach {
         val com = it as? Component
-        it.isReadOnly = if(com == null) true else com.id != "filtro"
+        it.isReadOnly = if (com == null) true else com.id != "filtro"
       }
     val footerLayout = buildFooter(operation, domainObject,
                                    cancelButtonClickListener,

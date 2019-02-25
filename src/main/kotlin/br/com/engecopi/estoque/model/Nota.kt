@@ -82,7 +82,8 @@ class Nota : BaseModel() {
     fun maxSequencia(serie : String) : Int {
       return where().select(QNota._alias.maxSequencia)
                .numero.endsWith("/$serie")
-               .findOne()
+               .findList()
+               .firstOrNull()
                ?.maxSequencia ?: 0
     }
 
@@ -93,7 +94,8 @@ class Nota : BaseModel() {
         .tipoMov.eq(ENTRADA)
         .numero.eq(numero)
         .loja.id.eq(loja.id)
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
 
     fun findSaida(numero: String?): Nota? {
@@ -103,7 +105,8 @@ class Nota : BaseModel() {
         .tipoMov.eq(SAIDA)
         .numero.eq(numero)
         .loja.id.eq(loja.id)
-        .findOne()
+        .findList()
+        .firstOrNull()
     }
 
     fun findEntradas(): List<Nota> {
