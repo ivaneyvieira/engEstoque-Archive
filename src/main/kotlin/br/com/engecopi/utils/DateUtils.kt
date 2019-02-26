@@ -6,6 +6,11 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+private const val DATE_PATTERN = "dd/MM/yyyy"
+private const val DATETIME_PATTERN = "dd/MM/yyyy HH:mm"
+private val DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN)
+private val DATETIME_FORMATTER = DateTimeFormatter.ofPattern(DATETIME_PATTERN)
+
 fun LocalDateTime?.toDate(): Date? {
   if(this == null) return null
   val instant = this.atZone(ZoneId.systemDefault())?.toInstant()
@@ -30,7 +35,8 @@ fun LocalTime?.toDate(): Date? {
   val year = date.year
   val month = date.month
   val dayOfMonth = date.dayOfMonth
-  val instant = this.atDate(LocalDate.of(year, month, dayOfMonth))?.atZone(ZoneId.systemDefault())?.toInstant()
+  val instant = this.atDate(LocalDate.of(year, month, dayOfMonth))
+    ?.atZone(ZoneId.systemDefault())?.toInstant()
   return Date.from(instant)
 }
 
@@ -48,16 +54,19 @@ fun Date?.toLocalDate(): LocalDate? {
   return zdt.toLocalDate()
 }
 
-fun LocalDateTime?.format(): String? {
-  if(this == null) return null
-  val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
-  return formatter.format(this)
+fun LocalDateTime?.format(): String {
+  if(this == null) return ""
+  return DATETIME_FORMATTER.format(this)
 }
 
 fun Date?.format() : String? {
   if(this == null) return null
-  val sdf = SimpleDateFormat("dd/MM/yyyy")
+  val sdf = SimpleDateFormat(DATE_PATTERN)
   return sdf.format(this)
+}
+
+fun LocalDate?.format() : String {
+  return this?.format(DATE_FORMATTER) ?: ""
 }
 
 fun Int.localDate() : LocalDate? {
@@ -67,4 +76,12 @@ fun Int.localDate() : LocalDate? {
   val month = strDate.substring(4, 6).toInt()
   val day = strDate.substring(6, 8).toInt()
   return LocalDate.of(year, month, day)
+}
+
+fun String?.parserDate(): LocalDate? {
+  return try {
+    LocalDate.parse(this, DATE_FORMATTER)
+  } catch (e: Exception) {
+    null
+  }
 }

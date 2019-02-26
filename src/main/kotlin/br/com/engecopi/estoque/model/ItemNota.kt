@@ -6,13 +6,13 @@ import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.saci.beans.NotaSaci
+import br.com.engecopi.utils.format
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
 import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
@@ -170,7 +170,7 @@ class NotaPrint(val item: ItemNota) {
   val dataLocal = if (isNotaSaci)
     notaSaci?.data
   else item.data
-  val data = dataLocal?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
+  val data = dataLocal?.format()
   val produto = item.produto
   val sd = item.saldo ?: 0
   val quant = item.quantidade
@@ -186,7 +186,7 @@ class NotaPrint(val item: ItemNota) {
   val codigoBarraConferencia
     get() = item.codigoBarraConferencia ?: ""
   val dataLancamento
-    get() = item.nota?.lancamento?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
+    get() = item.nota?.lancamento
 
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->

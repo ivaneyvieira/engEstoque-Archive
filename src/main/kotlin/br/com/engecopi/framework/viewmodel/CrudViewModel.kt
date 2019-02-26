@@ -1,6 +1,7 @@
 package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.BaseModel
+import br.com.engecopi.utils.parserDate
 import io.ebean.PagedList
 import io.ebean.typequery.TQRootBean
 import java.time.LocalDate
@@ -49,7 +50,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
   private fun Q.filterBlank(filter: String): Q {
     return if (filter.isBlank()) this
     else {
-      val date = parserDate(filter)
+      val date = filter.parserDate()
       val int = filter.toIntOrNull()
       val q1 = or().filterString(filter)
       val q2 = date?.let { q1.filterDate(it) } ?: q1
@@ -60,15 +61,6 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
 
   open fun Q.orderQuery(): Q {
     return this
-  }
-
-  private fun parserDate(filter: String): LocalDate? {
-    val frm = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    return try {
-      LocalDate.parse(filter, frm)
-    } catch (e: Exception) {
-      null
-    }
   }
 
   private fun Q.makeSort(sorts: List<Sort>): Q {
