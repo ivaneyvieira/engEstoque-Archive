@@ -287,7 +287,7 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String) : E
       }
     }
   var tipoNota: TipoNota = OUTROS_E
-  private val temGrid
+  val temGrid
     get() = (tipoNota != OUTROS_E) && (entityVo == null)
   val naoTemGrid
     get() = !temGrid
@@ -431,7 +431,7 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String) : E
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   var localizacao: LocProduto? = null
   val localizacaoProduto
-    get() = produto?.localizacoes().orEmpty()
+    get() = produto?.localizacoes()?.map { LocProduto(it) }.orEmpty()
   var status: StatusNota? = null
 }
 
