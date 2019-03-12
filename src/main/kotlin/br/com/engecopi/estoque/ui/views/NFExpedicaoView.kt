@@ -158,7 +158,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
-        readString("Chave da nota fiscal", false) { _, key ->
+        readString("Chave da nota fiscal", true) { _, key ->
           viewModel.processaKey(key)
           gridCrudFlex.grid.refresh()
           null
