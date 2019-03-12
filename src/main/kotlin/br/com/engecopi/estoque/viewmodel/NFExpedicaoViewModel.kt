@@ -72,6 +72,10 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   fun processaKey(key: String) = execValue<ItemNota?> {
     val notasSaci = Nota.findNotaSaidaPXA(key)
     if (notasSaci.isNotEmpty()) {
+      val loja = RegistryUserInfo.lojaDefault.numero
+      val lojaSaci = notasSaci.firstOrNull()?.storeno ?: 0
+      if (loja != lojaSaci)
+        throw EViewModel("Esta nota pertence a loja $lojaSaci")
       val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
         if (this.existe())
           throw EViewModel("Essa nota já está cadastrada")
@@ -102,7 +106,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
       throw EViewModel("Chave não encontrada")
   }
 
-  private fun imprimir(itemNota: ItemNota?) : String {
+  private fun imprimir(itemNota: ItemNota?): String {
     itemNota ?: return ""
     val template = itemNota.template
     val print = itemNota.printEtiqueta()
@@ -116,7 +120,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
 
   fun imprimir(nota: NFExpedicaoVo?): String {
     val itens = nota?.findEntity()?.findItens() ?: emptyList()
-    return itens.map{imprimir(it)}.distinct().joinToString(separator = "\n")
+    return itens.map { imprimir(it) }.distinct().joinToString(separator = "\n")
   }
 
   fun imprime(): String {
@@ -124,7 +128,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
       .impresso.eq(false)
       .status.eq(INCLUIDA)
       .findList()
-    return itens.map{imprimir(it)}.distinct().joinToString(separator = "\n")
+    return itens.map { imprimir(it) }.distinct().joinToString(separator = "\n")
   }
 }
 
@@ -141,7 +145,7 @@ class NFExpedicaoVo : EntityVo<ViewNotaExpedicao>() {
   var cliente: String = ""
   var data: LocalDate = LocalDate.now()
   var dataEmissao: LocalDate = LocalDate.now()
-  var lancamento: LocalDate =  LocalDate.now()
+  var lancamento: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var observacao: String = ""
   var loja: Loja? = null
