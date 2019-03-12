@@ -188,6 +188,9 @@ class NotaPrint(val item: ItemNota) {
   val dataLancamento
     get() = item.nota?.lancamento?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
 
+  val nomeFilial
+    get() = "ENGECOPI ${item.nota?.loja?.sigla}"
+
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->
       reduce.replace("[${prop.name}]", "${prop.get(this)}")
