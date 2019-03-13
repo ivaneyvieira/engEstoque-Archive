@@ -1,9 +1,12 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
+import br.com.engecopi.estoque.model.query.QViewCodBarConferencia
+import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
+import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
 
 /**
@@ -16,6 +19,10 @@ class QAssocViewCodBarConferencia<R>(name: String, root: R) : TQAssocBean<ViewCo
 
   lateinit var id: PLong<R>
   lateinit var codbar: PString<R>
+  lateinit var storeno: PInteger<R>
+  lateinit var numero: PString<R>
+  lateinit var sequencia: PInteger<R>
+  lateinit var abreviacao: PString<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

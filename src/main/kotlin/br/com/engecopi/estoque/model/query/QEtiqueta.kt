@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import io.ebean.EbeanServer
+import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
@@ -36,6 +37,7 @@ class QEtiqueta : TQRootBean<Etiqueta, QEtiqueta> {
   lateinit var statusNota: PEnum<QEtiqueta,StatusNota>
   lateinit var template: PString<QEtiqueta>
   lateinit var itensNota: QAssocItemNota<QEtiqueta>
+  lateinit var defaut: PBoolean<QEtiqueta>
 
 
   /**

@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.ViewCodBarEntrega
 import io.ebean.EbeanServer
+import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
@@ -25,6 +26,13 @@ class QViewCodBarEntrega : TQRootBean<ViewCodBarEntrega, QViewCodBarEntrega> {
 
   lateinit var id: PLong<QViewCodBarEntrega>
   lateinit var codbar: PString<QViewCodBarEntrega>
+  lateinit var storeno: PInteger<QViewCodBarEntrega>
+  lateinit var numero: PString<QViewCodBarEntrega>
+  lateinit var sequencia: PInteger<QViewCodBarEntrega>
+  lateinit var abreviacao: PString<QViewCodBarEntrega>
+  lateinit var codigo: PString<QViewCodBarEntrega>
+  lateinit var grade: PString<QViewCodBarEntrega>
+  lateinit var quantidade: PInteger<QViewCodBarEntrega>
 
 
   /**

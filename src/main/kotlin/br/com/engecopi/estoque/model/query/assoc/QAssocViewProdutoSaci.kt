@@ -1,9 +1,11 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.ViewProdutoSaci
+import br.com.engecopi.estoque.model.query.QViewProdutoSaci
 import io.ebean.typequery.PDouble
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
+import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
 
 /**

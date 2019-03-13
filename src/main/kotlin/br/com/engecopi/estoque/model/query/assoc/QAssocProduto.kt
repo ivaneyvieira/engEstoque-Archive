@@ -1,12 +1,14 @@
 package br.com.engecopi.estoque.model.query.assoc
 
 import br.com.engecopi.estoque.model.Produto
+import br.com.engecopi.estoque.model.query.QProduto
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQAssocBean
+import io.ebean.typequery.TQProperty
 import io.ebean.typequery.TypeQueryBean
 
 /**
@@ -29,7 +31,7 @@ class QAssocProduto<R>(name: String, root: R) : TQAssocBean<Produto,R>(name, roo
   lateinit var vproduto: QAssocViewProduto<R>
   lateinit var viewProdutoLoc: QAssocViewProdutoLoc<R>
   lateinit var localizacao: PString<R>
-  lateinit var saldo_total: PInteger<R>
+  lateinit var saldoTotal: PInteger<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }
