@@ -39,9 +39,17 @@ class Etiqueta : BaseModel() {
     fun template(statusNota: StatusNota?): String {
       return where()
                .statusNota.eq(statusNota)
+               .etiquetaDefault.eq(true)
                .findList()
                .firstOrNull()
-               ?.template ?: ""
+               ?.template
+             ?: where()
+               .statusNota.eq(statusNota)
+               .etiquetaDefault.eq(false)
+               .findList()
+               .firstOrNull()
+               ?.template
+             ?: ""
     }
   }
 
