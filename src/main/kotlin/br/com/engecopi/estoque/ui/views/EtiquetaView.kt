@@ -13,6 +13,7 @@ import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.bind
 import com.github.mvysny.karibudsl.v8.button
+import com.github.mvysny.karibudsl.v8.checkBox
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.h
 import com.github.mvysny.karibudsl.v8.px
@@ -42,11 +43,18 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
           expand = 4
           bind(binder).bind(EtiquetaVo::titulo)
         }
+      }
+      row{
         comboBox<StatusNota>("Tipo") {
-          expand = 1
+          expand = 2
           default { it.descricao }
           setItems(StatusNota.values().toList())
           bind(binder).bind(EtiquetaVo::statusNota)
+        }
+        checkBox("Etiqueta padrão") {
+          expand = 2
+          alignment = Alignment.BOTTOM_LEFT
+          bind(binder).bind(EtiquetaVo::etiquetaDefault)
         }
         button("Ajuda") {
           alignment = Alignment.BOTTOM_RIGHT
@@ -81,10 +89,21 @@ class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
           caption = "Tipo"
           setSortProperty("statusNota")
         }
+        column(EtiquetaVo::etiquetaDefault) {
+          caption = "Padrão"
+
+          setRenderer({
+                        when {
+                          it == null -> ""
+                          it         -> "Sim"
+                          else       -> "Não"
+                        }
+                      }, TextRenderer())
+        }
       }
     }
   }
-  
+
   override val viewModel: EtiquetaViewModel
     get() = EtiquetaViewModel(this)
 }

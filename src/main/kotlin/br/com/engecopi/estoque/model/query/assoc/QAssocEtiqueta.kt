@@ -29,7 +29,7 @@ class QAssocEtiqueta<R>(name: String, root: R) : TQAssocBean<Etiqueta,R>(name, r
   lateinit var statusNota: PEnum<R,StatusNota>
   lateinit var template: PString<R>
   lateinit var itensNota: QAssocItemNota<R>
-  lateinit var default: PBoolean<R>
+  lateinit var etiquetaDefault: PBoolean<R>
 
   // type safe fetch(properties) using varargs not supported yet ...
 }

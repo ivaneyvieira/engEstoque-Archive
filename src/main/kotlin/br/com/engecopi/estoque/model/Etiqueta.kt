@@ -24,7 +24,7 @@ class Etiqueta : BaseModel() {
   var template: String = ""
   @OneToMany(mappedBy = "etiqueta", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
-  var default : Boolean = false
+  var etiquetaDefault: Boolean = false
 
   companion object Find : EtiquetaFinder() {
     fun find(titulo: String?, statusNota: StatusNota?): Etiqueta? {
@@ -43,5 +43,14 @@ class Etiqueta : BaseModel() {
                .firstOrNull()
                ?.template ?: ""
     }
+  }
+
+  fun updateOutros() {
+    db().update(Etiqueta::class.java)
+      .set("etiqueta_default", false)
+      .where()
+      .eq("status_nota", statusNota)
+      .ne("id", id)
+      .update()
   }
 }

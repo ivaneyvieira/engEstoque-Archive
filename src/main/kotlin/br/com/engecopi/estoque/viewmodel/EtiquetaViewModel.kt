@@ -14,6 +14,8 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
       this.statusNota = bean.statusNota ?: throw EViewModel("O tipo está vazio")
+      this.etiquetaDefault = bean.etiquetaDefault
+      this.updateOutros()
       update()
     }
   }
@@ -23,6 +25,8 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
       this.statusNota = bean.statusNota ?: throw EViewModel("O tipo está vazio")
+      this.etiquetaDefault = bean.etiquetaDefault
+      this.updateOutros()
       insert()
     }
   }
@@ -41,7 +45,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.titulo = etiqueta.titulo
       this.template = etiqueta.template
       this.statusNota = etiqueta.statusNota
-      this.default = etiqueta.default
+      this.etiquetaDefault = etiqueta.etiquetaDefault
     }
   }
 
@@ -58,5 +62,5 @@ class EtiquetaVo : EntityVo<Etiqueta>() {
   var titulo: String? = ""
   var template: String? = ""
   var statusNota: StatusNota? = null
-  var default : Boolean = false
+  var etiquetaDefault : Boolean = false
 }

@@ -26,7 +26,6 @@ repositories {
   maven { url "https://jcenter.bintray.com" }
 }
 
-
 configurations.all {
   resolutionStrategy.cacheChangingModulesFor 4, 'hours'
 }
@@ -51,7 +50,7 @@ gretty {
 
 vaadin {
   version "${vaadin8_version}"
-  
+
   //manageDependencies false
   //manageRepositories false
   // push true
@@ -120,6 +119,8 @@ dependencies {
   compile 'org.vaadin.crudui:crudui:2.3.0'
   compile 'org.vaadin.addons:filtering-grid:0.1.1'
   compile 'com.fo0.advancedtokenfield:AdvancedTokenField:0.4.1'
+  compile 'com.vaadin:grid-renderers-collection-addon:2.3.3'
+
   //compile 'org.vaadin.extension:GridScrollExtension:2.4.0'
   // heroku app runner
   testCompile "junit:junit:4.11"
