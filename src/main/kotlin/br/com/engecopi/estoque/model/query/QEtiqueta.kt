@@ -37,7 +37,7 @@ class QEtiqueta : TQRootBean<Etiqueta, QEtiqueta> {
   lateinit var statusNota: PEnum<QEtiqueta,StatusNota>
   lateinit var template: PString<QEtiqueta>
   lateinit var itensNota: QAssocItemNota<QEtiqueta>
-  lateinit var defaut: PBoolean<QEtiqueta>
+  lateinit var default: PBoolean<QEtiqueta>
 
 
   /**

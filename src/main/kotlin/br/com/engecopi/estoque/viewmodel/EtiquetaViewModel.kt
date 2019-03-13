@@ -41,6 +41,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.titulo = etiqueta.titulo
       this.template = etiqueta.template
       this.statusNota = etiqueta.statusNota
+      this.default = etiqueta.default
     }
   }
 
@@ -57,4 +58,5 @@ class EtiquetaVo : EntityVo<Etiqueta>() {
   var titulo: String? = ""
   var template: String? = ""
   var statusNota: StatusNota? = null
+  var default : Boolean = false
 }
