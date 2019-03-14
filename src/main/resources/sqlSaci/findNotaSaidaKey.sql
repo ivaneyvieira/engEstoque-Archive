@@ -1,5 +1,5 @@
-select nf.storeno, nf.nfno, nf.nfse, nf2.nfekey
-from sqldados.nf2
-  INNER JOIN sqldados.nf
+select pxa.storeno, pxa.nfno, pxa.nfse, pxanf2.nfekey
+from sqlpdv.pxanf2
+  INNER JOIN sqlpdv.pxa
     USING(storeno, pdvno, xano)
 WHERE nfekey = :nfekey
