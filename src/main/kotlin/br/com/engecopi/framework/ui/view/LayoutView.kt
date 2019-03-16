@@ -64,8 +64,10 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
 
   fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit = {}) {
     isMargin = true
+    isSpacing = false
     setSizeFull()
     title(titleForm)
+
     this.block()
   }
 

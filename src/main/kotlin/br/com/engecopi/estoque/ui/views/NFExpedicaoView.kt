@@ -11,7 +11,6 @@ import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.AutoView
-import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.refresh
@@ -21,6 +20,7 @@ import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
+import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -81,7 +81,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     form("Nota Fiscal (Expedição)") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        addCustomToolBarComponent(btnLerChaveNota(this))
+        addCustomFormComponent(formCodbar(this))
         setUpdateOperationVisible(false)
         setAddOperationVisible(false)
         setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
@@ -95,11 +95,13 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
             val print = viewModel.imprimir(item)
             print
           }.extend(button)
-          val impresso = item?.impresso ?: true
+          val impresso = item?.impresso
+                         ?: true
           button.isEnabled = impresso == false || isAdmin
           button.icon = VaadinIcons.PRINT
           button.addClickListener {
-            val print = item?.impresso ?: true
+            val print = item?.impresso
+                        ?: true
             it.button.isEnabled = print == false || isAdmin
             refreshGrid()
           }
@@ -107,11 +109,17 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
         }.id = "btnPrint"
         column(NFExpedicaoVo::loja) {
           caption = "Loja NF"
-          setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
+          setRenderer({ loja ->
+                        loja?.sigla
+                        ?: ""
+                      }, TextRenderer())
         }
         column(NFExpedicaoVo::tipoNota) {
           caption = "TipoNota"
-          setRenderer({ tipo -> tipo?.descricao ?: "" }, TextRenderer())
+          setRenderer({ tipo ->
+                        tipo?.descricao
+                        ?: ""
+                      }, TextRenderer())
           setSortProperty("tipo_nota")
         }
         column(NFExpedicaoVo::lancamento) {
@@ -130,7 +138,10 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
         }
         column(NFExpedicaoVo::usuario) {
           caption = "Usuário"
-          setRenderer({ it?.loginName ?: "" }, TextRenderer())
+          setRenderer({
+                        it?.loginName
+                        ?: ""
+                      }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
         column(NFExpedicaoVo::rota) {
@@ -154,7 +165,13 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   override val viewModel: NFExpedicaoViewModel
     get() = NFExpedicaoViewModel(this)
 
-  private fun btnLerChaveNota(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): Button {
+  private fun formCodbar(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): HorizontalLayout {
+    return PnlCodigoBarras("Chave da Nota Fiscal") { _, key ->
+      viewModel.processaKey(key)
+      gridCrudFlex.grid.refresh()
+      null
+    }
+    /*
     return button("Ler Nota") {
       icon = VaadinIcons.BARCODE
       addClickListener {
@@ -164,7 +181,7 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
           null
         }
       }
-    }
+    }*/
   }
 
   private fun btnImprimeTudo(grid: GridCrudFlex<NFExpedicaoVo>): Button {
