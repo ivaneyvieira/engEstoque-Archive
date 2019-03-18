@@ -19,22 +19,25 @@ import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.icons.VaadinIcons.PRINT
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.ui.Button
-import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
 import org.vaadin.crudui.crud.CrudOperation
 
 @AutoView("nf_expedicao")
-class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
+class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
+  var formCodBar: PnlCodigoBarras? = null
   private val isAdmin
     get() = RegistryUserInfo.userDefaultIsAdmin
 
   override fun layoutForm(formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<NFExpedicaoVo>,
                           readOnly: Boolean) {
     formLayout.apply {
-      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
+        .px
       val nota = binder.bean
       grupo("Nota fiscal de saída") {
         verticalLayout {
@@ -77,11 +80,18 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     }
   }
 
+  override fun enter(event: ViewChangeEvent) {
+    super.enter(event)
+    formCodBar?.focusEdit()
+  }
+
   init {
     form("Nota Fiscal (Expedição)") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        addCustomFormComponent(formCodbar(this))
+
+        formCodBar = formCodbar(this)
+        addCustomFormComponent(formCodBar!!)
         setUpdateOperationVisible(false)
         setAddOperationVisible(false)
         setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
@@ -89,34 +99,33 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
           caption = "Número NF"
           setSortProperty("numero")
         }
-        grid.addComponentColumn { item ->
-          val button = Button()
-          print {
-            val print = viewModel.imprimir(item)
-            print
-          }.extend(button)
-          val impresso = item?.impresso
-                         ?: true
-          button.isEnabled = impresso == false || isAdmin
-          button.icon = VaadinIcons.PRINT
-          button.addClickListener {
-            val print = item?.impresso
-                        ?: true
-            it.button.isEnabled = print == false || isAdmin
-            refreshGrid()
+        grid.addComponentColumn {item ->
+          Button().apply {
+            //print {viewModel.imprimir(item)}.extend(this)
+            val impresso = item?.impresso
+                           ?: true
+            this.isEnabled = impresso == false || isAdmin
+            this.icon = VaadinIcons.PRINT
+            this.addClickListener {
+              openText(viewModel.imprimir(item))
+              val print = item?.impresso
+                          ?: true
+              it.button.isEnabled = print == false || isAdmin
+              refreshGrid()
+            }
           }
-          button
-        }.id = "btnPrint"
+        }
+          .id = "btnPrint"
         column(NFExpedicaoVo::loja) {
           caption = "Loja NF"
-          setRenderer({ loja ->
+          setRenderer({loja ->
                         loja?.sigla
                         ?: ""
                       }, TextRenderer())
         }
         column(NFExpedicaoVo::tipoNota) {
           caption = "TipoNota"
-          setRenderer({ tipo ->
+          setRenderer({tipo ->
                         tipo?.descricao
                         ?: ""
                       }, TextRenderer())
@@ -165,37 +174,21 @@ class NFExpedicaoView : CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   override val viewModel: NFExpedicaoViewModel
     get() = NFExpedicaoViewModel(this)
 
-  private fun formCodbar(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): HorizontalLayout {
-    return PnlCodigoBarras("Chave da Nota Fiscal") { _, key ->
+  private fun formCodbar(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): PnlCodigoBarras {
+    return PnlCodigoBarras("Chave da Nota Fiscal") {_, key ->
       viewModel.processaKey(key)
       gridCrudFlex.grid.refresh()
       null
     }
-    /*
-    return button("Ler Nota") {
-      icon = VaadinIcons.BARCODE
-      addClickListener {
-        readString("Chave da nota fiscal", true) { _, key ->
-          viewModel.processaKey(key)
-          gridCrudFlex.grid.refresh()
-          null
-        }
-      }
-    }*/
   }
 
   private fun btnImprimeTudo(grid: GridCrudFlex<NFExpedicaoVo>): Button {
-    val button = Button("Imprime Etiquetas")
-    button.let {
-      it.icon = VaadinIcons.PRINT
-      print {
-        val print = viewModel.imprime()
-        print
-      }.extend(it)
-      it.addClickListener {
+    return Button("Imprime Etiquetas").apply {
+      icon = PRINT
+      addClickListener {
+        openText(viewModel.imprime())
         grid.refreshGrid()
       }
     }
-    return button
   }
 }

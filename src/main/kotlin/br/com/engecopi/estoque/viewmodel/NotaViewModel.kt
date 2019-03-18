@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Loja
@@ -10,6 +11,7 @@ import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
 import br.com.engecopi.estoque.model.StatusNota
+import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -242,8 +244,7 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     return ViewProdutoLoc.localizacoes(abreviacaoNota)
   }
 
-  fun imprimir(itemNota: ItemNota?) = execString {
-    val template = itemNota?.template ?: ""
+  fun imprimir(itemNota: ItemNota?, template : String) = execString {
     val print = itemNota?.printEtiqueta()
     itemNota?.let {
       it.refresh()
@@ -253,13 +254,26 @@ abstract class NotaViewModel<VO : NotaVo>(view: IView, classVO: KClass<VO>, val 
     return@execString print?.print(template) ?: ""
   }
 
+  fun imprimir(itemNota: ItemNota?): String {
+    itemNota ?: return ""
+    val templates = itemNota.templates
+
+    return templates.joinToString(separator = "\n") {template ->
+      imprimir(itemNota, template)
+    }
+  }
+
   fun imprime(): String {
-    val list = query
+    val templates = Etiqueta.templates(statusDefault)
+    val itens = ItemNota.where()
       .impresso.eq(false)
-      .order().id.desc().findList()
-    return list
-      .map { nota -> imprimir(nota) }
-      .distinct().joinToString(separator = "\n")
+      .status.eq(INCLUIDA)
+      .findList()
+    return templates.joinToString(separator = "\n") {template ->
+      itens.map {imprimir(it, template)}
+        .distinct()
+        .joinToString(separator = "\n")
+    }
   }
 
   abstract fun QItemNota.filtroStatus(): QItemNota

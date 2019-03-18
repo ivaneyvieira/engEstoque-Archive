@@ -120,21 +120,17 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           setSortProperty("codigo_barra_conferencia")
         }
         grid.addComponentColumn { item ->
-          val button = Button()
-          print {
-            item.itemNota?.recalculaSaldos()
-            val print = viewModel.imprimir(item.itemNota)
-            print
-          }.extend(button)
-          val impresso = item?.entityVo?.impresso ?: true
-          button.isEnabled = impresso == false || isAdmin
-          button.icon = VaadinIcons.PRINT
-          button.addClickListener {
-            val print = item?.entityVo?.impresso ?: true
-            it.button.isEnabled = print == false || isAdmin
-            refreshGrid()
+          Button().apply {
+            val impresso = item?.entityVo?.impresso ?: true
+            isEnabled = impresso == false || isAdmin
+            icon = VaadinIcons.PRINT
+            addClickListener {
+              openText(viewModel.imprimir(item.itemNota))
+              val print = item?.entityVo?.impresso ?: true
+              it.button.isEnabled = print == false || isAdmin
+              refreshGrid()
+            }
           }
-          button
         }.id = "btnPrint"
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"

@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
+import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
@@ -106,9 +107,8 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
       throw EViewModel("Chave não encontrada")
   }
 
-  private fun imprimir(itemNota: ItemNota?): String {
+  private fun imprimir(itemNota: ItemNota?, template : String): String {
     itemNota ?: return ""
-    val template = itemNota.template
     val print = itemNota.printEtiqueta()
     itemNota.let {
       it.refresh()
@@ -119,16 +119,36 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   }
 
   fun imprimir(nota: NFExpedicaoVo?): String {
+    val templates = Etiqueta.templates(INCLUIDA)
     val itens = nota?.findEntity()?.findItens() ?: emptyList()
-    return itens.map { imprimir(it) }.distinct().joinToString(separator = "\n")
+
+    return templates.joinToString(separator = "\n") {template ->
+      itens.map {imprimir(it, template)}
+        .distinct()
+        .joinToString(separator = "\n")
+    }
+  }
+
+  fun imprimir(itemNota: ItemNota?): String {
+    itemNota ?: return ""
+    val templates = itemNota.templates
+
+    return templates.joinToString(separator = "\n") {template ->
+      imprimir(itemNota, template)
+    }
   }
 
   fun imprime(): String {
+    val templates = Etiqueta.templates(INCLUIDA)
     val itens = ItemNota.where()
       .impresso.eq(false)
       .status.eq(INCLUIDA)
       .findList()
-    return itens.map { imprimir(it) }.distinct().joinToString(separator = "\n")
+    return templates.joinToString(separator = "\n") {template ->
+      itens.map {imprimir(it, template)}
+        .distinct()
+        .joinToString(separator = "\n")
+    }
   }
 }
 

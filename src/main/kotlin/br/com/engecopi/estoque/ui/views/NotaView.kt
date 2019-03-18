@@ -30,7 +30,7 @@ import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textField
 import com.vaadin.data.Binder
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
-import com.vaadin.icons.VaadinIcons
+import com.vaadin.icons.VaadinIcons.PRINT
 import com.vaadin.ui.Button
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
@@ -58,18 +58,13 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
   }
 
   fun <T : EntityVo<*>> btnImprimeTudo(grid: GridCrudFlex<T>): Button {
-    val button = Button("Imprime Etiquetas")
-    button.let {
-      it.icon = VaadinIcons.PRINT
-      print {
-        val print = viewModel.imprime()
-        print
-      }.extend(it)
-      it.addClickListener {
+    return Button("Imprime Etiquetas").apply {
+      icon = PRINT
+      addClickListener {
+        openText(viewModel.imprime())
         grid.refreshGrid()
       }
     }
-    return button
   }
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).lojaField(

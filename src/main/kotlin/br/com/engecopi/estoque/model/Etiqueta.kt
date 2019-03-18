@@ -15,7 +15,7 @@ import javax.validation.constraints.Size
 
 @Entity
 @Table(name = "etiquetas")
-class Etiqueta : BaseModel() {
+class Etiqueta: BaseModel() {
   @Size(max = 60)
   var titulo: String = ""
   @Enumerated(EnumType.STRING)
@@ -26,31 +26,20 @@ class Etiqueta : BaseModel() {
   val itensNota: List<ItemNota>? = null
   var etiquetaDefault: Boolean = false
 
-  companion object Find : EtiquetaFinder() {
+  companion object Find: EtiquetaFinder() {
     fun find(titulo: String?, statusNota: StatusNota?): Etiqueta? {
-      titulo ?: return null
-      statusNota ?: return null
+      titulo
+      ?: return null
+      statusNota
+      ?: return null
       return where().titulo.eq(titulo)
         .statusNota.eq(statusNota)
         .findList()
         .firstOrNull()
     }
 
-    fun template(statusNota: StatusNota?): String {
-      return where()
-               .statusNota.eq(statusNota)
-               .etiquetaDefault.eq(true)
-               .findList()
-               .firstOrNull()
-               ?.template
-             ?: where()
-               .statusNota.eq(statusNota)
-               .etiquetaDefault.eq(false)
-               .findList()
-               .firstOrNull()
-               ?.template
-             ?: ""
-    }
+    fun templates(statusNota: StatusNota?): List<String> =
+      where().statusNota.eq(statusNota).etiquetaDefault.eq(true).orderBy().titulo.asc().findList().map {it.template}
   }
 
   fun updateOutros() {

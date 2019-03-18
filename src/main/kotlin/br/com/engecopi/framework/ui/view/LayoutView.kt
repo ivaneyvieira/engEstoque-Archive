@@ -24,7 +24,7 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
-import com.vaadin.server.BrowserWindowOpener
+import com.vaadin.server.Page
 import com.vaadin.server.StreamResource
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Component
@@ -59,7 +59,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 import kotlin.streams.toList
 
-abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
+abstract class LayoutView<V: ViewModel>: VerticalLayout(), View, IView {
   abstract val viewModel: V
 
   fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit = {}) {
@@ -76,30 +76,44 @@ abstract class LayoutView<V : ViewModel> : VerticalLayout(), View, IView {
   }
 
   fun <T> Grid<T>.actionSelected(msgErro: String = "Selecione um item", action: (T) -> Unit) {
-    this.selectedItems.firstOrNull()?.let { item -> action(item) } ?: showWarning(msgErro)
+    this.selectedItems.firstOrNull()?.let {item -> action(item)}
+    ?: showWarning(msgErro)
   }
 
   override fun showWarning(msg: String) {
-    if (msg.isNotBlank()) MessageDialog.warning(message = msg)
+    if(msg.isNotBlank()) MessageDialog.warning(message = msg)
   }
 
   override fun showError(msg: String) {
-    if (msg.isNotBlank()) MessageDialog.error(message = msg)
+    if(msg.isNotBlank()) MessageDialog.error(message = msg)
   }
 
   override fun showInfo(msg: String) {
-    if (msg.isNotBlank()) MessageDialog.info(message = msg)
+    if(msg.isNotBlank()) MessageDialog.info(message = msg)
   }
 
-  open fun print(text: () -> String): BrowserWindowOpener {
-    val resource =
-      StreamResource({ IOUtils.toInputStream(text()) }, "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
-    resource.mimeType = "text/plain"
-    return BrowserWindowOpener(resource)
+  /*
+    open fun printText(text: () -> String): BrowserWindowOpener {
+      val resource =
+        StreamResource({ IOUtils.toInputStream(text()) }, "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
+      resource.mimeType = "text/plain"
+      return BrowserWindowOpener(resource)
+    }
+  */
+  @Suppress("DEPRECATION")
+  open fun openText(text: String) {
+    if(text != "") {
+      val resource =
+        StreamResource({IOUtils.toInputStream(text)}, "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
+      resource.mimeType = "text/plain"
+
+      Page.getCurrent()
+        .open(resource, "_blank", false)
+    }
   }
 }
 
-fun <T> ComboBox<T>.default(valueEmpty: T? = null, captionGenerator: (T) -> String = { it.toString() }) {
+fun <T> ComboBox<T>.default(valueEmpty: T? = null, captionGenerator: (T) -> String = {it.toString()}) {
   isEmptySelectionAllowed = false
   isTextInputAllowed = false
   valueEmpty?.let {
@@ -113,12 +127,13 @@ fun <V, T> HasItems<T>.bindItens(binder: Binder<V>, propertyList: String) {
   val hasValue = (this as? HasValue<*>)
   val itensOld: List<T>? = (this.dataProvider as? ListDataProvider<T>)?.items?.toList()
 
-  bind<V, Collection<T>>(binder, propertyList) { itens ->
+  bind<V, Collection<T>>(binder, propertyList) {itens ->
     val oldValue = hasValue?.value
-    if (itensOld != itens) {
+    if(itensOld != itens) {
       when {
-        this is ComboBox<T>      -> setItems({ itemCaption, filterText ->
-                                               itemCaption.toUpperCase().startsWith(filterText.toUpperCase())
+        this is ComboBox<T>      -> setItems({itemCaption, filterText ->
+                                               itemCaption.toUpperCase()
+                                                 .startsWith(filterText.toUpperCase())
                                              }, itens)
         this is TwinColSelect<T> -> setItems(itens)
         else                     -> setItems(itens)
@@ -126,29 +141,29 @@ fun <V, T> HasItems<T>.bindItens(binder: Binder<V>, propertyList: String) {
     }
     @Suppress("UNCHECKED_CAST")
     val contains = itens.contains(oldValue as? T)
-    val value = if (oldValue == null || !contains) null
-    else itens.find { it == oldValue }
-    if (value == null) hasValue?.value = hasValue?.emptyValue
+    val value = if(oldValue == null || !contains) null
+    else itens.find {it == oldValue}
+    if(value == null) hasValue?.value = hasValue?.emptyValue
     else hasValue?.value = value
   }
 }
 
 fun <V, T> TwinColSelect<T>.bindItensSet(binder: Binder<V>, propertyList: String) {
-  bind<V, MutableSet<T>>(binder, propertyList) { itens ->
+  bind<V, MutableSet<T>>(binder, propertyList) {itens ->
     value = emptySet()
     setItems(itens)
   }
 }
 
 fun <BEAN> HasValue<*>.bindReadOnly(binder: Binder<BEAN>, property: String, block: (Boolean) -> Unit = {}) {
-  bind<BEAN, Boolean>(binder, property) { readOnly ->
+  bind<BEAN, Boolean>(binder, property) {readOnly ->
     isReadOnly = readOnly
     block(readOnly)
   }
 }
 
 fun <BEAN> Component.bindVisible(binder: Binder<BEAN>, property: String, block: (Boolean) -> Unit = {}) {
-  bind<BEAN, Boolean>(binder, property) { visible ->
+  bind<BEAN, Boolean>(binder, property) {visible ->
     isVisible = visible
     block(visible)
   }
@@ -163,30 +178,36 @@ fun <BEAN> Component.bindCaption(binder: Binder<BEAN>, property: String, block: 
 
 private fun <BEAN, FIELDVALUE> bind(binder: Binder<BEAN>, property: String,
                                     blockBinder: (FIELDVALUE) -> Unit): Binding<BEAN, FIELDVALUE> {
-  val field = ReadOnlyHasValue<FIELDVALUE> { itens -> blockBinder(itens) }
-  return field.bind(binder).bind(property)
+  val field = ReadOnlyHasValue<FIELDVALUE> {itens -> blockBinder(itens)}
+  return field.bind(binder)
+    .bind(property)
 }
 
 fun Binder<*>.reload() {
   bean = bean
 }
 
-inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(binder: Binder<BEAN>,
-                                                                                      vararg propertys: KProperty1<BEAN, *>) {
-  addValueChangeListener { event ->
-    if (event.isUserOriginated && (event.oldValue != event.value)) {
+inline fun <reified BEAN: Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnChange(binder: Binder<BEAN>,
+                                                                                     vararg propertys: KProperty1<BEAN, *>) {
+  addValueChangeListener {event ->
+    if(event.isUserOriginated && (event.oldValue != event.value)) {
       val bean = binder.bean
-      if (propertys.isEmpty()) {
-        val bindings =
-          BEAN::class.memberProperties.mapNotNull { prop -> binder.getBinding(prop.name).orElse(null) }
-        binder.fields.toList().mapNotNull { field ->
-          bindings.find { binding ->
-            binding.field == field && binding.field != this
-          }
-        }.forEach { binding ->
-          binding.read(bean)
+      if(propertys.isEmpty()) {
+        val bindings = BEAN::class.memberProperties.mapNotNull {prop ->
+          binder.getBinding(prop.name)
+            .orElse(null)
         }
-      } else {
+        binder.fields.toList()
+          .mapNotNull {field ->
+            bindings.find {binding ->
+              binding.field == field && binding.field != this
+            }
+          }
+          .forEach {binding ->
+            binding.read(bean)
+          }
+      }
+      else {
         reloadPropertys(binder, *propertys)
       }
     }
@@ -195,15 +216,16 @@ inline fun <reified BEAN : Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnC
 
 fun <BEAN> reloadPropertys(binder: Binder<BEAN>, vararg propertys: KProperty1<BEAN, *>) {
   val bean = binder.bean
-  propertys.forEach { prop ->
-    binder.getBinding(prop.name).ifPresent { binding ->
-      binding.read(bean)
-    }
+  propertys.forEach {prop ->
+    binder.getBinding(prop.name)
+      .ifPresent {binding ->
+        binding.read(bean)
+      }
   }
 }
 
 fun <C> Column<C, LocalDate?>.dateFormat() {
-  this.setRenderer(LocalDateRenderer { DateTimeFormatter.ofPattern("dd/MM/yyyy") })
+  this.setRenderer(LocalDateRenderer {DateTimeFormatter.ofPattern("dd/MM/yyyy")})
 }
 
 fun <C> Column<C, Int?>.intFormat() {
@@ -219,7 +241,8 @@ fun HasComponents.integerField(caption: String = "", block: IntegerField.() -> U
 fun HasComponents.doubleField(caption: String = "", block: DoubleField.() -> Unit = {}) =
   init(DoubleField(caption), block)
 
-fun HasComponents.emailField(caption: String = "", block: EmailField.() -> Unit = {}) = init(EmailField(caption), block)
+fun HasComponents.emailField(caption: String = "", block: EmailField.() -> Unit = {}) =
+  init(EmailField(caption), block)
 
 fun HasComponents.clearableTextField(caption: String = "", block: ClearableTextField.() -> Unit = {}) =
   init(ClearableTextField(caption), block)
@@ -250,25 +273,23 @@ fun HasComponents.tokenField(captionPar: String = "", block: AdvancedTokenField.
 fun <T> HasComponents.labelField(caption: String = "", block: LabelField<T>.() -> Unit = {}) =
   init(LabelField(caption), block)
 
-inline fun <reified T : Enum<*>> HasComponents.enumSelect(
-  caption: String = "", noinline block: EnumSelect<T>.() -> Unit = {}
-                                                         ) = init(EnumSelect<T>(caption, T::class.java), block)
+inline fun <reified T: Enum<*>> HasComponents.enumSelect(caption: String = "",
+                                                         noinline block: EnumSelect<T>.() -> Unit = {}) =
+  init(EnumSelect<T>(caption, T::class.java), block)
 
-fun HasComponents.title(title: String) = label(title) {
-  w = fillParent
-  addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
-}
+fun HasComponents.title(title: String) =
+  label(title) {
+    w = fillParent
+    addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
+  }
 
 //FilterGrid
-fun <T : Any> (@VaadinDsl HasComponents).filterGrid(
-  itemClass: KClass<T>? = null,
-  caption: String? = null,
-  dataProvider: DataProvider<T, *>? = null,
-  block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}
-                                                   ) =
-  init(if (itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
+fun <T: Any> (@VaadinDsl HasComponents).filterGrid(itemClass: KClass<T>? = null, caption: String? = null,
+                                                   dataProvider: DataProvider<T, *>? = null,
+                                                   block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}) =
+  init(if(itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {
     this.caption = caption
-    if (dataProvider != null) this.dataProvider = dataProvider
+    if(dataProvider != null) this.dataProvider = dataProvider
     block()
   }
 
@@ -286,5 +307,6 @@ fun Window.showDialog() {
   styleName = "modal"
   center()
   addCloseShortcut(KeyCode.ESCAPE)
-  UI.getCurrent().addWindow(this)
+  UI.getCurrent()
+    .addWindow(this)
 }
