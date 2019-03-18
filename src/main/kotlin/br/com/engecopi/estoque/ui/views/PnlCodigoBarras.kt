@@ -16,6 +16,7 @@ import com.vaadin.ui.themes.ValoTheme
 
 class PnlCodigoBarras(caption: String, processaleitura: (Nota?, String) -> ItemNota?): HorizontalLayout() {
   private var nota: Nota? = null
+
   private val textField: TextField = textField(caption) {
     w = 400.px
     focus()

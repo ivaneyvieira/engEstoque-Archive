@@ -20,8 +20,8 @@ import br.com.engecopi.framework.viewmodel.IView
 import java.time.LocalDate
 import java.time.LocalTime
 
-class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QViewNotaExpedicao, NFExpedicaoVo>
-                                            (view, NFExpedicaoVo::class) {
+class NFExpedicaoViewModel(view: IView):
+  CrudViewModel<ViewNotaExpedicao, QViewNotaExpedicao, NFExpedicaoVo>(view, NFExpedicaoVo::class) {
   override fun update(bean: NFExpedicaoVo) {
     log?.error("Atualização não permitida")
   }
@@ -31,7 +31,8 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   }
 
   override fun delete(bean: NFExpedicaoVo) {
-    val nota = bean.findEntity() ?: return
+    val nota = bean.findEntity()
+               ?: return
     val saida = Nota.findSaida(nota.numero)
 
     ItemNota.where()
@@ -70,45 +71,48 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
     }
   }
 
-  fun processaKey(key: String) = execValue<ItemNota?> {
-    val notasSaci = Nota.findNotaSaidaPXA(key)
-    if (notasSaci.isNotEmpty()) {
-      val loja = RegistryUserInfo.lojaDefault.numero
-      val lojaSaci = notasSaci.firstOrNull()?.storeno ?: 0
-      if (loja != lojaSaci)
-        throw EViewModel("Esta nota pertence a loja $lojaSaci")
-      val nota = Nota.createNota(notasSaci.firstOrNull())?.apply {
-        if (this.existe())
-          throw EViewModel("Essa nota já está cadastrada")
-        else {
-          val serie = numero.split("/").getOrNull(1) ?: ""
-          sequencia = Nota.maxSequencia(serie) + 1
-          usuario = RegistryUserInfo.usuarioDefault
-          save()
-        }
-      }
-      if (nota == null)
-        throw EViewModel("Nota não encontrada")
-      else {
-        val itens = notasSaci.mapNotNull { notaSaci ->
-          val item = ItemNota.find(notaSaci) ?: ItemNota.createItemNota(notaSaci, nota)
-          return@mapNotNull item?.apply {
-            status = INCLUIDA
-            impresso = false
-            usuario = RegistryUserInfo.usuarioDefault
-            save()
+  fun processaKey(key: String) =
+    execValue<Nota?> {
+      val notasSaci = Nota.findNotaSaidaPXA(key)
+      if(notasSaci.isNotEmpty()) {
+        val loja = RegistryUserInfo.lojaDefault.numero
+        val lojaSaci = notasSaci.firstOrNull()?.storeno
+                       ?: 0
+        if(loja != lojaSaci) throw EViewModel("Esta nota pertence a loja $lojaSaci")
+        val nota = Nota.createNota(notasSaci.firstOrNull())
+          ?.apply {
+            if(this.existe()) throw EViewModel("Essa nota já está cadastrada")
+            else {
+              val serie = numero.split("/").getOrNull(1)
+                          ?: ""
+              sequencia = Nota.maxSequencia(serie) + 1
+              usuario = RegistryUserInfo.usuarioDefault
+              save()
+            }
           }
-        }
-        if (itens.isEmpty())
-          throw EViewModel("Essa nota não possui itens com localização")
-        null
-      }
-    } else
-      throw EViewModel("Chave não encontrada")
-  }
+        if(nota == null) throw EViewModel("Nota não encontrada")
+        else {
+          val itens = notasSaci.mapNotNull {notaSaci ->
+            val item = ItemNota.find(notaSaci)
+                       ?: ItemNota.createItemNota(notaSaci, nota)
+            return@mapNotNull item?.apply {
+              status = INCLUIDA
+              impresso = false
+              usuario = RegistryUserInfo.usuarioDefault
+              save()
+            }
+          }
+          if(itens.isEmpty()) throw EViewModel("Essa nota não possui itens com localização")
 
-  private fun imprimir(itemNota: ItemNota?, template : String): String {
-    itemNota ?: return ""
+          nota
+        }
+      }
+      else throw EViewModel("Chave não encontrada")
+    }
+
+  private fun imprimir(itemNota: ItemNota?, template: String): String {
+    itemNota
+    ?: return ""
     val print = itemNota.printEtiqueta()
     itemNota.let {
       it.refresh()
@@ -118,9 +122,24 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
     return print.print(template)
   }
 
+  fun imprimir(nota: Nota?): String {
+    nota ?: return ""
+    nota.refresh()
+    val templates = Etiqueta.templates(INCLUIDA)
+    val itens = nota?.itensNota
+                ?: emptyList()
+
+    return templates.joinToString(separator = "\n") {template ->
+      itens.map {imprimir(it, template)}
+        .distinct()
+        .joinToString(separator = "\n")
+    }
+  }
+
   fun imprimir(nota: NFExpedicaoVo?): String {
     val templates = Etiqueta.templates(INCLUIDA)
-    val itens = nota?.findEntity()?.findItens() ?: emptyList()
+    val itens = nota?.findEntity()?.findItens()
+                ?: emptyList()
 
     return templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}
@@ -130,7 +149,8 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   }
 
   fun imprimir(itemNota: ItemNota?): String {
-    itemNota ?: return ""
+    itemNota
+    ?: return ""
     val templates = itemNota.templates
 
     return templates.joinToString(separator = "\n") {template ->
@@ -152,7 +172,7 @@ class NFExpedicaoViewModel(view: IView) : CrudViewModel<ViewNotaExpedicao, QView
   }
 }
 
-class NFExpedicaoVo : EntityVo<ViewNotaExpedicao>() {
+class NFExpedicaoVo: EntityVo<ViewNotaExpedicao>() {
   override fun findEntity(): ViewNotaExpedicao? {
     return ViewNotaExpedicao.findSaida(numero, abreviacao)
   }

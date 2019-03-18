@@ -38,6 +38,7 @@ import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.ui.Alignment.BOTTOM_RIGHT
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
@@ -52,20 +53,18 @@ import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView
-class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
+class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
+  var formCodBar: PnlCodigoBarras? = null
   private lateinit var gridCrudFlex: GridCrudFlex<SaidaVo>
-  override fun layoutForm(
-    formLayout: VerticalLayout,
-    operation: CrudOperation?,
-    binder: Binder<SaidaVo>,
-    readOnly: Boolean
-                         ) {
-    if (operation == ADD) {
+  override fun layoutForm(formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<SaidaVo>,
+                          readOnly: Boolean) {
+    if(operation == ADD) {
       binder.bean.lojaNF = lojaDefault
       binder.bean.usuario = usuario
     }
     formLayout.apply {
-      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
+        .px
 
       grupo("Nota fiscal de saída") {
         verticalLayout {
@@ -74,7 +73,7 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
             lojaField(operation, binder)
             comboBox<TipoNota>("Tipo") {
               expand = 2
-              default { it.descricao }
+              default {it.descricao}
               isReadOnly = true
               setItems(TipoNota.valuesSaida())
               bind(binder).bind(SaidaVo::tipoNota)
@@ -103,38 +102,49 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         produtoField(operation, binder, "Saída")
       }
     }
-    if (!isAdmin && operation == UPDATE)
-      binder.setReadOnly(true)
+    if(!isAdmin && operation == UPDATE) binder.setReadOnly(true)
   }
 
   override val viewModel: SaidaViewModel = SaidaViewModel(this)
+
+  override fun enter(event: ViewChangeEvent) {
+    super.enter(event)
+    formCodBar?.focusEdit()
+  }
 
   init {
     form("Saída de produtos") {
       gridCrudFlex = gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        addCustomToolBarComponent(btnLerChaveNota())
+        formCodBar = formCodbar(this)
+        addCustomFormComponent(formCodBar)
         addOnly = !isAdmin
         column(SaidaVo::numeroCodigo) {
           caption = "Número Conferencia"
           setSortProperty("codigo_barra_conferencia")
         }
-        grid.addComponentColumn { item ->
+        grid.addComponentColumn {item ->
           Button().apply {
-            val impresso = item?.entityVo?.impresso ?: true
+            val impresso = item?.entityVo?.impresso
+                           ?: true
             isEnabled = impresso == false || isAdmin
             icon = VaadinIcons.PRINT
             addClickListener {
               openText(viewModel.imprimir(item.itemNota))
-              val print = item?.entityVo?.impresso ?: true
+              val print = item?.entityVo?.impresso
+                          ?: true
               it.button.isEnabled = print == false || isAdmin
               refreshGrid()
             }
           }
-        }.id = "btnPrint"
+        }
+          .id = "btnPrint"
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
-          setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
+          setRenderer({loja ->
+                        loja?.sigla
+                        ?: ""
+                      }, TextRenderer())
         }
         column(SaidaVo::tipoNotaDescricao) {
           caption = "TipoNota"
@@ -167,11 +177,14 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
         }
         column(SaidaVo::localizacao) {
           caption = "Localização"
-          setRenderer({ it?.localizacao }, TextRenderer())
+          setRenderer({it?.localizacao}, TextRenderer())
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"
-          setRenderer({ it?.loginName ?: "" }, TextRenderer())
+          setRenderer({
+                        it?.loginName
+                        ?: ""
+                      }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
         column(SaidaVo::rotaDescricao) {
@@ -181,9 +194,8 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
           caption = "Cliente"
           setSortProperty("nota.cliente")
         }
-        grid.setStyleGenerator { saida ->
-          if (saida.status == CONFERIDA)
-            "pendente"
+        grid.setStyleGenerator {saida ->
+          if(saida.status == CONFERIDA) "pendente"
           else null
         }
       }
@@ -194,10 +206,9 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     return button("Ler Código") {
       icon = VaadinIcons.BARCODE
       addClickListener {
-        readString("Chave da nota fiscal", true) { _, key ->
+        readString("Código de barras", true) {_, key ->
           val nota = viewModel.processaKey(key)
-          if (nota == null)
-            showError("A nota não foi encontrada")
+          if(nota == null) showError("A nota não foi encontrada")
           else {
             val dlg = DlgNotaSaida(nota, viewModel)
             dlg.showDialog()
@@ -208,17 +219,30 @@ class SaidaView : NotaView<SaidaVo, SaidaViewModel>() {
     }
   }
 
+  private fun formCodbar(gridCrudFlex: GridCrudFlex<SaidaVo>): PnlCodigoBarras {
+    return PnlCodigoBarras("Código de barras") {_, key ->
+      val nota = viewModel.processaKey(key)
+      if(nota == null) showError("A nota não foi encontrada")
+      else {
+        val dlg = DlgNotaSaida(nota, viewModel)
+        dlg.showDialog()
+      }
+      null
+    }
+  }
+
   override fun updateView(viewModel: ViewModel) {
     gridCrudFlex.refreshGrid()
   }
 }
 
-class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel) : Window("Nota de Saída") {
+class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota de Saída") {
   private lateinit var gridProdutos: Grid<ProdutoVO>
 
   init {
     verticalLayout {
-      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
+        .px
 
       grupo("Nota fiscal de saída") {
         verticalLayout {
@@ -263,25 +287,24 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel) : Window("Nota
         row {
           gridProdutos = grid(ProdutoVO::class) {
             val abreviacao = RegistryUserInfo.abreviacaoDefault
-            val itens = nota.itensNota
-              ?.filter { it.status == INCLUIDA }
-              ?.filter { it.localizacao.startsWith(abreviacao) }
+            val itens = nota.itensNota?.filter {it.status == INCLUIDA}
+              ?.filter {it.localizacao.startsWith(abreviacao)}
               .orEmpty()
-            this.dataProvider = ListDataProvider(itens
-                                                   .map { item ->
-                                                     ProdutoVO(item.produto, item.tipoMov ?: SAIDA,
-                                                               LocProduto(item.localizacao)).apply {
-                                                       this.quantidade = item.quantidade
-                                                       this.value = item
-                                                     }
-                                                   })
+            this.dataProvider = ListDataProvider(itens.map {item ->
+              ProdutoVO(item.produto, item.tipoMov
+                                      ?: SAIDA, LocProduto(item.localizacao)).apply {
+                this.quantidade = item.quantidade
+                this.value = item
+              }
+            })
             removeAllColumns()
             val selectionModel = setSelectionMode(MULTI)
-            selectionModel.addSelectionListener { select ->
-              if (select.isUserOriginated) {
-                this.dataProvider.getAll().forEach {
-                  it.selecionado = false
-                }
+            selectionModel.addSelectionListener {select ->
+              if(select.isUserOriginated) {
+                this.dataProvider.getAll()
+                  .forEach {
+                    it.selecionado = false
+                  }
                 select.allSelectedItems.forEach {
                   it.selecionado = true
                 }
@@ -331,10 +354,8 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel) : Window("Nota
             alignment = BOTTOM_RIGHT
             addStyleName(ValoTheme.BUTTON_PRIMARY)
             addClickListener {
-              val itens = gridProdutos
-                .selectedItems
-                .toList()
-              viewModel.confirmaProdutos(itens.mapNotNull { vo -> vo.value })
+              val itens = gridProdutos.selectedItems.toList()
+              viewModel.confirmaProdutos(itens.mapNotNull {vo -> vo.value})
               close()
             }
           }

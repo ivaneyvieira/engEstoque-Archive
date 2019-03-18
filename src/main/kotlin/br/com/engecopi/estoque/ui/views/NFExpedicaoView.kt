@@ -89,9 +89,8 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     form("Nota Fiscal (Expedição)") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-
         formCodBar = formCodbar(this)
-        addCustomFormComponent(formCodBar!!)
+        addCustomFormComponent(formCodBar)
         setUpdateOperationVisible(false)
         setAddOperationVisible(false)
         setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
@@ -176,7 +175,8 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
 
   private fun formCodbar(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): PnlCodigoBarras {
     return PnlCodigoBarras("Chave da Nota Fiscal") {_, key ->
-      viewModel.processaKey(key)
+      val nota = viewModel.processaKey(key)
+      openText(viewModel.imprimir(nota))
       gridCrudFlex.grid.refresh()
       null
     }

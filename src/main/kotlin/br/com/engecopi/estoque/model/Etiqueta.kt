@@ -43,11 +43,11 @@ class Etiqueta: BaseModel() {
   }
 
   fun updateOutros() {
-    db().update(Etiqueta::class.java)
-      .set("etiqueta_default", false)
-      .where()
-      .eq("status_nota", statusNota)
-      .ne("id", id)
-      .update()
+    //db().update(Etiqueta::class.java)
+    //   .set("etiqueta_default", false)
+    //   .where()
+    //   .eq("status_nota", statusNota)
+    //   .ne("id", id)
+    //  .update()
   }
 }

@@ -249,7 +249,8 @@ open class GridCrudFlex<T: EntityVo<*>>(domainType: Class<T>, crudLayout: CrudLa
     crudLayout.addToolbarComponent(customToolBarComponent)
   }
 
-  fun addCustomFormComponent(customFormComponent: Component) {
+  fun addCustomFormComponent(customFormComponent: Component?) {
+    customFormComponent ?: return
     val layout = crudLayout as? WindowsCrud
     layout?.addFormComponent(customFormComponent)
   }

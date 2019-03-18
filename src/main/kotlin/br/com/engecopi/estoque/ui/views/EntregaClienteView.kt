@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
 import br.com.engecopi.estoque.viewmodel.EntregaClienteVo
+import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.expand
@@ -12,7 +13,6 @@ import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.row
 import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.bind
-import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.px
@@ -20,8 +20,7 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
-import com.vaadin.icons.VaadinIcons
-import com.vaadin.ui.Button
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -31,6 +30,8 @@ import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
 @AutoView("entrega_cliente")
 class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>() {
+  var formCodBar: PnlCodigoBarras? = null
+
   override fun layoutForm(
     formLayout: VerticalLayout,
     operation: CrudOperation?,
@@ -86,32 +87,21 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
 
   override val viewModel: EntregaClienteViewModel = EntregaClienteViewModel(this)
 
+  override fun enter(event: ViewChangeEvent) {
+    super.enter(event)
+    formCodBar?.focusEdit()
+  }
+
   init {
     form("Entrega ao Cliente") {
       gridCrud(viewModel.crudClass.java) {
-       /* addCustomToolBarComponent(btnImprimeTudo(this))*/
-        addCustomToolBarComponent(btnLerChaveNota())
+        formCodBar = formCodbar(this)
+        addCustomFormComponent(formCodBar)
         reloadOnly = !isAdmin
         column(EntregaClienteVo::numeroNF) {
           caption = "Número NF"
           setSortProperty("nota.numero")
         }
-       /* grid.addComponentColumn { item ->
-          val button = Button()
-          print {
-            item.itemNota?.recalculaSaldos()
-            return@print viewModel.imprimir(item.itemNota)
-          }.extend(button)
-          val impresso = item?.entityVo?.impresso ?: true
-          button.isEnabled = impresso == false || isAdmin
-          button.icon = VaadinIcons.PRINT
-          button.addClickListener {
-            val print = item?.entityVo?.impresso ?: true
-            it.button.isEnabled = print == false || isAdmin
-            refreshGrid()
-          }
-          return@addComponentColumn button
-        }.id = "btnPrint"*/
         column(EntregaClienteVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({ loja -> loja?.sigla ?: "" }, TextRenderer())
@@ -184,14 +174,9 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
     }
   }
 
-  private fun btnLerChaveNota(): Button {
-    return button("Ler Nota") {
-      icon = VaadinIcons.BARCODE
-      addClickListener {
-        readString("Chave da nota fiscal", false) { nota, key ->
-          viewModel.processaKey(nota, key)
-        }
-      }
+  private fun formCodbar(gridCrudFlex: GridCrudFlex<EntregaClienteVo>): PnlCodigoBarras {
+    return PnlCodigoBarras("Código de barras") { nota, key ->
+      viewModel.processaKey(nota, key)
     }
   }
 }
