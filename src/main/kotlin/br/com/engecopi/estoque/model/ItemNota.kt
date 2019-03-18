@@ -49,6 +49,8 @@ class ItemNota: BaseModel() {
   @Enumerated(EnumType.STRING)
   var status: StatusNota = ENTREGUE
   @Size(max = 60)
+  var codigoBarraCliente: String? = ""
+  @Size(max = 60)
   var codigoBarraConferencia: String? = ""
   @Size(max = 60)
   var codigoBarraEntrega: String? = ""
@@ -56,6 +58,8 @@ class ItemNota: BaseModel() {
     get() = (status.multiplicador) * quantidade
   val viewCodigoBarraConferencia: ViewCodBarConferencia?
     @Transient get() = ViewCodBarConferencia.byId(id)
+  val viewCodigoBarraCliente: ViewCodBarCliente?
+    @Transient get() = ViewCodBarCliente.byId(nota?.id)
   val viewCodigoBarraEntrega: ViewCodBarEntrega?
     @Transient get() = ViewCodBarEntrega.byId(id)
   val descricao: String?
@@ -140,6 +144,8 @@ class ItemNota: BaseModel() {
 
   override fun save() {
     super.save()
+    if(codigoBarraCliente.isNullOrEmpty()) codigoBarraCliente = viewCodigoBarraCliente?.codbar
+                                                                ?: ""
     if(codigoBarraConferencia.isNullOrEmpty()) codigoBarraConferencia = viewCodigoBarraConferencia?.codbar
                                                                         ?: ""
     if(codigoBarraEntrega.isNullOrEmpty()) codigoBarraEntrega = viewCodigoBarraEntrega?.codbar
@@ -198,6 +204,9 @@ class NotaPrint(val item: ItemNota) {
             ?: ""
   val codigoBarraConferencia
     get() = item.codigoBarraConferencia
+            ?: ""
+  val codigoBarraCliente
+    get() = item.codigoBarraCliente
             ?: ""
   val dataLancamento
     get() = item.nota?.lancamento?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
