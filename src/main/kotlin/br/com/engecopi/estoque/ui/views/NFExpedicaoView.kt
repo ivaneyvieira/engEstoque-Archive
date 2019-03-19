@@ -106,7 +106,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
             this.isEnabled = impresso == false || isAdmin
             this.icon = VaadinIcons.PRINT
             this.addClickListener {
-              openText(viewModel.imprimir(item))
+              openText(viewModel.imprimir(item?.entityVo?.nota))
               val print = item?.impresso
                           ?: true
               it.button.isEnabled = print == false || isAdmin

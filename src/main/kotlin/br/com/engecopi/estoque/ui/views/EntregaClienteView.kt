@@ -98,9 +98,9 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
         formCodBar = formCodbar(this)
         addCustomFormComponent(formCodBar)
         reloadOnly = !isAdmin
-        column(EntregaClienteVo::numeroNF) {
-          caption = "Número NF"
-          setSortProperty("nota.numero")
+        column(EntregaClienteVo::numeroCodigo) {
+          caption = "Número Conferencia"
+          setSortProperty("codigo_barra_conferencia")
         }
         column(EntregaClienteVo::lojaNF) {
           caption = "Loja NF"

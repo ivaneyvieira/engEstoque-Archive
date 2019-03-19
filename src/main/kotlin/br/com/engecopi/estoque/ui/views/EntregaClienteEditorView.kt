@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteEditorViewModel
-import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
 import br.com.engecopi.estoque.viewmodel.EntregaClienteVo
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
@@ -13,7 +12,6 @@ import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.row
 import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.bind
-import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.px
@@ -21,8 +19,6 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.Binder
-import com.vaadin.icons.VaadinIcons
-import com.vaadin.ui.Button
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
@@ -92,9 +88,9 @@ class EntregaClienteEditorView : NotaView<EntregaClienteVo, EntregaClienteEditor
     form("Editor Entrega ao Cliente") {
       gridCrud(viewModel.crudClass.java) {
         reloadOnly = !isAdmin
-        column(EntregaClienteVo::numeroNF) {
-          caption = "Número NF"
-          setSortProperty("nota.numero")
+        column(EntregaClienteVo::numeroCodigo) {
+          caption = "Número Conferencia"
+          setSortProperty("codigo_barra_conferencia")
         }
         column(EntregaClienteVo::lojaNF) {
           caption = "Loja NF"
