@@ -52,7 +52,7 @@ import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
-@AutoView
+@AutoView("")
 class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
   var formCodBar: PnlCodigoBarras? = null
   private lateinit var gridCrudFlex: GridCrudFlex<SaidaVo>

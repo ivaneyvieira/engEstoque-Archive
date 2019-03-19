@@ -27,7 +27,7 @@ import org.vaadin.crudui.crud.CrudOperation
 import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 
-@AutoView("")
+@AutoView
 class EntradaView : NotaView<EntradaVo, EntradaViewModel>() {
   override fun layoutForm(
     formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<EntradaVo>, readOnly: Boolean

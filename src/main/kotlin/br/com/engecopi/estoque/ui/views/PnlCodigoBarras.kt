@@ -33,10 +33,11 @@ class PnlCodigoBarras(caption: String, processaleitura: (Nota?, String) -> ItemN
       addClickListener {
         val item = processaleitura(nota, textField.value)
         if(item == null) {
+          focusEdit()
           textField.selectAll()
         }
         else {
-          textField.value = ""
+          focusEdit()
           nota = item.nota
         }
       }
@@ -44,6 +45,7 @@ class PnlCodigoBarras(caption: String, processaleitura: (Nota?, String) -> ItemN
   }
 
   fun focusEdit() {
+    textField.value = ""
     textField.focus()
   }
 }
