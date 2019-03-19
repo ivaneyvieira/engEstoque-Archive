@@ -27,7 +27,7 @@ class QAssocViewNotaExpedicao<R>(name: String, root: R) : TQAssocBean<ViewNotaEx
   lateinit var createdAt: PLocalDateTime<R>
   lateinit var updatedAt: PLocalDateTime<R>
   lateinit var version: PInteger<R>
-  lateinit var notaId: PLong<R>
+  lateinit var nota: QAssocNota<R>
   lateinit var numero: PString<R>
   lateinit var tipoMov: PEnum<R,TipoMov>
   lateinit var tipoNota: PEnum<R,TipoNota>

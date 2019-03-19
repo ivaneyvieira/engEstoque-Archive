@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
+import br.com.engecopi.estoque.model.query.assoc.QAssocNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
 import io.ebean.EbeanServer
 import io.ebean.typequery.PEnum
@@ -36,7 +37,7 @@ class QViewNotaExpedicao : TQRootBean<ViewNotaExpedicao, QViewNotaExpedicao> {
   lateinit var createdAt: PLocalDateTime<QViewNotaExpedicao>
   lateinit var updatedAt: PLocalDateTime<QViewNotaExpedicao>
   lateinit var version: PInteger<QViewNotaExpedicao>
-  lateinit var notaId: PLong<QViewNotaExpedicao>
+  lateinit var nota: QAssocNota<QViewNotaExpedicao>
   lateinit var numero: PString<QViewNotaExpedicao>
   lateinit var tipoMov: PEnum<QViewNotaExpedicao,TipoMov>
   lateinit var tipoNota: PEnum<QViewNotaExpedicao,TipoNota>

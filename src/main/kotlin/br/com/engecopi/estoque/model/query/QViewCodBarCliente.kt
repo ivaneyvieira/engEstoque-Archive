@@ -26,6 +26,7 @@ class QViewCodBarCliente : TQRootBean<ViewCodBarCliente, QViewCodBarCliente> {
 
   lateinit var id: PLong<QViewCodBarCliente>
   lateinit var codbar: PString<QViewCodBarCliente>
+  lateinit var codbarLimpo: PString<QViewCodBarCliente>
   lateinit var storeno: PInteger<QViewCodBarCliente>
   lateinit var numero: PString<QViewCodBarCliente>
   lateinit var sequencia: PInteger<QViewCodBarCliente>

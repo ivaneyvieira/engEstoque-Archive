@@ -36,6 +36,7 @@ import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.Window
 import com.vaadin.ui.renderers.LocalDateRenderer
+import com.vaadin.ui.renderers.LocalDateTimeRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.themes.ValoTheme
 import org.apache.commons.io.IOUtils
@@ -226,6 +227,10 @@ fun <BEAN> reloadPropertys(binder: Binder<BEAN>, vararg propertys: KProperty1<BE
 
 fun <C> Column<C, LocalDate?>.dateFormat() {
   this.setRenderer(LocalDateRenderer {DateTimeFormatter.ofPattern("dd/MM/yyyy")})
+}
+
+fun <C> Column<C, LocalDateTime?>.timeFormat() {
+  this.setRenderer(LocalDateTimeRenderer {DateTimeFormatter.ofPattern("hh:mm:ss")})
 }
 
 fun <C> Column<C, Int?>.intFormat() {

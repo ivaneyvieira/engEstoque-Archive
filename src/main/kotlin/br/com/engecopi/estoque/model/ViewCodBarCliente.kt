@@ -15,6 +15,7 @@ class ViewCodBarCliente {
   @Column(name = "id_nota")
   val id: Long = 0
   val codbar: String = ""
+  val codbarLimpo: String = ""
   val storeno: Int = 0
   val numero: String = ""
   val sequencia: Int = 0
