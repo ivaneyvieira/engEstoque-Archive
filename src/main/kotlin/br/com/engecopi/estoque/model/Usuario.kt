@@ -46,7 +46,7 @@ class Usuario : BaseModel() {
 
   fun temProduto(produto: Produto?): Boolean {
     produto ?: return false
-    return ViewProdutoLoc.exists(produto)
+    return ViewProdutoLoc.existsCache(produto)
   }
 
   fun localizacoesProduto(produto: Produto): List<String> {

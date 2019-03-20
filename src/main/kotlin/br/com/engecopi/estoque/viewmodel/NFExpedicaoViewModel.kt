@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
+import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
@@ -11,12 +12,14 @@ import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
+import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import br.com.engecopi.estoque.ui.log
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
+import br.com.engecopi.saci.beans.NotaSaci
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -31,8 +34,7 @@ class NFExpedicaoViewModel(view: IView):
   }
 
   override fun delete(bean: NFExpedicaoVo) {
-    val nota = bean.findEntity()
-               ?: return
+    val nota = bean.findEntity() ?: return
     val saida = Nota.findSaida(nota.numero)
 
     ItemNota.where()
@@ -71,48 +73,46 @@ class NFExpedicaoViewModel(view: IView):
     }
   }
 
-  fun processaKey(key: String) =
-    execValue<Nota?> {
-      val notasSaci = Nota.findNotaSaidaPXA(key)
-      if(notasSaci.isNotEmpty()) {
-        val loja = RegistryUserInfo.lojaDefault.numero
-        val lojaSaci = notasSaci.firstOrNull()?.storeno
-                       ?: 0
-        if(loja != lojaSaci) throw EViewModel("Esta nota pertence a loja $lojaSaci")
-        val nota = Nota.createNota(notasSaci.firstOrNull())
-          ?.apply {
-            if(this.existe()) throw EViewModel("Essa nota já está cadastrada")
-            else {
-              val serie = numero.split("/").getOrNull(1)
-                          ?: ""
-              sequencia = Nota.maxSequencia(serie) + 1
-              usuario = RegistryUserInfo.usuarioDefault
-              save()
-            }
+  fun processaKey(key: String, abreviacoes: List<String>) = execValue {
+    val notasSaci = Nota.findNotaSaidaKey(key)
+    if(notasSaci.isNotEmpty()) {
+      val loja = RegistryUserInfo.lojaDefault.numero
+      val lojaSaci = notasSaci.firstOrNull()?.storeno ?: 0
+      if(loja != lojaSaci) throw EViewModel("Esta nota pertence a loja $lojaSaci")
+      val nota = Nota.createNota(notasSaci.firstOrNull())
+        ?.apply {
+          if(this.existe()) throw EViewModel("Essa nota já está cadastrada")
+          else {
+            val serie = numero.split("/").getOrNull(1) ?: ""
+            sequencia = Nota.maxSequencia(serie) + 1
+            usuario = RegistryUserInfo.usuarioDefault
+            save()
           }
-        if(nota == null) throw EViewModel("Nota não encontrada")
-        else {
-          val itens = notasSaci.mapNotNull {notaSaci ->
-            val item = ItemNota.find(notaSaci)
-                       ?: ItemNota.createItemNota(notaSaci, nota)
-            return@mapNotNull item?.apply {
-              status = INCLUIDA
-              impresso = false
-              usuario = RegistryUserInfo.usuarioDefault
-              save()
-            }
-          }
-          if(itens.isEmpty()) throw EViewModel("Essa nota não possui itens com localização")
-
-          nota
         }
+      if(nota == null) throw EViewModel("Nota não encontrada")
+      else {
+        val itens = notasSaci.mapNotNull {notaSaci ->
+          val item = ItemNota.find(notaSaci) ?: ItemNota.createItemNota(notaSaci, nota)
+          val abreviacao = item?.abreviacao
+          return@mapNotNull if(abreviacoes.contains(abreviacao)) item?.apply {
+            status = INCLUIDA
+            impresso = false
+            usuario = RegistryUserInfo.usuarioDefault
+            save()
+          }
+          else null
+        }
+
+        if(itens.isEmpty()) throw EViewModel("Essa nota não possui itens com localização")
+
+        return@execValue nota
       }
-      else throw EViewModel("Chave não encontrada")
     }
+    else throw EViewModel("Chave não encontrada")
+  }
 
   private fun imprimir(itemNota: ItemNota?, template: String): String {
-    itemNota
-    ?: return ""
+    itemNota ?: return ""
     val print = itemNota.printEtiqueta()
     itemNota.let {
       it.refresh()
@@ -126,8 +126,7 @@ class NFExpedicaoViewModel(view: IView):
     nota ?: return ""
     nota.refresh()
     val templates = Etiqueta.templates(INCLUIDA)
-    val itens = nota?.itensNota
-                ?: emptyList()
+    val itens = nota?.itensNota ?: emptyList()
 
     return templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}
@@ -138,8 +137,7 @@ class NFExpedicaoViewModel(view: IView):
 
   fun imprimir(nota: NFExpedicaoVo?): String {
     val templates = Etiqueta.templates(INCLUIDA)
-    val itens = nota?.findEntity()?.findItens()
-                ?: emptyList()
+    val itens = nota?.findEntity()?.findItens() ?: emptyList()
 
     return templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}
@@ -149,8 +147,7 @@ class NFExpedicaoViewModel(view: IView):
   }
 
   fun imprimir(itemNota: ItemNota?): String {
-    itemNota
-    ?: return ""
+    itemNota ?: return ""
     val templates = itemNota.templates
 
     return templates.joinToString(separator = "\n") {template ->
@@ -169,6 +166,15 @@ class NFExpedicaoViewModel(view: IView):
         .distinct()
         .joinToString(separator = "\n")
     }
+  }
+
+  fun findNotaSaidaKey(key: String): List<NotaSaci> = Nota.findNotaSaidaKey(key)
+
+  fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)
+
+  fun abreviacoes(prdno: String?, grade: String?): List<String> {
+    val produto = Produto.findProduto(prdno, grade) ?: return emptyList()
+    return ViewProdutoLoc.abreviacoesProduto(produto)
   }
 }
 

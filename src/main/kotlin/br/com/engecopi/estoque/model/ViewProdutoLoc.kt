@@ -14,52 +14,43 @@ import javax.persistence.OneToOne
 @Cache(enableQueryCache = false)
 @Entity
 @View(name = "t_loc_produtos")
-class ViewProdutoLoc(
-  @Id
-  val id: String,
-  val storeno: Int,
-  val codigo: String,
-  val grade: String,
-  val localizacao: String,
-  val abreviacao: String,
-  @ManyToOne(cascade = [])
-  @JoinColumn(name = "produto_id")
-  val produto: Produto,
-  @OneToOne(cascade = [])
-  @JoinColumn(name = "loja_id")
-  val loja: Loja
-                    ) {
-  companion object Find : ViewProdutoLocFinder() {
-    fun exists(produto: Produto?): Boolean {
+class ViewProdutoLoc(@Id val id: String, val storeno: Int, val codigo: String, val grade: String,
+                     val localizacao: String, val abreviacao: String,
+                     @ManyToOne(cascade = [])
+                     @JoinColumn(name = "produto_id") val produto: Produto,
+                     @OneToOne(cascade = [])
+                     @JoinColumn(name = "loja_id") val loja: Loja) {
+  companion object Find: ViewProdutoLocFinder() {
+    fun existsCache(produto: Produto?): Boolean {
       return Repositories.findByProduto(produto).count() > 0
     }
 
-    fun produtos(): List<Produto> {
+    fun produtosCache(): List<Produto> {
       return Repositories.findByLojaAbreviacao()
-        .asSequence()
-        .map { it.produto }
+        .map {it.produto}
         .distinct()
-        .toList()
     }
 
-    fun find(produto: Produto?): List<ViewProdutoLoc> {
+    fun findCache(produto: Produto?): List<ViewProdutoLoc> {
       produto ?: return emptyList()
       return findByProduto(produto)
     }
 
-    fun localizacoes(abreviacao: String): List<String> {
-      return findByAbreviacao(abreviacao)
-        .asSequence()
-        .mapNotNull { it.localizacao }.distinct()
-        .toList()
+    fun localizacoesAbreviacaoCache(abreviacao: String): List<String> {
+      return findByAbreviacao(abreviacao).map {it.localizacao}
+        .distinct()
     }
 
-    fun localizacoes(produto: Produto?): List<String> {
+    fun localizacoesProdutoCache(produto: Produto?): List<String> {
       produto ?: return emptyList()
-      return findByProduto(produto)
-        .asSequence()
-        .mapNotNull { it.localizacao }.distinct()
-        .toList()
+      return findByProduto(produto).map {it.localizacao}
+        .distinct()
     }
+
+    fun localizacoesProduto(produto: Produto?)=
+      where().produto.id.eq(produto?.id).findList().mapNotNull {it.localizacao}.distinct()
+
+    fun abreviacoesProduto(produto: Produto?) =
+      where().produto.id.eq(produto?.id).findList().mapNotNull {it.abreviacao}.distinct()
   }
 }
