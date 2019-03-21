@@ -19,7 +19,6 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
-import br.com.engecopi.saci.beans.NotaSaci
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -74,7 +73,7 @@ class NFExpedicaoViewModel(view: IView):
   }
 
   fun processaKey(key: String, abreviacoes: List<String>) = execValue {
-    val notasSaci = Nota.findNotaSaidaKey(key)
+    val notasSaci = findNotaSaidaKey(key)
     if(notasSaci.isNotEmpty()) {
       val loja = RegistryUserInfo.lojaDefault.numero
       val lojaSaci = notasSaci.firstOrNull()?.storeno ?: 0
@@ -168,7 +167,16 @@ class NFExpedicaoViewModel(view: IView):
     }
   }
 
-  fun findNotaSaidaKey(key: String): List<NotaSaci> = Nota.findNotaSaidaKey(key)
+  fun findNotaSaidaKey(key: String) = execList {
+    val notaSaci = when {
+      key.length == 44    -> Nota.findNotaSaidaKey(key)
+      key.endsWith("/5")  -> Nota.findNotaSaidaSaci(key)
+      key.endsWith("/10") -> Nota.findNotaSaidaSaci(key)
+      else                -> throw EViewModel("Chave não encontrada")
+    }
+     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
+    else notaSaci
+  }
 
   fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)
 

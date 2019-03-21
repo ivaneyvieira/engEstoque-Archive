@@ -186,15 +186,15 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   private fun formCodbar(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): PnlCodigoBarras {
     return PnlCodigoBarras("Chave da Nota Fiscal") {_, key ->
       val notaSaida = viewModel.findNotaSaidaKey(key)
-      val dialog = DlgNotaLoc(notaSaida, viewModel) {itens ->
-        val abreviacoes = itens.map { it.localizacao}
-        val nota = viewModel.processaKey(key, abreviacoes)
-        openText(viewModel.imprimir(nota))
-        gridCrudFlex.grid.refresh()
+      if(notaSaida.isNotEmpty()) {
+        val dialog = DlgNotaLoc(notaSaida, viewModel) {itens ->
+          val abreviacoes = itens.map {it.localizacao}
+          val nota = viewModel.processaKey(key, abreviacoes)
+          openText(viewModel.imprimir(nota))
+          gridCrudFlex.grid.refresh()
+        }
+        dialog.showDialog()
       }
-      dialog.showDialog()
-
-
       null
     }
   }
