@@ -256,6 +256,24 @@ class DlgNotaLoc(val notaSaida: List<NotaSaci>, val viewModel: NFExpedicaoViewMo
 
       grupo("Localizações") {
         row {
+          horizontalLayout {
+            button("Confirma") {
+              addStyleName(ValoTheme.BUTTON_PRIMARY)
+              addClickListener {
+                val itens = gridProdutos.selectedItems.toList()
+                execConfirma(itens)
+                close()
+              }
+            }
+            button("Cancela") {
+              alignment = Alignment.BOTTOM_RIGHT
+              addClickListener {
+                close()
+              }
+            }
+          }
+        }
+        row {
           gridProdutos = grid(LocalizacaoNota::class) {
             val itens = notaSaida
 
@@ -267,17 +285,6 @@ class DlgNotaLoc(val notaSaida: List<NotaSaci>, val viewModel: NFExpedicaoViewMo
             }.distinct().sortedBy {it.localizacao})
             removeAllColumns()
             setSelectionMode(MULTI)
-            /*   selectionModel.addSelectionListener {select ->
-                 if(select.isUserOriginated) {
-                   this.dataProvider.getAll()
-                     .forEach {
-                       it.selecionado = false
-                     }
-                   select.allSelectedItems.forEach {
-                     it.selecionado = true
-                   }
-                 }
-               }*/
             setSizeFull()
             addColumnFor(LocalizacaoNota::localizacao) {
               expandRatio = 1
@@ -287,26 +294,6 @@ class DlgNotaLoc(val notaSaida: List<NotaSaci>, val viewModel: NFExpedicaoViewMo
         }
       }
 
-      row {
-        horizontalLayout {
-          alignment = Alignment.BOTTOM_RIGHT
-          button("Cancela") {
-            alignment = Alignment.BOTTOM_RIGHT
-            addClickListener {
-              close()
-            }
-          }
-          button("Confirma") {
-            alignment = Alignment.BOTTOM_RIGHT
-            addStyleName(ValoTheme.BUTTON_PRIMARY)
-            addClickListener {
-              val itens = gridProdutos.selectedItems.toList()
-              execConfirma(itens)
-              close()
-            }
-          }
-        }
-      }
     }
   }
 }
