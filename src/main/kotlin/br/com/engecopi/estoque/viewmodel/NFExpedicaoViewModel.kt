@@ -170,6 +170,7 @@ class NFExpedicaoViewModel(view: IView):
   fun findNotaSaidaKey(key: String) = execList {
     val notaSaci = when {
       key.length == 44    -> Nota.findNotaSaidaKey(key)
+      key.endsWith("/1")  -> Nota.findNotaSaidaSaci(key)
       key.endsWith("/5")  -> Nota.findNotaSaidaSaci(key)
       key.endsWith("/10") -> Nota.findNotaSaidaSaci(key)
       else                -> throw EViewModel("Chave não encontrada")

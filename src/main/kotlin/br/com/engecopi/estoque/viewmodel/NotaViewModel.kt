@@ -201,6 +201,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, classVO: KClass<VO>, val t
       val nota = itemNota.nota
       this.numeroNF = nota?.numero
       this.numeroCodigo = itemNota.codigoBarraConferencia
+      this.numeroCodigoReduzido = itemNota.codigoBarraCliente
       this.lojaNF = nota?.loja
       this.observacaoNota = nota?.observacao
       this.produto = itemNota.produto
@@ -285,6 +286,7 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): En
 
   var usuario: Usuario = RegistryUserInfo.usuarioDefault
   var numeroCodigo: String? = ""
+  var numeroCodigoReduzido: String? = ""
   var numeroNF: String? = ""
     set(value) {
       if(field != value) {

@@ -119,7 +119,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
         formCodBar = formCodbar(this)
         addCustomFormComponent(formCodBar)
         addOnly = !isAdmin
-        column(SaidaVo::numeroCodigo) {
+        column(SaidaVo::numeroCodigoReduzido) {
           caption = "Número Conferencia"
           setSortProperty("codigo_barra_conferencia")
         }
@@ -177,7 +177,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
         }
         column(SaidaVo::localizacao) {
           caption = "Localização"
-          setRenderer({it?.localizacao}, TextRenderer())
+          setRenderer({it?.abreviacao}, TextRenderer())
         }
         column(SaidaVo::usuario) {
           caption = "Usuário"
