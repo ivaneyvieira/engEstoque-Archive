@@ -116,7 +116,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
     form("Saída de produtos") {
       gridCrudFlex = gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        formCodBar = formCodbar(this)
+        formCodBar = formCodbar()
         addCustomFormComponent(formCodBar)
         addOnly = !isAdmin
         column(SaidaVo::numeroCodigoReduzido) {
@@ -125,25 +125,23 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
         }
         grid.addComponentColumn {item ->
           Button().apply {
-            val impresso = item?.entityVo?.impresso
-                           ?: true
+            val impresso = item?.entityVo?.impresso ?: true
             isEnabled = impresso == false || isAdmin
             icon = VaadinIcons.PRINT
             addClickListener {
               openText(viewModel.imprimir(item.itemNota))
-              val print = item?.entityVo?.impresso
-                          ?: true
+              val print = item?.entityVo?.impresso ?: true
               it.button.isEnabled = print == false || isAdmin
               refreshGrid()
             }
           }
         }
           .id = "btnPrint"
+
         column(SaidaVo::lojaNF) {
           caption = "Loja NF"
           setRenderer({loja ->
-                        loja?.sigla
-                        ?: ""
+                        loja?.sigla ?: ""
                       }, TextRenderer())
         }
         column(SaidaVo::tipoNotaDescricao) {
@@ -182,8 +180,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
         column(SaidaVo::usuario) {
           caption = "Usuário"
           setRenderer({
-                        it?.loginName
-                        ?: ""
+                        it?.loginName ?: ""
                       }, TextRenderer())
           setSortProperty("usuario.loginName")
         }
@@ -219,15 +216,14 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
     }
   }
 
-  private fun formCodbar(gridCrudFlex: GridCrudFlex<SaidaVo>): PnlCodigoBarras {
-    return PnlCodigoBarras("Código de barras") {_, key ->
+  private fun formCodbar(): PnlCodigoBarras {
+    return PnlCodigoBarras("Código de barras") {key ->
       val nota = viewModel.processaKey(key)
       if(nota == null) showError("A nota não foi encontrada")
       else {
         val dlg = DlgNotaSaida(nota, viewModel)
         dlg.showDialog()
       }
-      null
     }
   }
 
@@ -291,8 +287,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
               ?.filter {it.localizacao.startsWith(abreviacao)}
               .orEmpty()
             this.dataProvider = ListDataProvider(itens.map {item ->
-              ProdutoVO(item.produto, item.tipoMov
-                                      ?: SAIDA, LocProduto(item.localizacao)).apply {
+              ProdutoVO(item.produto, item.tipoMov ?: SAIDA, LocProduto(item.localizacao)).apply {
                 this.quantidade = item.quantidade
                 this.value = item
               }

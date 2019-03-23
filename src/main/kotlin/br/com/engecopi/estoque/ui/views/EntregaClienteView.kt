@@ -4,7 +4,6 @@ import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.EntregaClienteViewModel
 import br.com.engecopi.estoque.viewmodel.EntregaClienteVo
-import br.com.engecopi.framework.ui.view.GridCrudFlex
 import br.com.engecopi.framework.ui.view.dateFormat
 import br.com.engecopi.framework.ui.view.default
 import br.com.engecopi.framework.ui.view.expand
@@ -95,7 +94,7 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
   init {
     form("Entrega ao Cliente") {
       gridCrud(viewModel.crudClass.java) {
-        formCodBar = formCodbar(this)
+        formCodBar = formCodbar()
         addCustomFormComponent(formCodBar)
         reloadOnly = !isAdmin
         column(EntregaClienteVo::numeroCodigo) {
@@ -174,9 +173,9 @@ class EntregaClienteView : NotaView<EntregaClienteVo, EntregaClienteViewModel>()
     }
   }
 
-  private fun formCodbar(gridCrudFlex: GridCrudFlex<EntregaClienteVo>): PnlCodigoBarras {
-    return PnlCodigoBarras("Código de barras") { nota, key ->
-      viewModel.processaKey(nota, key)
+  private fun formCodbar(): PnlCodigoBarras {
+    return PnlCodigoBarras("Código de barras") { key ->
+      viewModel.processaKey(key)
     }
   }
 }

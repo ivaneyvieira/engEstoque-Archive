@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Nota
 import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.button
 import com.github.mvysny.karibudsl.v8.isMargin
@@ -14,9 +13,7 @@ import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.TextField
 import com.vaadin.ui.themes.ValoTheme
 
-class PnlCodigoBarras(caption: String, processaleitura: (Nota?, String) -> ItemNota?): HorizontalLayout() {
-  private var nota: Nota? = null
-
+class PnlCodigoBarras(caption: String, processaleitura: (String) -> Unit): HorizontalLayout() {
   private val textField: TextField = textField(caption) {
     w = 400.px
     focus()
@@ -31,15 +28,9 @@ class PnlCodigoBarras(caption: String, processaleitura: (Nota?, String) -> ItemN
       setClickShortcut(KeyCode.ENTER)
       alignment = Alignment.BOTTOM_RIGHT
       addClickListener {
-        val item = processaleitura(nota, textField.value)
-        if(item == null) {
-          focusEdit()
-          textField.selectAll()
-        }
-        else {
-          focusEdit()
-          nota = item.nota
-        }
+        processaleitura(textField.value)
+        focusEdit()
+        textField.selectAll()
       }
     }
   }

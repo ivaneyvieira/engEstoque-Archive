@@ -22,7 +22,6 @@ import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.grid
 import com.github.mvysny.karibudsl.v8.horizontalLayout
 import com.github.mvysny.karibudsl.v8.px
-import com.github.mvysny.karibudsl.v8.refresh
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
@@ -104,7 +103,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     form("Nota Fiscal (Expedição)") {
       gridCrud(viewModel.crudClass.java) {
         addCustomToolBarComponent(btnImprimeTudo(this))
-        formCodBar = formCodbar(this)
+        formCodBar = formCodbar()
         addCustomFormComponent(formCodBar)
         setUpdateOperationVisible(false)
         setAddOperationVisible(false)
@@ -183,19 +182,17 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   override val viewModel: NFExpedicaoViewModel
     get() = NFExpedicaoViewModel(this)
 
-  private fun formCodbar(gridCrudFlex: GridCrudFlex<NFExpedicaoVo>): PnlCodigoBarras {
-    return PnlCodigoBarras("Chave da Nota Fiscal") {_, key ->
+  private fun formCodbar(): PnlCodigoBarras {
+    return PnlCodigoBarras("Chave da Nota Fiscal") { key ->
       val notaSaida = viewModel.findNotaSaidaKey(key)
       if(notaSaida.isNotEmpty()) {
         val dialog = DlgNotaLoc(notaSaida, viewModel) {itens ->
           val abreviacoes = itens.map {it.localizacao}
           val nota = viewModel.processaKey(key, abreviacoes)
           openText(viewModel.imprimir(nota))
-          gridCrudFlex.grid.refresh()
         }
         dialog.showDialog()
       }
-      null
     }
   }
 

@@ -56,10 +56,7 @@ class Produto: BaseModel() {
     val localizacaoUser = user.localizacoesProduto(this)
     val locs = ViewProdutoLoc.findCache(produto = this)
 
-    return locs.asSequence()
-      .filterNotNull()
-      .filter {localizacaoUser.contains(it.localizacao)}
-      .firstOrNull()
+    return locs.firstOrNull {localizacaoUser.contains(it.localizacao)}
       ?.localizacao
   }
 
@@ -166,6 +163,7 @@ data class LocProduto(val localizacao: String): Comparable<LocProduto> {
   val prefixo = localizacao.split("-").getOrNull(0) ?: localizacao
   // val sufixo = localizacao.split("-").getOrNull(1) ?: localizacao
   val abreviacao = localizacao.split('.').getOrNull(0) ?: ""
+
   override fun compareTo(other: LocProduto): Int {
     return localizacao.compareTo(other.localizacao)
   }
