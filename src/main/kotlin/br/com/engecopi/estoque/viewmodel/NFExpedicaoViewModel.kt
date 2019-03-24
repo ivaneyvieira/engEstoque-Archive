@@ -35,7 +35,7 @@ class NFExpedicaoViewModel(view: IView):
   override fun delete(bean: NFExpedicaoVo) {
     val nota = bean.findEntity() ?: return
     val saida = Nota.findSaida(nota.numero)
-
+    //TODO Refatorar
     ItemNota.where()
       .nota.equalTo(saida)
       .localizacao.startsWith(bean.abreviacao)
@@ -156,6 +156,7 @@ class NFExpedicaoViewModel(view: IView):
 
   fun imprime(): String {
     val templates = Etiqueta.templates(INCLUIDA)
+    //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
       .status.eq(INCLUIDA)

@@ -89,7 +89,7 @@ class EntregaClienteEditorView : NotaView<EntregaClienteVo, EntregaClienteEditor
     form("Editor Entrega ao Cliente") {
       gridCrud(viewModel.crudClass.java) {
         reloadOnly = !isAdmin
-        column(EntregaClienteVo::numeroCodigo) {
+        column(EntregaClienteVo::numeroCodigoReduzido) {
           caption = "Número Conferencia"
           setSortProperty("codigo_barra_conferencia")
         }
@@ -133,7 +133,7 @@ class EntregaClienteEditorView : NotaView<EntregaClienteVo, EntregaClienteEditor
         }
         column(EntregaClienteVo::localizacao) {
           caption = "Localização"
-          setRenderer({ it?.toString() }, TextRenderer())
+          setRenderer({ it?.abreviacao }, TextRenderer())
         }
         column(EntregaClienteVo::usuario) {
           caption = "Usuário"

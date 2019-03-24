@@ -265,6 +265,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, classVO: KClass<VO>, val t
 
   fun imprime(): String {
     val templates = Etiqueta.templates(statusDefault)
+    //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
       .status.eq(INCLUIDA)
