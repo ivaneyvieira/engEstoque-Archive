@@ -4,16 +4,12 @@ import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
-import br.com.engecopi.utils.mid
 import io.ebean.annotation.Cache
 import io.ebean.annotation.CacheQueryTuning
-import io.ebean.annotation.FetchPreference
 import io.ebean.annotation.Formula
 import io.ebean.annotation.Index
 import io.ebean.annotation.Transactional
 import java.time.LocalDate
-import javax.persistence.CascadeType.MERGE
-import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
@@ -57,16 +53,22 @@ class Produto : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(
     select = "LOC.localizacao",
-    join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao from t_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC ON LOC.produto_id = \${ta}.id"
+    join = "LEFT join (select codigo, grade, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao " +
+           "from t_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC " +
+           "ON LOC.codigo = \${ta}.codigo and LOC.grade = \${ta}.grade "
           )
   var localizacao: String? = ""
   @Formula(
-    select = "SAL.saldo_total",
-    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
+    select = "IFNULL(SAL.saldo_total, 0) AS saldo_total",
+    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total " +
+           "from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    " +
+           "ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
           )
   var saldo_total: Int? = 0
   val descricao: String?
     @Transient get() = vproduto?.nome
+  val temGrade: Boolean
+    get() = grade != ""
 
   fun localizacao(usuario: Usuario?): String? {
     val user = usuario ?: return ""
@@ -126,6 +128,11 @@ class Produto : BaseModel() {
           " "
                    )
                               ).findList()
+    }
+
+    fun findProdutos(codigo: String?, grades: Set<String>): List<Produto> {
+      codigo ?: return emptyList()
+      return findProdutos(codigo).filter {grades.contains(it.grade)}
     }
 
     fun createProduto(produtoSaci: ViewProdutoSaci?): Produto? {
