@@ -2,14 +2,8 @@ package br.com.engecopi.framework.model
 
 import io.ebean.typequery.generator.Generator
 import io.ebean.typequery.generator.GeneratorConfig
-import java.io.IOException
 
-object MainQueryBeanGenerator {
-  
-  @Throws(IOException::class)
-  @JvmStatic
-  fun main(args: Array<String>) {
-    
+fun main() {
     val config = GeneratorConfig()
     config.lang = "kt"
     config.classesDirectory = "./out/production/classes/"
@@ -27,7 +21,5 @@ object MainQueryBeanGenerator {
     
     // Additionally generate 'finder's
     generator.generateFinders()
-    generator.modifyEntityBeansAddFinderField()
-    
+    //generator.modifyEntityBeansAddFinderField()
   }
-}
