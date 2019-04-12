@@ -48,7 +48,7 @@ class ProdutoViewModel(view: IView) :
   }
 
   override fun delete(bean: ProdutoVo) {
-    Produto.findProdutos(bean.codigoProduto, bean.gradesProduto).forEach {it.delete()}
+    Produto.findProdutos(bean.codigoProduto, bean.gradesProduto.toList()).forEach {it.delete()}
   }
 
   private fun QProduto.filtroUsuario(): QProduto {
@@ -62,6 +62,7 @@ class ProdutoViewModel(view: IView) :
       Repositories.updateViewProdutosLoc()
       return Produto
         .where()
+        .vproduto.fetch()
         .filtroUsuario()
     }
 
@@ -70,7 +71,7 @@ class ProdutoViewModel(view: IView) :
     return ProdutoVo().apply {
       entityVo = produto
       codigoProduto = produto.codigo.trim()
-      gradesProduto = Produto.findProdutos(produto.codigo).map {it.grade}.toSet()
+      //gradesProduto = Produto.findGradesProduto(produto.codigo).toSet()
       lojaDefault = usuarioDefault.loja
     }
   }
@@ -97,7 +98,7 @@ class ProdutoVo : EntityVo<Produto>() {
   var codigoProduto: String? = ""
     set(value) {
       field = value
-      if(entityVo == null) gradesProduto = Produto.findProdutos(value).map {it.grade}.toSet()
+      if(entityVo == null) gradesProduto = Produto.findGradesProduto(value).toSet()
     }
   var gradesProduto: Set<String> = emptySet()
   val descricaoProduto: String?

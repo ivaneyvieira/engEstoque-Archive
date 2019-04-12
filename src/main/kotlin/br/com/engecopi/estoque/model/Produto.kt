@@ -53,9 +53,8 @@ class Produto : BaseModel() {
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(
     select = "LOC.localizacao",
-    join = "LEFT join (select codigo, grade, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao " +
-           "from t_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC " +
-           "ON LOC.codigo = \${ta}.codigo and LOC.grade = \${ta}.grade "
+    join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' - ') as localizacao " +
+           "from t_loc_produtos where storeno = @$LOJA_FIELD group by produto_id) AS LOC " + "ON LOC.produto_id = \${ta}.id"
           )
   var localizacao: String? = ""
   @Formula(
@@ -130,7 +129,12 @@ class Produto : BaseModel() {
                               ).findList()
     }
 
-    fun findProdutos(codigo: String?, grades: Set<String>): List<Produto> {
+    fun findGradesProduto(codigo: String?): List<String> {
+      codigo ?: return emptyList()
+      return findProdutos(codigo).map {it.grade}
+    }
+
+    fun findProdutos(codigo: String?, grades: List<String>): List<Produto> {
       codigo ?: return emptyList()
       return findProdutos(codigo).filter {grades.contains(it.grade)}
     }

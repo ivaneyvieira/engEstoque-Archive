@@ -121,6 +121,7 @@ class NotaPrint(item: ItemNota) {
   val un
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
+  val numeroLoja = notaSaci?.loja?.numero ?: 0
 
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->
