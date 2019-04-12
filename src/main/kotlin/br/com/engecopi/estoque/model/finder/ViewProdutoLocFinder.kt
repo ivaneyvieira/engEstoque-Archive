@@ -12,13 +12,13 @@ open class ViewProdutoLocFinder : Finder<String, ViewProdutoLoc>(ViewProdutoLoc:
    * Start a new typed query.
    */
   fun where(): QViewProdutoLoc {
-     return QViewProdutoLoc(db())
+     return QViewProdutoLoc()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QViewProdutoLoc {
-     return QViewProdutoLoc(db()).text()
+     return QViewProdutoLoc().text()
   }
 }

@@ -62,7 +62,6 @@ class ProdutoViewModel(view: IView) :
       Repositories.updateViewProdutosLoc()
       return Produto
         .where()
-        .vproduto.fetch()
         .filtroUsuario()
     }
 

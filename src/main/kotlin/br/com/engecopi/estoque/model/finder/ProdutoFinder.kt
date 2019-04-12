@@ -12,13 +12,13 @@ open class ProdutoFinder : Finder<Long, Produto>(Produto::class.java) {
    * Start a new typed query.
    */
   fun where(): QProduto {
-     return QProduto(db())
+     return QProduto()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QProduto {
-     return QProduto(db()).text()
+     return QProduto().text()
   }
 }
