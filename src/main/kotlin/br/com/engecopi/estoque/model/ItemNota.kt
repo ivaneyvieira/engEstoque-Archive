@@ -173,6 +173,7 @@ class NotaPrint(val item: ItemNota) {
   val un
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
+
   val codigoBarraEntrega
     get() = item.codigoBarraEntrega ?: ""
   val codigoBarraConferencia
@@ -183,6 +184,9 @@ class NotaPrint(val item: ItemNota) {
     get() = item.nota?.lancamento?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
   val nomeFilial
     get() = "ENGECOPI ${item.nota?.loja?.sigla}"
+
+  val numeroLoja = notaSaci?.loja?.numero ?: 0
+
 
   fun print(template: String): String {
     return NotaPrint::class.memberProperties.fold(template) {reduce, prop ->

@@ -20,10 +20,7 @@ import java.time.LocalDate
 class ProdutoViewModel(view: IView) :
   CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
   override fun update(bean: ProdutoVo) {
-    Produto.findProduto(
-      bean.codigoProduto,
-      bean.gradeProduto
-                       )?.let { produto ->
+    bean.toEntity()?.let {produto ->
       produto.codigo = bean.codigoProduto.lpad(
         16,
         " "
@@ -35,23 +32,23 @@ class ProdutoViewModel(view: IView) :
 
   override fun add(bean: ProdutoVo) {
     Produto().apply {
-      this.codigo = bean.codigoProduto.lpad(
-        16,
-        " "
-                                           )
-      this.grade = bean.gradeProduto ?: ""
-      this.codebar = bean.codebar ?: ""
-      this.insert()
+      val gradesSalvas = Produto.findProdutos(bean.codigoProduto).map {it.grade}
+      if(bean.temGrade != true) {
+        this.codigo = bean.codigoProduto.lpad(16, " ")
+        this.grade = ""
+        this.codebar = bean.codebar ?: ""
+        this.save()
+      } else bean.gradesProduto.filter {grade -> !gradesSalvas.contains(grade)}.forEach {grade ->
+        this.codigo = bean.codigoProduto.lpad(16, " ")
+        this.grade = grade
+        this.codebar = bean.codebar ?: ""
+        this.save()
+      }
     }
   }
 
   override fun delete(bean: ProdutoVo) {
-    Produto.findProduto(
-      bean.codigoProduto,
-      bean.gradeProduto
-                       )?.let { produto ->
-      produto.delete()
-    }
+    Produto.findProdutos(bean.codigoProduto, bean.gradesProduto.toList()).forEach {it.delete()}
   }
 
   private fun QProduto.filtroUsuario(): QProduto {
@@ -73,7 +70,7 @@ class ProdutoViewModel(view: IView) :
     return ProdutoVo().apply {
       entityVo = produto
       codigoProduto = produto.codigo.trim()
-      gradeProduto = produto.grade
+      //gradesProduto = Produto.findGradesProduto(produto.codigo).toSet()
       lojaDefault = usuarioDefault.loja
     }
   }
@@ -93,18 +90,23 @@ class ProdutoViewModel(view: IView) :
 
 class ProdutoVo : EntityVo<Produto>() {
   override fun findEntity(): Produto? {
-    return Produto.findProduto(codigoProduto, gradeProduto)
+    return Produto.findProdutos(codigoProduto).firstOrNull()
   }
 
   var lojaDefault: Loja? = null
   var codigoProduto: String? = ""
-  var gradeProduto: String? = ""
+    set(value) {
+      field = value
+      if(entityVo == null) gradesProduto = Produto.findGradesProduto(value).toSet()
+    }
+  var gradesProduto: Set<String> = emptySet()
   val descricaoProduto: String?
     get() = produto?.descricao
   val descricaoProdutoSaci: String?
-    get() = ViewProdutoSaci.find(codigoProduto).firstOrNull()?.nome
+    get() = if(entityVo == null) ViewProdutoSaci.find(codigoProduto).firstOrNull()?.nome else entityVo?.descricao
   val grades
-    get() = ViewProdutoSaci.find(codigoProduto).mapNotNull { it.grade }
+    get() = if(entityVo == null) ViewProdutoSaci.find(codigoProduto).mapNotNull {it.grade} else listOf(entityVo?.grade
+                                                                                                       ?: "")
   val codebar: String?
     get() = produto?.codebar ?: ""
   val localizacao
@@ -113,6 +115,8 @@ class ProdutoVo : EntityVo<Produto>() {
       .distinct().joinToString(" / ")
   val produto
     get() = toEntity()
+  val temGrade get() = toEntity()?.temGrade
+  val grade get() = produto?.grade ?: ""
   val saldo
     get() = produto?.saldoTotal ?: 0
   val comprimento: Int?

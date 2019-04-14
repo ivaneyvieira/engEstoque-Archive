@@ -3,8 +3,6 @@ package br.com.engecopi.estoque.model.query
 import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
-import io.ebean.EbeanServer
-import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
@@ -41,12 +39,12 @@ class QEtiqueta : TQRootBean<Etiqueta, QEtiqueta> {
 
 
   /**
-   * Construct with a given EbeanServer.
+   * Construct with a given Database.
    */
-  constructor(server: EbeanServer) : super(Etiqueta::class.java, server)
+  constructor(database: Database) : super(Etiqueta::class.java, database)
 
   /**
-   * Construct using the default EbeanServer.
+   * Construct using the default Database.
    */
   constructor() : super(Etiqueta::class.java)
 

@@ -3,22 +3,20 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.query.QNota
 import io.ebean.Finder
+import io.ebean.Model.db
 
 open class NotaFinder : Finder<Long, Nota>(Nota::class.java) {
-
-  val alias = QNota._alias
-
   /**
    * Start a new typed query.
    */
   fun where(): QNota {
-     return QNota(db())
+    return QNota(db())
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QNota {
-     return QNota(db()).text()
+    return QNota(db()).text()
   }
 }

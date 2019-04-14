@@ -4,6 +4,7 @@ import io.ebean.typequery.generator.Generator
 import io.ebean.typequery.generator.GeneratorConfig
 
 fun main() {
+<<<<<<< HEAD
   val config = GeneratorConfig()
   config.lang = "kt"
   config.classesDirectory = "./out/production/classes/"
@@ -21,3 +22,24 @@ fun main() {
   generator.generateFinders()
   generator.modifyEntityBeansAddFinderField()
 }
+=======
+    val config = GeneratorConfig()
+    config.lang = "kt"
+    config.classesDirectory = "./out/production/classes/"
+    //config.classesDirectory = "./build/classes/kotlin/main/"
+    config.destDirectory = "./src/main/kotlin"
+    config.destResourceDirectory = "./src/main/resources"
+  
+    config.entityBeanPackage = "br.com.engecopi.estoque.model"
+    config.destPackage = "br.com.engecopi.estoque.model.query"
+  
+    config.isOverwriteExistingFinders = true
+    
+    val generator = Generator(config)
+    generator.generateQueryBeans()
+    
+    // Additionally generate 'finder's
+    generator.generateFinders()
+    //generator.modifyEntityBeansAddFinderField()
+  }
+>>>>>>> master

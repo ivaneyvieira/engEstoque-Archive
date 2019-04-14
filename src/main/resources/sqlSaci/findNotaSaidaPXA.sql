@@ -6,7 +6,7 @@ SELECT DISTINCT ''            AS rota,
                 N.date as dt_emissao,
                 P.prdno,
                 P.grade,
-                P.qtty / 1000 AS quant,
+                SUM(P.qtty / 1000) AS quant,
                 C.name        AS clienteName,
                 CASE WHEN N.nfse = '66'
                           THEN 'ACERTO_S'
@@ -25,3 +25,4 @@ WHERE N.storeno = :storeno AND
       N.nfse = :nfse AND
       processed = 0 AND
       N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
+GROUP BY P.storeno, P.pdvno, P.xano, P.prdno, P.grade

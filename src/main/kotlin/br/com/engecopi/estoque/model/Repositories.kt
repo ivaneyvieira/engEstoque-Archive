@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
+import br.com.engecopi.framework.model.DB
 import io.ebean.Ebean
 import java.time.LocalDateTime
 
@@ -22,9 +23,11 @@ object Repositories {
   }
 
   private fun newViewProdutosLoc() {
-    val agora = LocalDateTime.now()
-      .minusSeconds(10)
-    if(agora >= time) {
+
+    updateTabelas()
+    val agora = LocalDateTime.now().minusSeconds(10)
+    if (agora >= time) {
+
       val serverCacheManager = Ebean.getServerCacheManager()
       serverCacheManager.clear(ViewProdutoLoc::class.java)
       val list = ViewProdutoLoc.where()
@@ -39,6 +42,22 @@ object Repositories {
 
       time = LocalDateTime.now()
     }
+  }
+
+  private fun updateTabelas() {
+    val sql ="""update t_loc_produtos AS T
+  left join produtos AS P
+     USING(codigo, grade)
+SET T.produto_id = IFNULL(P.id, 0)
+WHERE T.produto_id <> P.id;
+
+update tab_produtos AS T
+  left join produtos AS P
+     USING(codigo, grade)
+SET T.produto_id = IFNULL(P.id, 0)
+WHERE T.produto_id <> P.id;
+"""
+    DB.sciptSql(sql)
   }
 
   fun findByProduto(produto: Produto?): List<ViewProdutoLoc> {

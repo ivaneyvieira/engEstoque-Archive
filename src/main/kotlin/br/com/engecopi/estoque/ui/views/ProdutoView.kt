@@ -18,6 +18,7 @@ import com.github.mvysny.karibudsl.v8.VAlign
 import com.github.mvysny.karibudsl.v8.addColumnFor
 import com.github.mvysny.karibudsl.v8.align
 import com.github.mvysny.karibudsl.v8.bind
+import com.github.mvysny.karibudsl.v8.checkBoxGroup
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.dateField
 import com.github.mvysny.karibudsl.v8.grid
@@ -31,7 +32,9 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.NumberRenderer
 import com.vaadin.ui.renderers.TextRenderer
+import com.vaadin.ui.themes.ValoTheme
 import org.vaadin.crudui.crud.CrudOperation
+import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.crudui.crud.CrudOperation.UPDATE
 import java.text.DecimalFormat
 
@@ -60,13 +63,25 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             isReadOnly = true
             bind(binder).bind(ProdutoVo::descricaoProdutoSaci.name)
           }
-          comboBox<String> {
-            expand = 1
-            caption = "Grade"
-            default { it }
-            bind(binder).bind(ProdutoVo::gradeProduto)
-            bindItens(binder, "grades")
-            reloadBinderOnChange(binder)
+          if(operation != ADD) {
+            textField {
+              expand = 1
+              caption = "Grade"
+              bind(binder).bind(ProdutoVo::grade.name)
+              reloadBinderOnChange(binder)
+            }
+          }
+        }
+        if(operation == ADD) {
+          row {
+            checkBoxGroup<String> {
+              expand = 1
+              caption = "Grades"
+              addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL)
+              bindItens(binder, ProdutoVo::grades.name)
+              bind(binder).bind(ProdutoVo::gradesProduto)
+             // reloadBinderOnChange(binder)
+            }
           }
         }
       }
@@ -164,7 +179,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
 
   init {
     form("Entrada de produtos") {
-      gridCrud(viewModel.crudClass.java) {
+      gridCrud(viewModel.crudClass.java, false) {
         queryOnly = !RegistryUserInfo.usuarioDefault.admin
         //grid.bodyRowHeight = 3 * 30.00
         column(ProdutoVo::codigoProduto) {
@@ -177,7 +192,7 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
           caption = "Descrição"
           setSortProperty("vproduto.nome")
         }
-        column(ProdutoVo::gradeProduto) {
+        column(ProdutoVo::grade) {
           expandRatio = 1
           caption = "Grade"
           setSortProperty("grade")
