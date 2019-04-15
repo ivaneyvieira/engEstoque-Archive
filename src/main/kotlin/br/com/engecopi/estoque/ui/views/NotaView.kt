@@ -207,7 +207,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         this.setStyleGenerator {
           when {
             it.saldoFinal < 0 -> "error_row"
-            it.isInsert       -> "insert_row"
+            it.isInsert       -> "uncheckable-row"
             else              -> null
           }
         }

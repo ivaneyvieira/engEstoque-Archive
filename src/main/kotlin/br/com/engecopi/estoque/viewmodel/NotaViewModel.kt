@@ -323,7 +323,9 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
       }
       produtos.addAll(produtosVo.asSequence().filter {
         it.quantidade != 0 && it.codigo != "" && it.localizacao?.localizacao?.startsWith(RegistryUserInfo.abreviacaoDefault) ?: false
-      }.sortedWith(compareBy(ProdutoVO::codigo, ProdutoVO::grade, ProdutoVO::localizacao)).toList())
+      }.filter {!it.isInsert}.sortedWith(compareBy(ProdutoVO::codigo,
+                                                   ProdutoVO::grade,
+                                                   ProdutoVO::localizacao)).toList())
     }
   }
 

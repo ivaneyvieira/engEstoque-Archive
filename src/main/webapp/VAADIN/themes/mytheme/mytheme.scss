@@ -166,4 +166,18 @@ $v-font-family: 'Roboto', 'Open Sans', 'Source Sans Pro';
   .v-grid-row.insert_row {
     color: dodgerblue;
   }
+  .v-grid-row.uncheckable-row td {
+    background: #b1b9d6 none repeat scroll 0 0;
+  }
+
+  .v-grid-row.uncheckable-row td:first-child {
+    visibility: hidden;
+  }
+
+  .v-grid-row.uncheckable-row.v-grid-row-selected > .v-grid-cell {
+    background-image: none;
+    border-color: #d4d4d4;
+    color: inherit;
+    text-shadow: inherit;
+  }
 }

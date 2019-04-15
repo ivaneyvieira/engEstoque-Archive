@@ -82,8 +82,9 @@ class ItemNota: BaseModel() {
 
     fun isInsert(notaSaci: NotaSaci): Boolean {
       val tipoNota = TipoNota.values().find {it.toString() == notaSaci.tipo} ?: OUTROS_E
-      val nota = if(tipoNota.tipoMov == ENTRADA) Nota.findEntrada(notaSaci.numero)
-      else Nota.findSaida(notaSaci.numero)
+      val numeroSerie = if(notaSaci.serie == "") notaSaci.numero else "${notaSaci.numero}/${notaSaci.serie}"
+      val nota = if(tipoNota.tipoMov == ENTRADA) Nota.findEntrada(numeroSerie)
+      else Nota.findSaida(numeroSerie)
       nota ?: return false
       val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return false
       return where().produto.equalTo(prd).nota.equalTo(nota).exists()
