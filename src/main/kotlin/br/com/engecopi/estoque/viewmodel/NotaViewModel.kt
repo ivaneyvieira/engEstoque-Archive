@@ -387,7 +387,7 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   var localizacao: LocProduto? = null
   val localizacaoProduto
-    get() = produto?.localizacoes().orEmpty()
+    get() = produto?.localizacoes().orEmpty().map {LocProduto(it)}
 }
 
 class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?, val isInsert : Boolean) {
