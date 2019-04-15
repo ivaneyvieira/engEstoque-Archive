@@ -278,6 +278,13 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
       SAIDA   -> Nota.findSaida(numeroNF)
       ENTRADA -> Nota.findEntrada(numeroNF)
     }
+  val msgAviso: String
+    get() {
+      val quantProdutos = produtos.size
+      val quantInsert = produtos.filter {it.isInsert}.size
+      return if(quantInsert == quantProdutos && quantProdutos > 0) "Essa nota já foi lançada"
+      else ""
+    }
 
   private fun atualizaNota() {
     if(!readOnly) if(entityVo == null) {
@@ -323,9 +330,7 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
       }
       produtos.addAll(produtosVo.asSequence().filter {
         it.quantidade != 0 && it.codigo != "" && it.localizacao?.localizacao?.startsWith(RegistryUserInfo.abreviacaoDefault) ?: false
-      }.filter {!it.isInsert}.sortedWith(compareBy(ProdutoVO::codigo,
-                                                   ProdutoVO::grade,
-                                                   ProdutoVO::localizacao)).toList())
+      }.sortedWith(compareBy(ProdutoVO::codigo, ProdutoVO::grade, ProdutoVO::localizacao)).toList())
     }
   }
 
@@ -363,6 +368,7 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
   val itemNota
     get() = toEntity()
   val produtos = ArrayList<ProdutoVO>()
+  val produtosNaoInseridos get() = produtos.filter {!it.isInsert}
   var produto: Produto? = null
     set(value) {
       field = value

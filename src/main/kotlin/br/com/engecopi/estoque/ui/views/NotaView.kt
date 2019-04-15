@@ -56,6 +56,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       isReadOnly = operation != ADD
       bind(binder).bind("numeroNF")
       reloadBinderOnChange(binder)
+      addValueChangeListener {e->
+        val msgAviso = binder.bean.msgAviso
+        if(e.isUserOriginated && msgAviso != "")
+          showWarning(msgAviso)
+      }
     }
   }
 
@@ -186,7 +191,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Saldo Final"
           align = VAlign.Right
         }
-        bindItens(binder, "produtos")
+        bindItens(binder, NotaVo::produtosNaoInseridos.name)
         editor.addOpenListener { event ->
           event.bean.produto?.let { produto ->
             val locSulfixos = produto.localizacoes().map { LocProduto(it) }
