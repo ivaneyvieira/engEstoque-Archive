@@ -1,6 +1,6 @@
 SELECT DISTINCT cast(CONCAT(N.paymno) as char)     AS rota,
                 N.storeno,
-                N.ordno       AS numero,
+                CAST(N.ordno AS CHAR)      AS numero,
                 ''            AS serie,
                 N.date,
                 N.date as dt_emissao,

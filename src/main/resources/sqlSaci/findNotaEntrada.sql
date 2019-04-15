@@ -1,5 +1,5 @@
 
-select P.invno, N.storeno, nfname           as numero, invse as serie,
+select P.invno, N.storeno, CAST(nfname AS CHAR) as numero, invse as serie,
        CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        N.date,
        N.issue_date                         AS dt_emissao,
@@ -32,7 +32,7 @@ where N.invno = (SELECT MAX(invno)
                      AND invse <> ''
 )
 UNION
-select 0                    as invno, N.storeno, ordno as numero, '' as serie,
+select 0                    as invno, N.storeno, CAST(ordno AS CHAR) as numero, '' as serie,
        cast(CONCAT(N.paymno) as char)      AS rota,
        N.date,
        N.date,

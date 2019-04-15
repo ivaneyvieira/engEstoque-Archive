@@ -1,6 +1,6 @@
 SELECT DISTINCT ''            AS rota,
                 N.storeno,
-                N.nfno AS numero,
+                CAST(N.nfno AS CHAR) AS numero,
                 N.nfse AS serie,
                 N.date,
                 N.date as dt_emissao,
