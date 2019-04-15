@@ -205,9 +205,11 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         editor.saveCaption = "Salvar"
         editor.isBuffered = false
         this.setStyleGenerator {
-           if(it.saldoFinal < 0)
-             "error_row"
-           else null
+          when {
+            it.saldoFinal < 0 -> "error_row"
+            it.isInsert       -> "insert_row"
+            else              -> null
+          }
         }
       }
     }
