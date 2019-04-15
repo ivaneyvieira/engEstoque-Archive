@@ -118,7 +118,7 @@ class ProdutoVo : EntityVo<Produto>() {
   val temGrade get() = toEntity()?.temGrade
   val grade get() = produto?.grade ?: ""
   val saldo
-    get() = produto?.saldoTotal ?: 0
+    get() = produto?.saldoTotal() ?: 0
   val comprimento: Int?
     get() = produto?.vproduto?.comp
   val lagura: Int?

@@ -52,18 +52,17 @@ vaadin {
 configure<EnhancePluginExtension> {
   debugLevel = 9
 }
-
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
   jvmTarget = "1.8"
 }
-
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
   jvmTarget = "1.8"
 }
 
 dependencies {
+  compile(project(":trayServerBiometrico"))
   // Karibu-DSL dependency
   compile("com.github.mvysny.karibudsl:karibu-dsl-v8:$karibuVersion")
   compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -105,11 +104,11 @@ dependencies {
 
   compile("org.imgscalr:imgscalr-lib:4.2")
   compile("de.steinwedel.vaadin.addon:messagebox:4.0.21")
-  compile("org.vaadin.patrik:GridFastNavigation:2.3.10")
-  compile("org.vaadin:viritin:2.8")
-  compile("org.vaadin.crudui:crudui:2.3.0")
+  compile("org.vaadin.patrik:GridFastNavigation:2.4.3")
+  compile("org.vaadin:viritin:2.9")
+  compile("org.vaadin.crudui:crudui:2.3.1")
   compile("org.vaadin.addons:filtering-grid:0.1.1")
-  compile("com.fo0.advancedtokenfield:AdvancedTokenField:0.4.1")
+  compile("com.fo0.advancedtokenfield:AdvancedTokenField:0.5.1")
   // heroku app runner
   testImplementation("junit:junit:4.11")
 }

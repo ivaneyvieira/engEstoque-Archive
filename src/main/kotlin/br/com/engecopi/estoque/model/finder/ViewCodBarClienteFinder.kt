@@ -12,13 +12,13 @@ open class ViewCodBarClienteFinder : Finder<Long, ViewCodBarCliente>(ViewCodBarC
    * Start a new typed query.
    */
   fun where(): QViewCodBarCliente {
-     return QViewCodBarCliente(db())
+     return QViewCodBarCliente()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QViewCodBarCliente {
-     return QViewCodBarCliente(db()).text()
+     return QViewCodBarCliente().text()
   }
 }

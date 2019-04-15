@@ -12,13 +12,13 @@ open class ViewNotaExpedicaoFinder : Finder<Long, ViewNotaExpedicao>(ViewNotaExp
    * Start a new typed query.
    */
   fun where(): QViewNotaExpedicao {
-     return QViewNotaExpedicao(db())
+     return QViewNotaExpedicao()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QViewNotaExpedicao {
-     return QViewNotaExpedicao(db()).text()
+     return QViewNotaExpedicao().text()
   }
 }

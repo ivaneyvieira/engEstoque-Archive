@@ -125,7 +125,7 @@ class NFExpedicaoViewModel(view: IView):
     nota ?: return ""
     nota.refresh()
     val templates = Etiqueta.templates(INCLUIDA)
-    val itens = nota?.itensNota ?: emptyList()
+    val itens = nota.itensNota ?: emptyList()
 
     return templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}

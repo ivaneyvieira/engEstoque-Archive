@@ -3,6 +3,8 @@ package br.com.engecopi.estoque.model.query
 import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
+import io.ebean.Database
+import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime

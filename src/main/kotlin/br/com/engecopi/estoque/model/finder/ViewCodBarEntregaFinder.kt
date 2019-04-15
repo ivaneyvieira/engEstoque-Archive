@@ -12,13 +12,13 @@ open class ViewCodBarEntregaFinder : Finder<Long, ViewCodBarEntrega>(ViewCodBarE
    * Start a new typed query.
    */
   fun where(): QViewCodBarEntrega {
-     return QViewCodBarEntrega(db())
+     return QViewCodBarEntrega()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QViewCodBarEntrega {
-     return QViewCodBarEntrega(db()).text()
+     return QViewCodBarEntrega().text()
   }
 }

@@ -47,11 +47,12 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   private val isAdmin
     get() = RegistryUserInfo.userDefaultIsAdmin
 
-  override fun layoutForm(formLayout: VerticalLayout, operation: CrudOperation?, binder: Binder<NFExpedicaoVo>,
+  override fun layoutForm(formLayout: VerticalLayout,
+                          operation: CrudOperation?,
+                          binder: Binder<NFExpedicaoVo>,
                           readOnly: Boolean) {
     formLayout.apply {
-      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
-        .px
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
       val nota = binder.bean
       grupo("Nota fiscal de saída") {
         verticalLayout {
@@ -125,8 +126,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
               refreshGrid()
             }
           }
-        }
-          .id = "btnPrint"
+        }.id = "btnPrint"
         column(NFExpedicaoVo::loja) {
           caption = "Loja NF"
           setRenderer({loja ->
@@ -173,7 +173,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   }
 
   override fun updateView(viewModel: ViewModel) {
-    gridCrud.refreshGrid()
+    gridCrud?.refreshGrid()
   }
 
   override fun updateModel() {
@@ -183,7 +183,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     get() = NFExpedicaoViewModel(this)
 
   private fun formCodbar(): PnlCodigoBarras {
-    return PnlCodigoBarras("Chave da Nota Fiscal") { key ->
+    return PnlCodigoBarras("Chave da Nota Fiscal") {key ->
       val notaSaida = viewModel.findNotaSaidaKey(key)
       if(notaSaida.isNotEmpty()) {
         val dialog = DlgNotaLoc(notaSaida, viewModel) {itens ->
@@ -207,15 +207,15 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   }
 }
 
-class DlgNotaLoc(val notaSaida: List<NotaSaci>, val viewModel: NFExpedicaoViewModel,
+class DlgNotaLoc(val notaSaida: List<NotaSaci>,
+                 val viewModel: NFExpedicaoViewModel,
                  val execConfirma: (itens: List<LocalizacaoNota>) -> Unit): Window("Nota de Saída") {
   private lateinit var gridProdutos: Grid<LocalizacaoNota>
 
   init {
     val nota = notaSaida.firstOrNull()
     verticalLayout {
-      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
-        .px
+      w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt().px
 
       grupo("Nota fiscal de saída") {
         verticalLayout {
@@ -228,14 +228,12 @@ class DlgNotaLoc(val notaSaida: List<NotaSaci>, val viewModel: NFExpedicaoViewMo
             textField("Loja") {
               expand = 2
               isReadOnly = true
-              value = viewModel.findLoja(nota?.storeno)
-                ?.sigla
+              value = viewModel.findLoja(nota?.storeno)?.sigla
             }
             textField("Tipo") {
               expand = 2
               isReadOnly = true
-              value = TipoNota.value(nota?.tipo)
-                ?.descricao
+              value = TipoNota.value(nota?.tipo)?.descricao
             }
             dateField("Data") {
               expand = 1
@@ -290,7 +288,6 @@ class DlgNotaLoc(val notaSaida: List<NotaSaci>, val viewModel: NFExpedicaoViewMo
           }
         }
       }
-
     }
   }
 }

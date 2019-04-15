@@ -12,13 +12,13 @@ open class ViewCodBarConferenciaFinder : Finder<Long, ViewCodBarConferencia>(Vie
    * Start a new typed query.
    */
   fun where(): QViewCodBarConferencia {
-     return QViewCodBarConferencia(db())
+     return QViewCodBarConferencia()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QViewCodBarConferencia {
-     return QViewCodBarConferencia(db()).text()
+     return QViewCodBarConferencia().text()
   }
 }

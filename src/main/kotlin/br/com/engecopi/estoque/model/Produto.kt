@@ -112,10 +112,7 @@ class Produto: BaseModel() {
 
     fun findProdutos(codigo: String?): List<Produto> {
       codigo ?: return emptyList()
-<<<<<<< HEAD
-      return where().codigo.eq(codigo.lpad(16, " "))
-        .findList()
-=======
+
       return where().codigo.eq(
         codigo.lpad(
           16,
@@ -151,7 +148,6 @@ class Produto: BaseModel() {
         gradeProduto
                                             )
       return createProduto(produtoSaci)
->>>>>>> master
     }
   }
 

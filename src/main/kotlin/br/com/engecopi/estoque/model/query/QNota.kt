@@ -5,7 +5,8 @@ import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
-
+import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
+import io.ebean.Database
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
