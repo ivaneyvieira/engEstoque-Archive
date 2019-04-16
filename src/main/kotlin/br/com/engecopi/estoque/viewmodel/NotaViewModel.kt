@@ -164,9 +164,15 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   override val query: QItemNota
     get() {
       Repositories.updateViewProdutosLoc()
-      val query = ItemNota.where()/*.setUseQueryCache(true).fetch("nota").fetch("usuario").fetch("produto")
-        .fetch("produto.vproduto").fetch("produto.viewProdutoLoc")*/.nota.tipoMov.eq(tipo)
-      return query.nota.loja.id.eq(lojaDefault.id).localizacao.startsWith(abreviacaoDefault)
+      val query = ItemNota.where()
+       // .setUseQueryCache(true)
+       // .fetch("nota")
+       // .fetch("usuario")
+       // .fetch("produto")
+       // .fetch("produto.vproduto")
+       // .fetch("produto.viewProdutoLoc")
+        .nota.tipoMov.eq(tipo)
+      return query.nota.loja.id.eq(lojaDefault.id).localizacao.between(abreviacaoDefault, "${abreviacaoDefault}zzzzzzzzzzzzzzzzzzz")
     }
 
   abstract fun createVo(): VO

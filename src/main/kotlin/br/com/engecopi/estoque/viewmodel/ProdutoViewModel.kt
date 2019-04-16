@@ -45,6 +45,7 @@ class ProdutoViewModel(view: IView) :
         this.save()
       }
     }
+    bean.codigoProduto = ""
   }
 
   override fun delete(bean: ProdutoVo) {
