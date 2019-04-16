@@ -164,8 +164,8 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   override val query: QItemNota
     get() {
       Repositories.updateViewProdutosLoc()
-      val query = ItemNota.where().setUseQueryCache(true).fetch("nota").fetch("usuario").fetch("produto")
-        .fetch("produto.vproduto").fetch("produto.viewProdutoLoc").nota.tipoMov.eq(tipo)
+      val query = ItemNota.where()/*.setUseQueryCache(true).fetch("nota").fetch("usuario").fetch("produto")
+        .fetch("produto.vproduto").fetch("produto.viewProdutoLoc")*/.nota.tipoMov.eq(tipo)
       return query.nota.loja.id.eq(lojaDefault.id).localizacao.startsWith(abreviacaoDefault)
     }
 
@@ -195,9 +195,8 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
 
   override fun QItemNota.filterString(text: String): QItemNota {
     val idLoja = RegistryUserInfo.lojaDefault.id
-    return nota.numero.eq(text).and().produto.viewProdutoLoc.localizacao.contains(text)
-      .produto.viewProdutoLoc.loja.id.eq(idLoja).endAnd().produto.vproduto.codigo.contains(text)
-      .produto.vproduto.nome.contains(text)
+    return nota.numero.eq(text).produto.vproduto.codigo.eq(text).produto.vproduto.nome.contains(text).and()
+      .produto.viewProdutoLoc.localizacao.contains(text).produto.viewProdutoLoc.loja.id.eq(idLoja).endAnd()
   }
 
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {
@@ -390,16 +389,16 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
     get() = produto?.localizacoes().orEmpty().map {LocProduto(it)}
 }
 
-class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?, val isInsert : Boolean) {
+class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?, val isInsert: Boolean) {
   val codigo: String = produto?.codigo ?: ""
   val grade: String = produto?.grade ?: ""
   var quantidade: Int = 0
   var selecionado: Boolean = false
-  set(value) {
-    field = if(isInsert) {
-      false
-    } else value
-  }
+    set(value) {
+      field = if(isInsert) {
+        false
+      } else value
+    }
   val saldoInsuficiente: Boolean
     get() = if(tipoMov == SAIDA) saldo < quantidade
     else false
