@@ -282,6 +282,7 @@ open class GridCrudFlex<T : EntityVo<*>>(
                                               if(operation != ADD || closeInAdd) crudLayout.hideForm() else{
                                                 val formFactory = crudFormFactory  as? CustomCrudFormFactory<T>
                                                 formFactory?.binder()?.bean = domainObject.javaClass.newInstance()
+                                                
                                               }
                                               buttonClickListener.buttonClick(operationPerformedClickEvent)
                                               Notification.show(successMessage)
