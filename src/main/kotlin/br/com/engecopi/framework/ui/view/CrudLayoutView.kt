@@ -244,7 +244,7 @@ open class GridCrudFlex<T: EntityVo<*>>(domainType: Class<T>,
     val domainObject =
       grid.asSingleSelect()
         .value
-    showForm(UPDATE, domainObject, false, savedMessage) {event ->
+    showForm(UPDATE, domainObject, false, savedMessage) {
       try {
         val updatedObject = updateOperation.perform(domainObject)
         grid.asSingleSelect()
@@ -269,7 +269,7 @@ open class GridCrudFlex<T: EntityVo<*>>(domainType: Class<T>,
                         readOnly: Boolean,
                         successMessage: String,
                         buttonClickListener: ClickListener) {
-    val form = crudFormFactory.buildNewForm(operation, domainObject, readOnly, {cancelClickEvent ->
+    val form = crudFormFactory.buildNewForm(operation, domainObject, readOnly, {
       val selected =
         grid.asSingleSelect()
           .value
@@ -281,16 +281,11 @@ open class GridCrudFlex<T: EntityVo<*>>(domainType: Class<T>,
     }, {operationPerformedClickEvent ->
                                               if(operation != ADD || closeInAdd) crudLayout.hideForm() else {
                                                 val formFactory = crudFormFactory  as? CustomCrudFormFactory<T>
-<<<<<<< HEAD
-                                                formFactory?.binder()?.bean = domainObject.javaClass.newInstance()
-                                                
-=======
                                                 val binder = formFactory?.binder()
                                                 binder?.bean = domainObject.javaClass.newInstance()
                                                 val field =
                                                   binder?.fields?.toList().orEmpty().find {it is Focusable} as? Focusable
                                                 field?.focus()
->>>>>>> 9539fbcca8f58725dc94a8c954b40306fe863788
                                               }
                                               buttonClickListener.buttonClick(operationPerformedClickEvent)
                                               Notification.show(successMessage)
