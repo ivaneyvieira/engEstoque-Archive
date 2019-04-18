@@ -23,6 +23,5 @@ FROM sqlpdv.pxa AS                       N
 WHERE N.storeno = :storeno AND
       N.nfno = :nfno AND
       N.nfse = :nfse AND
-      processed = 0 AND
-      N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
+      processed = 0
 GROUP BY P.storeno, P.pdvno, P.xano, P.prdno, P.grade
