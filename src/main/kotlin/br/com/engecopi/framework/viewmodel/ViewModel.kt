@@ -1,11 +1,6 @@
 package br.com.engecopi.framework.viewmodel
 
 import br.com.engecopi.framework.model.Transaction
-import br.com.engecopi.framework.model.UserException
-import io.ebean.AcquireLockException
-import io.ebean.DataIntegrityException
-import io.ebean.DuplicateKeyException
-import javax.persistence.PersistenceException
 
 abstract class ViewModel(val view: IView) {
   private var inExcection = false
@@ -15,7 +10,10 @@ abstract class ViewModel(val view: IView) {
   private fun updateView(exception: EViewModel? = null) {
     if (exception == null)
       execUpdate()
-    
+    exception?.message?.let {message ->
+      view.showError(message)
+    }
+
     view.updateView(this)
   }
   
@@ -25,14 +23,16 @@ abstract class ViewModel(val view: IView) {
   
   @Throws(EViewModel::class)
   fun <T> execValue(block: () -> T): T? {
-    return transaction {
+    var ret: T? = null
+    transaction {
       try {
-        block()
+        ret = block()
       } catch (e: EViewModel) {
         updateView(e)
-        null
+        throw e
       }
     }
+    return ret
   }
   
   @Throws(EViewModel::class)
@@ -71,13 +71,14 @@ abstract class ViewModel(val view: IView) {
   fun <T> execList(block: () -> List<T>): List<T> {
     return execValue(block).orEmpty()
   }
-  
-  private fun <T> transaction(block: () -> T): T {
+
+  private fun <T> transaction(block: () -> T) {
     return try {
-      val ret = block()
+      block()
       Transaction.commit()
-      ret
-    } catch (e: Throwable) {
+    } catch(e: EViewModel) {
+      Transaction.rollback()
+    } catch(e: Throwable) {
       Transaction.rollback()
       throw e
     }

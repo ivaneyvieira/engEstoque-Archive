@@ -12,6 +12,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
+import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.lpad
@@ -30,19 +31,25 @@ class ProdutoViewModel(view: IView) :
     }
   }
 
-  override fun add(bean: ProdutoVo) {
+  override fun add(bean: ProdutoVo) = exec {
     Produto().apply {
       val gradesSalvas = Produto.findProdutos(bean.codigoProduto).map {it.grade}
+      if(gradesSalvas.isEmpty())
+        throw EViewModel("Este produto não existe")
       if(bean.temGrade != true) {
         this.codigo = bean.codigoProduto.lpad(16, " ")
         this.grade = ""
         this.codebar = bean.codebar ?: ""
         this.save()
-      } else bean.gradesProduto.filter {grade -> !gradesSalvas.contains(grade)}.forEach {grade ->
-        this.codigo = bean.codigoProduto.lpad(16, " ")
-        this.grade = grade
-        this.codebar = bean.codebar ?: ""
-        this.save()
+      } else {
+        val gradesProduto = bean.gradesProduto.filter {it != ""}
+        if(gradesProduto.isEmpty()) throw EViewModel("Este produto deveria tem grade")
+        else gradesProduto.filter {grade -> !gradesSalvas.contains(grade)}.forEach {grade ->
+          this.codigo = bean.codigoProduto.lpad(16, " ")
+          this.grade = grade
+          this.codebar = bean.codebar ?: ""
+          this.save()
+        }
       }
     }
     bean.codigoProduto = ""
