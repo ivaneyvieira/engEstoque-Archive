@@ -10,13 +10,13 @@ open class ViewProdutoSaciFinder : Finder<String, ViewProdutoSaci>(ViewProdutoSa
    * Start a new typed query.
    */
   fun where(): QViewProdutoSaci {
-    return QViewProdutoSaci(db())
+    return QViewProdutoSaci()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QViewProdutoSaci {
-    return QViewProdutoSaci(db()).text()
+    return QViewProdutoSaci().text()
   }
 }

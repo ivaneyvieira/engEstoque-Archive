@@ -10,13 +10,13 @@ open class NotaFinder : Finder<Long, Nota>(Nota::class.java) {
    * Start a new typed query.
    */
   fun where(): QNota {
-    return QNota(db())
+    return QNota()
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QNota {
-    return QNota(db()).text()
+    return QNota().text()
   }
 }

@@ -26,7 +26,7 @@ class QProduto : TQRootBean<Produto, QProduto> {
      * shared 'Alias' instance used to provide
      * properties to select and fetch clauses
      */
-//    val _alias = QProduto(true)
+    val _alias = QProduto(true)
   }
 
   lateinit var id: PLong<QProduto>
