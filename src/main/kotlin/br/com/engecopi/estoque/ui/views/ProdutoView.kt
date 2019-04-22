@@ -80,7 +80,6 @@ class ProdutoView : CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
               addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL)
               bindItens(binder, ProdutoVo::grades.name)
               bind(binder).bind(ProdutoVo::gradesProduto)
-             // reloadBinderOnChange(binder)
             }
           }
         }

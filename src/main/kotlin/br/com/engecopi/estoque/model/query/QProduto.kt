@@ -4,7 +4,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocViewProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocViewProdutoLoc
-import io.ebean.Database
+import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
@@ -26,7 +26,7 @@ class QProduto : TQRootBean<Produto, QProduto> {
      * shared 'Alias' instance used to provide
      * properties to select and fetch clauses
      */
-//    val _alias = QProduto(true)
+    val _alias = QProduto(true)
   }
 
   lateinit var id: PLong<QProduto>
@@ -45,12 +45,12 @@ class QProduto : TQRootBean<Produto, QProduto> {
 
 
   /**
-   * Construct with a given Database.
+   * Construct with a given EbeanServer.
    */
-  constructor(database: Database) : super(Produto::class.java, database)
+  constructor(server: EbeanServer) : super(Produto::class.java, server)
 
   /**
-   * Construct using the default Database.
+   * Construct using the default EbeanServer.
    */
   constructor() : super(Produto::class.java)
 

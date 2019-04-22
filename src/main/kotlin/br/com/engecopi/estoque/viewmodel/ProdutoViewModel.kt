@@ -34,14 +34,9 @@ class ProdutoViewModel(view: IView) :
   override fun add(bean: ProdutoVo) = exec {
     Produto().apply {
       val gradesSalvas = Produto.findProdutos(bean.codigoProduto).map {it.grade}
-      if(gradesSalvas.isEmpty())
+      if(!ViewProdutoSaci.existe(bean.codigoProduto))
         throw EViewModel("Este produto não existe")
-      if(bean.temGrade != true) {
-        this.codigo = bean.codigoProduto.lpad(16, " ")
-        this.grade = ""
-        this.codebar = bean.codebar ?: ""
-        this.save()
-      } else {
+      if(ViewProdutoSaci.temGrade(bean.codigoProduto)) {
         val gradesProduto = bean.gradesProduto.filter {it != ""}
         if(gradesProduto.isEmpty()) throw EViewModel("Este produto deveria tem grade")
         else gradesProduto.filter {grade -> !gradesSalvas.contains(grade)}.forEach {grade ->
@@ -50,6 +45,11 @@ class ProdutoViewModel(view: IView) :
           this.codebar = bean.codebar ?: ""
           this.save()
         }
+      } else {
+        this.codigo = bean.codigoProduto.lpad(16, " ")
+        this.grade = ""
+        this.codebar = bean.codebar ?: ""
+        this.save()
       }
     }
     bean.codigoProduto = ""

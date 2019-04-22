@@ -22,6 +22,7 @@ class ViewProdutoSaci {
   var custo: Double? = null
   var unidade: String? = null
   var tipo: String? = null
+  var localizacao: String? = null
 
   companion object Find : ViewProdutoSaciFinder() {
     fun find(codigo: String?, grade: String?): ViewProdutoSaci? {
@@ -38,6 +39,18 @@ class ViewProdutoSaci {
       return where()
         .codigo.eq(codigo.lpad(16, " "))
         .findList()
+    }
+
+    fun existe(codigo: String?): Boolean {
+      codigo ?: return false
+      return where()
+        .codigo.eq(codigo.lpad(16, " "))
+        .exists()
+    }
+
+    fun temGrade(codigo: String?): Boolean {
+      codigo ?: return false
+      return where().codigo.eq(codigo.lpad(16, " ")).grade.ne("").findCount() > 0
     }
   }
 }

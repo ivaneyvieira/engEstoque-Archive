@@ -3,7 +3,7 @@ package br.com.engecopi.estoque.model.query
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
-import io.ebean.Database
+import io.ebean.EbeanServer
 import io.ebean.typequery.PBoolean
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
@@ -40,12 +40,12 @@ class QUsuario : TQRootBean<Usuario, QUsuario> {
 
 
   /**
-   * Construct with a given Database.
+   * Construct with a given EbeanServer.
    */
-  constructor(database: Database) : super(Usuario::class.java, database)
+  constructor(server: EbeanServer) : super(Usuario::class.java, server)
 
   /**
-   * Construct using the default Database.
+   * Construct using the default EbeanServer.
    */
   constructor() : super(Usuario::class.java)
 

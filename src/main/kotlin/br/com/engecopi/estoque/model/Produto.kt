@@ -67,7 +67,7 @@ class Produto : BaseModel() {
   val descricao: String?
     @Transient get() = vproduto?.nome
   val temGrade: Boolean
-    get() = ViewProdutoSaci.where().codigo.eq(codigo).findCount() > 1
+    get() = ViewProdutoSaci.temGrade(codigo)
 
   fun localizacao(usuario: Usuario?): String? {
     val user = usuario ?: return ""
