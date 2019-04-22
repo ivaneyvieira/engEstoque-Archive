@@ -12,21 +12,13 @@ open class ProdutoFinder : Finder<Long, Produto>(Produto::class.java) {
    * Start a new typed query.
    */
   fun where(): QProduto {
-<<<<<<< HEAD
      return QProduto()
-=======
-    return QProduto()
->>>>>>> 9cbf9ae981c8aa2a499bc5822de1707096db26c9
   }
 
   /**
    * Start a new document store query.
    */
   fun text(): QProduto {
-<<<<<<< HEAD
-     return QProduto().text()
-=======
-    return QProduto().text()
->>>>>>> 9cbf9ae981c8aa2a499bc5822de1707096db26c9
+   return QProduto().text()
   }
 }
