@@ -82,7 +82,7 @@ dependencies {
   // compile "io.ebean:querybean-generator:11.37.1"
   compile("io.ebean:ebean-querybean:11.37.1")
   //compile "io.ebean:ebean-annotation:4.7"
-  compile("io.ebean.tools:finder-generator:4.2.2")
+  compile("io.ebean.tools:finder-generator:11.34.1")
 
   compile("com.vaadin:vaadin-themes:$vaadin8Version")
   compile("com.vaadin:vaadin-server:$vaadin8Version")
