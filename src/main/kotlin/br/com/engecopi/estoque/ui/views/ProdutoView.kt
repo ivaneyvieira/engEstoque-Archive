@@ -38,6 +38,7 @@ import java.text.DecimalFormat
 @AutoView
 class ProdutoView: CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   init {
+    isAddClose = false
     layoutForm {
       binder.bean.lojaDefault = RegistryUserInfo.lojaDefault
       formLayout.apply {

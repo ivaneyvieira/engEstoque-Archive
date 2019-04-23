@@ -8,6 +8,7 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.QueryView
 import br.com.engecopi.framework.viewmodel.Sort
+import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.VaadinDsl
 import com.github.mvysny.karibudsl.v8.addGlobalShortcutListener
 import com.github.mvysny.karibudsl.v8.expandRatio
@@ -33,7 +34,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.Column
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.HorizontalLayout
-import com.vaadin.ui.Label
 import com.vaadin.ui.Layout
 import com.vaadin.ui.Notification
 import com.vaadin.ui.TextField
@@ -48,7 +48,7 @@ import kotlin.reflect.KProperty1
 import kotlin.streams.toList
 
 abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: LayoutView<V>() {
-  var isAddClose = false
+  var isAddClose = true
   val headerLayout = HorizontalLayout()
   val toolbarLayout = CssLayout()
   val filterLayout = HorizontalLayout()
@@ -339,11 +339,8 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
       if(operation != ADD || isAddClose)
         hideForm()
       else {
-        val binder = form.binder
-        binder.bean = domainObject.javaClass.newInstance()
-        val field =
-          binder.fields?.toList().orEmpty().find {it is Focusable} as? Focusable
-        field?.focus()
+        form.binder.bean = viewModel.newBean()
+        form.focusFirst()
       }
                               buttonClickListener()
                               Notification.show(successMessage)
@@ -471,11 +468,14 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
     layoutForm(this)
     addComponentsAndExpand(formLayout)
 
-
-
     addComponent(footerLayout)
     setComponentAlignment(footerLayout, BOTTOM_RIGHT)
     setMargin(true)
+  }
+
+  fun focusFirst() {
+    val field = binder.fields.toList().firstOrNull {it is  Component.Focusable} as?  Component.Focusable
+    field?.focus()
   }
 
   fun updateButtons() {

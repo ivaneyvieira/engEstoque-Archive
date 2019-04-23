@@ -272,7 +272,7 @@ inline fun <reified T: Enum<*>> HasComponents.enumSelect(caption: String = "",
 
 fun HasComponents.title(title: String) = label(title) {
   w = fillParent
-  addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
+  addStyleNames(ValoTheme.LABEL_LARGE, ValoTheme.LABEL_COLORED, ValoTheme.LABEL_BOLD)
 }
 
 //FilterGrid

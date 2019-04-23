@@ -6,10 +6,8 @@ import io.ebean.PagedList
 import io.ebean.typequery.TQRootBean
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.reflect.KClass
 
-abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: EntityVo<MODEL>>
-(view: IView/*, val crudClass: KClass<VO>*/): ViewModel(view) {
+abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: EntityVo<MODEL>>(view: IView): ViewModel(view) {
   private var queryView: QueryView? = null
   private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
