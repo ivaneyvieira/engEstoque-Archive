@@ -6,7 +6,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
 import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
-import io.ebean.EbeanServer
+import io.ebean.Database
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
@@ -56,12 +56,12 @@ class QNota : TQRootBean<Nota, QNota> {
 
 
   /**
-   * Construct with a given EbeanServer.
+   * Construct with a given Database.
    */
-  constructor(server: EbeanServer) : super(Nota::class.java, server)
+  constructor(database: Database) : super(Nota::class.java, database)
 
   /**
-   * Construct using the default EbeanServer.
+   * Construct using the default Database.
    */
   constructor() : super(Nota::class.java)
 

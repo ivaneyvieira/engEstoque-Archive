@@ -7,8 +7,12 @@ import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.IView
 
 class EntradaViewModel(view: IView) : NotaViewModel<EntradaVo>
-                                        (view, EntradaVo::class, ENTRADA, RECEBIDO,
+                                        (view, ENTRADA, RECEBIDO,
                                          abreviacaoDefault) {
+  override fun newBean(): EntradaVo {
+    return EntradaVo()
+  }
+
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.eq(RECEBIDO)
   }

@@ -4,7 +4,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.query.assoc.QAssocNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
 import br.com.engecopi.estoque.model.query.assoc.QAssocViewProdutoLoc
-import io.ebean.EbeanServer
+import io.ebean.Database
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDateTime
 import io.ebean.typequery.PLong
@@ -40,12 +40,12 @@ class QLoja : TQRootBean<Loja, QLoja> {
 
 
   /**
-   * Construct with a given EbeanServer.
+   * Construct with a given Database.
    */
-  constructor(server: EbeanServer) : super(Loja::class.java, server)
+  constructor(database: Database) : super(Loja::class.java, database)
 
   /**
-   * Construct using the default EbeanServer.
+   * Construct using the default Database.
    */
   constructor() : super(Loja::class.java)
 

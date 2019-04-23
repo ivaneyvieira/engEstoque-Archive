@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
@@ -12,7 +11,11 @@ import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
 class EntregaClienteViewModel(view: IView)
-  : NotaViewModel<EntregaClienteVo>(view, EntregaClienteVo::class, SAIDA, ENTREGUE, "") {
+  : NotaViewModel<EntregaClienteVo>(view, SAIDA, ENTREGUE, "") {
+  override fun newBean(): EntregaClienteVo {
+    return EntregaClienteVo()
+  }
+
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.`in`(CONFERIDA)
       .nota.usuario.isNotNull
@@ -21,11 +24,9 @@ class EntregaClienteViewModel(view: IView)
 
   override fun createVo() = EntregaClienteVo()
 
-  fun processaKey(nota: Nota?, key: String) = execValue {
+  fun processaKey(key: String) = execList {
     val item = ViewCodBarEntrega.findNota(key) ?: throw EViewModel("Produto não encontrado")
 
-    if (nota != null && nota.id != item.nota?.id)
-      throw EViewModel("Este produto não pertence a nota ${nota.numero}")
     if (item.status != CONFERIDA) {
       if (item.status == ENTREGUE)
         throw  EViewModel("Produto já foi entregue")
@@ -35,10 +36,11 @@ class EntregaClienteViewModel(view: IView)
     }
     item.status = ENTREGUE
     item.save()
-    return@execValue item
+    return@execList listOf(item)
   }
 
   fun notasConferidas(): List<EntregaClienteVo> {
+    //TODO Refatorar
     return ItemNota.where()
       .status.eq(CONFERIDA)
       .findList()

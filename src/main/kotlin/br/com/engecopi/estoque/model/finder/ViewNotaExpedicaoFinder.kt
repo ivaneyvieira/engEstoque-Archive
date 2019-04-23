@@ -3,22 +3,13 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import io.ebean.Finder
+import io.ebean.Model.db
 
 open class ViewNotaExpedicaoFinder : Finder<Long, ViewNotaExpedicao>(ViewNotaExpedicao::class.java) {
-
-  val alias = QViewNotaExpedicao._alias
-
   /**
    * Start a new typed query.
    */
   fun where(): QViewNotaExpedicao {
-     return QViewNotaExpedicao(db())
-  }
-
-  /**
-   * Start a new document store query.
-   */
-  fun text(): QViewNotaExpedicao {
-     return QViewNotaExpedicao(db()).text()
+    return QViewNotaExpedicao(db())
   }
 }

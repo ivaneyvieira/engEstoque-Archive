@@ -12,7 +12,11 @@ import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
 class EntregaClienteEditorViewModel(view: IView)
-  : NotaViewModel<EntregaClienteVo>(view, EntregaClienteVo::class, SAIDA, ENTREGUE, "") {
+  : NotaViewModel<EntregaClienteVo>(view, SAIDA, ENTREGUE, "") {
+  override fun newBean(): EntregaClienteVo {
+    return EntregaClienteVo()
+  }
+
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.`in`(CONFERIDA, ENTREGUE)
       .nota.usuario.isNotNull
@@ -39,6 +43,7 @@ class EntregaClienteEditorViewModel(view: IView)
   }
 
   fun notasConferidas(): List<EntregaClienteVo> {
+    //TODO Refatorar
     return ItemNota.where()
       .status.eq(CONFERIDA)
       .findList()

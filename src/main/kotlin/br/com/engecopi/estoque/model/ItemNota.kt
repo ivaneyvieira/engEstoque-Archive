@@ -13,6 +13,7 @@ import io.ebean.annotation.Index
 import io.ebean.annotation.Length
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH
@@ -30,7 +31,7 @@ import kotlin.reflect.full.memberProperties
 @CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "itens_nota")
 @Index(unique = true, columnNames = ["nota_id", "produto_id", "localizacao"])
-class ItemNota : BaseModel() {
+class ItemNota: BaseModel() {
   var data: LocalDate = LocalDate.now()
   var hora: LocalTime = LocalTime.now()
   var quantidade: Int = 0
@@ -49,6 +50,8 @@ class ItemNota : BaseModel() {
   @Enumerated(EnumType.STRING)
   var status: StatusNota = ENTREGUE
   @Size(max = 60)
+  var codigoBarraCliente: String? = ""
+  @Size(max = 60)
   var codigoBarraConferencia: String? = ""
   @Size(max = 60)
   var codigoBarraEntrega: String? = ""
@@ -56,6 +59,8 @@ class ItemNota : BaseModel() {
     get() = (status.multiplicador) * quantidade
   val viewCodigoBarraConferencia: ViewCodBarConferencia?
     @Transient get() = ViewCodBarConferencia.byId(id)
+  val viewCodigoBarraCliente: ViewCodBarCliente?
+    @Transient get() = ViewCodBarCliente.byId(nota?.id)
   val viewCodigoBarraEntrega: ViewCodBarEntrega?
     @Transient get() = ViewCodBarEntrega.byId(id)
   val descricao: String?
@@ -75,22 +80,22 @@ class ItemNota : BaseModel() {
   val dataNota: LocalDate?
     @Transient get() = nota?.data
   val ultilmaMovimentacao: Boolean
-    @Transient
-    get() {
+    @Transient get() {
       return produto?.ultimaNota()?.let {
         it.id == this.id
       } ?: true
     }
-  val template: String
-    @Transient get() = Etiqueta.template(status)
+  val templates: List<String>
+    @Transient get() = Etiqueta.templates(status)
   val abreviacao: String
     @Transient get() = localizacao.split('.').getOrNull(0) ?: ""
 
-  companion object Find : ItemNotaFinder() {
+  companion object Find: ItemNotaFinder() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
       nota ?: return null
       produto ?: return null
-      return ItemNota.where().nota.id.eq(nota.id)
+      return ItemNota.where()
+        .nota.id.eq(nota.id)
         .produto.id.eq(produto.id)
         .findList()
         .firstOrNull()
@@ -99,8 +104,7 @@ class ItemNota : BaseModel() {
     fun find(notaSaci: NotaSaci?): ItemNota? {
       notaSaci ?: return null
       val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return null
-      return where()
-        .nota.numero.eq("${notaSaci.numero}/${notaSaci.serie}")
+      return where().nota.numero.eq("${notaSaci.numero}/${notaSaci.serie}")
         .nota.loja.equalTo(RegistryUserInfo.lojaDefault)
         .produto.equalTo(produtoSaci)
         .findList()
@@ -110,14 +114,8 @@ class ItemNota : BaseModel() {
     fun createItemNota(notaSaci: NotaSaci, notaPrd: Nota?): ItemNota? {
       notaPrd ?: return null
       val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return null
-      val locProduto = ViewProdutoLoc
-                         .where()
-                         .produto.id.eq(produtoSaci.id)
-                         .findList()
-                         .sortedBy { it.localizacao }
-                         .firstOrNull()
-                         ?.localizacao
-                       ?: return null
+      val locProduto = ViewProdutoLoc.localizacoesProduto(produtoSaci).sorted().firstOrNull() ?: ""
+
       return ItemNota().apply {
         quantidade = notaSaci.quant ?: 0
         produto = produtoSaci
@@ -136,19 +134,16 @@ class ItemNota : BaseModel() {
 
   override fun save() {
     super.save()
-    if (codigoBarraConferencia.isNullOrEmpty())
-      codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
-    if (codigoBarraEntrega.isNullOrEmpty())
-      codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
+    if(codigoBarraCliente.isNullOrEmpty()) codigoBarraCliente = viewCodigoBarraCliente?.codbar ?: ""
+    if(codigoBarraConferencia.isNullOrEmpty()) codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
+    if(codigoBarraEntrega.isNullOrEmpty()) codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
     super.save()
   }
 
   override fun insert() {
     super.insert()
-    if (codigoBarraConferencia.isNullOrEmpty())
-      codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
-    if (codigoBarraEntrega.isNullOrEmpty())
-      codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
+    if(codigoBarraConferencia.isNullOrEmpty()) codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
+    if(codigoBarraEntrega.isNullOrEmpty()) codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
     super.save()
   }
 }
@@ -158,17 +153,15 @@ class NotaPrint(val item: ItemNota) {
   val rota = notaSaci?.rota ?: ""
   val nota = notaSaci?.numero ?: ""
   val tipoObservacao = notaSaci?.observacao?.split(" ")?.get(0) ?: ""
-  val isNotaSaci = when (notaSaci?.tipoNota) {
+  val isNotaSaci = when(notaSaci?.tipoNota) {
     TipoNota.OUTROS_E -> false
     TipoNota.OUTROS_S -> false
     null              -> false
     else              -> true
   }
-  val tipoNota = if (isNotaSaci)
-    notaSaci?.tipoNota?.descricao ?: ""
+  val tipoNota = if(isNotaSaci) notaSaci?.tipoNota?.descricao ?: ""
   else tipoObservacao
-  val dataLocal = if (isNotaSaci)
-    notaSaci?.data
+  val dataLocal = if(isNotaSaci) notaSaci?.data
   else item.data
   val data = dataLocal?.format()
   val produto = item.produto
@@ -177,28 +170,34 @@ class NotaPrint(val item: ItemNota) {
   val prdno = produto?.codigo?.trim() ?: ""
   val grade = produto?.grade ?: ""
   val name = produto?.descricao ?: ""
-  val prdnoGrade = "$prdno${if (grade == "") "" else "-$grade"}"
+  val prdnoGrade = "$prdno${if(grade == "") "" else "-$grade"}"
   val un
     get() = produto?.vproduto?.unidade ?: "UN"
   val loc = item.localizacao
+
   val codigoBarraEntrega
     get() = item.codigoBarraEntrega ?: ""
   val codigoBarraConferencia
     get() = item.codigoBarraConferencia ?: ""
+  val codigoBarraCliente
+    get() = item.codigoBarraCliente ?: ""
   val dataLancamento
-    get() = item.nota?.lancamento
+    get() = item.nota?.lancamento?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""
+  val nomeFilial
+    get() = "ENGECOPI ${item.nota?.loja?.sigla}"
+
+  val numeroLoja = notaSaci?.loja?.numero ?: 0
+
 
   fun print(template: String): String {
-    return NotaPrint::class.memberProperties.fold(template) { reduce, prop ->
+    return NotaPrint::class.memberProperties.fold(template) {reduce, prop ->
       reduce.replace("[${prop.name}]", "${prop.get(this)}")
     }
   }
 }
 
 enum class StatusNota(val descricao: String, val tipoMov: TipoMov, val multiplicador: Int) {
-  RECEBIDO("Recebido", ENTRADA, 1),
-  INCLUIDA("Incluída", SAIDA, 0),
-  CONFERIDA("Conferida", SAIDA, 0),
+  RECEBIDO("Recebido", ENTRADA, 1), INCLUIDA("Incluída", SAIDA, 0), CONFERIDA("Conferida", SAIDA, 0),
   ENTREGUE("Entregue", SAIDA, -1)
 }
 

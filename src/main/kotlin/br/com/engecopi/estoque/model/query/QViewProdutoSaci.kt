@@ -1,7 +1,7 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.ViewProdutoSaci
-import io.ebean.EbeanServer
+import io.ebean.Database
 import io.ebean.typequery.PDouble
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
@@ -34,12 +34,12 @@ class QViewProdutoSaci : TQRootBean<ViewProdutoSaci, QViewProdutoSaci> {
 
 
   /**
-   * Construct with a given EbeanServer.
+   * Construct with a given Database.
    */
-  constructor(server: EbeanServer) : super(ViewProdutoSaci::class.java, server)
+  constructor(database: Database) : super(ViewProdutoSaci::class.java, database)
 
   /**
-   * Construct using the default EbeanServer.
+   * Construct using the default Database.
    */
   constructor() : super(ViewProdutoSaci::class.java)
 

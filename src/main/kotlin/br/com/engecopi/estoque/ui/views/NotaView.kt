@@ -8,7 +8,8 @@ import br.com.engecopi.estoque.viewmodel.NotaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.GridCrudFlex
+import br.com.engecopi.framework.ui.view.CrudOperation
+import br.com.engecopi.framework.ui.view.CrudOperation.ADD
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindVisible
 import br.com.engecopi.framework.ui.view.default
@@ -30,14 +31,12 @@ import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textField
 import com.vaadin.data.Binder
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
-import com.vaadin.icons.VaadinIcons
+import com.vaadin.icons.VaadinIcons.PRINT
 import com.vaadin.ui.Button
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
-import org.vaadin.crudui.crud.CrudOperation
-import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.patrik.FastNavigation
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
@@ -57,19 +56,14 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
     }
   }
 
-  fun <T : EntityVo<*>> btnImprimeTudo(grid: GridCrudFlex<T>): Button {
-    val button = Button("Imprime Etiquetas")
-    button.let {
-      it.icon = VaadinIcons.PRINT
-      print {
-        val print = viewModel.imprime()
-        print
-      }.extend(it)
-      it.addClickListener {
-        grid.refreshGrid()
+  fun btnImprimeTudo(): Button {
+    return Button("Imprime Etiquetas").apply {
+      icon = PRINT
+      addClickListener {
+        openText(viewModel.imprime())
+        //grid.refreshGrid()
       }
     }
-    return button
   }
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).lojaField(

@@ -38,5 +38,17 @@ class ViewProdutoSaci {
         .codigo.eq(codigo.lpad(16, " "))
         .findList()
     }
+
+    fun existe(codigo: String?): Boolean {
+      codigo ?: return false
+      return where()
+        .codigo.eq(codigo.lpad(16, " "))
+        .exists()
+    }
+
+    fun temGrade(codigo: String?): Boolean {
+      codigo ?: return false
+      return where().codigo.eq(codigo.lpad(16, " ")).grade.ne("").findCount() > 0
+    }
   }
 }

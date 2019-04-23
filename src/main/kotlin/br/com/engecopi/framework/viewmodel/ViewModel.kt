@@ -6,12 +6,10 @@ abstract class ViewModel(val view: IView) {
   private var inExcection = false
 
   private fun updateView(exception: EViewModel? = null) {
-    exception?.let { e ->
-      e.message?.let {
-        view.showError(e.message)
-      }
+    exception?.message?.let {message ->
+      view.showError(message)
     }
-    view.updateView(this)
+    view.updateView()
   }
 
   private fun updateModel() {
@@ -20,23 +18,13 @@ abstract class ViewModel(val view: IView) {
 
   @Throws(EViewModel::class)
   fun <T> execValue(block: () -> T): T? {
-    var ret : T? = null
-     transaction {
+    var ret: T? = null
+    transaction {
       try {
-        if (inExcection)
-          ret= block()
-        else {
-          inExcection = true
-          updateModel()
-
-          ret= block()
-
-          updateView()
-          inExcection = false
-        }
-      } catch (e: EViewModel) {
-        inExcection = false
+        ret = block()
+      } catch(e: EViewModel) {
         updateView(e)
+        throw e
       }
     }
     return ret
@@ -54,24 +42,18 @@ abstract class ViewModel(val view: IView) {
 
   @Throws(EViewModel::class)
   fun exec(block: () -> Unit) {
-     transaction {
-      try {
-        if (inExcection)
-          block()
-        else {
-          inExcection = true
-          updateModel()
-
-          block()
-
-          updateView()
-          inExcection = false
-        }
-      } catch (e: EViewModel) {
-        updateView(e)
+    try {
+      if(inExcection) block()
+      else transaction {
+        inExcection = true
+        updateModel()
+        block()
+        updateView()
         inExcection = false
-        throw e
       }
+    } catch(e: EViewModel) {
+      updateView(e)
+      throw e
     }
   }
 
@@ -81,30 +63,17 @@ abstract class ViewModel(val view: IView) {
   }
 
   private fun <T> transaction(block: () -> T) {
-    return try {
-      block()
-      Transaction.commit()
-    }catch (ev : EViewModel){
-      Transaction.rollback()
-    }
-    catch (e: Throwable) {
-      Transaction.rollback()
-      throw e
-    }
+    Transaction.execTransacao {block()}
   }
 }
 
-class EViewModel(msg: String) : Exception(msg)
+class EViewModel(msg: String): Exception(msg)
 
 interface IView {
-  fun updateView(viewModel: ViewModel)
-
+  fun updateView()
   fun updateModel()
-
   fun showWarning(msg: String)
-
   fun showError(msg: String)
-
   fun showInfo(msg: String)
 }
 

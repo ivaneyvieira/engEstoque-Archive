@@ -13,78 +13,88 @@ import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.bind
 import com.github.mvysny.karibudsl.v8.button
+import com.github.mvysny.karibudsl.v8.checkBox
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.h
 import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textArea
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.w
-import com.vaadin.data.Binder
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Alignment
-import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.TextRenderer
-import org.vaadin.crudui.crud.CrudOperation
 
 @AutoView
-class EtiquetaView : CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
-  override fun layoutForm(
-          formLayout: VerticalLayout,
-          operation: CrudOperation?,
-          binder: Binder<EtiquetaVo>,
-          readOnly: Boolean
-                         ) {
-    formLayout.apply {
-      w = 600.px
-      h = 600.px
-      row {
-        textField("Título") {
-          expand = 4
-          bind(binder).bind(EtiquetaVo::titulo)
+class EtiquetaView: CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
+
+
+  init {
+    layoutForm {
+      formLayout.apply {
+        w = 600.px
+        h = 600.px
+        row {
+          textField("Título") {
+            expand = 4
+            bind(binder).bind(EtiquetaVo::titulo)
+          }
         }
-        comboBox<StatusNota>("Tipo") {
-          expand = 1
-          default { it.descricao }
-          setItems(StatusNota.values().toList())
-          bind(binder).bind(EtiquetaVo::statusNota)
+        row {
+          comboBox<StatusNota>("Tipo") {
+            expand = 2
+            default {it.descricao}
+            setItems(StatusNota.values().toList())
+            bind(binder).bind(EtiquetaVo::statusNota)
+          }
+          checkBox("Etiqueta padrão") {
+            expand = 2
+            alignment = Alignment.BOTTOM_LEFT
+            bind(binder).bind(EtiquetaVo::etiquetaDefault)
+          }
+          button("Ajuda") {
+            alignment = Alignment.BOTTOM_RIGHT
+            expand = 1
+            icon = VaadinIcons.BOOK
+            addClickListener {
+              showInfo(SystemUtils.readFile("/html/variaveis.html") ?: "")
+            }
+          }
         }
-        button("Ajuda") {
-          alignment = Alignment.BOTTOM_RIGHT
-          expand = 1
-          icon = VaadinIcons.BOOK
-          addClickListener {
-            showInfo(SystemUtils.readFile("/html/variaveis.html")?:"")
+        row {
+          textArea("Template") {
+            h = 400.px
+            expand = 1
+            bind(binder).bind(EtiquetaVo::template)
           }
         }
       }
-      row {
-        textArea("Template") {
-          h = 400.px
-          expand = 1
-          bind(binder).bind(EtiquetaVo::template)
-        }
+    }
+    form("Etiquetas")
+    gridCrud {
+      setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
+      column(EtiquetaVo::titulo) {
+        expandRatio = 1
+        caption = "Título"
+        setSortProperty("titulo")
+      }
+      column(EtiquetaVo::statusNota) {
+        setRenderer({it?.descricao ?: ""}, TextRenderer())
+        caption = "Tipo"
+        setSortProperty("statusNota")
+      }
+      column(EtiquetaVo::etiquetaDefault) {
+        caption = "Padrão"
+
+        setRenderer({
+                      when {
+                        it == null -> ""
+                        it         -> "Sim"
+                        else       -> "Não"
+                      }
+                    }, TextRenderer())
       }
     }
   }
-  
-  init {
-    form("Etiquetas") {
-      gridCrud(viewModel.crudClass.java) {
-        setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
-        column(EtiquetaVo::titulo) {
-          expandRatio = 1
-          caption = "Título"
-          setSortProperty("titulo")
-        }
-        column(EtiquetaVo::statusNota) {
-          setRenderer({ it?.descricao ?: "" }, TextRenderer())
-          caption = "Tipo"
-          setSortProperty("statusNota")
-        }
-      }
-    }
-  }
-  
-  override val viewModel: EtiquetaViewModel
-    get() = EtiquetaViewModel(this)
+
+  override val viewModel: EtiquetaViewModel = EtiquetaViewModel(this)
 }

@@ -14,13 +14,11 @@ fun causaSqlException(causa: Throwable?): SQLException? {
 }
 
 open class AppException(causa: Throwable?,  menssagem: String) : Exception(menssagem) {
-  //TODO Verificar o uso disso
   val causaSqlException = causaSqlException(causa)
 }
 
 open class DevException(causa: Throwable?, menssagem: String) : AppException(causa, menssagem)
 
 open class UserException(causa: Throwable?, menssagem: String) : AppException(causa, menssagem)
-
 
 

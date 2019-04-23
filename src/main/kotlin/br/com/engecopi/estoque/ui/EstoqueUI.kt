@@ -76,7 +76,6 @@ class EstoqueUI : UI() {
   }
 
   private fun updateContent(contextPath: String) {
-    //loginInfo = Session[LoginInfo::class]
     val info = loginInfo
     if (info == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")

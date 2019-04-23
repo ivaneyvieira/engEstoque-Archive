@@ -8,23 +8,33 @@ import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 
-class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, EtiquetaVo>(view, EtiquetaVo::class) {
-  override fun update(bean: EtiquetaVo) {
+class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, EtiquetaVo>(view) {
+  override fun newBean(): EtiquetaVo {
+    return EtiquetaVo()
+  }
+
+  override fun update(bean: EtiquetaVo): EtiquetaVo {
     bean.entityVo?.apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
       this.statusNota = bean.statusNota ?: throw EViewModel("O tipo está vazio")
+      this.etiquetaDefault = bean.etiquetaDefault
+      this.updateOutros()
       update()
     }
+    return bean
   }
 
-  override fun add(bean: EtiquetaVo) {
+  override fun add(bean: EtiquetaVo): EtiquetaVo {
     Etiqueta().apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
       this.statusNota = bean.statusNota ?: throw EViewModel("O tipo está vazio")
+      this.etiquetaDefault = bean.etiquetaDefault
+      this.updateOutros()
       insert()
     }
+    return bean
   }
 
   override fun delete(bean: EtiquetaVo) {
@@ -41,6 +51,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.titulo = etiqueta.titulo
       this.template = etiqueta.template
       this.statusNota = etiqueta.statusNota
+      this.etiquetaDefault = etiqueta.etiquetaDefault
     }
   }
 
@@ -57,4 +68,5 @@ class EtiquetaVo : EntityVo<Etiqueta>() {
   var titulo: String? = ""
   var template: String? = ""
   var statusNota: StatusNota? = null
+  var etiquetaDefault : Boolean = false
 }

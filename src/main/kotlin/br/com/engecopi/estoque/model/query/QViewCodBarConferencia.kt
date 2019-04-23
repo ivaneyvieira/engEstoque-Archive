@@ -1,7 +1,8 @@
 package br.com.engecopi.estoque.model.query
 
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
-import io.ebean.EbeanServer
+import io.ebean.Database
+import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLong
 import io.ebean.typequery.PString
 import io.ebean.typequery.TQRootBean
@@ -25,15 +26,19 @@ class QViewCodBarConferencia : TQRootBean<ViewCodBarConferencia, QViewCodBarConf
 
   lateinit var id: PLong<QViewCodBarConferencia>
   lateinit var codbar: PString<QViewCodBarConferencia>
+  lateinit var storeno: PInteger<QViewCodBarConferencia>
+  lateinit var numero: PString<QViewCodBarConferencia>
+  lateinit var sequencia: PInteger<QViewCodBarConferencia>
+  lateinit var abreviacao: PString<QViewCodBarConferencia>
 
 
   /**
-   * Construct with a given EbeanServer.
+   * Construct with a given Database.
    */
-  constructor(server: EbeanServer) : super(ViewCodBarConferencia::class.java, server)
+  constructor(database: Database) : super(ViewCodBarConferencia::class.java, database)
 
   /**
-   * Construct using the default EbeanServer.
+   * Construct using the default Database.
    */
   constructor() : super(ViewCodBarConferencia::class.java)
 

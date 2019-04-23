@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.Nota.Find
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
@@ -13,8 +12,12 @@ import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
-class SaidaViewModel(view: IView) : NotaViewModel<SaidaVo>(view, SaidaVo::class, SAIDA,
-                                                           ENTREGUE, abreviacaoDefault) {
+class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
+                                                          ENTREGUE, abreviacaoDefault) {
+  override fun newBean(): SaidaVo {
+    return SaidaVo()
+  }
+
   override fun QItemNota.filtroStatus(): QItemNota {
     return status.`in`(ENTREGUE, CONFERIDA)
   }

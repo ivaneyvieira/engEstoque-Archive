@@ -18,8 +18,10 @@ import javax.persistence.ManyToOne
 @Cache(enableQueryCache = false)
 @Entity
 @View(name = "v_nota_expedicao", dependentTables = ["notas", "itens_nota"])
-class ViewNotaExpedicao : BaseModel() {
-  private var notaId: Long = 0
+class ViewNotaExpedicao: BaseModel() {
+  // var notaId: Long = 0
+  @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
+  var nota: Nota? = null
   var numero: String = ""
   @Enumerated(EnumType.STRING)
   var tipoMov: TipoMov = ENTRADA
@@ -40,12 +42,13 @@ class ViewNotaExpedicao : BaseModel() {
   var usuario: Usuario? = null
   var abreviacao: String? = ""
 
-  companion object Find : ViewNotaExpedicaoFinder() {
+  companion object Find: ViewNotaExpedicaoFinder() {
     fun findSaida(numero: String?, abreviacao: String?): ViewNotaExpedicao? {
-      numero ?: return null
-      abreviacao ?: return null
-      return where()
-        .numero.eq(numero)
+      numero
+      ?: return null
+      abreviacao
+      ?: return null
+      return where().numero.eq(numero)
         .loja.equalTo(RegistryUserInfo.lojaDefault)
         .abreviacao.eq(abreviacao)
         .findList()
@@ -53,9 +56,9 @@ class ViewNotaExpedicao : BaseModel() {
     }
   }
 
-  fun findItens() : List<ItemNota>{
+  fun findItens(): List<ItemNota> {
     return ItemNota.where()
-      .nota.id.eq(notaId)
+      .nota.id.eq(nota?.id)
       .localizacao.startsWith(abreviacao)
       .findList()
   }
