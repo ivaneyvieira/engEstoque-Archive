@@ -22,14 +22,16 @@ import br.com.engecopi.framework.viewmodel.IView
 import java.time.LocalDate
 import java.time.LocalTime
 
-class NFExpedicaoViewModel(view: IView):
-  CrudViewModel<ViewNotaExpedicao, QViewNotaExpedicao, NFExpedicaoVo>(view, NFExpedicaoVo::class) {
-  override fun update(bean: NFExpedicaoVo) {
+class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewNotaExpedicao, NFExpedicaoVo>(view,
+                                                                                                             NFExpedicaoVo::class) {
+  override fun update(bean: NFExpedicaoVo): NFExpedicaoVo {
     log?.error("Atualização não permitida")
+    return bean
   }
 
-  override fun add(bean: NFExpedicaoVo) {
+  override fun add(bean: NFExpedicaoVo): NFExpedicaoVo {
     log?.error("Inserssão não permitida")
+    return bean
   }
 
   override fun delete(bean: NFExpedicaoVo) {
@@ -106,8 +108,7 @@ class NFExpedicaoViewModel(view: IView):
 
         return@execValue nota
       }
-    }
-    else throw EViewModel("Chave não encontrada")
+    } else throw EViewModel("Chave não encontrada")
   }
 
   private fun imprimir(itemNota: ItemNota?, template: String): String {
@@ -154,14 +155,14 @@ class NFExpedicaoViewModel(view: IView):
     }
   }
 
-  fun imprime(): String {
+  fun imprime() = execString {
     val templates = Etiqueta.templates(INCLUIDA)
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
       .status.eq(INCLUIDA)
       .findList()
-    return templates.joinToString(separator = "\n") {template ->
+    templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}
         .distinct()
         .joinToString(separator = "\n")
@@ -176,7 +177,7 @@ class NFExpedicaoViewModel(view: IView):
       key.endsWith("/10") -> Nota.findNotaSaidaSaci(key)
       else                -> throw EViewModel("Chave não encontrada")
     }
-     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
+    if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
     else notaSaci
   }
 

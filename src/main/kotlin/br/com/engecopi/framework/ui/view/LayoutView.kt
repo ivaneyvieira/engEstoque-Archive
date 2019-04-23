@@ -24,6 +24,7 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
+import com.vaadin.server.BrowserWindowOpener
 import com.vaadin.server.Page
 import com.vaadin.server.StreamResource
 import com.vaadin.ui.ComboBox
@@ -63,22 +64,19 @@ import kotlin.streams.toList
 abstract class LayoutView<V: ViewModel>: VerticalLayout(), View, IView {
   abstract val viewModel: V
 
-  fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit = {}) {
+  open fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit = {}) {
     isMargin = true
-    isSpacing = false
     setSizeFull()
     title(titleForm)
-
     this.block()
   }
 
   override fun enter(event: ViewChangeEvent) {
-    updateView(viewModel)
+    updateView()
   }
 
   fun <T> Grid<T>.actionSelected(msgErro: String = "Selecione um item", action: (T) -> Unit) {
-    this.selectedItems.firstOrNull()?.let {item -> action(item)}
-    ?: showWarning(msgErro)
+    this.selectedItems.firstOrNull()?.let {item -> action(item)} ?: showWarning(msgErro)
   }
 
   override fun showWarning(msg: String) {
@@ -93,14 +91,6 @@ abstract class LayoutView<V: ViewModel>: VerticalLayout(), View, IView {
     if(msg.isNotBlank()) MessageDialog.info(message = msg)
   }
 
-  /*
-    open fun printText(text: () -> String): BrowserWindowOpener {
-      val resource =
-        StreamResource({ IOUtils.toInputStream(text()) }, "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
-      resource.mimeType = "text/plain"
-      return BrowserWindowOpener(resource)
-    }
-  */
   @Suppress("DEPRECATION")
   open fun openText(text: String) {
     if(text != "") {
@@ -131,14 +121,12 @@ fun <V, T> HasItems<T>.bindItens(binder: Binder<V>, propertyList: String) {
   bind<V, Collection<T>>(binder, propertyList) {itens ->
     val oldValue = hasValue?.value
     if(itensOld != itens) {
-      when {
-        this is ComboBox<T>      -> setItems({itemCaption, filterText ->
-                                               itemCaption.toUpperCase()
-                                                 .startsWith(filterText.toUpperCase())
-                                             }, itens)
-        this is TwinColSelect<T> -> setItems(itens)
-        else                     -> setItems(itens)
-      }
+      if(this is ComboBox<T>) setItems({itemCaption, filterText ->
+                                         itemCaption.toUpperCase()
+                                           .startsWith(filterText.toUpperCase())
+                                       }, itens)
+      else if(this is TwinColSelect<T>) setItems(itens)
+      else setItems(itens)
     }
     @Suppress("UNCHECKED_CAST")
     val contains = itens.contains(oldValue as? T)
@@ -177,7 +165,8 @@ fun <BEAN> Component.bindCaption(binder: Binder<BEAN>, property: String, block: 
   }
 }
 
-private fun <BEAN, FIELDVALUE> bind(binder: Binder<BEAN>, property: String,
+private fun <BEAN, FIELDVALUE> bind(binder: Binder<BEAN>,
+                                    property: String,
                                     blockBinder: (FIELDVALUE) -> Unit): Binding<BEAN, FIELDVALUE> {
   val field = ReadOnlyHasValue<FIELDVALUE> {itens -> blockBinder(itens)}
   return field.bind(binder)
@@ -194,10 +183,11 @@ inline fun <reified BEAN: Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnCh
     if(event.isUserOriginated && (event.oldValue != event.value)) {
       val bean = binder.bean
       if(propertys.isEmpty()) {
-        val bindings = BEAN::class.memberProperties.mapNotNull {prop ->
-          binder.getBinding(prop.name)
-            .orElse(null)
-        }
+        val bindings =
+          BEAN::class.memberProperties.mapNotNull {prop ->
+            binder.getBinding(prop.name)
+              .orElse(null)
+          }
         binder.fields.toList()
           .mapNotNull {field ->
             bindings.find {binding ->
@@ -207,8 +197,7 @@ inline fun <reified BEAN: Any, FIELDVALUE> HasValue<FIELDVALUE>.reloadBinderOnCh
           .forEach {binding ->
             binding.read(bean)
           }
-      }
-      else {
+      } else {
         reloadPropertys(binder, *propertys)
       }
     }
@@ -246,8 +235,7 @@ fun HasComponents.integerField(caption: String = "", block: IntegerField.() -> U
 fun HasComponents.doubleField(caption: String = "", block: DoubleField.() -> Unit = {}) =
   init(DoubleField(caption), block)
 
-fun HasComponents.emailField(caption: String = "", block: EmailField.() -> Unit = {}) =
-  init(EmailField(caption), block)
+fun HasComponents.emailField(caption: String = "", block: EmailField.() -> Unit = {}) = init(EmailField(caption), block)
 
 fun HasComponents.clearableTextField(caption: String = "", block: ClearableTextField.() -> Unit = {}) =
   init(ClearableTextField(caption), block)
@@ -282,14 +270,14 @@ inline fun <reified T: Enum<*>> HasComponents.enumSelect(caption: String = "",
                                                          noinline block: EnumSelect<T>.() -> Unit = {}) =
   init(EnumSelect<T>(caption, T::class.java), block)
 
-fun HasComponents.title(title: String) =
-  label(title) {
-    w = fillParent
-    addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
-  }
+fun HasComponents.title(title: String) = label(title) {
+  w = fillParent
+  addStyleNames(ValoTheme.LABEL_H2, ValoTheme.LABEL_COLORED)
+}
 
 //FilterGrid
-fun <T: Any> (@VaadinDsl HasComponents).filterGrid(itemClass: KClass<T>? = null, caption: String? = null,
+fun <T: Any> (@VaadinDsl HasComponents).filterGrid(itemClass: KClass<T>? = null,
+                                                   caption: String? = null,
                                                    dataProvider: DataProvider<T, *>? = null,
                                                    block: (@VaadinDsl FilterGrid<T>).() -> Unit = {}) =
   init(if(itemClass == null) FilterGrid() else FilterGrid<T>(itemClass.java)) {

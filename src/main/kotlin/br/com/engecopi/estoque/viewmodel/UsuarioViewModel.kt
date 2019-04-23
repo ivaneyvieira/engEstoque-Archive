@@ -22,7 +22,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
     return queryProduto.findCount()
   }
 
-  override fun update(bean: UsuarioCrudVo) {
+  override fun update(bean: UsuarioCrudVo): UsuarioCrudVo {
     bean.entityVo?.let { usuario ->
       val loginName = bean.loginName ?: ""
       if (loginName.isNotBlank())
@@ -34,9 +34,10 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       usuario.admin = bean.admin ?: false
       usuario.update()
     }
+    return bean
   }
 
-  override fun add(bean: UsuarioCrudVo) {
+  override fun add(bean: UsuarioCrudVo): UsuarioCrudVo {
     val usuario = Usuario().apply {
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
@@ -46,6 +47,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.admin = bean.admin ?: false
     }
     usuario.insert()
+    return bean
   }
 
   override val query: QUsuario

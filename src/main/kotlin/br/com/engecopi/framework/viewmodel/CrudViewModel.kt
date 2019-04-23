@@ -7,26 +7,26 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
-abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : EntityVo<MODEL>>
-  (view: IView, val crudClass: KClass<VO>) : ViewModel(view) {
+abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: EntityVo<MODEL>>
+(view: IView, val crudClass: KClass<VO>): ViewModel(view) {
   private var queryView: QueryView? = null
   private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
 
-  abstract fun update(bean: VO)
-  abstract fun add(bean: VO)
-  abstract fun delete(bean: VO)
+  protected abstract fun update(bean: VO): VO
+  protected abstract fun add(bean: VO): VO
+  protected abstract fun delete(bean: VO)
 
-  fun update() = exec {
-    crudBean?.let { bean -> update(bean) }
+  fun update() = execValue {
+    crudBean?.let {bean -> update(bean)}
   }
 
-  fun add() = exec {
-    crudBean?.let { bean -> add(bean) }
+  fun add() = execValue {
+    crudBean?.let {bean -> add(bean)}
   }
 
   fun delete() = exec {
-    crudBean?.let { bean -> delete(bean) }
+    crudBean?.let {bean -> delete(bean)}
   }
 
   //Query Lazy
@@ -46,14 +46,14 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
     return this
   }
 
-  private fun Q.filterBlank(filter: String): Q {
-    return if (filter.isBlank()) this
+  private fun Q.filterBlank(filter: String?): Q {
+    return if(filter.isNullOrBlank()) this
     else {
       val date = parserDate(filter)
       val int = filter.toIntOrNull()
       val q1 = or().filterString(filter)
-      val q2 = date?.let { q1.filterDate(it) } ?: q1
-      val q3 = int?.let { q2.filterInt(it) } ?: q2
+      val q2 = date?.let {q1.filterDate(it)} ?: q1
+      val q3 = int?.let {q2.filterInt(it)} ?: q2
       q3.endOr()
     }
   }
@@ -66,23 +66,22 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
     val frm = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     return try {
       LocalDate.parse(filter, frm)
-    } catch (e: Exception) {
+    } catch(e: Exception) {
       null
     }
   }
 
   private fun Q.makeSort(sorts: List<Sort>): Q {
-    return if (sorts.isEmpty())
-      this.orderQuery()
+    return if(sorts.isEmpty()) this.orderQuery()
     else {
-      val orderByClause = sorts.joinToString { "${it.propertyName} ${if (it.descending) "DESC" else "ASC"}" }
+      val orderByClause = sorts.joinToString {"${it.propertyName} ${if(it.descending) "DESC" else "ASC"}"}
       orderBy(orderByClause)
     }
   }
 
   open fun findQuery(): List<VO> = execList {
     val list = pagedList?.list.orEmpty()
-    list.map { model ->
+    list.map {model ->
       val vo = model.toVO()
       vo.apply {
         entityVo = model
@@ -95,7 +94,7 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
   }
 
   fun updateQueryView(queryView: QueryView) {
-    if (this.queryView != queryView) {
+    if(this.queryView != queryView) {
       this.queryView = queryView
       pagedList = query.filterBlank(queryView.filter)
         .makeSort(queryView.sorts)
@@ -105,11 +104,20 @@ abstract class CrudViewModel<MODEL : BaseModel, Q : TQRootBean<MODEL, Q>, VO : E
       pagedList?.loadCount()
     }
   }
+
+  fun existsBean(bean: VO): Boolean {
+    val entity = bean.toEntity() ?: return false
+    return query.filterBlank(queryView?.filter)
+      .query()
+      .where()
+      .eq("id", entity.id)
+      .exists()
+  }
 }
 
 data class Sort(val propertyName: String, val descending: Boolean = false)
 
-abstract class EntityVo<MODEL : BaseModel> {
+abstract class EntityVo<MODEL: BaseModel> {
   open var entityVo: MODEL? = null
   var readOnly: Boolean = false
 
@@ -120,9 +128,4 @@ abstract class EntityVo<MODEL : BaseModel> {
   abstract fun findEntity(): MODEL?
 }
 
-data class QueryView(
-  val offset: Int,
-  val limit: Int,
-  val filter: String, val
-  sorts: List<Sort>
-                    )
+data class QueryView(val offset: Int, val limit: Int, val filter: String, val sorts: List<Sort>)

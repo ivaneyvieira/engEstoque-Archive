@@ -106,7 +106,7 @@ dependencies {
   compile("de.steinwedel.vaadin.addon:messagebox:4.0.21")
   compile("org.vaadin.patrik:GridFastNavigation:2.4.3")
   compile("org.vaadin:viritin:2.9")
-  compile("org.vaadin.crudui:crudui:2.3.1")
+  //compile("org.vaadin.crudui:crudui:2.3.1")
   compile("org.vaadin.addons:filtering-grid:0.1.1")
   compile("com.fo0.advancedtokenfield:AdvancedTokenField:0.5.1")
   // heroku app runner

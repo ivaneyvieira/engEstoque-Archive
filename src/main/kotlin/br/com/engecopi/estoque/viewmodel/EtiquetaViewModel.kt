@@ -9,7 +9,7 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 
 class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, EtiquetaVo>(view, EtiquetaVo::class) {
-  override fun update(bean: EtiquetaVo) {
+  override fun update(bean: EtiquetaVo): EtiquetaVo {
     bean.entityVo?.apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
@@ -18,9 +18,10 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.updateOutros()
       update()
     }
+    return bean
   }
 
-  override fun add(bean: EtiquetaVo) {
+  override fun add(bean: EtiquetaVo): EtiquetaVo {
     Etiqueta().apply {
       this.titulo = bean.titulo ?: throw EViewModel("A etiqueta está sem título")
       this.template = bean.template ?: throw EViewModel("O template está vazio")
@@ -29,6 +30,7 @@ class EtiquetaViewModel(view: IView) : CrudViewModel<Etiqueta, QEtiqueta, Etique
       this.updateOutros()
       insert()
     }
+    return bean
   }
 
   override fun delete(bean: EtiquetaVo) {

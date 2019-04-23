@@ -12,6 +12,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewProdutoSaci
 import br.com.engecopi.estoque.model.query.QProduto
 import br.com.engecopi.framework.viewmodel.CrudViewModel
+import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.utils.lpad
@@ -19,7 +20,7 @@ import java.time.LocalDate
 
 class ProdutoViewModel(view: IView) :
   CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
-  override fun update(bean: ProdutoVo) {
+  override fun update(bean: ProdutoVo): ProdutoVo {
     bean.toEntity()?.let {produto ->
       produto.codigo = bean.codigoProduto.lpad(
         16,
@@ -28,23 +29,32 @@ class ProdutoViewModel(view: IView) :
       produto.codebar = bean.codebar ?: ""
       produto.update()
     }
+    return bean
   }
 
-  override fun add(bean: ProdutoVo) {
+  override fun add(bean: ProdutoVo): ProdutoVo {
     Produto().apply {
       val gradesSalvas = Produto.findProdutos(bean.codigoProduto).map {it.grade}
-      if(bean.temGrade != true) {
+      if(!ViewProdutoSaci.existe(bean.codigoProduto))
+        throw EViewModel("Este produto não existe")
+      if(ViewProdutoSaci.temGrade(bean.codigoProduto)) {
+        val gradesProduto = bean.gradesProduto.filter {it != ""}
+        if(gradesProduto.isEmpty()) throw EViewModel("Este produto deveria tem grade")
+        else gradesProduto.filter {grade -> !gradesSalvas.contains(grade)}.forEach {grade ->
+          this.codigo = bean.codigoProduto.lpad(16, " ")
+          this.grade = grade
+          this.codebar = bean.codebar ?: ""
+          this.save()
+        }
+      } else {
         this.codigo = bean.codigoProduto.lpad(16, " ")
         this.grade = ""
         this.codebar = bean.codebar ?: ""
         this.save()
-      } else bean.gradesProduto.filter {grade -> !gradesSalvas.contains(grade)}.forEach {grade ->
-        this.codigo = bean.codigoProduto.lpad(16, " ")
-        this.grade = grade
-        this.codebar = bean.codebar ?: ""
-        this.save()
       }
     }
+    bean.codigoProduto = ""
+    return bean
   }
 
   override fun delete(bean: ProdutoVo) {

@@ -4,7 +4,7 @@ import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocViewProduto
 import br.com.engecopi.estoque.model.query.assoc.QAssocViewProdutoLoc
-import io.ebean.Database
+import io.ebean.EbeanServer
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
 import io.ebean.typequery.PLocalDateTime
@@ -41,16 +41,16 @@ class QProduto : TQRootBean<Produto, QProduto> {
   lateinit var vproduto: QAssocViewProduto<QProduto>
   lateinit var viewProdutoLoc: QAssocViewProdutoLoc<QProduto>
   lateinit var localizacao: PString<QProduto>
-  lateinit var saldoTotal: PInteger<QProduto>
+  lateinit var saldo_total: PInteger<QProduto>
 
 
   /**
-   * Construct with a given Database.
+   * Construct with a given EbeanServer.
    */
-  constructor(database: Database) : super(Produto::class.java, database)
+  constructor(server: EbeanServer) : super(Produto::class.java, server)
 
   /**
-   * Construct using the default Database.
+   * Construct using the default EbeanServer.
    */
   constructor() : super(Produto::class.java)
 

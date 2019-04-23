@@ -37,12 +37,13 @@ import kotlin.reflect.KClass
 abstract class NotaViewModel<VO: NotaVo>(view: IView, classVO: KClass<VO>, val tipo: TipoMov,
                                          private val statusDefault: StatusNota, private val abreviacaoNota: String):
   CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
-  override fun update(bean: VO) {
+  override fun update(bean: VO): VO {
     if(bean.localizacao?.localizacao.isNullOrBlank()) throw EViewModel("Não foi especificado a localização do item")
     val nota = updateNota(bean)
     val produto = saveProduto(bean.produto)
 
     updateItemNota(bean, nota, produto)
+    return bean
   }
 
   override fun QItemNota.orderQuery(): QItemNota {
@@ -51,7 +52,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, classVO: KClass<VO>, val t
       .nota.id.desc()
   }
 
-  override fun add(bean: VO) {
+  override fun add(bean: VO): VO {
     val nota = insertNota(bean)
     val usuario = bean.usuario
     if(bean.notaSaci == null) {
@@ -83,6 +84,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, classVO: KClass<VO>, val t
           }
         }
     }
+    return bean
   }
 
   private fun insertItemNota(nota: Nota, produto: Produto?, quantProduto: Int, usuario3: Usuario,
