@@ -167,7 +167,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   }
 
   override val viewModel: NFExpedicaoViewModel
-    get() = NFExpedicaoViewModel(this)
+     = NFExpedicaoViewModel(this)
 
   private fun formCodbar(): PnlCodigoBarras {
     return PnlCodigoBarras("Chave da Nota Fiscal") {key ->

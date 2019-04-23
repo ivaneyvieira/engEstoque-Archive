@@ -26,8 +26,7 @@ import com.vaadin.ui.renderers.TextRenderer
 
 @AutoView("entrega_cliente_editor")
 class EntregaClienteEditorView: NotaView<EntregaClienteVo, EntregaClienteEditorViewModel>() {
-  override val viewModel: EntregaClienteEditorViewModel
-     = EntregaClienteEditorViewModel(this)
+  override val viewModel: EntregaClienteEditorViewModel = EntregaClienteEditorViewModel(this)
 
   init {
     layoutForm {

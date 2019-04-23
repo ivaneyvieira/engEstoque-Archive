@@ -26,8 +26,6 @@ import com.vaadin.ui.renderers.TextRenderer
 
 @AutoView
 class EtiquetaView: CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
-
-
   init {
     layoutForm {
       formLayout.apply {
