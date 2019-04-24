@@ -372,7 +372,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
 
   fun showWindow(caption: String?, form: Component) {
     val windowLayout = VerticalLayout(form)
-    windowLayout.setWidth("100%")
+    //windowLayout.setWidth("100%")
     windowLayout.setMargin(false)
     formWindow = Window(caption, windowLayout).apply {
       w = wrapContent
@@ -466,6 +466,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
     val footerLayout = buildFooter(operation, cancelButtonClickListener, operationButtonClickListener)
 
     layoutForm(this)
+    formLayout.setSizeFull()
     addComponentsAndExpand(formLayout)
 
     addComponent(footerLayout)
