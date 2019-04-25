@@ -10,7 +10,6 @@ import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.framework.ui.view.showDialog
-import br.com.engecopi.framework.viewmodel.ViewModel
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
 import com.github.mvysny.karibudsl.v8.AutoView
@@ -24,7 +23,6 @@ import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
-import com.sun.javafx.webkit.theme.Renderer.setRenderer
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.icons.VaadinIcons.PRINT
@@ -50,6 +48,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
   }
 
   init {
+    viewModel = NFExpedicaoViewModel(this)
     layoutForm {
       formLayout.apply {
         w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
@@ -165,9 +164,6 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
       }
     }
   }
-
-  override val viewModel: NFExpedicaoViewModel
-     = NFExpedicaoViewModel(this)
 
   private fun formCodbar(): PnlCodigoBarras {
     return PnlCodigoBarras("Chave da Nota Fiscal") {key ->

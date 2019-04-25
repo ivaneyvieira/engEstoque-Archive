@@ -29,7 +29,7 @@ abstract class ViewModel(val view: IView) {
       }
     } catch(e: EViewModel) {
       updateView(e)
-      throw e
+      //throw e
     }finally {
       inExcection = false
     }

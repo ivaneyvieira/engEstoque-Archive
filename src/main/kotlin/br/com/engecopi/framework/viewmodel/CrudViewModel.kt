@@ -13,26 +13,52 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
   var crudBean: VO? = null
   var resultadoOK = false
 
-  protected abstract fun update(bean: VO): Boolean
-  protected abstract fun add(bean: VO): Boolean
-  protected abstract fun delete(bean: VO) : Boolean
-  protected abstract fun read(bean: VO) : Boolean
+  protected abstract fun update(bean: VO)
+  protected abstract fun add(bean: VO)
+  protected abstract fun delete(bean: VO)
+  protected abstract fun newBean() : VO
+
+  fun read(bean: VO) {
+    val entity = bean.toEntity() ?: throw EViewModel("Registro inválido")
+    entity.refresh()
+    crudBean = entity.toVO()
+  }
 
   fun update() = exec {
-    resultadoOK = crudBean?.let {bean -> update(bean)} ?: false
+    resultadoOK = false
+    crudBean?.let {bean ->
+      update(bean)
+      resultadoOK = true
+    }
   }
 
   fun add() = exec {
-    resultadoOK = crudBean?.let {bean -> add(bean)} ?: false
+    resultadoOK = false
+    crudBean?.let {bean ->
+      add(bean)
+      resultadoOK = true
+    }
   }
 
   fun delete() = exec {
-    resultadoOK = crudBean?.let {bean -> delete(bean)} ?: false
+    resultadoOK = false
+    crudBean?.let {bean ->
+      delete(bean)
+      resultadoOK = true
+    }
     crudBean = null
   }
 
+  fun cleanBean() = exec {
+    crudBean = newBean()
+  }
+
   fun read() = exec {
-    resultadoOK = crudBean?.let {bean -> read(bean)} ?: false
+    resultadoOK = false
+    crudBean?.let {bean ->
+      read(bean)
+      resultadoOK = true
+    }
   }
 
   //Query Lazy
@@ -119,8 +145,6 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
       .eq("id", entity.id)
       .exists()
   }
-
-  abstract fun newBean(): VO
 }
 
 data class Sort(val propertyName: String, val descending: Boolean = false)

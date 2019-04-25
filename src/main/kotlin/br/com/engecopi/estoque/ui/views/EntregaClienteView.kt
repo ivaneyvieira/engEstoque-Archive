@@ -28,7 +28,6 @@ import com.vaadin.ui.renderers.TextRenderer
 @AutoView("entrega_cliente")
 class EntregaClienteView: NotaView<EntregaClienteVo, EntregaClienteViewModel>() {
   var formCodBar: PnlCodigoBarras? = null
-  override val viewModel: EntregaClienteViewModel = EntregaClienteViewModel(this)
 
   override fun enter(event: ViewChangeEvent) {
     super.enter(event)
@@ -36,6 +35,7 @@ class EntregaClienteView: NotaView<EntregaClienteVo, EntregaClienteViewModel>() 
   }
 
   init {
+    viewModel = EntregaClienteViewModel(this)
     layoutForm {
       if(operation == ADD) {
         binder.bean.lojaNF = lojaDefault

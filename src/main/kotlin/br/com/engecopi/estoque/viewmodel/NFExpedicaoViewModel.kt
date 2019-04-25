@@ -27,14 +27,12 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     return NFExpedicaoVo()
   }
 
-  override fun update(bean: NFExpedicaoVo): NFExpedicaoVo {
+  override fun update(bean: NFExpedicaoVo) {
     log?.error("Atualização não permitida")
-    return bean
   }
 
-  override fun add(bean: NFExpedicaoVo): NFExpedicaoVo {
+  override fun add(bean: NFExpedicaoVo) {
     log?.error("Inserssão não permitida")
-    return bean
   }
 
   override fun delete(bean: NFExpedicaoVo) {

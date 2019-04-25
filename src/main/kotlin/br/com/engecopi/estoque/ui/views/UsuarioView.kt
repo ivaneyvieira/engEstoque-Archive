@@ -22,10 +22,10 @@ import com.vaadin.ui.renderers.TextRenderer
 
 @AutoView
 class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
-  override val viewModel = UsuarioViewModel(this)
   private val isAdmin = RegistryUserInfo.usuarioDefault.admin
 
   init {
+    viewModel = UsuarioViewModel(this)
     layoutForm {
       formLayout.apply {
         row {

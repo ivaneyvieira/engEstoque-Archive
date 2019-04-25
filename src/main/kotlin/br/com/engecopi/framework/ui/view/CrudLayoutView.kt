@@ -252,7 +252,8 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   }
 
   private fun addButtonClicked() {
-    val domainObject = viewModel.newBean()
+    viewModel.cleanBean()
+    val domainObject = viewModel.crudBean ?: return
     showForm(ADD, domainObject, false, savedMessage) {
       viewModel.crudBean = domainObject
       viewModel.add()
@@ -281,12 +282,13 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
                successMessage: String,
                buttonClickListener: () -> Unit) {
     fun operation(form: CrudForm<C>) {
+      buttonClickListener()
       if(operation != ADD || isAddClose) hideForm()
       else {
-        form.binder.bean = viewModel.newBean()
+        viewModel.cleanBean()
+        form.binder.bean = viewModel.crudBean
         form.focusFirst()
       }
-      buttonClickListener()
       if(viewModel.resultadoOK) Notification.show(successMessage)
     }
 
@@ -390,6 +392,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   override fun updateView() {
     dataLazyFilterProvider.refreshAll()
     refreshGrid()
+
     val bean = viewModel.crudBean
     if(itemContains(bean)) {
       grid.asSingleSelect()

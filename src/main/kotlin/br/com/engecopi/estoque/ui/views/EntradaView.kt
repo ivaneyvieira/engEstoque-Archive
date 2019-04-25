@@ -26,9 +26,8 @@ import com.vaadin.ui.renderers.TextRenderer
 
 @AutoView
 class EntradaView: NotaView<EntradaVo, EntradaViewModel>() {
-  override val viewModel: EntradaViewModel = EntradaViewModel(this)
-
   init {
+    viewModel = EntradaViewModel(this)
     layoutForm {
       if(operation == ADD) {
         binder.bean.lojaNF = lojaDefault

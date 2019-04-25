@@ -51,14 +51,13 @@ import com.vaadin.ui.themes.ValoTheme
 @AutoView("")
 class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
   var formCodBar: PnlCodigoBarras? = null
-  override val viewModel: SaidaViewModel = SaidaViewModel(this)
-
   override fun enter(event: ViewChangeEvent) {
     super.enter(event)
     formCodBar?.focusEdit()
   }
 
   init {
+    viewModel = SaidaViewModel(this)
     layoutForm {
       if(operation == ADD) {
         binder.bean.lojaNF = lojaDefault

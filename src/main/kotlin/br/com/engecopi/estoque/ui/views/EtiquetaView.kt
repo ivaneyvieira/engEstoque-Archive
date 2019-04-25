@@ -27,6 +27,7 @@ import com.vaadin.ui.renderers.TextRenderer
 @AutoView
 class EtiquetaView: CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
   init {
+    viewModel = EtiquetaViewModel(this)
     layoutForm {
       formLayout.apply {
         w = 600.px
@@ -93,6 +94,4 @@ class EtiquetaView: CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
       }
     }
   }
-
-  override val viewModel: EtiquetaViewModel = EtiquetaViewModel(this)
 }

@@ -24,7 +24,6 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
-import com.vaadin.server.BrowserWindowOpener
 import com.vaadin.server.Page
 import com.vaadin.server.StreamResource
 import com.vaadin.ui.ComboBox
@@ -62,7 +61,7 @@ import kotlin.reflect.full.memberProperties
 import kotlin.streams.toList
 
 abstract class LayoutView<V: ViewModel>: VerticalLayout(), View, IView {
-  abstract val viewModel: V
+  lateinit var viewModel: V
 
   open fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit = {}) {
     isMargin = true
@@ -72,7 +71,7 @@ abstract class LayoutView<V: ViewModel>: VerticalLayout(), View, IView {
   }
 
   override fun enter(event: ViewChangeEvent) {
-    updateView()
+    if(::viewModel.isInitialized) updateView()
   }
 
   fun <T> Grid<T>.actionSelected(msgErro: String = "Selecione um item", action: (T) -> Unit) {

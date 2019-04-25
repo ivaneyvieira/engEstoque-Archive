@@ -26,9 +26,8 @@ import com.vaadin.ui.renderers.TextRenderer
 
 @AutoView("entrega_cliente_editor")
 class EntregaClienteEditorView: NotaView<EntregaClienteVo, EntregaClienteEditorViewModel>() {
-  override val viewModel: EntregaClienteEditorViewModel = EntregaClienteEditorViewModel(this)
-
   init {
+    viewModel = EntregaClienteEditorViewModel(this)
     layoutForm {
       if(operation == ADD) {
         binder.bean.lojaNF = lojaDefault

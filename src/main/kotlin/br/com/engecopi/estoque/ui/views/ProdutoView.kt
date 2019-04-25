@@ -38,6 +38,7 @@ import java.text.DecimalFormat
 @AutoView
 class ProdutoView: CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
   init {
+    viewModel = ProdutoViewModel(this)
     isAddClose = false
     layoutForm {
       binder.bean.lojaDefault = RegistryUserInfo.lojaDefault
@@ -231,9 +232,6 @@ class ProdutoView: CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
       }
     }
   }
-
-  override val viewModel: ProdutoViewModel
-     = ProdutoViewModel(this)
 }
 
 

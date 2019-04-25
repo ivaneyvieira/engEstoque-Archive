@@ -21,10 +21,13 @@ import java.time.LocalDate
 class ProdutoViewModel(view: IView) :
   CrudViewModel<Produto, QProduto, ProdutoVo>(view) {
   override fun newBean(): ProdutoVo {
-    return ProdutoVo()
+    val bean = crudBean ?: ProdutoVo()
+    return bean.apply {
+      bean.codigoProduto = ""
+    }
   }
 
-  override fun update(bean: ProdutoVo): ProdutoVo {
+  override fun update(bean: ProdutoVo) {
     bean.toEntity()?.let {produto ->
       produto.codigo = bean.codigoProduto.lpad(
         16,
@@ -33,10 +36,9 @@ class ProdutoViewModel(view: IView) :
       produto.codebar = bean.codebar ?: ""
       produto.update()
     }
-    return bean
   }
 
-  override fun add(bean: ProdutoVo): ProdutoVo {
+  override fun add(bean: ProdutoVo) {
     Produto().apply {
       val gradesSalvas = Produto.findProdutos(bean.codigoProduto).map {it.grade}
       if(!ViewProdutoSaci.existe(bean.codigoProduto))
@@ -58,7 +60,6 @@ class ProdutoViewModel(view: IView) :
       }
     }
     bean.codigoProduto = ""
-    return bean
   }
 
   override fun delete(bean: ProdutoVo) {
