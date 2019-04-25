@@ -11,21 +11,28 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
   private var queryView: QueryView? = null
   private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
+  var resultadoOK = false
 
-  protected abstract fun update(bean: VO): VO
-  protected abstract fun add(bean: VO): VO
-  protected abstract fun delete(bean: VO)
+  protected abstract fun update(bean: VO): Boolean
+  protected abstract fun add(bean: VO): Boolean
+  protected abstract fun delete(bean: VO) : Boolean
+  protected abstract fun read(bean: VO) : Boolean
 
-  fun update() = execValue {
-    crudBean?.let {bean -> update(bean)}
+  fun update() = exec {
+    resultadoOK = crudBean?.let {bean -> update(bean)} ?: false
   }
 
-  fun add() = execValue {
-    crudBean?.let {bean -> add(bean)}
+  fun add() = exec {
+    resultadoOK = crudBean?.let {bean -> add(bean)} ?: false
   }
 
   fun delete() = exec {
-    crudBean?.let {bean -> delete(bean)}
+    resultadoOK = crudBean?.let {bean -> delete(bean)} ?: false
+    crudBean = null
+  }
+
+  fun read() = exec {
+    resultadoOK = crudBean?.let {bean -> read(bean)} ?: false
   }
 
   //Query Lazy

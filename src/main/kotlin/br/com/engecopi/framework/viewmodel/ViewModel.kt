@@ -17,30 +17,6 @@ abstract class ViewModel(val view: IView) {
   }
 
   @Throws(EViewModel::class)
-  fun <T> execValue(block: () -> T): T? {
-    var ret: T? = null
-    transaction {
-      try {
-        ret = block()
-      } catch(e: EViewModel) {
-        updateView(e)
-        throw e
-      }
-    }
-    return ret
-  }
-
-  @Throws(EViewModel::class)
-  fun execString(block: () -> String): String {
-    return execValue(block) ?: ""
-  }
-
-  @Throws(EViewModel::class)
-  fun execInt(block: () -> Int): Int {
-    return execValue(block) ?: 0
-  }
-
-  @Throws(EViewModel::class)
   fun exec(block: () -> Unit) {
     try {
       if(inExcection) block()
@@ -54,7 +30,40 @@ abstract class ViewModel(val view: IView) {
     } catch(e: EViewModel) {
       updateView(e)
       throw e
+    }finally {
+      inExcection = false
     }
+  }
+
+  @Throws(EViewModel::class)
+  fun <T> execValue(block: () -> T): T? {
+    var ret: T? = null
+    if(inExcection) ret = block()
+    else transaction {
+      try {
+        inExcection = true
+        updateModel()
+        ret = block()
+        updateView()
+        inExcection = false
+      } catch(e: EViewModel) {
+        updateView(e)
+        throw e
+      }finally {
+        inExcection = false
+      }
+    }
+    return ret
+  }
+
+  @Throws(EViewModel::class)
+  fun execString(block: () -> String): String {
+    return execValue(block) ?: ""
+  }
+
+  @Throws(EViewModel::class)
+  fun execInt(block: () -> Int): Int {
+    return execValue(block) ?: 0
   }
 
   @Throws(EViewModel::class)

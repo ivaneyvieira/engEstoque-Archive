@@ -8,14 +8,12 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.QueryView
 import br.com.engecopi.framework.viewmodel.Sort
-import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.VaadinDsl
 import com.github.mvysny.karibudsl.v8.addGlobalShortcutListener
 import com.github.mvysny.karibudsl.v8.expandRatio
 import com.github.mvysny.karibudsl.v8.init
 import com.github.mvysny.karibudsl.v8.w
 import com.github.mvysny.karibudsl.v8.wrapContent
-import com.vaadin.client.Focusable
 import com.vaadin.data.BeanValidationBinder
 import com.vaadin.data.Binder
 import com.vaadin.data.provider.CallbackDataProvider
@@ -248,77 +246,32 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   private fun readButtonClicked() {
     val domainObject = grid.asSingleSelect()?.value ?: return
     showForm(READ, domainObject, false, savedMessage) {
-      try {
-        grid.asSingleSelect()
-          ?.clear()
-        refreshGrid()
-        if(itemContains(domainObject)) {
-          grid.asSingleSelect()
-            ?.value = domainObject
-          // grid.scrollTo(updatedObject);
-        }
-      } finally {
-        refreshGrid()
-      }
+      viewModel.crudBean = domainObject
+      viewModel.read()
     }
   }
 
   private fun addButtonClicked() {
-    try {
-      val domainObject = viewModel.newBean()
-      showForm(ADD, domainObject, false, savedMessage) {
-        try {
-          viewModel.crudBean = domainObject
-          val addedObject = viewModel.add()
-          refreshGrid()
-          if(itemContains(addedObject)) {
-            grid.asSingleSelect()
-              ?.value = addedObject
-            // TODO: grid.scrollTo(addedObject);
-          }
-        } finally {
-          refreshGrid()
-        }
-      }
-    } catch(e: InstantiationException) {
-      e.printStackTrace()
-    } catch(e: IllegalAccessException) {
-      e.printStackTrace()
+    val domainObject = viewModel.newBean()
+    showForm(ADD, domainObject, false, savedMessage) {
+      viewModel.crudBean = domainObject
+      viewModel.add()
     }
   }
 
   fun updateButtonClicked() {
     val domainObject = grid.asSingleSelect()?.value ?: return
     showForm(UPDATE, domainObject, false, savedMessage) {
-      try {
-        viewModel.crudBean = domainObject
-        val updatedObject = viewModel.update()
-        grid.asSingleSelect()
-          ?.clear()
-        refreshGrid()
-        if(itemContains(updatedObject)) {
-          grid.asSingleSelect()
-            ?.value = updatedObject
-          // TODO: grid.scrollTo(updatedObject);
-        }
-      } finally {
-        refreshGrid()
-      }
+      viewModel.crudBean = domainObject
+      viewModel.update()
     }
   }
 
   fun deleteButtonClicked() {
     val domainObject = grid.asSingleSelect()?.value ?: return
     showForm(DELETE, domainObject, true, deletedMessage) {
-      try {
-        viewModel.crudBean = domainObject
-        viewModel.delete()
-        refreshGrid()
-        grid.asSingleSelect()
-          ?.clear()
-      } finally {
-        refreshGrid()
-      }
+      viewModel.crudBean = domainObject
+      viewModel.delete()
     }
   }
 
@@ -327,24 +280,27 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
                readOnly: Boolean,
                successMessage: String,
                buttonClickListener: () -> Unit) {
-    val form = buildNewForm(operation, domainObject, readOnly, {
+    fun operation(form: CrudForm<C>) {
+      if(operation != ADD || isAddClose) hideForm()
+      else {
+        form.binder.bean = viewModel.newBean()
+        form.focusFirst()
+      }
+      buttonClickListener()
+      if(viewModel.resultadoOK) Notification.show(successMessage)
+    }
+
+    fun cancel(form: CrudForm<C>) {
       val selected = grid.asSingleSelect()
         ?.value
       hideForm()
       grid.asSingleSelect()
         ?.clear()
       grid.asSingleSelect()
-        ?.setValue(selected)
-    }, {form->
-      if(operation != ADD || isAddClose)
-        hideForm()
-      else {
-        form.binder.bean = viewModel.newBean()
-        form.focusFirst()
-      }
-                              buttonClickListener()
-                              Notification.show(successMessage)
-                            })
+        ?.value = selected
+    }
+
+    val form = buildNewForm(operation, domainObject, readOnly, ::cancel, ::operation)
 
     showForm(operation, form)
   }
@@ -433,6 +389,13 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
 
   override fun updateView() {
     dataLazyFilterProvider.refreshAll()
+    refreshGrid()
+    val bean = viewModel.crudBean
+    if(itemContains(bean)) {
+      grid.asSingleSelect()
+        ?.value = bean
+      // TODO: grid.scrollTo(addedObject);
+    }
   }
 
   override fun updateModel() {
@@ -475,7 +438,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
   }
 
   fun focusFirst() {
-    val field = binder.fields.toList().firstOrNull {it is  Component.Focusable} as?  Component.Focusable
+    val field = binder.fields.toList().firstOrNull {it is Component.Focusable} as?  Component.Focusable
     field?.focus()
   }
 
@@ -515,7 +478,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
   private fun buildOperationButton(operation: CrudOperation, clickListener: (CrudForm<C>) -> Unit): Button {
     val caption = buttonCaptions[operation]
     val button = Button(caption, buttonIcons[operation])
-
+    button.setClickShortcut(KeyCode.ENTER)
     button.addStyleName(buttonStyleNames[operation])
     button.addClickListener {_ ->
       val validate = binder.validate()
@@ -526,7 +489,10 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
   }
 
   private fun buildCancelButton(clickListener: (CrudForm<C>) -> Unit): Button? {
-    return Button("Cancela") {_ -> clickListener(this)}
+    val button = Button("Cancela")
+    button.addClickListener {clickListener(this)}
+    button.setClickShortcut(KeyCode.ESCAPE)
+    return button
   }
 }
 
