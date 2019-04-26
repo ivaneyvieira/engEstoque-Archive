@@ -2,7 +2,6 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.finder.EtiquetaFinder
 import br.com.engecopi.framework.model.BaseModel
-import sun.misc.MessageUtils.where
 import javax.persistence.CascadeType.MERGE
 import javax.persistence.CascadeType.PERSIST
 import javax.persistence.CascadeType.REFRESH

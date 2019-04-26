@@ -94,7 +94,7 @@ abstract class LayoutView<V: ViewModel>: VerticalLayout(), View, IView {
   open fun openText(text: String) {
     if(text != "") {
       val resource =
-        StreamResource({IOUtils.toInputStream(text)}, "${SystemUtils.md5(LocalDateTime.now().toString())}.txt")
+        StreamResource({IOUtils.toInputStream(text)}, "${SystemUtils.md5(text)}.txt")
       resource.mimeType = "text/plain"
 
       Page.getCurrent()

@@ -84,21 +84,6 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
     icon = VaadinIcons.SEARCH
     addToolbarComponent(this)
   }
-  val grid = Grid<C>().apply {
-    setSizeFull()
-    addSelectionListener {gridSelectionChanged()}
-
-    this.addGlobalShortcutListener(ENTER) {
-      if(this.selectedItems.isNotEmpty()) if(updateButton.isVisible) updateButtonClicked()
-      else readButtonClicked()
-    }
-    this.addItemClickListener {e ->
-      if(e.mouseEventDetails.isDoubleClick) if(!this.asSingleSelect().isEmpty) if(updateButton.isVisible) updateButtonClicked()
-      else readButtonClicked()
-    }
-
-    this.dataProvider = dataLazyFilterProvider
-  }
   var queryOnly: Boolean = false
     set(value) {
       field = value
@@ -131,20 +116,34 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
     }
   //val domainType get() = viewModel.crudClass
   var crudForm: (CrudForm<C>) -> Unit = {}
-  val find
-    get() = CallbackDataProvider.FetchCallback<C, String> {query ->
+  val find = CallbackDataProvider.FetchCallback<C, String> {query ->
       findQuery(query)
     }
-  val count
-    get() = CallbackDataProvider.CountCallback<C, String> {query ->
+  val count = CallbackDataProvider.CountCallback<C, String> {query ->
       countQuery(query)
     }
-  private val dataLazyFilterProvider
-    get() = DataProvider.fromFilteringCallbacks(find, count).withConfigurableFilter()
+  private val dataLazyFilterProvider = DataProvider.fromFilteringCallbacks(find, count)
+    .withConfigurableFilter()
   private val filtroEdt = TextField("Pesquisa") {
     val value = if(it.value.isNullOrBlank()) null else it.value
     dataLazyFilterProvider.setFilter(value)
     dataLazyFilterProvider.refreshAll()
+  }
+
+  val grid = Grid<C>().apply {
+    setSizeFull()
+    addSelectionListener {gridSelectionChanged()}
+
+    this.addGlobalShortcutListener(ENTER) {
+      if(this.selectedItems.isNotEmpty()) if(updateButton.isVisible) updateButtonClicked()
+      else readButtonClicked()
+    }
+    this.addItemClickListener {e ->
+      if(e.mouseEventDetails.isDoubleClick) if(!this.asSingleSelect().isEmpty) if(updateButton.isVisible) updateButtonClicked()
+      else readButtonClicked()
+    }
+
+    this.dataProvider = dataLazyFilterProvider
   }
 
   override fun form(titleForm: String, block: (@VaadinDsl VerticalLayout).() -> Unit) {
