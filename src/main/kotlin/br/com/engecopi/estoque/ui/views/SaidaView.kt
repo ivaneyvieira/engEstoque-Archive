@@ -19,7 +19,6 @@ import br.com.engecopi.framework.ui.view.grupo
 import br.com.engecopi.framework.ui.view.intFormat
 import br.com.engecopi.framework.ui.view.row
 import br.com.engecopi.framework.ui.view.showDialog
-import br.com.engecopi.framework.viewmodel.ViewModel
 import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.VAlign
 import com.github.mvysny.karibudsl.v8.addColumnFor
@@ -106,7 +105,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
       if(!isAdmin && operation == UPDATE) binder.setReadOnly(true)
     }
     form("Saída de produtos")
-     gridCrud {
+    gridCrud {
       addCustomToolBarComponent(btnImprimeTudo())
       formCodBar = formCodbar()
       addCustomFormComponent(formCodBar)

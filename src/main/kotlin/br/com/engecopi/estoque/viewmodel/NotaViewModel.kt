@@ -217,12 +217,13 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
 
   override fun QItemNota.filterString(text: String): QItemNota {
     val idLoja = RegistryUserInfo.lojaDefault.id
-    return nota.numero.eq(text)
+    return nota.numero.startsWith(text)
+      .codigoBarraCliente.startsWith(text)
       .and()
       .produto.viewProdutoLoc.localizacao.contains(text)
       .produto.viewProdutoLoc.loja.id.eq(idLoja)
       .endAnd()
-      .produto.vproduto.codigo.contains(text)
+      .produto.vproduto.codigo.startsWith(text)
       .produto.vproduto.nome.contains(text)
   }
 
@@ -286,7 +287,7 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): En
     return ItemNota.find(nota, produto)
   }
 
-  var usuario: Usuario = RegistryUserInfo.usuarioDefault
+  var usuario: Usuario = usuarioDefault
   var numeroCodigo: String? = ""
   var numeroCodigoReduzido: String? = ""
   var numeroNF: String? = ""

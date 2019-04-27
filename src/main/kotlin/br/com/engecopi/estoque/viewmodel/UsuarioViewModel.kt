@@ -76,7 +76,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
     Usuario.findUsuario(bean.loginName ?: "")?.delete()
   }
 
-  val lojas = execList { Loja.all() }
+  val lojas
+    get() = Loja.all()
   val produtos: List<Produto>
     get() = Produto.all()
 }
