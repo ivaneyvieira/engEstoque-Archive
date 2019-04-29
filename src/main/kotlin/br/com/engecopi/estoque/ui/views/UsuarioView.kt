@@ -75,10 +75,10 @@ class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           }
         }
         row {
-         // expand =1
+          // expand =1
           twinColSelect<String>("Localizações") {
-          //  expand = 1
-            setWidth("99%")
+            //  expand = 1
+            setWidth("95%")
             bindItensSet(binder, UsuarioCrudVo::locaisLoja.name)
             bind(binder).bind(UsuarioCrudVo::localizacaoes)
           }
@@ -88,7 +88,7 @@ class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
     }
     form("Usuários")
     gridCrud {
-      setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
+      deleteOperationVisible = RegistryUserInfo.usuarioDefault.admin
       column(UsuarioCrudVo::loginName) {
         expandRatio = 1
         caption = "Usuário"

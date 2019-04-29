@@ -99,9 +99,9 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
       addCustomToolBarComponent(btnImprimeTudo())
       formCodBar = formCodbar()
       addCustomFormComponent(formCodBar)
-      setUpdateOperationVisible(false)
-      setAddOperationVisible(false)
-      setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
+      updateOperationVisible = false
+      addOperationVisible = false
+      deleteOperationVisible = RegistryUserInfo.usuarioDefault.admin
       column(NFExpedicaoVo::numero) {
         caption = "Número NF"
         setSortProperty("numero")

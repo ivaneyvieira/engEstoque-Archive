@@ -70,7 +70,7 @@ class EtiquetaView: CrudLayoutView<EtiquetaVo, EtiquetaViewModel>() {
     }
     form("Etiquetas")
     gridCrud {
-      setDeleteOperationVisible(RegistryUserInfo.usuarioDefault.admin)
+      deleteOperationVisible = RegistryUserInfo.usuarioDefault.admin
       column(EtiquetaVo::titulo) {
         expandRatio = 1
         caption = "Título"

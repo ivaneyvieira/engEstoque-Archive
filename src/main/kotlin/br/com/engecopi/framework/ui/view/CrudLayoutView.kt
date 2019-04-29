@@ -115,13 +115,13 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
       deleteButton.isVisible = !value
     }
   //val domainType get() = viewModel.crudClass
-  var crudForm: (CrudForm<C>) -> Unit = {}
+  var layoutForm: (CrudForm<C>) -> Unit = {}
   val find = CallbackDataProvider.FetchCallback<C, String> {query ->
-      findQuery(query)
-    }
+    findQuery(query)
+  }
   val count = CallbackDataProvider.CountCallback<C, String> {query ->
-      countQuery(query)
-    }
+    countQuery(query)
+  }
   private val dataLazyFilterProvider = DataProvider.fromFilteringCallbacks(find, count)
     .withConfigurableFilter()
   private val filtroEdt = TextField("Pesquisa") {
@@ -129,7 +129,6 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
     dataLazyFilterProvider.setFilter(value)
     dataLazyFilterProvider.refreshAll()
   }
-
   val grid = Grid<C>().apply {
     setSizeFull()
     addSelectionListener {gridSelectionChanged()}
@@ -172,9 +171,9 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
     this.setMargin(false)
     this.isSpacing = true
 
-    setWindowCaption(ADD, "Adicionar")
-    setWindowCaption(UPDATE, "Atualisar")
-    setWindowCaption(DELETE, "Apagar")
+    windowCaptions[ADD] = "Adicionar"
+    windowCaptions[UPDATE] = "Atualisar"
+    windowCaptions[DELETE] = "Apagar"
 
     updateButtons()
   }
@@ -184,21 +183,26 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
     refreshGrid()
   }
 
-  fun setAddOperationVisible(visible: Boolean) {
-    addButton.isVisible = visible
-  }
-
-  fun setUpdateOperationVisible(visible: Boolean) {
-    updateButton.isVisible = visible
-  }
-
-  fun setDeleteOperationVisible(visible: Boolean) {
-    deleteButton.isVisible = visible
-  }
-
-  fun setFindAllOperationVisible(visible: Boolean) {
-    findAllButton.isVisible = visible
-  }
+  var addOperationVisible
+    get() = addButton.isVisible
+    set(value) {
+      addButton.isVisible = value
+    }
+  var updateOperationVisible
+    get() = updateButton.isVisible
+    set(value) {
+      updateButton.isVisible = value
+    }
+  var deleteOperationVisible
+    get() = deleteButton.isVisible
+    set(value) {
+      deleteButton.isVisible = value
+    }
+  var findAllOperationVisible
+    get() = findAllButton.isVisible
+    set(value) {
+      findAllButton.isVisible = value
+    }
 
   fun refreshGrid() {
     grid.dataProvider?.refreshAll()
@@ -211,7 +215,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   }
 
   fun layoutForm(crudForm: CrudForm<C>.() -> Unit) {
-    this.crudForm = crudForm
+    this.layoutForm = crudForm
   }
 
   fun buildNewForm(operation: CrudOperation,
@@ -224,7 +228,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
                     readOnly,
                     cancelButtonClickListener,
                     operationButtonClickListener,
-                    crudForm)
+                    layoutForm)
   }
 
   private fun gridSelectionChanged() {
@@ -357,10 +361,6 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
     formWindow?.close()
   }
 
-  private fun setWindowCaption(operation: CrudOperation, caption: String) {
-    windowCaptions[operation] = caption
-  }
-
   private fun findQuery(query: Query<C, String>): Stream<C> {
     viewModel.updateQueryView(query.viewQuery())
     return viewModel.findQuery()
@@ -391,7 +391,6 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   override fun updateView() {
     dataLazyFilterProvider.refreshAll()
     refreshGrid()
-
     val bean = viewModel.crudBean
     if(itemContains(bean)) {
       grid.asSingleSelect()
