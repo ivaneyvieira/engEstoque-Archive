@@ -3,7 +3,7 @@ package br.com.engecopi.framework.viewmodel
 import br.com.engecopi.framework.model.Transaction
 
 abstract class ViewModel(val view: IView) {
-  private var inExcection = false
+  private var inTransaction = false
 
   private fun updateView(exception: EViewModel? = null) {
     exception?.message?.let {message ->
@@ -19,38 +19,38 @@ abstract class ViewModel(val view: IView) {
   @Throws(EViewModel::class)
   fun exec(block: () -> Unit) {
     try {
-      if(inExcection) block()
+      if(inTransaction) block()
       else transaction {
-        inExcection = true
+        inTransaction = true
         updateModel()
         block()
         updateView()
-        inExcection = false
+        inTransaction = false
       }
     } catch(e: EViewModel) {
       updateView(e)
       //throw e
     }finally {
-      inExcection = false
+      inTransaction = false
     }
   }
 
   @Throws(EViewModel::class)
   fun <T> execValue(block: () -> T): T? {
     var ret: T? = null
-    if(inExcection) ret = block()
+    if(inTransaction) ret = block()
     else transaction {
       try {
-        inExcection = true
+        inTransaction = true
         updateModel()
         ret = block()
         updateView()
-        inExcection = false
+        inTransaction = false
       } catch(e: EViewModel) {
         updateView(e)
         throw e
       }finally {
-        inExcection = false
+        inTransaction = false
       }
     }
     return ret

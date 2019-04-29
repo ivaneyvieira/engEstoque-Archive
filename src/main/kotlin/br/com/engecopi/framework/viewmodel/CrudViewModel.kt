@@ -111,9 +111,9 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
     }
   }
 
-  open fun findQuery(): List<VO> = execList {
+  open fun findQuery(): List<VO>  {
     val list = pagedList?.list.orEmpty()
-    list.map {model ->
+    return list.map {model ->
       val vo = model.toVO()
       vo.apply {
         entityVo = model
@@ -121,8 +121,8 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
     }
   }
 
-  open fun countQuery(): Int = execInt {
-    pagedList?.totalCount ?: 0
+  open fun countQuery(): Int  {
+    return pagedList?.totalCount ?: 0
   }
 
   fun updateQueryView(queryView: QueryView) {

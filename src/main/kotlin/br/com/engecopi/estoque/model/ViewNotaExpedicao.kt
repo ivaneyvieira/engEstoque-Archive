@@ -54,6 +54,13 @@ class ViewNotaExpedicao: BaseModel() {
         .findList()
         .firstOrNull()
     }
+
+    fun findExpedicao(nota : Nota) : ViewNotaExpedicao? {
+      return where().numero.eq(nota.numero)
+        .loja.equalTo(nota.loja)
+        .findList()
+        .firstOrNull()
+    }
   }
 
   fun findItens(): List<ItemNota> {

@@ -265,14 +265,14 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
     }
   }
 
-  fun imprime(): String {
+  fun imprime()= execString {
     val templates = Etiqueta.templates(statusDefault)
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
       .status.eq(INCLUIDA)
       .findList()
-    return templates.joinToString(separator = "\n") {template ->
+    templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}
         .distinct()
         .joinToString(separator = "\n")

@@ -26,7 +26,7 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
 
   fun processaKey(key: String) = execValue {
     val item = ViewCodBarConferencia.findNota(key) ?: return@execValue null
-    if (item.abreviacao != RegistryUserInfo.abreviacaoDefault)
+    if (item.abreviacao != abreviacaoDefault)
       throw EViewModel("Código de barras inválido")
     return@execValue Nota.findSaida(item.numero)
   }

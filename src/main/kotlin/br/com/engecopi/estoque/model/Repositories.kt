@@ -23,11 +23,9 @@ object Repositories {
   }
 
   private fun newViewProdutosLoc() {
-
-    updateTabelas()
     val agora = LocalDateTime.now().minusSeconds(10)
     if (agora >= time) {
-
+      updateTabelas()
       val serverCacheManager = Ebean.getServerCacheManager()
       serverCacheManager.clear(ViewProdutoLoc::class.java)
       val list = ViewProdutoLoc.where()
