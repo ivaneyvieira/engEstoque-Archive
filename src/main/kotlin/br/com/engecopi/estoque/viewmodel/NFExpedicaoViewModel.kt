@@ -84,13 +84,13 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       val nota = Nota.createNota(notasSaci.firstOrNull())
         ?.apply {
           //TODO Verificar notas já cadastrada
-          //if(this.existe()) throw EViewModel("Essa nota já está cadastrada")
-          //else {
+          if(this.existe()) print("Não faz Nada") //throw EViewModel("Essa nota já está cadastrada")
+          else {
             val serie = numero.split("/").getOrNull(1) ?: ""
             sequencia = Nota.maxSequencia(serie) + 1
             usuario = RegistryUserInfo.usuarioDefault
             save()
-          //}
+          }
         }
       if(nota == null) throw EViewModel("Nota não encontrada")
       else {
