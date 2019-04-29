@@ -13,6 +13,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.ViewProdutoLoc
+import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import br.com.engecopi.estoque.ui.log
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -191,6 +192,14 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
   fun abreviacoes(prdno: String?, grade: String?): List<String> {
     val produto = Produto.findProduto(prdno, grade) ?: return emptyList()
     return ViewProdutoLoc.abreviacoesProduto(produto)
+  }
+
+  override fun QViewNotaExpedicao.filterString(text: String): QViewNotaExpedicao {
+    return nota.numero.startsWith(text)
+  }
+
+  override fun QViewNotaExpedicao.filterDate(date: LocalDate): QViewNotaExpedicao {
+    return data.eq(date)
   }
 }
 
