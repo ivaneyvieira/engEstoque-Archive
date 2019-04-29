@@ -126,9 +126,9 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
 
   fun imprimir(nota: Nota?): String {
     nota ?: return ""
-    //nota.refresh()
+    val notaRef = Nota.byId(nota.id) ?: return ""
     val templates = Etiqueta.templates(INCLUIDA)
-    val itens = nota.itensNota ?: emptyList()
+    val itens = notaRef.itensNota ?: emptyList()
 
     return templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}
