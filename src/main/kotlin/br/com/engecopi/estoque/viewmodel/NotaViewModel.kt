@@ -30,9 +30,9 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
+import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.reflect.KClass
 
 abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
                                          private val statusDefault: StatusNota, private val abreviacaoNota: String):
@@ -223,7 +223,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
       .produto.viewProdutoLoc.localizacao.contains(text)
       .produto.viewProdutoLoc.loja.id.eq(idLoja)
       .endAnd()
-      .produto.vproduto.codigo.startsWith(text)
+      .produto.vproduto.codigo.contains(" $text")
       .produto.vproduto.nome.contains(text)
   }
 
