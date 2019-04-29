@@ -183,7 +183,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
     return Button("Imprime Etiquetas").apply {
       icon = PRINT
       addClickListener {
-        openText(viewModel.imprime())
+        openText(viewModel.imprimeTudo())
         //grid.refreshGrid()
       }
     }

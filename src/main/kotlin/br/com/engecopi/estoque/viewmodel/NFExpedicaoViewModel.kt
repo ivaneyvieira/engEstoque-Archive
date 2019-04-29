@@ -156,7 +156,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     }
   }
 
-  fun imprime() = execString {
+  fun imprimeTudo() = execString {
     val templates = Etiqueta.templates(INCLUIDA)
     //TODO Refatorar
     val itens = ItemNota.where()
