@@ -56,6 +56,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
   }
 
   init {
+    addButton.isEnabled = false
     viewModel = SaidaViewModel(this)
     layoutForm {
       if(operation == ADD) {
