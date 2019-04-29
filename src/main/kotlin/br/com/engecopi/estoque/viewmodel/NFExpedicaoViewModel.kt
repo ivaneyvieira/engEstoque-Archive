@@ -81,15 +81,16 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       val loja = RegistryUserInfo.lojaDefault.numero
       val lojaSaci = notasSaci.firstOrNull()?.storeno ?: 0
       if(loja != lojaSaci) throw EViewModel("Esta nota pertence a loja $lojaSaci")
-      val nota = Nota.createNota(notasSaci.firstOrNull())
-        ?.apply {
+      val nota: Nota? = Nota.createNota(notasSaci.firstOrNull())
+        ?.let {
           //TODO Verificar notas já cadastrada
-          if(this.existe()) print("Não faz Nada") //throw EViewModel("Essa nota já está cadastrada")
+          if(it.existe()) Nota.findSaida(it.numero)
           else {
-            val serie = numero.split("/").getOrNull(1) ?: ""
-            sequencia = Nota.maxSequencia(serie) + 1
-            usuario = RegistryUserInfo.usuarioDefault
-            save()
+            val serie = it.numero.split("/").getOrNull(1) ?: ""
+            it.sequencia = Nota.maxSequencia(serie) + 1
+            it.usuario = RegistryUserInfo.usuarioDefault
+            it.save()
+            it
           }
         }
       if(nota == null) throw EViewModel("Nota não encontrada")
@@ -126,9 +127,10 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
 
   fun imprimir(nota: Nota?): String {
     nota ?: return ""
-    val notaRef = Nota.byId(nota.id) ?: return ""
+    val id = nota.id
+    val notaRef = Nota.byId(id) ?: return ""
     val templates = Etiqueta.templates(INCLUIDA)
-    val itens = notaRef.itensNota ?: emptyList()
+    val itens = notaRef.itensNota() ?: emptyList()
 
     return templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}

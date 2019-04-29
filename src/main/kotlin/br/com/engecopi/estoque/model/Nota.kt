@@ -157,6 +157,10 @@ class Nota: BaseModel() {
   fun existe(): Boolean {
     return where().loja.equalTo(loja).numero.eq(numero).findCount() > 0
   }
+
+  fun itensNota() : List<ItemNota>{
+    return ItemNota.where().nota.equalTo(this).findList()
+  }
 }
 
 enum class TipoMov(val descricao: String) {
