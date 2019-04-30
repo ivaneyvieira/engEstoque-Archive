@@ -150,16 +150,18 @@ class ProdutoVo : EntityVo<Produto>() {
     get() {
       produto?.recalculaSaldos()
 
-      return produto?.findItensNota().orEmpty().asSequence().filter {
-        (lojaDefault?.let { lDef -> it.nota?.loja?.id == lDef.id } ?: true)
+      return produto?.findItensNota().orEmpty().asSequence().filter {item ->
+        (lojaDefault?.let { lDef -> item.nota?.loja?.id == lDef.id } ?: true)
         &&
-        (filtroDI?.let { di -> (it.nota?.data?.isAfter(di) ?: true) || (it.nota?.data?.isEqual(di) ?: true) } ?: true)
+        (filtroDI?.let { di -> (item.nota?.data?.isAfter(di) ?: true) || (item.nota?.data?.isEqual(di) ?: true) } ?: true)
         &&
-        (filtroDF?.let { df -> (it.nota?.data?.isBefore(df) ?: true) || (it.nota?.data?.isEqual(df) ?: true) } ?: true)
+        (filtroDF?.let { df -> (item.nota?.data?.isBefore(df) ?: true) || (item.nota?.data?.isEqual(df) ?: true) } ?: true)
         &&
-        (filtroTipo?.let { t -> it.nota?.tipoNota == t } ?: true)
+        (filtroTipo?.let { t -> item.nota?.tipoNota == t } ?: true)
         &&
-        (filtroLocalizacao?.let { loc -> it.localizacao == loc.localizacao } ?: true)
+        (filtroLocalizacao?.let { loc -> item.localizacao == loc.localizacao } ?: true)
+        &&
+        (item.quantidadeSaldo != 0)
       }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::data, ItemNota::id)).toList()
     }
 }
