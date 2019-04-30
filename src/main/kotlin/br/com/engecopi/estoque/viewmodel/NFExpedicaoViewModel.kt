@@ -137,7 +137,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       if(notaRef == null) ""
       else {
         val templates = Etiqueta.templates(INCLUIDA)
-        val itens = notaRef.itensNota() ?: emptyList()
+        val itens = notaRef.itensNota()
 
         templates.joinToString(separator = "\n") {template ->
           itens.map {imprimir(it, template)}

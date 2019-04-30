@@ -248,7 +248,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
 
   private fun readButtonClicked() {
     val domainObject = grid.asSingleSelect()?.value ?: return
-    showForm(READ, domainObject, false, savedMessage) {
+    showForm(READ, domainObject, true, savedMessage) {
       viewModel.crudBean = domainObject
       viewModel.read()
     }
@@ -352,9 +352,9 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   }
 
   fun showForm(operation: CrudOperation, form: Component) {
-    if(operation != READ) {
+    //if(operation != READ) {
       showWindow(windowCaptions[operation], form)
-    }
+    //}
   }
 
   fun hideForm() {

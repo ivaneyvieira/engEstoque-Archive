@@ -169,6 +169,7 @@ class ProdutoView: CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
         }
       }
       if(!RegistryUserInfo.usuarioDefault.admin && operation == UPDATE) binder.setReadOnly(true)
+      readButton.isVisible = true
     }
     form("Entrada de produtos")
     gridCrud {

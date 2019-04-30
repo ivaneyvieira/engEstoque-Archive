@@ -39,8 +39,6 @@ object Repositories {
     viewProdutosLocAbreviacaoKey = list.groupBy {it.abreviacao}
   }
 
-
-  @Transactional
   private fun newViewProdutosLoc() {
     val agora = LocalDateTime.now().minusSeconds(10)
     if (agora >= time) {
