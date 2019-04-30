@@ -22,9 +22,11 @@ object Repositories {
     newViewProdutosLoc()
   }
 
+  @Synchronized
   private fun newViewProdutosLoc() {
     val agora = LocalDateTime.now().minusSeconds(10)
     if (agora >= time) {
+      time = LocalDateTime.now()
       updateTabelas()
       val serverCacheManager = Ebean.getServerCacheManager()
       serverCacheManager.clear(ViewProdutoLoc::class.java)
@@ -37,8 +39,6 @@ object Repositories {
       viewProdutosLocLojaAbreviacaoKey = list.groupBy {LojaAbreviacaoKey(it.storeno, it.abreviacao)}
       viewProdutosLocLojaKey = list.groupBy {it.storeno}
       viewProdutosLocAbreviacaoKey = list.groupBy {it.abreviacao}
-
-      time = LocalDateTime.now()
     }
   }
 
