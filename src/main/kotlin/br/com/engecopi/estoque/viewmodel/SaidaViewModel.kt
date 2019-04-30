@@ -22,6 +22,10 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
     return status.`in`(ENTREGUE, CONFERIDA)
   }
 
+  override fun add(bean: SaidaVo) {
+    //Não faze nada
+  }
+
   override fun createVo() = SaidaVo()
 
   fun processaKey(key: String) = execValue {
