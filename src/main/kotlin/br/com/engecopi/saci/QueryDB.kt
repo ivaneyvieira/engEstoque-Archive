@@ -30,16 +30,16 @@ open class QueryDB(private val driver: String, val url: String, val username: St
     //ds.minConnectionsPerPartition = 7
     //ds.acquireIncrement = 1
     //ds.acquireRetryAttempts = 1
-    ds.acquireRetryDelayInMs = 5000
-    ds.connectionTimeoutInMs = 30000
-    ds.idleMaxAgeInMinutes = 1
-    ds.idleConnectionTestPeriodInMinutes = 1
-    ds.connectionTestStatement = "SELECT 1"
+    //ds.acquireRetryDelayInMs = 5000
+    //ds.connectionTimeoutInMs = 30000
+    //ds.idleMaxAgeInMinutes = 1
+    //ds.idleConnectionTestPeriodInMinutes = 1
+    //ds.connectionTestStatement = "SELECT 1"
     ds.maxConnectionAgeInSeconds = 0
 
     //ds.partitionCount = 2
-    //this.sql2o = Sql2o(ds)
-    this.sql2o = Sql2o(url, username, password)
+    this.sql2o = Sql2o(ds)
+    //this.sql2o = Sql2o(url, username, password)
     //this.sql2o = Sql2o(dataSourceConfig())
   }
 
