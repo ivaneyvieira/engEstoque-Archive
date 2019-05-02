@@ -37,9 +37,9 @@ open class QueryDB(private val driver: String, val url: String, val username: St
     ds.connectionTestStatement = "SELECT 1"
     ds.maxConnectionAgeInSeconds = 0
 
-    ds.partitionCount = 2
-    this.sql2o = Sql2o(ds)
-    //this.sql2o = Sql2o(url, username, password)
+    //ds.partitionCount = 2
+    //this.sql2o = Sql2o(ds)
+    this.sql2o = Sql2o(url, username, password)
     //this.sql2o = Sql2o(dataSourceConfig())
   }
 
