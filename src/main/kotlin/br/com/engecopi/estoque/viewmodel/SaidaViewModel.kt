@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
+import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -35,10 +36,10 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
     return@execValue Nota.findSaida(item.numero)
   }
 
-  fun confirmaProdutos(itens: List<ItemNota>) = exec {
+  fun confirmaProdutos(itens: List<ItemNota>, situacao : StatusNota) = exec {
     itens.forEach { itemNota ->
       itemNota.refresh()
-      itemNota.status = CONFERIDA
+      itemNota.status = situacao
       itemNota.impresso = false
       itemNota.usuario = RegistryUserInfo.usuarioDefault
       itemNota.update()

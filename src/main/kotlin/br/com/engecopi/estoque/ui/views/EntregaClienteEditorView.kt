@@ -109,6 +109,10 @@ class EntregaClienteEditorView: NotaView<EntregaClienteVo, EntregaClienteEditorV
         caption = "Quantidade"
         intFormat()
       }
+      column(EntregaClienteVo::status){
+        caption = "Situação"
+        setRenderer({it?.descricao ?: ""}, TextRenderer())
+      }
       column(EntregaClienteVo::codigo) {
         caption = "Código"
         setSortProperty("produto.codigo")
