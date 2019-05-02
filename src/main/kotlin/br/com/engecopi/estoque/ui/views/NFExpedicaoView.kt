@@ -137,7 +137,7 @@ class NFExpedicaoView: CrudLayoutView<NFExpedicaoVo, NFExpedicaoViewModel>() {
       column(NFExpedicaoVo::lancamento) {
         caption = "Lançamento"
         dateFormat()
-        setSortProperty("data", "hora")
+        setSortProperty("lancamento")
       }
       column(NFExpedicaoVo::dataEmissao) {
         caption = "Emissao"
