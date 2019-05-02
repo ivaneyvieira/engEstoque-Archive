@@ -36,7 +36,7 @@ class Usuario : BaseModel() {
       localizacaoes = value.asSequence().sorted().joinToString()
     }
 
-  private fun usuarioSaci() = saci.findUser(loginName)
+  private fun usuarioSaci() = saci().findUser(loginName)
   var admin: Boolean = false
   var estoque : Boolean = true
   var expedicao : Boolean = false
@@ -81,7 +81,7 @@ class Usuario : BaseModel() {
     }
 
     fun nomeSaci(value: String): String {
-      return saci.findUser(value)?.name ?: ""
+      return saci().findUser(value)?.name ?: ""
     }
 
     fun abreviacaoes(username: String?): List<String> {
@@ -96,7 +96,7 @@ class Usuario : BaseModel() {
       } ?: emptyList()
     }
 
-    fun findLoginUser() = saci.findLoginUser()
+    fun findLoginUser() = saci().findLoginUser()
   }
 }
 

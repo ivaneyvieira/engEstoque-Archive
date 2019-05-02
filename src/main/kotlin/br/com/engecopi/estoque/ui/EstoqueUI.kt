@@ -10,6 +10,8 @@ import br.com.engecopi.estoque.ui.views.NFExpedicaoView
 import br.com.engecopi.estoque.ui.views.ProdutoView
 import br.com.engecopi.estoque.ui.views.SaidaView
 import br.com.engecopi.estoque.ui.views.UsuarioView
+import br.com.engecopi.saci.QuerySaci
+import br.com.engecopi.saci.saci
 import br.com.engecopi.utils.SystemUtils
 import com.github.mvysny.karibudsl.v8.autoViewProvider
 import com.github.mvysny.karibudsl.v8.onLeftClick
@@ -33,6 +35,11 @@ import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.ErrorEvent
 import com.vaadin.server.Page
+import com.vaadin.server.ServiceException
+import com.vaadin.server.SessionDestroyEvent
+import com.vaadin.server.SessionDestroyListener
+import com.vaadin.server.SessionInitEvent
+import com.vaadin.server.SessionInitListener
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinServlet
@@ -71,6 +78,7 @@ class EstoqueUI : UI() {
     RegistryUserInfo.register {
       EstoqueUI.current?.loginInfo
     }
+    saci = QuerySaci(UI.getCurrent().session.session.id)
     isResponsive = true
     updateContent(request?.contextPath ?: "")
   }
@@ -172,13 +180,28 @@ class Bootstrap : ServletContextListener {
 
 @WebServlet(urlPatterns = ["/*"], name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = EstoqueUI::class, productionMode = false)
-class MyUIServlet : VaadinServlet() {
+class MyUIServlet : VaadinServlet(), SessionInitListener, SessionDestroyListener {
+
   companion object {
     init {
       // Vaadin logs into java.util.logging. Redirect that, so that all logging goes through slf4j.
       SLF4JBridgeHandler.removeHandlersForRootLogger()
       SLF4JBridgeHandler.install()
     }
+  }
+
+  override fun servletInitialized() {
+    super.servletInitialized()
+    service.addSessionInitListener(this)
+    service.addSessionDestroyListener(this)
+  }
+
+  override fun sessionInit(event: SessionInitEvent?) {
+
+  }
+
+  override fun sessionDestroy(event: SessionDestroyEvent?) {
+    saci?.closeTransaction()
   }
 }
 

@@ -1,5 +1,6 @@
 package br.com.engecopi.framework.model
 
+import br.com.engecopi.saci.saci
 import java.io.IOException
 import javax.servlet.Filter
 import javax.servlet.FilterChain
@@ -23,7 +24,7 @@ class ConnectionFilter : Filter {
           chain: FilterChain
                        ) {
     Transaction.execTransacao {
-      chain.doFilter(request, response)
+        chain.doFilter(request, response)
     }
   }
   

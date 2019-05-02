@@ -32,7 +32,7 @@ class Loja : BaseModel() {
       else
         where().numero.eq(storeno).findList()
           .firstOrNull()
-        ?: saci.findLojas(storeno).firstOrNull()?.let { lojaSaci ->
+        ?: saci().findLojas(storeno).firstOrNull()?.let { lojaSaci ->
           val loja = Loja().apply {
             numero = lojaSaci.storeno ?: 0
           }
@@ -48,7 +48,7 @@ class Loja : BaseModel() {
     }
 
     fun carregasLojas() {
-      saci.findLojas(0).forEach { lojaSaci ->
+      saci().findLojas(0).forEach { lojaSaci ->
         lojaSaci.storeno?.let { storeno ->
           val loja = Loja.findLoja(storeno)
           if (loja == null) {

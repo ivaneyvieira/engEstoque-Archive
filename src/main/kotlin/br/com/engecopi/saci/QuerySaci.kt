@@ -6,7 +6,12 @@ import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.saci.beans.UserSaci
 import br.com.engecopi.utils.DB
 
-class QuerySaci : QueryDB(driver, url, username, password) {
+class QuerySaci(val sessaoId : String) : QueryDB(driver, url, username, password) {
+
+  init {
+    openTransaction()
+  }
+
   fun findNotaEntrada(storeno: Int, nfname: String, invse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaEntrada.sql"
     return if (nfname == "") emptyList()
@@ -106,4 +111,12 @@ class QuerySaci : QueryDB(driver, url, username, password) {
   }
 }
 
-val saci = QuerySaci()
+var saci : QuerySaci? = null
+
+fun saci() : QuerySaci{
+  val sessionId = saci?.sessaoId
+  println("Sessão: $sessionId")
+  return saci ?: throw EBancoNaoInicializado()
+}
+
+class EBancoNaoInicializado : Exception()

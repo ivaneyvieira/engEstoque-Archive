@@ -345,6 +345,9 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
       this.setWidth("80%")
       this.isModal = true
       this.center()
+      this.addResizeListener {
+        this.center()
+      }
     }
 
     UI.getCurrent()

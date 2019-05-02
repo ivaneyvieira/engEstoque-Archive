@@ -129,7 +129,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   }
 
   private fun login() {
-    val user = saci.findUser(username.value)
+    val user = saci().findUser(username.value)
     val pass = password.value
     val abrev = abreviacao.value ?: ""
     if (user == null || user.senha != pass) {
