@@ -40,6 +40,7 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
       itemNota.refresh()
       itemNota.status = CONFERIDA
       itemNota.impresso = false
+      itemNota.usuario = RegistryUserInfo.usuarioDefault
       itemNota.update()
       itemNota.recalculaSaldos()
     }
