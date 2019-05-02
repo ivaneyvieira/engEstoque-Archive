@@ -36,16 +36,19 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.verticalLayout
 import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.event.ShortcutAction.KeyCode
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent
 import com.vaadin.ui.Alignment.BOTTOM_RIGHT
 import com.vaadin.ui.Button
+import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.UI
 import com.vaadin.ui.Window
 import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
+import org.vaadin.patrik.FastNavigation
 
 @AutoView("")
 class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
@@ -291,6 +294,11 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
                 }
               }
             }
+            editor.isEnabled = true
+            val comboLoc = ComboBox<LocProduto>().apply {
+              isEmptySelectionAllowed = false
+              isTextInputAllowed = false
+            }
             setSizeFull()
             addColumnFor(ProdutoVO::codigo) {
               expandRatio = 1
@@ -303,6 +311,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
             addColumnFor(ProdutoVO::localizacao) {
               expandRatio = 4
               caption = "Localização"
+              setEditorComponent(comboLoc)
             }
             addColumnFor(ProdutoVO::grade) {
               expandRatio = 1
@@ -317,6 +326,28 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
               expandRatio = 1
               caption = "Saldo"
               align = VAlign.Right
+            }
+            editor.addOpenListener { event ->
+              event.bean.produto?.let { produto ->
+                val locSulfixos = produto.localizacoes().map { LocProduto(it) }
+                comboLoc.setItems(locSulfixos)
+                comboLoc.setItemCaptionGenerator { it.localizacao }
+                comboLoc.value = event.bean.localizacao
+              }
+            }
+            val nav = FastNavigation<ProdutoVO>(this, false, true)
+            nav.changeColumnAfterLastRow = true
+            nav.openEditorWithSingleClick = true
+            nav.allowArrowToChangeRow = true
+            nav.openEditorOnTyping = true
+            nav.addEditorSaveShortcut(KeyCode.ENTER)
+            editor.cancelCaption = "Cancelar"
+            editor.saveCaption = "Salvar"
+            editor.isBuffered = false
+            this.setStyleGenerator {
+              if (it.saldoFinal < 0)
+                "error_row"
+              else null
             }
           }
         }
