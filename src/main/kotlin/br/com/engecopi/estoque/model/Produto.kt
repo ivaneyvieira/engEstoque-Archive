@@ -51,7 +51,7 @@ class Produto: BaseModel() {
   var localizacao: String? = ""
   @Formula(
     select = "SAL.saldo_total",
-    join = "LEFT JOIN (select produto_id, SUM(quantidade*(IF(tipo_mov = 'ENTRADA', 1, -1))) AS saldo_total " +
+    join = "LEFT JOIN (select produto_id, SUM(quantidade*IF(tipo_mov = 'ENTRADA', 1, -1)*IF(tipo_mov in ('INCLUIDA') || tipo_nota IN ('CANCELADA_E', 'CANCELADA_S'), 0, 1)) AS saldo_total " +
            "from itens_nota AS I  inner join notas AS N\n    ON N.id = I.nota_id\n  inner join lojas AS L    " +
            "ON L.id = N.loja_id WHERE L.numero = @$LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id = \${ta}.id"
           )
