@@ -61,11 +61,11 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
       if(operation == ADD) {
         binder.bean.lojaNF = lojaDefault
         binder.bean.usuario = usuario
+        operationButton?.isEnabled = false
       }
       formLayout.apply {
         w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
           .px
-        operationButton?.isEnabled = false
         grupo("Nota fiscal de saída") {
           verticalLayout {
             row {
