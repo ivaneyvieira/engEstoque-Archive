@@ -2,6 +2,8 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.estoque.model.TipoNota.CANCELADA_E
+import br.com.engecopi.estoque.model.TipoNota.CANCELADA_S
 import br.com.engecopi.estoque.model.finder.NotaFinder
 import br.com.engecopi.estoque.model.query.QNota
 import br.com.engecopi.framework.model.BaseModel
@@ -62,6 +64,9 @@ class Nota: BaseModel() {
   var usuario: Usuario? = null
   @Aggregation("max(sequencia)")
   var maxSequencia: Int = 0
+  val multipicadorCancelado
+    get() = if(tipoNota == CANCELADA_E || tipoNota == CANCELADA_S) 0 else 1
+
 
   companion object Find: NotaFinder() {
     fun createNota(notasaci: NotaSaci?): Nota? {
@@ -158,26 +163,39 @@ class Nota: BaseModel() {
     return where().loja.equalTo(loja).numero.eq(numero).findCount() > 0
   }
 
-  fun itensNota() : List<ItemNota>{
-    return ItemNota.where().nota.equalTo(this).findList()
+  fun itensNota(): List<ItemNota> {
+    return ItemNota.where()
+      .nota.equalTo(this)
+      .findList()
   }
 }
 
 enum class TipoMov(val descricao: String) {
-  ENTRADA("Entrada"), SAIDA("Saida")
+  ENTRADA("Entrada"),
+  SAIDA("Saida")
 }
 
 enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2: String, val isFree: Boolean = false) {
   //Entrada
   COMPRA(ENTRADA, "Compra", "Compra"),
-  TRANSFERENCIA_E(ENTRADA, "Transferencia", "Transferencia Entrada"), DEV_CLI(ENTRADA, "Dev Cliente", "Dev Cliente"),
-  ACERTO_E(ENTRADA, "Acerto", "Acerto Entrada"), PEDIDO_E(ENTRADA, "Pedido", "Pedido Entrada"),
-  OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true), NOTA_E(ENTRADA, "Entradas", "Entradas", true),
-  RECLASSIFICACAO_E(ENTRADA, "Reclassificação", "Reclassificação Entrada"), VENDA(SAIDA, "Venda", "Venda"),
-  TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"), ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"),
-  DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"), ACERTO_S(SAIDA, "Acerto", "Acerto Saida"),
-  PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"), OUTROS_S(SAIDA, "Outros", "Outras Saidas", true),
-  OUTRAS_NFS(SAIDA, "Outras NFS", "Outras NF Saida", true), SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true);
+  TRANSFERENCIA_E(ENTRADA, "Transferencia", "Transferencia Entrada"),
+  DEV_CLI(ENTRADA, "Dev Cliente", "Dev Cliente"),
+  ACERTO_E(ENTRADA, "Acerto", "Acerto Entrada"),
+  PEDIDO_E(ENTRADA, "Pedido", "Pedido Entrada"),
+  OUTROS_E(ENTRADA, "Outros", "Outras Entradas", true),
+  NOTA_E(ENTRADA, "Entradas", "Entradas", true),
+  RECLASSIFICACAO_E(ENTRADA, "Reclassificação", "Reclassificação Entrada"),
+  VENDA(SAIDA, "Venda", "Venda"),
+  TRANSFERENCIA_S(SAIDA, "Transferencia", "Transferencia Saida"),
+  ENT_RET(SAIDA, "Ent/Ret", "Ent/Ret"),
+  DEV_FOR(SAIDA, "Dev Fornecedor", "Dev Fornecedor"),
+  ACERTO_S(SAIDA, "Acerto", "Acerto Saida"),
+  PEDIDO_S(SAIDA, "Pedido", "Pedido Saida"),
+  OUTROS_S(SAIDA, "Outros", "Outras Saidas", true),
+  OUTRAS_NFS(SAIDA, "Outras NFS", "Outras NF Saida", true),
+  SP_REME(SAIDA, "Simples Remessa", "Simples Remessa", true),
+  CANCELADA_E(ENTRADA, "Nota Cancelada", "Nota Cancelada"),
+  CANCELADA_S(SAIDA, "Nota Cancelada", "Nota Cancelada");
 
   companion object {
     fun valuesEntrada(): List<TipoNota> = values().filter {it.tipoMov == ENTRADA}

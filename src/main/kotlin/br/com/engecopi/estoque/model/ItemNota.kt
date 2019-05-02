@@ -56,7 +56,7 @@ class ItemNota: BaseModel() {
   @Size(max = 60)
   var codigoBarraEntrega: String? = ""
   val quantidadeSaldo: Int
-    get() = (status.multiplicador) * quantidade
+    get() = (status.multiplicador) * quantidade* (nota?.multipicadorCancelado ?: 0)
   val viewCodigoBarraConferencia: ViewCodBarConferencia?
     @Transient get() = ViewCodBarConferencia.byId(id)
   val viewCodigoBarraCliente: ViewCodBarCliente?
