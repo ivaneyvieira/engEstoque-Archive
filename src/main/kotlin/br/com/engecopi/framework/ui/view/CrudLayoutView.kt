@@ -424,6 +424,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
   val buttonIcons = HashMap<CrudOperation, Resource?>()
   val buttonStyleNames = HashMap<CrudOperation, String?>()
   val formLayout = VerticalLayout()
+  var operationButton : Button? = null
 
   init {
     updateButtons()
@@ -463,7 +464,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
   private fun buildFooter(operation: CrudOperation,
                           cancelButtonClickListener: (CrudForm<C>) -> Unit,
                           operationButtonClickListener: (CrudForm<C>) -> Unit): Layout {
-    val operationButton = buildOperationButton(operation, operationButtonClickListener)
+    operationButton = buildOperationButton(operation, operationButtonClickListener)
     val cancelButton = buildCancelButton(cancelButtonClickListener)
     val footerLayout = HorizontalLayout()
     footerLayout.setSizeUndefined()
@@ -489,7 +490,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
     return button
   }
 
-  private fun buildCancelButton(clickListener: (CrudForm<C>) -> Unit): Button? {
+  private fun buildCancelButton(clickListener: (CrudForm<C>) -> Unit): Button {
     val button = Button("Cancela")
     button.addClickListener {clickListener(this)}
     button.setClickShortcut(KeyCode.ESCAPE)

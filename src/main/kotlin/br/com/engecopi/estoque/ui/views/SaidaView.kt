@@ -65,7 +65,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
       formLayout.apply {
         w = (UI.getCurrent().page.browserWindowWidth * 0.8).toInt()
           .px
-
+        operationButton?.isEnabled = false
         grupo("Nota fiscal de saída") {
           verticalLayout {
             row {
