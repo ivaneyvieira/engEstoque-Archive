@@ -11,7 +11,7 @@ import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
 class EntregaClienteViewModel(view: IView)
-  : NotaViewModel<EntregaClienteVo>(view, SAIDA, ENTREGUE, "") {
+  : NotaViewModel<EntregaClienteVo>(view, SAIDA, ENTREGUE, CONFERIDA, "") {
   override fun newBean(): EntregaClienteVo {
     return EntregaClienteVo()
   }

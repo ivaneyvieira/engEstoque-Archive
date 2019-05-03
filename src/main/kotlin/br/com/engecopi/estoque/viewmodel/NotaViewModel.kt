@@ -11,7 +11,6 @@ import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
 import br.com.engecopi.estoque.model.StatusNota
-import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -30,12 +29,13 @@ import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
-import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
-                                         private val statusDefault: StatusNota, private val abreviacaoNota: String):
+                                         private val statusDefault: StatusNota,
+                                         private val statusImpressao: StatusNota,
+                                         private val abreviacaoNota: String):
   CrudViewModel<ItemNota, QItemNota, VO>(view) {
   override fun update(bean: VO) {
     if(bean.localizacao?.localizacao.isNullOrBlank()) throw EViewModel("Não foi especificado a localização do item")
@@ -270,7 +270,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
-      .status.eq(INCLUIDA)
+      .status.eq(statusImpressao)
       .findList()
     templates.joinToString(separator = "\n") {template ->
       itens.map {imprimir(it, template)}

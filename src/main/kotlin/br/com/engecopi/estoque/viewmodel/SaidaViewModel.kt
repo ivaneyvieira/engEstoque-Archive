@@ -14,7 +14,7 @@ import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
 class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
-                                                          ENTREGUE, abreviacaoDefault) {
+                                                          ENTREGUE, CONFERIDA, abreviacaoDefault) {
   override fun newBean(): SaidaVo {
     return SaidaVo()
   }
