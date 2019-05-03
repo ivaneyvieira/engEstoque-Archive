@@ -45,6 +45,7 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid
 import com.vaadin.ui.Grid.SelectionMode.MULTI
+import com.vaadin.ui.Notification
 import com.vaadin.ui.UI
 import com.vaadin.ui.Window
 import com.vaadin.ui.renderers.TextRenderer
@@ -291,7 +292,11 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
                     it.selecionado = false
                   }
                 select.allSelectedItems.forEach {
-                  it.selecionado = true
+                  if(it.saldoFinal < 0){
+                    Notification.show("Saldo Insuficiente")
+                    selectionModel.deselect(it)
+                  }
+                  else it.selecionado = true
                 }
               }
             }
@@ -368,6 +373,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
             addStyleName(ValoTheme.BUTTON_PRIMARY)
             addClickListener {
               val itens = gridProdutos.selectedItems.toList()
+                .filter {it.saldoFinal > 0}
               val allItens = gridProdutos.dataProvider.getAll()
               val naoSelect = allItens.minus(itens)
               viewModel.confirmaProdutos(itens.mapNotNull {vo -> vo.value}, CONFERIDA)
