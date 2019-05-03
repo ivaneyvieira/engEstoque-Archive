@@ -77,8 +77,8 @@ class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
         row {
           // expand =1
           twinColSelect<String>("Localizações") {
-            //  expand = 1
-            setWidth("95%")
+            expand = 1
+            //setWidth("95%")
             bindItensSet(binder, UsuarioCrudVo::locaisLoja.name)
             bind(binder).bind(UsuarioCrudVo::localizacaoes)
           }

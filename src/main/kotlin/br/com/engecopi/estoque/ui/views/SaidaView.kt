@@ -295,6 +295,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
                   if(it.saldoFinal < 0){
                     Notification.show("Saldo Insuficiente")
                     selectionModel.deselect(it)
+                    it.selecionado = false
                   }
                   else it.selecionado = true
                 }
@@ -373,7 +374,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
             addStyleName(ValoTheme.BUTTON_PRIMARY)
             addClickListener {
               val itens = gridProdutos.selectedItems.toList()
-                .filter {it.saldoFinal > 0}
+                .filter {it.saldoFinal >= 0}
               val allItens = gridProdutos.dataProvider.getAll()
               val naoSelect = allItens.minus(itens)
               viewModel.confirmaProdutos(itens.mapNotNull {vo -> vo.value}, CONFERIDA)

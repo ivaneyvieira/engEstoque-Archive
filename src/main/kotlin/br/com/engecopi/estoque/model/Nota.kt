@@ -209,4 +209,12 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   }
 }
 
-
+data class NotasSerie(val id: Long, val serie: String, val descricao: String) {
+  companion object {
+    val values = listOf(NotasSerie(1, "1", "Venda"),
+                        NotasSerie(2, "3", "Entrega/Retira"),
+                        NotasSerie(3, "5", "Transferencia"),
+                        NotasSerie(4, "66", "Acerto Estoque"),
+                        NotasSerie(5, "", "Pedidos"))
+  }
+}
