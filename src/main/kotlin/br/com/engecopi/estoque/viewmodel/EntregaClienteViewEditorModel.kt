@@ -4,7 +4,7 @@ import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
-import br.com.engecopi.estoque.model.StatusNota.ENTREGUE_LOJA
+import br.com.engecopi.estoque.model.StatusNota.ENT_LOJA
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.ViewCodBarEntrega
@@ -19,7 +19,7 @@ class EntregaClienteEditorViewModel(view: IView)
   }
 
   override fun QItemNota.filtroStatus(): QItemNota {
-    return status.`in`(ENTREGUE, ENTREGUE_LOJA)
+    return status.`in`(ENTREGUE, ENT_LOJA)
       .nota.usuario.isNotNull
       .nota.sequencia.ne(0)
   }

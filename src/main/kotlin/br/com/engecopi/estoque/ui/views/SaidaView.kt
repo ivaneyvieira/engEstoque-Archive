@@ -4,7 +4,7 @@ import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
-import br.com.engecopi.estoque.model.StatusNota.ENTREGUE_LOJA
+import br.com.engecopi.estoque.model.StatusNota.ENT_LOJA
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota
@@ -371,7 +371,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
               val allItens = gridProdutos.dataProvider.getAll()
               val naoSelect = allItens.minus(itens)
               viewModel.confirmaProdutos(itens.mapNotNull {vo -> vo.value}, CONFERIDA)
-              viewModel.confirmaProdutos(naoSelect.mapNotNull {vo -> vo.value}, ENTREGUE_LOJA)
+              viewModel.confirmaProdutos(naoSelect.mapNotNull {vo -> vo.value}, ENT_LOJA)
               close()
             }
           }

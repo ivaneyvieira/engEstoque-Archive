@@ -94,7 +94,7 @@ class ItemNota: BaseModel() {
     fun find(nota: Nota?, produto: Produto?): ItemNota? {
       nota ?: return null
       produto ?: return null
-      return ItemNota.where()
+      return where().fetchQuery("nota")
         .nota.id.eq(nota.id)
         .produto.id.eq(produto.id)
         .findList()
@@ -104,7 +104,8 @@ class ItemNota: BaseModel() {
     fun find(notaSaci: NotaSaci?): ItemNota? {
       notaSaci ?: return null
       val produtoSaci = Produto.findProduto(notaSaci.prdno, notaSaci.grade) ?: return null
-      return where().nota.numero.eq("${notaSaci.numero}/${notaSaci.serie}")
+      return where().fetchQuery("nota")
+        .nota.numero.eq("${notaSaci.numero}/${notaSaci.serie}")
         .nota.loja.equalTo(RegistryUserInfo.lojaDefault)
         .produto.equalTo(produtoSaci)
         .findList()
@@ -198,6 +199,6 @@ enum class StatusNota(val descricao: String, val tipoMov: TipoMov, val multiplic
   INCLUIDA("Incluída", SAIDA, 0),
   CONFERIDA("Conferida", SAIDA, -1),
   ENTREGUE("Entregue", SAIDA, -1),
-  ENTREGUE_LOJA("Entregue na Loja", SAIDA, 0)
+  ENT_LOJA("Entregue na Loja", SAIDA, 0)
 }
 
