@@ -162,6 +162,6 @@ class ProdutoVo : EntityVo<Produto>() {
         (filtroLocalizacao?.let { loc -> item.localizacao == loc.localizacao } ?: true)
         &&
         (item.quantidadeSaldo != 0)
-      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::data, ItemNota::id)).toList()
+      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::data, ItemNota::hora)).toList()
     }
 }
