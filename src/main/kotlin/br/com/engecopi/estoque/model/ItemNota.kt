@@ -166,7 +166,7 @@ class NotaPrint(val item: ItemNota) {
   else item.data
   val data = dataLocal?.format()
   val produto = item.produto
-  val sd = produto?.saldoLoja(item.localizacao) ?: 0
+  val sd = item.saldo ?: 0
   val quant = item.quantidade
   val prdno = produto?.codigo?.trim() ?: ""
   val grade = produto?.grade ?: ""
