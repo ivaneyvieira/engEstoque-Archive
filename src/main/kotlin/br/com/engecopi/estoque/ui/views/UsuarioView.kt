@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.NotasSerie
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
@@ -14,11 +15,13 @@ import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.bind
 import com.github.mvysny.karibudsl.v8.checkBox
+import com.github.mvysny.karibudsl.v8.checkBoxGroup
 import com.github.mvysny.karibudsl.v8.comboBox
 import com.github.mvysny.karibudsl.v8.textField
 import com.github.mvysny.karibudsl.v8.twinColSelect
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.renderers.TextRenderer
+import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
 class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
@@ -72,6 +75,18 @@ class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
             expand = 1
             bind(binder).bind(UsuarioCrudVo::estoque)
             alignment = Alignment.BOTTOM_RIGHT
+          }
+        }
+        row {
+          checkBoxGroup<NotasSerie> {
+            caption = "Tipo de notas"
+            expand = 1
+            setItems(NotasSerie.values)
+            setItemCaptionGenerator {
+              it.descricao
+            }
+            addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL)
+            bind(binder).bind(UsuarioCrudVo::series)
           }
         }
         row {

@@ -35,6 +35,7 @@ class QUsuario : TQRootBean<Usuario, QUsuario> {
   lateinit var loginName: PString<QUsuario>
   lateinit var loja: QAssocLoja<QUsuario>
   lateinit var localizacaoes: PString<QUsuario>
+  lateinit var notaSeries: PString<QUsuario>
   lateinit var itensNota: QAssocItemNota<QUsuario>
   lateinit var admin: PBoolean<QUsuario>
   lateinit var estoque: PBoolean<QUsuario>

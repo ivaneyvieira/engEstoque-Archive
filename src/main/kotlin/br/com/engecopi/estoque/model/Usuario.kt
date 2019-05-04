@@ -25,6 +25,8 @@ class Usuario : BaseModel() {
   var loja: Loja? = null
   @Length(4000)
   var localizacaoes: String = ""
+  @Length(4000)
+  var notaSeries: String = ""
   @OneToMany(
     mappedBy = "usuario",
     cascade = [PERSIST, MERGE, REFRESH]
@@ -35,6 +37,18 @@ class Usuario : BaseModel() {
     set(value) {
       localizacaoes = value.asSequence().sorted().joinToString()
     }
+  var series: List<NotasSerie>
+    get() = notaSeries.split(",").filter {it.isNotBlank()}.mapNotNull {mapNotaSerie(it)}.toList()
+    set(value) {
+      notaSeries = value.map {it.id.toString()}
+        .sorted()
+        .joinToString()
+    }
+
+  private fun mapNotaSerie(idStr: String): NotasSerie? {
+    val id = idStr.trim().toLongOrNull() ?: return null
+    return NotasSerie.values.find {it.id == id}
+  }
 
   private fun usuarioSaci() = saci.findUser(loginName)
   var admin: Boolean = false

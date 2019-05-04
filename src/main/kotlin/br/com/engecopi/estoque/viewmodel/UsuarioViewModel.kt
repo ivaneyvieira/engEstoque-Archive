@@ -1,6 +1,7 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.NotasSerie
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QUsuario
@@ -34,6 +35,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       usuario.loja = bean.loja
       usuario.locais = bean.localizacaoes.toList()
       usuario.estoque = bean.estoque
+      usuario.series = bean.series.toList()
       usuario.expedicao = bean.expedicao
       usuario.admin = bean.admin ?: false
       usuario.update()
@@ -45,6 +47,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
       this.locais = bean.localizacaoes.toList()
+      this.series = bean.series.toList()
       this.estoque = bean.estoque
       this.expedicao = bean.expedicao
       this.admin = bean.admin ?: false
@@ -62,6 +65,7 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = usuario.loginName
       this.loja = usuario.loja
       this.localizacaoes = usuario.locais.toHashSet()
+      this.series = usuario.series.toSet()
       this.estoque = usuario.estoque
       this.expedicao = usuario.expedicao
       this.admin = usuario.admin
@@ -98,6 +102,7 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
   var locaisLoja: MutableSet<String> = HashSet()
+  var series: Set<NotasSerie> = HashSet()
   var localizacaoes: Set<String> = HashSet()
   val localStr
     get() = localizacaoes.joinToString()
