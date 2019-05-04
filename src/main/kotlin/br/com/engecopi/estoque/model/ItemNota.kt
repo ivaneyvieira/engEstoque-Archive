@@ -1,6 +1,9 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
+import br.com.engecopi.estoque.model.StatusNota.ENT_LOJA
+import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.finder.ItemNotaFinder
@@ -146,6 +149,13 @@ class ItemNota: BaseModel() {
     if(codigoBarraConferencia.isNullOrEmpty()) codigoBarraConferencia = viewCodigoBarraConferencia?.codbar ?: ""
     if(codigoBarraEntrega.isNullOrEmpty()) codigoBarraEntrega = viewCodigoBarraEntrega?.codbar ?: ""
     super.save()
+  }
+
+  fun desfazerOperacao() {
+    if(status == ENT_LOJA || status == ENTREGUE || status == CONFERIDA){
+      status = INCLUIDA
+      save()
+    }
   }
 }
 

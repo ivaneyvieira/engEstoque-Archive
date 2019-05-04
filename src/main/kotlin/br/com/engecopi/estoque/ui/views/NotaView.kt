@@ -17,7 +17,6 @@ import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import br.com.engecopi.framework.viewmodel.EntityVo
 import com.github.mvysny.karibudsl.v8.VAlign
 import com.github.mvysny.karibudsl.v8.VaadinDsl
 import com.github.mvysny.karibudsl.v8.addColumnFor
@@ -31,6 +30,7 @@ import com.github.mvysny.karibudsl.v8.px
 import com.github.mvysny.karibudsl.v8.textField
 import com.vaadin.data.Binder
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
+import com.vaadin.icons.VaadinIcons
 import com.vaadin.icons.VaadinIcons.PRINT
 import com.vaadin.ui.Button
 import com.vaadin.ui.ComboBox
@@ -62,6 +62,18 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       addClickListener {
         openText(viewModel.imprime())
         //grid.refreshGrid()
+      }
+    }
+  }
+
+  fun btnDesfazer(): Button {
+    return Button("Cancelar").apply {
+      this.isVisible = usuario.admin
+      icon = VaadinIcons.CLOSE
+      addClickListener {
+        val itens = grid.selectedItems.firstOrNull()
+        if(itens == null) showError("Não há item selecionado")
+        else viewModel.desfazOperacao(itens.entityVo)
       }
     }
   }

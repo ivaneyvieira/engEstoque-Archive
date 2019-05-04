@@ -280,6 +280,10 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
   }
 
   abstract fun QItemNota.filtroStatus(): QItemNota
+
+  fun desfazOperacao(item: ItemNota?) = exec {
+    item?.desfazerOperacao()
+  }
 }
 
 abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): EntityVo<ItemNota>() {

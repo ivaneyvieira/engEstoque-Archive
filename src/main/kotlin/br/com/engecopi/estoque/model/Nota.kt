@@ -203,7 +203,7 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
     fun valuesSaida(): List<TipoNota> = values().filter {it.tipoMov == SAIDA}
 
     fun value(valueStr: String?) = valueStr?.let {v ->
-      TipoNota.values()
+      values()
         .find {it.toString() == v}
     }
   }

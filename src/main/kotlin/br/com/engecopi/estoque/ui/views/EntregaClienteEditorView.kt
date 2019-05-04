@@ -78,6 +78,7 @@ class EntregaClienteEditorView: NotaView<EntregaClienteVo, EntregaClienteEditorV
     form("Editor Entrega ao Cliente")
     gridCrud {
       reloadOnly = !isAdmin
+      addCustomToolBarComponent(btnDesfazer())
       column(EntregaClienteVo::numeroCodigoReduzido) {
         caption = "Número Conferencia"
         setSortProperty("codigo_barra_conferencia")

@@ -111,6 +111,7 @@ class SaidaView: NotaView<SaidaVo, SaidaViewModel>() {
     }
     form("Saída de produtos")
     gridCrud {
+      addCustomToolBarComponent(btnDesfazer())
       addCustomToolBarComponent(btnImprimeTudo())
       formCodBar = formCodbar()
       addCustomFormComponent(formCodBar)

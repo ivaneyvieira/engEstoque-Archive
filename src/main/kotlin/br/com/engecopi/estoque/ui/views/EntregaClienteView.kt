@@ -86,6 +86,7 @@ class EntregaClienteView: NotaView<EntregaClienteVo, EntregaClienteViewModel>() 
     form("Entrega ao Cliente")
     gridCrud {
       formCodBar = formCodbar()
+      addCustomToolBarComponent(btnDesfazer())
       addCustomFormComponent(formCodBar)
       reloadOnly = !isAdmin
       column(EntregaClienteVo::numeroCodigo) {
