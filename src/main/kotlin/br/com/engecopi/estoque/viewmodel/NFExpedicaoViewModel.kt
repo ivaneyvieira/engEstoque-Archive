@@ -4,8 +4,10 @@ import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
+import br.com.engecopi.estoque.model.NotasSerie
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
@@ -193,7 +195,16 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       else                -> throw EViewModel("Chave não encontrada")
     }
     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
-    else notaSaci
+    else {
+      if(!usuarioDefault.admin && !usuarioDefault.expedicao && usuarioDefault.estoque) {
+        val serie = notaSaci.firstOrNull()?.serie ?: throw EViewModel("Chave não encontrada")
+        val notaSerie = NotasSerie.values.find {it.serie == serie} ?: throw EViewModel("Chave não encontrada")
+        val notasSerieUsuario = usuarioDefault.series
+        val compativel = notasSerieUsuario.find {it.serie == serie} != null
+        if(compativel) notaSaci
+        else throw EViewModel("O usuário não está habilitado para lançar esse tipo de nota (${notaSerie.descricao})")
+      } else notaSaci
+    }
   }
 
   fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)

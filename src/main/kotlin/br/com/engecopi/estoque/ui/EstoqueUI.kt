@@ -69,7 +69,7 @@ class EstoqueUI : UI() {
 
   override fun init(request: VaadinRequest?) {
     RegistryUserInfo.register {
-      EstoqueUI.current?.loginInfo
+      current?.loginInfo
     }
     isResponsive = true
     updateContent(request?.contextPath ?: "")
@@ -99,9 +99,10 @@ class EstoqueUI : UI() {
           }
         }
 
-        if (user.expedicao || user.admin) {
-          section("Expedição") {
-            menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
+
+        section("Expedição") {
+          menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
+          if(user.expedicao || user.admin) {
             menuButton("Entrega ao Cliente", TRUCK, view = EntregaClienteView::class.java)
             menuButton("Editor de Entrega", TRUCK, view = EntregaClienteEditorView::class.java)
           }
