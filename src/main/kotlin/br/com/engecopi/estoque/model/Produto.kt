@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.RegistryUserInfo.LOJA_FIELD
 import br.com.engecopi.estoque.model.finder.ProdutoFinder
 import br.com.engecopi.framework.model.BaseModel
 import br.com.engecopi.utils.lpad
@@ -43,16 +42,10 @@ class Produto: BaseModel() {
   @OneToMany(mappedBy = "produto", cascade = [REFRESH])
   var viewProdutoLoc: List<ViewProdutoLoc>? = null
   @Formula(select = "LOC.localizacao",
-           join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' -" +
-                  " ') as localizacao from t_loc_produtos FORCE INDEX(i2) where storeno = @LOJA_FIELD group by " +
-                  "produto_id) AS LOC ON LOC.produto_id = \${ta}.id")
+           join = "LEFT join (select produto_id, GROUP_CONCAT(DISTINCT localizacao ORDER BY localizacao SEPARATOR ' -" + " ') as localizacao from t_loc_produtos FORCE INDEX(i2) where storeno = @LOJA_FIELD group by " + "produto_id) AS LOC ON LOC.produto_id = \${ta}.id")
   var localizacao: String? = ""
   @Formula(select = "SAL.saldo_total",
-           join = "LEFT JOIN (select produto_id, SUM(quantidade*IF(tipo_mov = 'ENTRADA', 1, -1)*IF(tipo_mov in " +
-                  "('INCLUIDA', 'ENTREGUE_LOJA') || tipo_nota IN ('CANCELADA_E', 'CANCELADA_S'), 0, 1)) AS " +
-                  "saldo_total from itens_nota AS I inner join notas AS N ON N.id = I.nota_id inner join lojas AS L " +
-                  "   ON L.id = N.loja_id WHERE L.numero = @LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id" +
-                  " = \${ta}.id")
+           join = "LEFT JOIN (select produto_id, SUM(quantidade*IF(tipo_mov = 'ENTRADA', 1, -1)*IF(tipo_mov in " + "('INCLUIDA', 'ENTREGUE_LOJA') || tipo_nota IN ('CANCELADA_E', 'CANCELADA_S'), 0, 1)) AS " + "saldo_total from itens_nota AS I inner join notas AS N ON N.id = I.nota_id inner join lojas AS L " + "   ON L.id = N.loja_id WHERE L.numero = @LOJA_FIELD group by produto_id) AS SAL ON SAL.produto_id" + " = \${ta}.id")
   var saldo_total: Int? = 0
   val descricao: String?
     @Transient get() = vproduto?.nome
@@ -141,22 +134,17 @@ class Produto: BaseModel() {
     }
   }
 
-  private fun somaSaldo(item: ItemNota): Int {
-    val multiplicador = item.status.multiplicador
-    return multiplicador * item.quantidade
-  }
-
   fun saldoLoja(localizacao: String?): Int {
     localizacao ?: return 0
     if(localizacao == "") return 0
     val loja = RegistryUserInfo.lojaDefault
     return findItensNota().asSequence()
       .filter {it.nota?.loja?.id == loja.id && it.localizacao == localizacao}
-      .sumBy(this::somaSaldo)
+      .sumBy {it.quantidadeSaldo}
   }
 
   fun saldoTotal(): Int {
-    return findItensNota().sumBy(this::somaSaldo)
+    return findItensNota().sumBy {it.quantidadeSaldo}
   }
 
   fun ultimaNota(): ItemNota? {
