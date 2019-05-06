@@ -1,7 +1,7 @@
 package br.com.engecopi.estoque.ui.views
 
 import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.NotasSerie
+import br.com.engecopi.estoque.model.NotaSerie
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.viewmodel.UsuarioCrudVo
 import br.com.engecopi.estoque.viewmodel.UsuarioViewModel
@@ -78,10 +78,10 @@ class UsuarioView: CrudLayoutView<UsuarioCrudVo, UsuarioViewModel>() {
           }
         }
         row {
-          checkBoxGroup<NotasSerie> {
+          checkBoxGroup<NotaSerie> {
             caption = "Tipo de notas"
             expand = 1
-            setItems(NotasSerie.values)
+            setItems(NotaSerie.values)
             setItemCaptionGenerator {
               it.descricao
             }

@@ -1,7 +1,7 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
-import br.com.engecopi.estoque.model.NotasSerie
+import br.com.engecopi.estoque.model.NotaSerie
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.query.QUsuario
@@ -102,7 +102,7 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
   var locaisLoja: MutableSet<String> = HashSet()
-  var series: Set<NotasSerie> = HashSet()
+  var series: Set<NotaSerie> = HashSet()
   var localizacaoes: Set<String> = HashSet()
   val localStr
     get() = localizacaoes.joinToString()

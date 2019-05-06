@@ -209,12 +209,17 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
   }
 }
 
-data class NotasSerie(val id: Long, val serie: String, val descricao: String) {
+data class NotaSerie(val id: Long, val serie: String, val descricao: String) {
   companion object {
-    val values = listOf(NotasSerie(1, "1", "Venda"),
-                        NotasSerie(2, "3", "Entrega/Retira"),
-                        NotasSerie(3, "5", "Transferencia"),
-                        NotasSerie(4, "66", "Acerto Estoque"),
-                        NotasSerie(5, "", "Pedidos"))
+    fun findBySerie(serie: String?): NotaSerie? {
+      serie ?: return null
+      return values.find {it.serie == serie}
+    }
+
+    val values = listOf(NotaSerie(1, "1", "Venda"),
+                        NotaSerie(2, "3", "Entrega/Retira"),
+                        NotaSerie(3, "5", "Transferencia"),
+                        NotaSerie(4, "66", "Acerto Estoque"),
+                        NotaSerie(5, "", "Pedidos"))
   }
 }

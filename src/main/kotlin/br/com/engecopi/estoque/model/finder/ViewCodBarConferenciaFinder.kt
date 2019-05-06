@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
 import br.com.engecopi.estoque.model.query.QViewCodBarConferencia
 import io.ebean.Finder
-import io.ebean.Model.db
 
 open class ViewCodBarConferenciaFinder : Finder<Long, ViewCodBarConferencia>(ViewCodBarConferencia::class.java) {
   /**

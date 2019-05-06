@@ -37,17 +37,20 @@ class Usuario : BaseModel() {
     set(value) {
       localizacaoes = value.asSequence().sorted().joinToString()
     }
-  var series: List<NotasSerie>
+  var series: List<NotaSerie>
     get() = notaSeries.split(",").filter {it.isNotBlank()}.mapNotNull {mapNotaSerie(it)}.toList()
     set(value) {
       notaSeries = value.map {it.id.toString()}
         .sorted()
         .joinToString()
     }
+  val isEstoqueSomente
+    get() = !admin && (expedicao || estoque)
 
-  private fun mapNotaSerie(idStr: String): NotasSerie? {
+
+  private fun mapNotaSerie(idStr: String): NotaSerie? {
     val id = idStr.trim().toLongOrNull() ?: return null
-    return NotasSerie.values.find {it.id == id}
+    return NotaSerie.values.find {it.id == id}
   }
 
   private fun usuarioSaci() = saci.findUser(loginName)
@@ -77,6 +80,10 @@ class Usuario : BaseModel() {
       .endOr()
       .findList()
       .mapNotNull { it.localizacao }
+  }
+
+  fun isSerieCompativel(serie: String): Boolean {
+    return series.any {it.serie == serie}
   }
 
   val produtoLoc: List<Produto>

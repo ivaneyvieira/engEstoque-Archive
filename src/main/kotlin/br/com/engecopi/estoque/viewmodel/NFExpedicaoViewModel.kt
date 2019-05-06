@@ -4,9 +4,11 @@ import br.com.engecopi.estoque.model.Etiqueta
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.NotasSerie
+import br.com.engecopi.estoque.model.NotaSerie
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
+import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
@@ -21,6 +23,7 @@ import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
+import br.com.engecopi.saci.beans.NotaSaci
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -48,7 +51,24 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
   }
 
   override val query: QViewNotaExpedicao
-    get() = ViewNotaExpedicao.where()
+    get() = ViewNotaExpedicao.where().let {query ->
+      val queryLoc = query.abreviacao.eq(abreviacaoDefault)
+        .loja.id.eq(lojaDefault.id)
+      if(usuarioDefault.isEstoqueSomente) filtroNotaSerie(queryLoc)
+      else queryLoc
+    }
+
+  private fun filtroNotaSerie(query: QViewNotaExpedicao): QViewNotaExpedicao {
+    val series = usuarioDefault.series.map {it.serie}
+    val queryOr = query.or()
+    val querySeries = series.fold(queryOr) {q, serie ->
+      q.nota.numero.endsWith("/$serie")
+    }
+    val querySeriePedido = if(series.any {it == ""}) querySeries.not().nota.numero.contains("/").endNot()
+    else querySeries
+
+    return querySeriePedido.endOr()
+  }
 
   override fun QViewNotaExpedicao.orderQuery(): QViewNotaExpedicao {
     return this.order()
@@ -90,7 +110,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
           else {
             val serie = it.numero.split("/").getOrNull(1) ?: ""
             it.sequencia = Nota.maxSequencia(serie) + 1
-            it.usuario = RegistryUserInfo.usuarioDefault
+            it.usuario = usuarioDefault
             it.save()
             it
           }
@@ -103,7 +123,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
           return@mapNotNull if(abreviacoes.contains(abreviacao)) item?.apply {
             status = INCLUIDA
             impresso = false
-            usuario = RegistryUserInfo.usuarioDefault
+            usuario = usuarioDefault
             save()
           }
           else null
@@ -175,15 +195,18 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     }
     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
     else {
-      if(!usuarioDefault.admin && !usuarioDefault.expedicao && usuarioDefault.estoque) {
-        val serie = notaSaci.firstOrNull()?.serie ?: throw EViewModel("Chave não encontrada")
-        val notaSerie = NotasSerie.values.find {it.serie == serie} ?: throw EViewModel("Chave não encontrada")
-        val notasSerieUsuario = usuarioDefault.series
-        val compativel = notasSerieUsuario.find {it.serie == serie} != null
-        if(compativel) notaSaci
+      if(usuarioDefault.isEstoqueSomente) {
+        val nota = notaSaci.firstOrNull() ?: throw EViewModel("Chave não encontrada")
+        val notaSerie = nota.notaSerie() ?: throw EViewModel("Chave não encontrada")
+        val serie = notaSerie.serie
+        if(usuarioDefault.isSerieCompativel(serie)) notaSaci
         else throw EViewModel("O usuário não está habilitado para lançar esse tipo de nota (${notaSerie.descricao})")
       } else notaSaci
     }
+  }
+
+  fun NotaSaci.notaSerie(): NotaSerie? {
+    return NotaSerie.findBySerie(serie)
   }
 
   fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)

@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.query.QItemNota
 import io.ebean.Finder
-import io.ebean.Model.db
 
 open class ItemNotaFinder : Finder<Long, ItemNota>(ItemNota::class.java) {
   /**

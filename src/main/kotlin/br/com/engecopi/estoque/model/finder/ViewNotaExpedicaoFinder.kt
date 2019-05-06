@@ -3,7 +3,6 @@ package br.com.engecopi.estoque.model.finder
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import io.ebean.Finder
-import io.ebean.Model.db
 
 open class ViewNotaExpedicaoFinder : Finder<Long, ViewNotaExpedicao>(ViewNotaExpedicao::class.java) {
   /**
