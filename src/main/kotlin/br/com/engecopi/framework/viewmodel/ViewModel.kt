@@ -30,7 +30,7 @@ abstract class ViewModel(val view: IView) {
     } catch(e: EViewModel) {
       updateView(e)
       //throw e
-    }finally {
+    } finally {
       inTransaction = false
     }
   }
@@ -49,7 +49,7 @@ abstract class ViewModel(val view: IView) {
       } catch(e: EViewModel) {
         updateView(e)
         throw e
-      }finally {
+      } finally {
         inTransaction = false
       }
     }
@@ -72,7 +72,11 @@ abstract class ViewModel(val view: IView) {
   }
 
   private fun <T> transaction(block: () -> T) {
-    Transaction.execTransacao {block()}
+    try {
+      Transaction.execTransacao {block()}
+    } catch(e: EViewModel) {
+      //Não faz nada
+    }
   }
 }
 

@@ -149,28 +149,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       }
     }
   }
-  /*
-  fun imprimir(nota: NFExpedicaoVo?): String {
-    val templates = Etiqueta.templates(INCLUIDA)
-    val itens = nota?.findEntity()?.findItens() ?: emptyList()
 
-    return templates.joinToString(separator = "\n") {template ->
-      itens.map {imprimir(it, template)}
-        .distinct()
-        .joinToString(separator = "\n")
-    }
-  }
-  */
-  /*
-    fun imprimir(itemNota: ItemNota?): String {
-      itemNota ?: return ""
-      val templates = itemNota.templates
-
-      return templates.joinToString(separator = "\n") {template ->
-        imprimir(itemNota, template)
-      }
-    }
-  */
   fun imprimeTudo() = execString {
     val templates = Etiqueta.templates(INCLUIDA)
     //TODO Refatorar
