@@ -192,6 +192,8 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       key.endsWith("/10") -> Nota.findNotaSaidaSaci(key)
       !key.contains('/')  -> Nota.findNotaSaidaSaci(key) //Pedido
       else                -> throw EViewModel("Chave não encontrada")
+    }.filter {ns ->
+      ViewProdutoLoc.filtraLoc(ns.prdno, ns.grade)
     }
     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
     else {

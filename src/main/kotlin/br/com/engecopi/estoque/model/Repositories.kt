@@ -79,7 +79,7 @@ WHERE T.produto_id <> P.id;
   }
 
   fun findByLojaAbreviacao(storeno: Int = RegistryUserInfo.lojaDefault.numero,
-                           abreviacao: String = RegistryUserInfo.abreviacaoDefault): List<ViewProdutoLoc> {
+                           abreviacao: String = abreviacaoDefault): List<ViewProdutoLoc> {
     return viewProdutosLocLojaAbreviacaoKey[LojaAbreviacaoKey(storeno = storeno, abreviacao = abreviacao)].orEmpty()
   }
 }

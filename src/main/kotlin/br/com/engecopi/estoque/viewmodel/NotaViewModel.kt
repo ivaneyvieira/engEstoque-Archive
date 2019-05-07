@@ -188,7 +188,10 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
         .nota.tipoMov.eq(tipo)
         .filtroStatus()
         .nota.loja.id.eq(lojaDefault.id)
-        .localizacao.startsWith(abreviacaoNota)
+        .let {
+          if(usuarioDefault.admin) it
+          else it.localizacao.startsWith(abreviacaoNota)
+        }
     }
 
   abstract fun createVo(): VO

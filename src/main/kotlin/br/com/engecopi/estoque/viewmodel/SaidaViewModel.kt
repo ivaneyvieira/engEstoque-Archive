@@ -13,8 +13,7 @@ import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
-class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA,
-                                                          ENTREGUE, CONFERIDA, abreviacaoDefault) {
+class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE, CONFERIDA, abreviacaoDefault) {
   override fun newBean(): SaidaVo {
     return SaidaVo()
   }

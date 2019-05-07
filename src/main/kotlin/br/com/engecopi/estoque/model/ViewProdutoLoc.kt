@@ -22,7 +22,7 @@ class ViewProdutoLoc(@Id val id: String, val storeno: Int, val codigo: String, v
                      @JoinColumn(name = "loja_id") val loja: Loja) {
   companion object Find: ViewProdutoLocFinder() {
     fun existsCache(produto: Produto?): Boolean {
-      return Repositories.findByProduto(produto).count() > 0
+      return findByProduto(produto).count() > 0
     }
 
     fun produtosCache(): List<Produto> {
@@ -52,5 +52,11 @@ class ViewProdutoLoc(@Id val id: String, val storeno: Int, val codigo: String, v
 
     fun abreviacoesProduto(produto: Produto?) =
       where().produto.id.eq(produto?.id).findList().mapNotNull {it.abreviacao}.distinct()
+
+    fun filtraLoc(prdno: String?, grade: String?): Boolean {
+      val produto = Produto.findProduto(prdno, grade) ?: return false
+      val abreviacoes = findCache(produto).map {it.abreviacao}
+      return abreviacoes.contains(RegistryUserInfo.abreviacaoDefault)
+    }
   }
 }

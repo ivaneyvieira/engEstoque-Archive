@@ -94,7 +94,8 @@ class Produto: BaseModel() {
   companion object Find: ProdutoFinder() {
     fun findProduto(codigo: String?, grade: String?): Produto? {
       codigo ?: return null
-      return where().codigo.eq(codigo.lpad(16, " "))
+      return where().setUseQueryCache(true)
+        .codigo.eq(codigo.lpad(16, " "))
         .grade.eq(grade ?: "")
         .findList()
         .firstOrNull()
