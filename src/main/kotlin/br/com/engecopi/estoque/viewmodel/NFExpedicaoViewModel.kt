@@ -60,15 +60,13 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     }
 
   private fun QViewNotaExpedicao.filtroNotaSerie(): QViewNotaExpedicao {
-    val series = usuarioDefault.series.map {it.serie}
+    val tipos = usuarioDefault.series.map {it.tipoNota}
     val queryOr = or()
-    val querySeries = series.fold(queryOr) {q, serie ->
-      q.nota.numero.endsWith("/$serie")
+    val querySeries = tipos.fold(queryOr) {q, tipo ->
+      q.nota.tipoNota.eq(tipo)
     }
-    val querySeriePedido = if(series.any {it == ""}) querySeries.not().nota.numero.contains("/").endNot()
-    else querySeries
 
-    return querySeriePedido.endOr()
+    return querySeries.endOr()
   }
 
   override fun QViewNotaExpedicao.orderQuery(): QViewNotaExpedicao {
@@ -202,15 +200,16 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       if(usuarioDefault.isEstoqueExpedicao) {
         val nota = notaSaci.firstOrNull() ?: throw EViewModel("Chave não encontrada")
         val notaSerie = nota.notaSerie() ?: throw EViewModel("Chave não encontrada")
-        val serie = notaSerie.serie
-        if(usuarioDefault.isSerieCompativel(serie)) notaSaci
+        val tipo = notaSerie.tipoNota
+        if(usuarioDefault.isTipoCompativel(tipo)) notaSaci
         else throw EViewModel("O usuário não está habilitado para lançar esse tipo de nota (${notaSerie.descricao})")
       } else notaSaci
     }
   }
 
   fun NotaSaci.notaSerie(): NotaSerie? {
-    return NotaSerie.findBySerie(serie)
+    val tipo = TipoNota.value(tipo)
+    return NotaSerie.findByTipo(tipo)
   }
 
   fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)

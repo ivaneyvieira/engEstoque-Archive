@@ -78,8 +78,8 @@ class Usuario: BaseModel() {
       .mapNotNull {it.localizacao}
   }
 
-  fun isSerieCompativel(serie: String): Boolean {
-    return series.any {it.serie == serie}
+  fun isTipoCompativel(tipo: TipoNota): Boolean {
+    return series.any {it.tipoNota == tipo}
   }
 
   val produtoLoc: List<Produto>

@@ -2,8 +2,14 @@ package br.com.engecopi.estoque.model
 
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.estoque.model.TipoNota.ACERTO_S
 import br.com.engecopi.estoque.model.TipoNota.CANCELADA_E
 import br.com.engecopi.estoque.model.TipoNota.CANCELADA_S
+import br.com.engecopi.estoque.model.TipoNota.DEV_FOR
+import br.com.engecopi.estoque.model.TipoNota.ENT_RET
+import br.com.engecopi.estoque.model.TipoNota.PEDIDO_S
+import br.com.engecopi.estoque.model.TipoNota.TRANSFERENCIA_S
+import br.com.engecopi.estoque.model.TipoNota.VENDA
 import br.com.engecopi.estoque.model.finder.NotaFinder
 import br.com.engecopi.estoque.model.query.QNota
 import br.com.engecopi.framework.model.BaseModel
@@ -66,7 +72,6 @@ class Nota: BaseModel() {
   var maxSequencia: Int = 0
   val multipicadorCancelado
     get() = if(tipoNota == CANCELADA_E || tipoNota == CANCELADA_S) 0 else 1
-
 
   companion object Find: NotaFinder() {
     fun createNota(notasaci: NotaSaci?): Nota? {
@@ -203,23 +208,25 @@ enum class TipoNota(val tipoMov: TipoMov, val descricao: String, val descricao2:
     fun valuesSaida(): List<TipoNota> = values().filter {it.tipoMov == SAIDA}
 
     fun value(valueStr: String?) = valueStr?.let {v ->
-      values()
-        .find {it.toString() == v}
+      values().find {it.toString() == v}
     }
   }
 }
 
-data class NotaSerie(val id: Long, val serie: String, val descricao: String) {
+data class NotaSerie(val id: Long, val tipoNota: TipoNota) {
+  val descricao = tipoNota.descricao
+
   companion object {
-    fun findBySerie(serie: String?): NotaSerie? {
-      serie ?: return null
-      return values.find {it.serie == serie}
+    fun findByTipo(tipo: TipoNota?): NotaSerie? {
+      tipo ?: return null
+      return values.find {it.tipoNota == tipo}
     }
 
-    val values = listOf(NotaSerie(1, "1", "Venda"),
-                        NotaSerie(2, "3", "Entrega/Retira"),
-                        NotaSerie(3, "5", "Transferencia"),
-                        NotaSerie(4, "66", "Acerto Estoque"),
-                        NotaSerie(5, "", "Pedidos"))
+    val values = listOf(NotaSerie(1, VENDA),
+                        NotaSerie(2, ENT_RET),
+                        NotaSerie(3, TRANSFERENCIA_S),
+                        NotaSerie(4, ACERTO_S),
+                        NotaSerie(5, PEDIDO_S),
+                        NotaSerie(6, DEV_FOR))
   }
 }
