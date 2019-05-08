@@ -14,6 +14,7 @@ import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
+import br.com.engecopi.estoque.model.TipoNota.VENDA
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.ViewProdutoLoc
@@ -138,17 +139,17 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     } else throw EViewModel("Chave não encontrada")
   }
 
-  private fun imprimir(itemNota: ItemNota?, template: String) = execString {
-    if(itemNota == null) ""
-    else {
-      val print = itemNota.printEtiqueta()
-      itemNota.let {
-        it.refresh()
-        it.impresso = true
-        it.update()
-      }
-      print.print(template)
+  private fun imprimir(itemNota: ItemNota?, etiqueta: Etiqueta) = execString {
+    itemNota ?: return@execString ""
+    val tipoNota = itemNota.tipoNota ?: return@execString ""
+    if(!etiqueta.imprimivel(tipoNota)) return@execString  ""
+    val print = itemNota.printEtiqueta()
+    itemNota.let {
+      it.refresh()
+      it.impresso = true
+      it.update()
     }
+    print.print(etiqueta.template)
   }
 
   fun imprimir(nota: Nota?) = execString {
@@ -158,11 +159,11 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       val notaRef = Nota.byId(id)
       if(notaRef == null) ""
       else {
-        val templates = Etiqueta.templates(INCLUIDA)
+        val etiquetas = Etiqueta.findByStatus(INCLUIDA)
         val itens = notaRef.itensNota()
 
-        templates.joinToString(separator = "\n") {template ->
-          itens.map {imprimir(it, template)}
+        etiquetas.joinToString(separator = "\n") {etiqueta ->
+          itens.map {imprimir(it, etiqueta)}
             .distinct()
             .joinToString(separator = "\n")
         }
@@ -171,15 +172,15 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
   }
 
   fun imprimeTudo() = execString {
-    val templates = Etiqueta.templates(INCLUIDA)
+    val etiquetas = Etiqueta.findByStatus(INCLUIDA)
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
-      .localizacao.startsWith(abreviacaoDefault)//TODO Essa regra não deveria ser aplicada em todos os casos
+      .localizacao.startsWith(abreviacaoDefault) //TODO Essa regra não deveria ser aplicada em todos os casos
       .status.eq(INCLUIDA)
       .findList()
-    templates.joinToString(separator = "\n") {template ->
-      itens.map {imprimir(it, template)}
+    etiquetas.joinToString(separator = "\n") {etiqueta ->
+      itens.map {imprimir(it, etiqueta)}
         .distinct()
         .joinToString(separator = "\n")
     }

@@ -252,34 +252,37 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
     return ViewProdutoLoc.localizacoesAbreviacaoCache(abreviacaoNota)
   }
 
-  fun imprimir(itemNota: ItemNota?, template: String) = execString {
-    val print = itemNota?.printEtiqueta()
-    itemNota?.let {
+  private fun imprimir(itemNota: ItemNota?, etiqueta: Etiqueta) = execString {
+    itemNota ?: return@execString ""
+    val tipoNota = itemNota.tipoNota ?: return@execString ""
+    if(!etiqueta.imprimivel(tipoNota)) return@execString  ""
+    val print = itemNota.printEtiqueta()
+    itemNota.let {
       it.refresh()
       it.impresso = true
       it.update()
     }
-    return@execString print?.print(template) ?: ""
+    print.print(etiqueta.template)
   }
 
   fun imprimir(itemNota: ItemNota?): String {
     itemNota ?: return ""
-    val templates = itemNota.templates
+    val etiquetas = itemNota.etiquetas
 
-    return templates.joinToString(separator = "\n") {template ->
-      imprimir(itemNota, template)
+    return etiquetas.joinToString(separator = "\n") {etiqueta ->
+      imprimir(itemNota, etiqueta)
     }
   }
 
   fun imprime() = execString {
-    val templates = Etiqueta.templates(statusDefault)
+    val etiquetas = Etiqueta.findByStatus(statusDefault)
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
       .status.eq(statusImpressao)
       .findList()
-    templates.joinToString(separator = "\n") {template ->
-      itens.map {imprimir(it, template)}
+    etiquetas.joinToString(separator = "\n") {etiqueta ->
+      itens.map {imprimir(it, etiqueta)}
         .distinct()
         .joinToString(separator = "\n")
     }

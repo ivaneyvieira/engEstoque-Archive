@@ -88,8 +88,8 @@ class ItemNota: BaseModel() {
         it.id == this.id
       } ?: true
     }
-  val templates: List<String>
-    @Transient get() = Etiqueta.templates(status)
+  val etiquetas: List<Etiqueta>
+    @Transient get() = Etiqueta.findByStatus(status)
   val abreviacao: String
     @Transient get() = localizacao.split('.').getOrNull(0) ?: ""
 

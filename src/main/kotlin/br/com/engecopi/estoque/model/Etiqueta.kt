@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.TipoNota.VENDA
 import br.com.engecopi.estoque.model.finder.EtiquetaFinder
 import br.com.engecopi.framework.model.BaseModel
 import javax.persistence.CascadeType.MERGE
@@ -25,21 +26,21 @@ class Etiqueta: BaseModel() {
   @OneToMany(mappedBy = "etiqueta", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   var etiquetaDefault: Boolean = false
+  val isCliente
+    get() = titulo.contains("CLiente")
 
   companion object Find: EtiquetaFinder() {
     fun find(titulo: String?, statusNota: StatusNota?): Etiqueta? {
-      titulo
-      ?: return null
-      statusNota
-      ?: return null
+      titulo ?: return null
+      statusNota ?: return null
       return where().titulo.eq(titulo)
         .statusNota.eq(statusNota)
         .findList()
         .firstOrNull()
     }
 
-    fun templates(statusNota: StatusNota?): List<String> =
-      where().statusNota.eq(statusNota).etiquetaDefault.eq(true).orderBy().titulo.asc().findList().map {it.template}
+    fun findByStatus(statusNota: StatusNota?): List<Etiqueta> =
+      where().statusNota.eq(statusNota).etiquetaDefault.eq(true).orderBy().titulo.asc().findList()
   }
 
   fun updateOutros() {
@@ -49,5 +50,9 @@ class Etiqueta: BaseModel() {
     //   .eq("status_nota", statusNota)
     //   .ne("id", id)
     //  .update()
+  }
+
+  fun imprimivel(tipoNota: TipoNota): Boolean {
+    return tipoNota == VENDA || isCliente
   }
 }
