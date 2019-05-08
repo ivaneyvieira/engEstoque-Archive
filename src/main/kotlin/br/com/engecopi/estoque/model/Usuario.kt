@@ -43,8 +43,8 @@ class Usuario: BaseModel() {
         .sorted()
         .joinToString()
     }
-  val isEstoqueSomente
-    get() = !admin && (expedicao || estoque)
+  val isEstoqueExpedicao
+    get() = !admin && expedicao && estoque
 
   private fun mapNotaSerie(idStr: String): NotaSerie? {
     val id = idStr.trim().toLongOrNull() ?: return null

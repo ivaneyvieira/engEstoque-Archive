@@ -52,15 +52,16 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
 
   override val query: QViewNotaExpedicao
     get() = ViewNotaExpedicao.where().let {query ->
-      val queryLoc = query.abreviacao.eq(abreviacaoDefault)
-        .loja.id.eq(lojaDefault.id)
-      if(usuarioDefault.isEstoqueSomente) filtroNotaSerie(queryLoc)
-      else queryLoc
+      query.loja.id.eq(lojaDefault.id)
+        .let {q ->
+          if(usuarioDefault.isEstoqueExpedicao) q.abreviacao.eq(abreviacaoDefault).filtroNotaSerie()
+          else q
+        }
     }
 
-  private fun filtroNotaSerie(query: QViewNotaExpedicao): QViewNotaExpedicao {
+  private fun QViewNotaExpedicao.filtroNotaSerie(): QViewNotaExpedicao {
     val series = usuarioDefault.series.map {it.serie}
-    val queryOr = query.or()
+    val queryOr = or()
     val querySeries = series.fold(queryOr) {q, serie ->
       q.nota.numero.endsWith("/$serie")
     }
@@ -131,7 +132,8 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
 
         if(itens.isEmpty()) throw EViewModel("Essa nota não possui itens com localização")
 
-        crudBean = ViewNotaExpedicao.findExpedicao(nota)?.toVO()
+        crudBean = ViewNotaExpedicao.findExpedicao(nota)
+          ?.toVO()
 
         return@execValue nota
       }
@@ -197,7 +199,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     }
     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
     else {
-      if(usuarioDefault.isEstoqueSomente) {
+      if(usuarioDefault.isEstoqueExpedicao) {
         val nota = notaSaci.firstOrNull() ?: throw EViewModel("Chave não encontrada")
         val notaSerie = nota.notaSerie() ?: throw EViewModel("Chave não encontrada")
         val serie = notaSerie.serie

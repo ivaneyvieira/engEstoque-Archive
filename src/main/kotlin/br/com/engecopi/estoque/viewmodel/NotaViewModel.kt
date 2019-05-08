@@ -32,11 +32,12 @@ import br.com.engecopi.utils.localDate
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
+abstract class NotaViewModel<VO: NotaVo>(view: IView,
+                                         val tipo: TipoMov,
                                          private val statusDefault: StatusNota,
                                          private val statusImpressao: StatusNota,
-                                         private val abreviacaoNota: String):
-  CrudViewModel<ItemNota, QItemNota, VO>(view) {
+                                         private val abreviacaoNota: String): CrudViewModel<ItemNota, QItemNota, VO>(
+  view) {
   override fun update(bean: VO) {
     if(bean.localizacao?.localizacao.isNullOrBlank()) throw EViewModel("Não foi especificado a localização do item")
     val nota = updateNota(bean)
@@ -59,10 +60,8 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
       if(Nota.itemDuplicado(nota, produto)) {
         val msg = "O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}."
         view.showWarning(msg)
-      }
-      else insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
-    }
-    else {
+      } else insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
+    } else {
       val produtos = bean.produtos.filter {it.selecionado && it.quantidade != 0}
       val produtosJaInserido = produtos.asSequence()
         .distinctBy {it.produto?.id}
@@ -78,14 +77,20 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
       produtos.filter {it.produto !in produtosJaInserido}
         .forEach {produto ->
           produto.let {prd ->
-            if(usuario.temProduto(prd.produto)) insertItemNota(nota, prd.produto, prd.quantidade, usuario,
+            if(usuario.temProduto(prd.produto)) insertItemNota(nota,
+                                                               prd.produto,
+                                                               prd.quantidade,
+                                                               usuario,
                                                                prd.localizacao?.localizacao)
           }
         }
     }
   }
 
-  private fun insertItemNota(nota: Nota, produto: Produto?, quantProduto: Int, usuario3: Usuario,
+  private fun insertItemNota(nota: Nota,
+                             produto: Produto?,
+                             quantProduto: Int,
+                             usuario3: Usuario,
                              local: String?): ItemNota? {
     if(local.isNullOrBlank()) throw EViewModel("Não foi especificado a localização do item")
     val saldoLocal = produto?.saldoLoja(local) ?: 0
@@ -111,8 +116,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
           item
         }
       }
-    }
-    else null
+    } else null
   }
 
   private fun updateItemNota(bean: VO, nota: Nota, produto: Produto?) {
@@ -188,15 +192,14 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
         .nota.tipoMov.eq(tipo)
         .filtroStatus()
         .nota.loja.id.eq(lojaDefault.id)
-        .let {
-          if(usuarioDefault.admin) it
-          else it.localizacao.startsWith(abreviacaoNota)
+        .let {query ->
+          if(usuarioDefault.admin) query
+          else query.localizacao.startsWith(abreviacaoNota)
         }
     }
 
   abstract fun createVo(): VO
   //TODO fazer o createVo generico
-
   override fun ItemNota.toVO(): VO {
     val itemNota = this
     return createVo().apply {
@@ -268,7 +271,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView, val tipo: TipoMov,
     }
   }
 
-  fun imprime()= execString {
+  fun imprime() = execString {
     val templates = Etiqueta.templates(statusDefault)
     //TODO Refatorar
     val itens = ItemNota.where()
@@ -342,8 +345,7 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): En
       if(nota != null) {
         tipoNota = TipoNota.value(nota.tipo) ?: OUTROS_E
         rota = nota.rota
-      }
-      else {
+      } else {
         tipoNota = OUTROS_E
         rota = ""
       }
@@ -364,13 +366,11 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): En
                   if(localizacao == ultimaLocalizacao) {
                     quantidade = quant
                     quant = 0
-                  }
-                  else {
+                  } else {
                     quantidade = saldo
                     quant -= saldo
                   }
-                }
-                else {
+                } else {
                   quantidade = quant
                   quant = 0
                 }
@@ -379,8 +379,7 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): En
             }
             .toList()
           produtosLocais
-        }
-        else listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
+        } else listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
           quantidade = notaSaci.quant ?: 0
         })
       }

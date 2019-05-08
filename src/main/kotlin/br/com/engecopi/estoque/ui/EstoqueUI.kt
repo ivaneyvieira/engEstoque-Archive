@@ -53,14 +53,12 @@ import javax.servlet.http.Cookie
 @Theme("mytheme")
 @Title("Controle de estoque")
 @Viewport("width=device-width, initial-scale=1.0")
-@JavaScript("https://code.jquery.com/jquery-2.1.4.min.js",
-            "https://code.responsivevoice.org/responsivevoice.js")
+@JavaScript("https://code.jquery.com/jquery-2.1.4.min.js", "https://code.responsivevoice.org/responsivevoice.js")
 @PushStateNavigation
 @PreserveOnRefresh
-class EstoqueUI : UI() {
+class EstoqueUI: UI() {
   val title = "<h3>Estoque <strong>Engecopi</strong></h3>"
   private val versao = SystemUtils.readFile("/versao.txt")
-
   var loginInfo: LoginInfo? = null
     set(value) {
       field = value
@@ -77,7 +75,7 @@ class EstoqueUI : UI() {
 
   private fun updateContent(contextPath: String) {
     val info = loginInfo
-    if (info == null) {
+    if(info == null) {
       content = LoginForm("$title <p align=\"right\">$versao</p>")
       navigator = null
     } else {
@@ -88,8 +86,7 @@ class EstoqueUI : UI() {
         this.appTitle = title
         section("Login") {
           menuButton("Usuário:", badge = user.loginName)
-          if (user.estoque || user.admin)
-            menuButton("Localizacao:", badge = info.abreviacao)
+          if(user.estoque || user.admin) menuButton("Localizacao:", badge = info.abreviacao)
           menuButton("Loja:", badge = info.usuario.loja?.sigla ?: "")
           menuButton(caption = "Endereco: ", badge = RegistryUserInfo.endereco)
           menuButton("Sair", icon = OUT) {
@@ -99,23 +96,22 @@ class EstoqueUI : UI() {
           }
         }
 
-
-        section("Expedição") {
-          menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
-          if(user.expedicao || user.admin) {
+        if(user.expedicao || user.admin) {
+          section("Expedição") {
+            menuButton("Nota Fiscal", NEWSPAPER, view = NFExpedicaoView::class.java)
             menuButton("Entrega ao Cliente", TRUCK, view = EntregaClienteView::class.java)
             menuButton("Editor de Entrega", TRUCK, view = EntregaClienteEditorView::class.java)
           }
         }
 
-        if (user.estoque || user.admin) {
+        if(user.estoque || user.admin) {
           section("Movimentação") {
             menuButton("Entrada", INBOX, view = EntradaView::class.java)
             menuButton("Saída", OUTBOX, view = SaidaView::class.java)
           }
           section("Consulta") {
             menuButton("Produtos", PACKAGE, view = ProdutoView::class.java)
-            if (user.admin) {
+            if(user.admin) {
               menuButton("Usuários", USER, view = UsuarioView::class.java)
               menuButton("Etiquetas", PAPERCLIP, view = EtiquetaView::class.java)
             }
@@ -127,35 +123,32 @@ class EstoqueUI : UI() {
       navigator.addProvider(autoViewProvider)
 
 
-      setErrorHandler { e -> errorHandler(e) }
-      if (user.expedicao)
-        navigator.navigateTo(if (contextPath == "") "nf_expedicao" else contextPath)
-      else
-        navigator.navigateTo(contextPath)
+      setErrorHandler {e -> errorHandler(e)}
+      if(user.expedicao) navigator.navigateTo(if(contextPath == "") "nf_expedicao" else contextPath)
+      else navigator.navigateTo(contextPath)
     }
   }
 
   private fun errorHandler(e: ErrorEvent) {
     log?.error("Erro não identificado ${e.throwable.message}", e.throwable)
     // when the exception occurs, show a nice notification
-    Notification("Oops", "\n" +
-                         "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
-                 ERROR_MESSAGE)
-      .apply {
-        styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
-        position = TOP_CENTER
-        show(Page.getCurrent())
-      }
+    Notification("Oops",
+                 "\n" + "Ocorreu um erro e lamentamos muito isso. Já está trabalhando na correção!",
+                 ERROR_MESSAGE).apply {
+      styleName += " " + ValoTheme.NOTIFICATION_CLOSABLE
+      position = TOP_CENTER
+      show(Page.getCurrent())
+    }
   }
 
   companion object {
     val current
-      get() = UI.getCurrent() as? EstoqueUI
+      get() = getCurrent() as? EstoqueUI
   }
 }
 
 @WebListener
-class Bootstrap : ServletContextListener {
+class Bootstrap: ServletContextListener {
   override fun contextDestroyed(sce: ServletContextEvent?) {
     log?.info("Shutting down")
     log?.info("Destroying VaadinOnKotlin")
@@ -173,7 +166,7 @@ class Bootstrap : ServletContextListener {
 
 @WebServlet(urlPatterns = ["/*"], name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = EstoqueUI::class, productionMode = false)
-class MyUIServlet : VaadinServlet() {
+class MyUIServlet: VaadinServlet() {
   companion object {
     init {
       // Vaadin logs into java.util.logging. Redirect that, so that all logging goes through slf4j.
@@ -189,13 +182,17 @@ fun setCookie(nome: String, valor: String) {
   // Make cookie expire in 2 minutes
   myCookie.maxAge = 60 * 60 * 24 * 5
   // Set the cookie path.
-  myCookie.path = VaadinService.getCurrentRequest().contextPath
+  myCookie.path = VaadinService.getCurrentRequest()
+    .contextPath
   // Save cookie
-  VaadinService.getCurrentResponse().addCookie(myCookie)
+  VaadinService.getCurrentResponse()
+    .addCookie(myCookie)
 }
 
 fun getCokies(name: String): String? {
-  val cookie = VaadinService.getCurrentRequest().cookies.toList().firstOrNull { it.name == name }
+  val cookie = VaadinService.getCurrentRequest()
+    .cookies.toList()
+    .firstOrNull {it.name == name}
   cookie?.let {
     setCookie(it.name, it.value)
   }
