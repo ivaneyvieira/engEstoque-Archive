@@ -1,6 +1,5 @@
 package br.com.engecopi.estoque.model
 
-import br.com.engecopi.estoque.model.TipoNota.VENDA
 import br.com.engecopi.estoque.model.finder.EtiquetaFinder
 import br.com.engecopi.framework.model.BaseModel
 import javax.persistence.CascadeType.MERGE
@@ -53,6 +52,7 @@ class Etiqueta: BaseModel() {
   }
 
   fun imprimivel(tipoNota: TipoNota): Boolean {
-    return tipoNota == VENDA || isCliente
+    // return tipoNota != VENDA || isCliente
+    return true
   }
 }

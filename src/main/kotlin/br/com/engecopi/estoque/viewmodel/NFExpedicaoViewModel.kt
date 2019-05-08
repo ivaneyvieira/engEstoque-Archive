@@ -142,7 +142,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
   private fun imprimir(itemNota: ItemNota?, etiqueta: Etiqueta) = execString {
     itemNota ?: return@execString ""
     val tipoNota = itemNota.tipoNota ?: return@execString ""
-    if(!etiqueta.imprimivel(tipoNota)) return@execString  ""
+    if(!etiqueta.imprimivel(tipoNota) ) return@execString  ""
     val print = itemNota.printEtiqueta()
     itemNota.let {
       it.refresh()
@@ -190,6 +190,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     val notaSaci = when {
       key.length == 44    -> Nota.findNotaSaidaKey(key)
       key.endsWith("/1")  -> Nota.findNotaSaidaSaci(key)
+      key.endsWith("/3")  -> Nota.findNotaSaidaSaci(key)
       key.endsWith("/5")  -> Nota.findNotaSaidaSaci(key)
       key.endsWith("/10") -> Nota.findNotaSaidaSaci(key)
       !key.contains('/')  -> Nota.findNotaSaidaSaci(key) //Pedido
