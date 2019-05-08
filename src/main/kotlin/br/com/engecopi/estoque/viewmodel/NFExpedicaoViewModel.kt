@@ -175,6 +175,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
+      .localizacao.startsWith(abreviacaoDefault)//TODO Essa regra não deveria ser aplicada em todos os casos
       .status.eq(INCLUIDA)
       .findList()
     templates.joinToString(separator = "\n") {template ->
