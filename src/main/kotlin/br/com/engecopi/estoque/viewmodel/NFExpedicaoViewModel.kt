@@ -14,7 +14,6 @@ import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoNota
-import br.com.engecopi.estoque.model.TipoNota.VENDA
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.ViewProdutoLoc
@@ -142,7 +141,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
   private fun imprimir(itemNota: ItemNota?, etiqueta: Etiqueta) = execString {
     itemNota ?: return@execString ""
     val tipoNota = itemNota.tipoNota ?: return@execString ""
-    if(!etiqueta.imprimivel(tipoNota) ) return@execString  ""
+    if(!etiqueta.imprimivel(tipoNota)) return@execString ""
     val print = itemNota.printEtiqueta()
     itemNota.let {
       it.refresh()
@@ -176,7 +175,10 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     //TODO Refatorar
     val itens = ItemNota.where()
       .impresso.eq(false)
-      .localizacao.startsWith(abreviacaoDefault) //TODO Essa regra não deveria ser aplicada em todos os casos
+      .let {q ->
+        if(usuarioDefault.estoque) q.localizacao.startsWith(abreviacaoDefault)
+        else q
+      }
       .status.eq(INCLUIDA)
       .findList()
     etiquetas.joinToString(separator = "\n") {etiqueta ->
@@ -196,7 +198,8 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       !key.contains('/')  -> Nota.findNotaSaidaSaci(key) //Pedido
       else                -> throw EViewModel("Chave não encontrada")
     }.filter {ns ->
-      ViewProdutoLoc.filtraLoc(ns.prdno, ns.grade)
+      if(usuarioDefault.isEstoqueExpedicao) ViewProdutoLoc.filtraLoc(ns.prdno, ns.grade)
+      else true
     }
     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
     else {
