@@ -161,8 +161,7 @@ class Produto: BaseModel() {
   }
 
   fun localizacoes(): List<String> {
-    return ViewProdutoLoc.localizacoesProdutoCache(produto = this)
-      .sorted()
+    return ViewProdutoLoc.localizacoesProduto(produto = this)
   }
 
   fun prefixoLocalizacoes(): String {

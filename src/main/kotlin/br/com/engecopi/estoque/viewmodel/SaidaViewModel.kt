@@ -35,14 +35,17 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
     return@execValue Nota.findSaida(item.numero)
   }
 
-  fun confirmaProdutos(itens: List<ItemNota>, situacao : StatusNota) = exec {
-    itens.forEach { itemNota ->
-      itemNota.refresh()
-      itemNota.status = situacao
-      itemNota.impresso = false
-      itemNota.usuario = RegistryUserInfo.usuarioDefault
-      itemNota.update()
-      itemNota.recalculaSaldos()
+  fun confirmaProdutos(itens: List<ProdutoVO>, situacao : StatusNota) = exec {
+    itens.forEach { produtoVO ->
+      produtoVO.value?.run {
+        refresh()
+        status = situacao
+        impresso = false
+        usuario = RegistryUserInfo.usuarioDefault
+        localizacao = produtoVO.localizacao?.localizacao ?: ""
+        update()
+        recalculaSaldos()
+      }
     }
   }
 }

@@ -378,8 +378,8 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
                 .filter {it.saldoFinal >= 0}
               val allItens = gridProdutos.dataProvider.getAll()
               val naoSelect = allItens.minus(itens)
-              viewModel.confirmaProdutos(itens.mapNotNull {vo -> vo.value}, CONFERIDA)
-              viewModel.confirmaProdutos(naoSelect.mapNotNull {vo -> vo.value}, ENT_LOJA)
+              viewModel.confirmaProdutos(itens, CONFERIDA)
+              viewModel.confirmaProdutos(naoSelect, ENT_LOJA)
               close()
             }
           }
