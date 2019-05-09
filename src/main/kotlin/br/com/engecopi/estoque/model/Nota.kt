@@ -70,7 +70,7 @@ class Nota: BaseModel() {
   @ManyToOne(cascade = [PERSIST, MERGE, REFRESH])
   var usuario: Usuario? = null
   @Aggregation("max(sequencia)")
-  var maxSequencia: Int = 0
+  var maxSequencia: Int? = 0
   val multipicadorCancelado
     get() = if(tipoNota == CANCELADA_E || tipoNota == CANCELADA_S) 0 else 1
 
