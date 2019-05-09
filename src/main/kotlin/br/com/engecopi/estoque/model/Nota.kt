@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.TipoNota.CANCELADA_E
 import br.com.engecopi.estoque.model.TipoNota.CANCELADA_S
 import br.com.engecopi.estoque.model.TipoNota.DEV_FOR
 import br.com.engecopi.estoque.model.TipoNota.ENT_RET
+import br.com.engecopi.estoque.model.TipoNota.OUTROS_S
 import br.com.engecopi.estoque.model.TipoNota.PEDIDO_S
 import br.com.engecopi.estoque.model.TipoNota.TRANSFERENCIA_S
 import br.com.engecopi.estoque.model.TipoNota.VENDA
@@ -227,6 +228,8 @@ data class NotaSerie(val id: Long, val tipoNota: TipoNota) {
                         NotaSerie(3, TRANSFERENCIA_S),
                         NotaSerie(4, ACERTO_S),
                         NotaSerie(5, PEDIDO_S),
-                        NotaSerie(6, DEV_FOR))
+                        NotaSerie(6, DEV_FOR),
+                        NotaSerie(7, OUTROS_S)
+                        )
   }
 }
