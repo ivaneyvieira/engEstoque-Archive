@@ -176,8 +176,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     val itens = ItemNota.where()
       .impresso.eq(false)
       .let {q ->
-        if(usuarioDefault.estoque)
-          q.localizacao.startsWith(abreviacaoDefault)
+        if(usuarioDefault.estoque) q.localizacao.startsWith(abreviacaoDefault)
         else q
       }
       .status.eq(INCLUIDA)
@@ -199,7 +198,8 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
       !key.contains('/')  -> Nota.findNotaSaidaSaci(key) //Pedido
       else                -> throw EViewModel("Chave não encontrada")
     }.filter {ns ->
-      ViewProdutoLoc.filtraLoc(ns.prdno, ns.grade)
+      if(usuarioDefault.isEstoqueExpedicao) ViewProdutoLoc.filtraLoc(ns.prdno, ns.grade)
+      else true
     }
     if(notaSaci.isEmpty()) throw EViewModel("Chave não encontrada")
     else {

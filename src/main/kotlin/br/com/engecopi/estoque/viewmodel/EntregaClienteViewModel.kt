@@ -17,7 +17,7 @@ class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view
                                                                             SAIDA,
                                                                             ENTREGUE,
                                                                             CONFERIDA,
-                                                                            abreviacaoDefault) {
+                                                                            "") {
   override fun newBean(): EntregaClienteVo {
     return EntregaClienteVo()
   }
