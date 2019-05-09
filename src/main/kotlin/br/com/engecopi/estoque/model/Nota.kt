@@ -233,3 +233,8 @@ data class NotaSerie(val id: Long, val tipoNota: TipoNota) {
                         )
   }
 }
+
+fun NotaSaci.notaSerie(): NotaSerie? {
+  val tipo = TipoNota.value(tipo)
+  return NotaSerie.findByTipo(tipo)
+}

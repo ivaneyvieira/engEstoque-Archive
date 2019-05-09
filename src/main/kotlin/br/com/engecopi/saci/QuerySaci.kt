@@ -27,7 +27,7 @@ class QuerySaci : QueryDB(driver, url, username, password) {
       if (nfs.isNotEmpty())
         nfs
       else
-        findNotaSaidaKey(storeno, nfno, nfse)
+        findNotaSaidaPxa(storeno, nfno, nfse)
     }
   }
 
@@ -50,7 +50,7 @@ class QuerySaci : QueryDB(driver, url, username, password) {
     }
   }
 
-  private fun findNotaSaidaKey(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
+  private fun findNotaSaidaPxa(storeno: Int, nfno: String, nfse: String): List<NotaSaci> {
     val sql = "/sqlSaci/findNotaSaidaPXA.sql"
     return query(sql) { q ->
       q.addParameter("storeno", storeno)

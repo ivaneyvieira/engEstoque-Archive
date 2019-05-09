@@ -17,6 +17,7 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.ViewProdutoLoc
+import br.com.engecopi.estoque.model.notaSerie
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import br.com.engecopi.estoque.ui.log
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -211,11 +212,6 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
         else throw EViewModel("O usuário não está habilitado para lançar esse tipo de nota (${notaSerie.descricao})")
       } else notaSaci
     }
-  }
-
-  fun NotaSaci.notaSerie(): NotaSerie? {
-    val tipo = TipoNota.value(tipo)
-    return NotaSerie.findByTipo(tipo)
   }
 
   fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)

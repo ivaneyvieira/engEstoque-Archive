@@ -1,4 +1,3 @@
-import com.sun.javafx.scene.CameraHelper.project
 import io.ebean.gradle.EnhancePluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -13,7 +12,7 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    classpath("io.ebean:ebean-gradle-plugin:11.37.1")
+    classpath("io.ebean:ebean-gradle-plugin:11.38.1")
   }
 }
 
@@ -51,7 +50,7 @@ vaadin {
 }
 
 configure<EnhancePluginExtension> {
-  debugLevel = 0
+  debugLevel = 9
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
@@ -81,7 +80,6 @@ dependencies {
   compile("io.ebean:ebean:11.38.1")
   // compile "io.ebean:querybean-generator:11.37.1"
   compile("io.ebean:ebean-querybean:11.38.1")
-
   //compile "io.ebean:ebean-annotation:4.7"
   compile("io.ebean.tools:finder-generator:11.34.1")
 

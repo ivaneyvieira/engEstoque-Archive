@@ -77,5 +77,13 @@ class ViewProdutoLoc(@Id
       val abreviacoes = findCache(produto).map {it.abreviacao}
       return abreviacoes.contains(RegistryUserInfo.abreviacaoDefault)
     }
+
+    fun findByCodigoGrade(prdno: String?, grade: String?): List<ViewProdutoLoc> {
+      prdno ?: return emptyList()
+      grade ?: return emptyList()
+      return where().codigo.eq(prdno.padStart(16, ' '))
+        .grade.eq(grade)
+        .findList()
+    }
   }
 }

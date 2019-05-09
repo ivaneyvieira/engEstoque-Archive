@@ -118,10 +118,9 @@ class EstoqueUI: UI() {
           }
         }
       }
-      // Read more about navigators here: https://github.com/mvysny/karibu-dsl
+
       navigator = Navigator(this, content as ViewDisplay)
       navigator.addProvider(autoViewProvider)
-
 
       setErrorHandler {e -> errorHandler(e)}
       if(user.expedicao) navigator.navigateTo(if(contextPath == "") "nf_expedicao" else contextPath)
