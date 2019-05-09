@@ -1,7 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota
@@ -9,6 +8,7 @@ import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
+import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.notaSerie
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -30,13 +30,15 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   override fun createVo() = SaidaVo()
 
   fun processaKey(key: String) = execValue {
-    processaKeyBarcode(key) ?: processaKeyNumero(key)
+    processaKeyBarcode(key) ?: if(usuarioDefault.isEstoqueExpedicao) {
+      processaKeyNumero(key)
+    } else null
   }
 
   private fun processaKeyNumero(key: String): Nota? {
-    val notaSaci = Nota.findNotaSaidaSaci(key).firstOrNull() ?: throw EViewModel("Código de barras inválido")
-    val notaSerie = notaSaci.notaSerie() ?: throw EViewModel("Código de barras inválido")
-    if(usuarioDefault.series.contains(notaSerie))
+    val notaSaci = Nota.findNotaSaidaSaci(key)
+      .firstOrNull()
+    return  Nota.findSaida(notaSaci?.numeroSerie())  Nota.createNota(notaSaci)
   }
 
   private fun processaKeyBarcode(key: String): Nota? {
@@ -51,7 +53,7 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
         refresh()
         status = situacao
         impresso = false
-        usuario = RegistryUserInfo.usuarioDefault
+        usuario = usuarioDefault
         localizacao = produtoVO.localizacao?.localizacao ?: ""
         update()
         recalculaSaldos()

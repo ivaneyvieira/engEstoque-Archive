@@ -78,7 +78,7 @@ class Nota: BaseModel() {
     fun createNota(notasaci: NotaSaci?): Nota? {
       notasaci ?: return null
       return Nota().apply {
-        numero = "${notasaci.numero}/${notasaci.serie}"
+        numero = notasaci.numeroSerie()
         tipoNota = TipoNota.values()
           .find {it.toString() == notasaci.tipo}
         tipoMov = tipoNota?.tipoMov ?: ENTRADA
@@ -229,8 +229,7 @@ data class NotaSerie(val id: Long, val tipoNota: TipoNota) {
                         NotaSerie(4, ACERTO_S),
                         NotaSerie(5, PEDIDO_S),
                         NotaSerie(6, DEV_FOR),
-                        NotaSerie(7, OUTROS_S)
-                        )
+                        NotaSerie(7, OUTROS_S))
   }
 }
 
