@@ -3,6 +3,7 @@ package br.com.engecopi.estoque.ui.views
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.LocProduto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
 import br.com.engecopi.estoque.viewmodel.ProdutoViewModel
@@ -129,7 +130,7 @@ class ProdutoView: CrudLayoutView<ProdutoVo, ProdutoViewModel>() {
             grid(ItemNota::class) {
               expand = 2
               removeAllColumns()
-              editor.isEnabled = true
+              editor.isEnabled = usuarioDefault.admin
               val comboLoc = ComboBox<String>().apply {
                 isEmptySelectionAllowed = false
                 isTextInputAllowed = false
