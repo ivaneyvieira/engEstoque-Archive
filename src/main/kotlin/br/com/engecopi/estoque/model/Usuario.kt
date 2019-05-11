@@ -78,7 +78,8 @@ class Usuario: BaseModel() {
       .mapNotNull {it.localizacao}
   }
 
-  fun isTipoCompativel(tipo: TipoNota): Boolean {
+  fun isTipoCompativel(tipo: TipoNota?): Boolean {
+    tipo ?: return false
     return series.any {it.tipoNota == tipo}
   }
 

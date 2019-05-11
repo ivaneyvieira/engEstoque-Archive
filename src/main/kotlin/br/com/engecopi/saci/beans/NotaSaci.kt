@@ -1,5 +1,6 @@
 package br.com.engecopi.saci.beans
 
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 
 class NotaSaci(val rota: String?,
@@ -19,6 +20,8 @@ class NotaSaci(val rota: String?,
   fun localizacaoes(): List<ViewProdutoLoc> {
     return ViewProdutoLoc.findByCodigoGrade(prdno, grade)
   }
+
+  fun tipoNota(): TipoNota? = TipoNota.value(tipo)
 
   fun numeroSerie(): String {
     numero ?: return ""

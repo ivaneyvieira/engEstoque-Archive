@@ -30,15 +30,16 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   override fun createVo() = SaidaVo()
 
   fun processaKey(key: String) = execValue {
-    processaKeyBarcode(key) ?: if(usuarioDefault.isEstoqueExpedicao) {
-      processaKeyNumero(key)
-    } else null
+    processaKeyBarcode(key) ?: processaKeyNumero(key)
   }
 
   private fun processaKeyNumero(key: String): Nota? {
-    val notaSaci = Nota.findNotaSaidaSaci(key)
-      .firstOrNull()
-    return  Nota.findSaida(notaSaci?.numeroSerie())  Nota.createNota(notaSaci)
+    val notaSaci =
+      Nota.findNotaSaidaSaci(key)
+        .firstOrNull()
+    return if(usuarioDefault.isTipoCompativel(notaSaci?.tipoNota())) Nota.findSaida(notaSaci?.numeroSerie())
+                                                                     ?: Nota.createNota(notaSaci)
+    else null
   }
 
   private fun processaKeyBarcode(key: String): Nota? {
