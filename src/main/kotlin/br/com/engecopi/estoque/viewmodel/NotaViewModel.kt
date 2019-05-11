@@ -60,16 +60,19 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
       if(Nota.itemDuplicado(nota, produto)) {
         val msg = "O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}."
         view.showWarning(msg)
-      } else insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
-    } else {
+      }
+      else insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
+    }
+    else {
       val produtos = bean.produtos.filter {it.selecionado && it.quantidade != 0}
-      val produtosJaInserido = produtos.asSequence()
-        .distinctBy {it.produto?.id}
-        .filter {prd ->
-          prd.produto?.let {Nota.itemDuplicado(nota, it)} ?: false
-        }
-        .map {it.produto}
-        .filterNotNull()
+      val produtosJaInserido =
+        produtos.asSequence()
+          .distinctBy {it.produto?.id}
+          .filter {prd ->
+            prd.produto?.let {Nota.itemDuplicado(nota, it)} ?: false
+          }
+          .map {it.produto}
+          .filterNotNull()
       produtosJaInserido.forEach {prd ->
         val msg = "O produto ${prd.codigo} - ${prd.descricao}. Já foi inserido na nota ${nota.numero}."
         view.showWarning(msg)
@@ -116,7 +119,8 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
           item
         }
       }
-    } else null
+    }
+    else null
   }
 
   private fun updateItemNota(bean: VO, nota: Nota, produto: Produto?) {
@@ -255,7 +259,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   private fun imprimir(itemNota: ItemNota?, etiqueta: Etiqueta) = execString {
     itemNota ?: return@execString ""
     val tipoNota = itemNota.tipoNota ?: return@execString ""
-    if(!etiqueta.imprimivel(tipoNota)) return@execString  ""
+    if(!etiqueta.imprimivel(tipoNota)) return@execString ""
     val print = itemNota.printEtiqueta()
     itemNota.let {
       it.refresh()
@@ -277,10 +281,11 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   fun imprime() = execString {
     val etiquetas = Etiqueta.findByStatus(statusDefault)
     //TODO Refatorar
-    val itens = ItemNota.where()
-      .impresso.eq(false)
-      .status.eq(statusImpressao)
-      .findList()
+    val itens =
+      ItemNota.where()
+        .impresso.eq(false)
+        .status.eq(statusImpressao)
+        .findList()
     etiquetas.joinToString(separator = "\n") {etiqueta ->
       itens.map {imprimir(it, etiqueta)}
         .distinct()
@@ -348,44 +353,52 @@ abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): En
       if(nota != null) {
         tipoNota = TipoNota.value(nota.tipo) ?: OUTROS_E
         rota = nota.rota
-      } else {
+      }
+      else {
         tipoNota = OUTROS_E
         rota = ""
       }
       produtos.clear()
-      val produtosVo = notaProdutoSaci.flatMap {notaSaci ->
-        val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        val localizacoes = prd?.localizacoes()
-          .orEmpty()
-          .sorted()
-        val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
-        return@flatMap if(tipoNota.tipoMov == SAIDA) {
-          var quant = notaSaci.quant ?: 0
-          val produtosLocais = localizacoes.asSequence()
-            .map {localizacao ->
-              ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao)).apply {
-                val saldo = saldo
-                if(quant > 0) if(quant > saldo) {
-                  if(localizacao == ultimaLocalizacao) {
-                    quantidade = quant
-                    quant = 0
-                  } else {
-                    quantidade = saldo
-                    quant -= saldo
+      val produtosVo =
+        notaProdutoSaci.filter {!it.isSave()}
+          .flatMap {notaSaci ->
+            val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+            val localizacoes =
+              prd?.localizacoes()
+                .orEmpty()
+                .sorted()
+            val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
+            return@flatMap if(tipoNota.tipoMov == SAIDA) {
+              var quant = notaSaci.quant ?: 0
+              val produtosLocais =
+                localizacoes.asSequence()
+                  .map {localizacao ->
+                    ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao)).apply {
+                      val saldo = saldo
+                      if(quant > 0) if(quant > saldo) {
+                        if(localizacao == ultimaLocalizacao) {
+                          quantidade = quant
+                          quant = 0
+                        }
+                        else {
+                          quantidade = saldo
+                          quant -= saldo
+                        }
+                      }
+                      else {
+                        quantidade = quant
+                        quant = 0
+                      }
+                      else quantidade = 0
+                    }
                   }
-                } else {
-                  quantidade = quant
-                  quant = 0
-                }
-                else quantidade = 0
-              }
+                  .toList()
+              produtosLocais
             }
-            .toList()
-          produtosLocais
-        } else listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
-          quantidade = notaSaci.quant ?: 0
-        })
-      }
+            else listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
+              quantidade = notaSaci.quant ?: 0
+            })
+          }
       produtos.addAll(produtosVo.asSequence().filter {
         it.quantidade != 0 && it.codigo != "" && it.localizacao?.localizacao?.startsWith(abreviacaoNota) ?: false
       }.sortedWith(compareBy(ProdutoVO::codigo, ProdutoVO::grade, ProdutoVO::localizacao)).toList())

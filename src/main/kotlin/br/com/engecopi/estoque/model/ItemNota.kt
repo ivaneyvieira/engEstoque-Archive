@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.StatusNota.ENT_LOJA
@@ -128,6 +129,14 @@ class ItemNota: BaseModel() {
         localizacao = locProduto
       }
     }
+
+    fun isSave(notaSaci: NotaSaci): Boolean {
+      return where().produto.codigo.eq(notaSaci.prdno?.padStart(16, ' '))
+        .produto.grade.eq(notaSaci.grade)
+        .nota.numero.eq(notaSaci.numeroSerie())
+        .nota.loja.equalTo(lojaDefault)
+        .exists()
+    }
   }
 
   fun printEtiqueta() = NotaPrint(this)
@@ -152,7 +161,7 @@ class ItemNota: BaseModel() {
   }
 
   fun desfazerOperacao() {
-    if(status == ENT_LOJA || status == ENTREGUE || status == CONFERIDA){
+    if(status == ENT_LOJA || status == ENTREGUE || status == CONFERIDA) {
       status = INCLUIDA
       save()
     }
