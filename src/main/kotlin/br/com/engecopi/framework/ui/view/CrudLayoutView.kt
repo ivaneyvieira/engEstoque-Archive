@@ -242,8 +242,9 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   }
 
   fun itemContains(item: C?): Boolean {
-    item ?: return false
-    return viewModel.existsBean(item)
+    return false
+    //    item ?: return false
+    //  return viewModel.existsBean(item)
   }
 
   private fun readButtonClicked() {
@@ -353,7 +354,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
 
   fun showForm(operation: CrudOperation, form: Component) {
     //if(operation != READ) {
-      showWindow(windowCaptions[operation], form)
+    showWindow(windowCaptions[operation], form)
     //}
   }
 
@@ -424,7 +425,7 @@ class CrudForm<C: EntityVo<*>>(val operation: CrudOperation,
   val buttonIcons = HashMap<CrudOperation, Resource?>()
   val buttonStyleNames = HashMap<CrudOperation, String?>()
   val formLayout = VerticalLayout()
-  var operationButton : Button? = null
+  var operationButton: Button? = null
 
   init {
     updateButtons()

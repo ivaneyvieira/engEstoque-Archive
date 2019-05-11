@@ -101,6 +101,10 @@ class ProdutoViewModel(view: IView) :
   fun localizacoes(bean: ProdutoVo?): List<LocProduto> {
     return bean?.produto?.localizacoes().orEmpty().map { LocProduto(it) }
   }
+
+  fun saveItem(item: ItemNota?) {
+    item?.save()
+  }
 }
 
 class ProdutoVo : EntityVo<Produto>() {
