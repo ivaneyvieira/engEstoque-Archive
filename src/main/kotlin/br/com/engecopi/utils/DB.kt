@@ -2,7 +2,6 @@ package br.com.engecopi.utils
 
 import java.io.File
 import java.io.FileReader
-import java.io.StringReader
 import java.util.*
 
 class DB(banco: String) {

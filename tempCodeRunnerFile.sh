@@ -1,1 +1,0 @@
-build/libs/engEstoque-1.0-SNAPSHOT.war

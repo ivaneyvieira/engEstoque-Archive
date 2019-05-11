@@ -1,6 +1,6 @@
 SELECT DISTINCT ''            AS rota,
                 N.storeno,
-                CAST(N.nfno AS CHAR) AS numero,
+                N.nfno AS numero,
                 N.nfse AS serie,
                 N.date,
                 N.date as dt_emissao,
@@ -23,5 +23,6 @@ FROM sqlpdv.pxa AS                       N
 WHERE N.storeno = :storeno AND
       N.nfno = :nfno AND
       N.nfse = :nfse AND
-      processed = 0
+      processed = 0 AND
+      N.date > DATE_SUB(current_date, INTERVAL 7 DAY)
 GROUP BY P.storeno, P.pdvno, P.xano, P.prdno, P.grade

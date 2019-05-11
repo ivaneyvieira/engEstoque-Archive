@@ -1,5 +1,5 @@
 
-select P.invno, N.storeno, CAST(nfname AS CHAR) as numero, invse as serie,
+select P.invno, N.storeno, nfname           as numero, invse as serie,
        CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        N.date,
        N.issue_date                         AS dt_emissao,
@@ -25,13 +25,14 @@ where N.invno = (SELECT MAX(invno)
                  FROM sqldados.inv AS N
                  where N.storeno = :storeno
                      and nfname = :nfname
-                     and invse = :invse
+                     and invse = :invse AND
+                       N.date > DATE_SUB(current_date, INTERVAL 6 MONTH)
                      AND N.bits & POW(2, 4) = 0
                      AND N.auxShort13 & pow(2, 15) = 0
                      AND invse <> ''
 )
 UNION
-select 0                    as invno, N.storeno, CAST(ordno AS CHAR) as numero, '' as serie,
+select 0                    as invno, N.storeno, ordno as numero, '' as serie,
        cast(CONCAT(N.paymno) as char)      AS rota,
        N.date,
        N.date,
@@ -45,7 +46,8 @@ from sqldados.eord AS N
     ON E.codigo = P.prdno AND E.grade = P.grade
   left join sqldados.custp AS C
     ON C.no = N.custno
-WHERE N.paymno = 290 AND
+WHERE N.date > DATE_SUB(current_date, INTERVAL 6 MONTH) AND
+      N.paymno = 290 AND
       N.storeno = :storeno
       and (N.ordno = :nfname)
       and (:invse = '')

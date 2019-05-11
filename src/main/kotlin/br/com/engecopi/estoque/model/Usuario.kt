@@ -17,7 +17,7 @@ import javax.validation.constraints.Size
 
 @Entity
 @Table(name = "usuarios")
-class Usuario : BaseModel() {
+class Usuario: BaseModel() {
   @Size(max = 8)
   @Index(unique = true)
   var loginName: String = ""
@@ -25,31 +25,46 @@ class Usuario : BaseModel() {
   var loja: Loja? = null
   @Length(4000)
   var localizacaoes: String = ""
-  @OneToMany(
-    mappedBy = "usuario",
-    cascade = [PERSIST, MERGE, REFRESH]
-            )
+  @Length(4000)
+  var notaSeries: String = ""
+  @OneToMany(mappedBy = "usuario", cascade = [PERSIST, MERGE, REFRESH])
   val itensNota: List<ItemNota>? = null
   var locais: List<String>
-    get() = localizacaoes.split(",").asSequence().filter { it.isNotBlank() }.map { it.trim() }.toList()
+    get() = localizacaoes.split(",").asSequence().filter {it.isNotBlank()}.map {it.trim()}.toList()
     set(value) {
-      localizacaoes = value.asSequence().sorted().joinToString()
+      localizacaoes = value.asSequence()
+        .sorted()
+        .joinToString()
     }
+  var series: List<NotaSerie>
+    get() = notaSeries.split(",").filter {it.isNotBlank()}.mapNotNull {mapNotaSerie(it)}.toList()
+    set(value) {
+      notaSeries = value.map {it.id.toString()}
+        .sorted()
+        .joinToString()
+    }
+  val isEstoqueExpedicao
+    get() = !admin && expedicao && estoque
 
-  fun usuarioSaci() = saci.findUser(loginName)
+  private fun mapNotaSerie(idStr: String): NotaSerie? {
+    val id = idStr.trim().toLongOrNull() ?: return null
+    return NotaSerie.values.find {it.id == id}
+  }
+
+  private fun usuarioSaci() = saci.findUser(loginName)
   var admin: Boolean = false
+  var estoque: Boolean = true
+  var expedicao: Boolean = false
   val nome: String?
-    @Transient
-    get() = usuarioSaci()?.name
+    @Transient get() = usuarioSaci()?.name
 
   fun temProduto(produto: Produto?): Boolean {
     produto ?: return false
-    return ViewProdutoLoc.exists(produto)
+    return ViewProdutoLoc.existsCache(produto)
   }
 
   fun localizacoesProduto(produto: Produto): List<String> {
-    return ViewProdutoLoc
-      .where()
+    return ViewProdutoLoc.where()
       .produto.equalTo(produto)
       .or()
       .loja.equalTo(loja)
@@ -60,21 +75,33 @@ class Usuario : BaseModel() {
       .localizacao.isIn(locais)
       .endOr()
       .findList()
-      .mapNotNull { it.localizacao }
+      .mapNotNull {it.localizacao}
+  }
+
+  fun isTipoCompativel(tipo: TipoNota): Boolean {
+    return series.any {it.tipoNota == tipo}
   }
 
   val produtoLoc: List<Produto>
     get() {
-      return locais.flatMap { loc ->
-        ViewProdutoLoc.where().loja.id.eq(loja?.id).or().abreviacao.eq(loc).localizacao.eq(loc).endOr().findList()
-          .map { it.produto }
+      return locais.flatMap {loc ->
+        ViewProdutoLoc.where()
+          .loja.id.eq(loja?.id)
+          .or()
+          .abreviacao.eq(loc)
+          .localizacao.eq(loc)
+          .endOr()
+          .findList()
+          .map {it.produto}
       }
     }
 
-  companion object Find : UsuarioFinder() {
+  companion object Find: UsuarioFinder() {
     fun findUsuario(loginName: String?): Usuario? {
-      if (loginName.isNullOrBlank()) return null
-      return where().loginName.eq(loginName).findOne()
+      if(loginName.isNullOrBlank()) return null
+      return where().loginName.eq(loginName)
+        .findList()
+        .firstOrNull()
     }
 
     fun nomeSaci(value: String): String {
@@ -82,11 +109,12 @@ class Usuario : BaseModel() {
     }
 
     fun abreviacaoes(username: String?): List<String> {
-      return findUsuario(loginName = username)?.let { usuario ->
-        val locais = usuario.locais
-        if (locais.isEmpty())
-          usuario.loja?.findAbreviacores()
-        else locais
+      return findUsuario(loginName = username)?.let {usuario ->
+        if(usuario.estoque) {
+          val locais = usuario.locais
+          if(locais.isEmpty()) usuario.loja?.findAbreviacores()
+          else locais
+        } else emptyList()
       } ?: emptyList()
     }
 

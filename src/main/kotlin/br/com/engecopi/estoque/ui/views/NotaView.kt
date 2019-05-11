@@ -8,7 +8,8 @@ import br.com.engecopi.estoque.viewmodel.NotaViewModel
 import br.com.engecopi.estoque.viewmodel.NotaVo
 import br.com.engecopi.estoque.viewmodel.ProdutoVO
 import br.com.engecopi.framework.ui.view.CrudLayoutView
-import br.com.engecopi.framework.ui.view.GridCrudFlex
+import br.com.engecopi.framework.ui.view.CrudOperation
+import br.com.engecopi.framework.ui.view.CrudOperation.ADD
 import br.com.engecopi.framework.ui.view.bindItens
 import br.com.engecopi.framework.ui.view.bindVisible
 import br.com.engecopi.framework.ui.view.default
@@ -16,7 +17,6 @@ import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.framework.ui.view.integerField
 import br.com.engecopi.framework.ui.view.reloadBinderOnChange
 import br.com.engecopi.framework.ui.view.row
-import br.com.engecopi.framework.viewmodel.EntityVo
 import com.github.mvysny.karibudsl.v8.VAlign
 import com.github.mvysny.karibudsl.v8.VaadinDsl
 import com.github.mvysny.karibudsl.v8.addColumnFor
@@ -31,15 +31,12 @@ import com.github.mvysny.karibudsl.v8.textField
 import com.vaadin.data.Binder
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.icons.VaadinIcons
+import com.vaadin.icons.VaadinIcons.PRINT
 import com.vaadin.ui.Button
 import com.vaadin.ui.ComboBox
 import com.vaadin.ui.Grid.SelectionMode.MULTI
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.renderers.NumberRenderer
-import com.vaadin.ui.themes.ValoTheme
-import org.vaadin.crudui.crud.CrudOperation
-import org.vaadin.crudui.crud.CrudOperation.ADD
 import org.vaadin.patrik.FastNavigation
 
 abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView<VO, MODEL>() {
@@ -56,27 +53,29 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       isReadOnly = operation != ADD
       bind(binder).bind("numeroNF")
       reloadBinderOnChange(binder)
-      addValueChangeListener {e->
-        val msgAviso = binder.bean.msgAviso
-        if(e.isUserOriginated && msgAviso != "")
-          showWarning(msgAviso)
+    }
+  }
+
+  fun btnImprimeTudo(): Button {
+    return Button("Imprime Etiquetas").apply {
+      icon = PRINT
+      addClickListener {
+        openText(viewModel.imprime())
+        //grid.refreshGrid()
       }
     }
   }
 
-  fun <T : EntityVo<*>>btnImprimeTudo(grid : GridCrudFlex<T>) : Button{
-    val button = Button("Imprime Notas")
-    button.let {
-      it.icon = VaadinIcons.PRINT
-      print {
-        val print = viewModel.imprime()
-        print
-      }.extend(it)
-      it.addClickListener{
-        grid.refreshGrid()
+  fun btnDesfazer(): Button {
+    return Button("Cancelar").apply {
+      this.isVisible = usuario.admin
+      icon = VaadinIcons.CLOSE
+      addClickListener {
+        val itens = grid.selectedItems.firstOrNull()
+        if(itens == null) showError("Não há item selecionado")
+        else viewModel.desfazOperacao(itens.entityVo)
       }
     }
-    return button
   }
 
   inline fun <reified V : NotaVo> (@VaadinDsl HasComponents).lojaField(
@@ -132,7 +131,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
       }
       integerField("Qtd $tipo") {
         expand = 1
-        isReadOnly = (isAdmin == false) && (operation != ADD)
+        isReadOnly = (!this@NotaView.isAdmin) && (operation != ADD)
         this.bind(binder).bind("quantProduto")
       }
     }
@@ -191,7 +190,7 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
           caption = "Saldo Final"
           align = VAlign.Right
         }
-        bindItens(binder, NotaVo::produtosNaoInseridos.name)
+        bindItens(binder, "produtos")
         editor.addOpenListener { event ->
           event.bean.produto?.let { produto ->
             val locSulfixos = produto.localizacoes().map { LocProduto(it) }
@@ -203,20 +202,19 @@ abstract class NotaView<VO : NotaVo, MODEL : NotaViewModel<VO>> : CrudLayoutView
         val nav = FastNavigation<ProdutoVO>(this, false, true)
         nav.changeColumnAfterLastRow = true
         nav.openEditorWithSingleClick = true
-        nav.allowArrowToChangeRow=true
-        nav.openEditorOnTyping=true
+        nav.allowArrowToChangeRow = true
+        nav.openEditorOnTyping = true
         nav.addEditorSaveShortcut(ENTER)
         editor.cancelCaption = "Cancelar"
         editor.saveCaption = "Salvar"
         editor.isBuffered = false
         this.setStyleGenerator {
-          when {
-            it.saldoFinal < 0 -> "error_row"
-            it.isInsert       -> "uncheckable-row"
-            else              -> null
-          }
+          if (it.saldoFinal < 0)
+            "error_row"
+          else null
         }
       }
     }
   }
 }
+

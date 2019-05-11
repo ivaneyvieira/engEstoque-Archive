@@ -22,4 +22,3 @@ open class DevException(causa: Throwable?, menssagem: String) : AppException(cau
 open class UserException(causa: Throwable?, menssagem: String) : AppException(causa, menssagem)
 
 
-

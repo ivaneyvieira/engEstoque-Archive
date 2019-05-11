@@ -33,12 +33,36 @@ class QAssocNota<R>(name: String, root: R) : TQAssocBean<Nota,R>(name, root) {
   lateinit var rota: PString<R>
   lateinit var fornecedor: PString<R>
   lateinit var cliente: PString<R>
+  lateinit var lancamento: PLocalDate<R>
   lateinit var data: PLocalDate<R>
   lateinit var dataEmissao: PLocalDate<R>
   lateinit var hora: PLocalTime<R>
   lateinit var observacao: PString<R>
   lateinit var loja: QAssocLoja<R>
   lateinit var itensNota: QAssocItemNota<R>
+  lateinit var sequencia: PInteger<R>
+  lateinit var usuario: QAssocUsuario<R>
+  lateinit var maxSequencia: PInteger<R>
 
-  // type safe fetch(properties) using varargs not supported yet ...
+  /**
+   * Eagerly fetch this association loading the specified properties.
+   */
+  fun fetch(vararg properties: TQProperty<QNota>) : R {
+    return fetchProperties(*properties)
+  }
+
+  /**
+   * Eagerly fetch this association using a 'query join' loading the specified properties.
+   */
+  fun fetchQuery(vararg properties: TQProperty<QNota>) : R {
+    return fetchQueryProperties(*properties)
+  }
+
+  /**
+   * Use lazy loading for this association loading the specified properties.
+   */
+  fun fetchLazy(vararg properties: TQProperty<QNota>) : R {
+    return fetchLazyProperties(*properties)
+  }
+
 }

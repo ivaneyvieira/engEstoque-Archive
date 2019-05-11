@@ -1,6 +1,6 @@
 SELECT DISTINCT cast(CONCAT(N.paymno) as char)     AS rota,
                 N.storeno,
-                CAST(N.ordno AS CHAR)      AS numero,
+                N.ordno       AS numero,
                 ''            AS serie,
                 N.date,
                 N.date as dt_emissao,
@@ -15,6 +15,7 @@ FROM sqldados.eord AS                    N
          ON E.codigo = P.prdno AND E.grade = P.grade
        LEFT JOIN  sqldados.custp AS      C
          ON C.no = N.custno
-WHERE N.paymno = 291 AND
+WHERE N.date > DATE_SUB(current_date, INTERVAL 7 DAY) AND
+      N.paymno = 291 AND
       N.storeno = :storeno AND
       (N.ordno = :nfno)
