@@ -1,10 +1,5 @@
 package br.com.engecopi.saci.beans
 
-import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.Nota.Find
-import br.com.engecopi.estoque.model.ViewProdutoLoc
-
 class NotaSaci(
   val rota: String?,
   val storeno: Int?,
@@ -19,14 +14,4 @@ class NotaSaci(
   val clienteName: String? = "",
   val tipo: String?,
   val invno: Int?
-) {
-  fun isSave(): Boolean {
-   return ItemNota.isSave(this)
-  }
-
-  fun numeroSerie(): String {
-    numero ?: return ""
-    return if(serie.isNullOrBlank()) numero
-    else "$numero/$serie"
-  }
-}
+)

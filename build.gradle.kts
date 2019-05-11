@@ -1,4 +1,3 @@
-import com.sun.javafx.scene.CameraHelper.project
 import io.ebean.gradle.EnhancePluginExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -18,7 +17,7 @@ buildscript {
 }
 
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.3.31"
+  id("org.jetbrains.kotlin.jvm") version "1.3.30"
   id("org.gretty") version "2.3.1"
   id("com.devsoap.plugin.vaadin") version "1.4.1"
   war
@@ -51,19 +50,20 @@ vaadin {
 }
 
 configure<EnhancePluginExtension> {
-  debugLevel = 0
+  debugLevel = 9
 }
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
   jvmTarget = "1.8"
 }
+
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
   jvmTarget = "1.8"
 }
 
 dependencies {
-  compile(project(":trayServerBiometrico"))
   // Karibu-DSL dependency
   compile("com.github.mvysny.karibudsl:karibu-dsl-v8:$karibuVersion")
   compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -78,12 +78,11 @@ dependencies {
   //testCompile "com.github.kaributesting:karibu-testing-v8:0.4.15"
   testImplementation("com.github.mvysny.dynatest:dynatest:0.8")
 
-  compile("io.ebean:ebean:11.38.1")
+  compile("io.ebean:ebean:11.37.1")
   // compile "io.ebean:querybean-generator:11.37.1"
-  compile("io.ebean:ebean-querybean:11.38.1")
-
+  compile("io.ebean:ebean-querybean:11.37.1")
   //compile "io.ebean:ebean-annotation:4.7"
-  compile("io.ebean.tools:finder-generator:11.34.1")
+  compile("io.ebean.tools:finder-generator:4.2.2")
 
   compile("com.vaadin:vaadin-themes:$vaadin8Version")
   compile("com.vaadin:vaadin-server:$vaadin8Version")
@@ -106,11 +105,11 @@ dependencies {
 
   compile("org.imgscalr:imgscalr-lib:4.2")
   compile("de.steinwedel.vaadin.addon:messagebox:4.0.21")
-  compile("org.vaadin.patrik:GridFastNavigation:2.4.3")
-  compile("org.vaadin:viritin:2.9")
-  //compile("org.vaadin.crudui:crudui:2.3.1")
+  compile("org.vaadin.patrik:GridFastNavigation:2.3.10")
+  compile("org.vaadin:viritin:2.8")
+  compile("org.vaadin.crudui:crudui:2.3.0")
   compile("org.vaadin.addons:filtering-grid:0.1.1")
-  compile("com.fo0.advancedtokenfield:AdvancedTokenField:0.5.1")
+  compile("com.fo0.advancedtokenfield:AdvancedTokenField:0.4.1")
   // heroku app runner
   testImplementation("junit:junit:4.11")
 }

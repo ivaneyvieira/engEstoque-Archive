@@ -37,4 +37,5 @@ FROM sqldados.nf AS                      N
 WHERE N.storeno = :storeno AND
       N.nfno = :nfno AND
       N.nfse = :nfse AND
+      N.issuedate > DATE_SUB(current_date, INTERVAL 100 DAY) AND
       N.status <> 1

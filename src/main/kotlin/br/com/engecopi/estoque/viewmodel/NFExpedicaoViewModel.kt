@@ -17,6 +17,10 @@ import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.Usuario
 import br.com.engecopi.estoque.model.ViewNotaExpedicao
 import br.com.engecopi.estoque.model.ViewProdutoLoc
+<<<<<<< HEAD
+=======
+import br.com.engecopi.estoque.model.notaSerie
+>>>>>>> mudancasExpedicaoPro
 import br.com.engecopi.estoque.model.query.QViewNotaExpedicao
 import br.com.engecopi.estoque.ui.log
 import br.com.engecopi.framework.viewmodel.CrudViewModel
@@ -221,11 +225,14 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
     }
   }
 
+<<<<<<< HEAD
   fun NotaSaci.notaSerie(): NotaSerie? {
     val tipo = TipoNota.value(tipo)
     return NotaSerie.findByTipo(tipo)
   }
 
+=======
+>>>>>>> mudancasExpedicaoPro
   fun findLoja(storeno: Int?): Loja? = Loja.findLoja(storeno)
 
   fun abreviacoes(prdno: String?, grade: String?): List<String> {
