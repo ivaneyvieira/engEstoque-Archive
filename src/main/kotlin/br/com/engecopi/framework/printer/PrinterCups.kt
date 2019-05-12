@@ -5,7 +5,7 @@ import org.cups4j.CupsPrinter
 import org.cups4j.PrintJob
 
 class PrinterCups(val host: String) {
-  val cupsClient = try {
+  private val cupsClient = try {
     CupsClient(host, 631)
   } catch (e: Exception) {
     null

@@ -7,10 +7,10 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
-import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
+import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -30,17 +30,26 @@ import br.com.engecopi.framework.viewmodel.IView
 import br.com.engecopi.saci.beans.NotaSaci
 import br.com.engecopi.utils.localDate
 import java.time.LocalDate
-import kotlin.reflect.KClass
+import java.time.LocalDateTime
 
 abstract class NotaViewModel<VO: NotaVo>(view: IView,
-                                         classVO: KClass<VO>,
-                                         val tipo: TipoMov): CrudViewModel<ItemNota, QItemNota, VO>(view, classVO) {
+                                         val tipo: TipoMov,
+                                         private val statusDefault: StatusNota,
+                                         private val statusImpressao: StatusNota,
+                                         private val abreviacaoNota: String): CrudViewModel<ItemNota, QItemNota, VO>(
+  view) {
   override fun update(bean: VO) {
     if(bean.localizacao?.localizacao.isNullOrBlank()) throw EViewModel("Não foi especificado a localização do item")
     val nota = updateNota(bean)
     val produto = saveProduto(bean.produto)
 
     updateItemNota(bean, nota, produto)
+  }
+
+  override fun QItemNota.orderQuery(): QItemNota {
+    return this.order()
+      .nota.lancamento.desc()
+      .nota.id.desc()
   }
 
   override fun add(bean: VO) {
@@ -51,24 +60,33 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
       if(Nota.itemDuplicado(nota, produto)) {
         val msg = "O produto ${produto.codigo} - ${produto.descricao}. Já foi inserido na nota ${nota.numero}."
         view.showWarning(msg)
-      } else insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
-    } else {
+      }
+      else insertItemNota(nota, produto, bean.quantProduto ?: 0, usuario, bean.localizacao?.localizacao)
+    }
+    else {
       val produtos = bean.produtos.filter {it.selecionado && it.quantidade != 0}
-      val produtosJaInserido = produtos.asSequence().distinctBy {it.produto?.id}
-        .filter {prd -> prd.produto?.let {Nota.itemDuplicado(nota, it)} ?: false}.map {it.produto}.filterNotNull()
+      val produtosJaInserido =
+        produtos.asSequence()
+          .distinctBy {it.produto?.id}
+          .filter {prd ->
+            prd.produto?.let {Nota.itemDuplicado(nota, it)} ?: false
+          }
+          .map {it.produto}
+          .filterNotNull()
       produtosJaInserido.forEach {prd ->
         val msg = "O produto ${prd.codigo} - ${prd.descricao}. Já foi inserido na nota ${nota.numero}."
         view.showWarning(msg)
       }
-      produtos.filter {it.produto !in produtosJaInserido}.forEach {produto ->
-        produto.let {prd ->
-          if(usuario.temProduto(prd.produto)) insertItemNota(nota,
-                                                             prd.produto,
-                                                             prd.quantidade,
-                                                             usuario,
-                                                             prd.localizacao?.localizacao)
+      produtos.filter {it.produto !in produtosJaInserido}
+        .forEach {produto ->
+          produto.let {prd ->
+            if(usuario.temProduto(prd.produto)) insertItemNota(nota,
+                                                               prd.produto,
+                                                               prd.quantidade,
+                                                               usuario,
+                                                               prd.localizacao?.localizacao)
+          }
         }
-      }
     }
   }
 
@@ -81,12 +99,12 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
     val saldoLocal = produto?.saldoLoja(local) ?: 0
     return if(quantProduto != 0) {
       when {
-        (saldoLocal + (nota.tipoMov.multiplicador * quantProduto)) < 0 -> {
+        (saldoLocal + (statusDefault.multiplicador * quantProduto)) < 0 -> {
           val msg = "Saldo insuficiente para o produto ${produto?.codigo} - ${produto?.descricao}."
           view.showWarning(msg)
           null
         }
-        else                                                           -> {
+        else                                                            -> {
           val item = ItemNota()
           item.apply {
             this.nota = nota
@@ -94,25 +112,29 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
             this.quantidade = quantProduto
             this.usuario = usuario3
             this.localizacao = local
+            this.status = statusDefault
           }
           item.insert()
           item.produto?.recalculaSaldos(local)
           item
         }
       }
-    } else null
+    }
+    else null
   }
 
   private fun updateItemNota(bean: VO, nota: Nota, produto: Produto?) {
-    bean.toEntity()?.let {item ->
-      item.apply {
-        this.nota = nota
-        this.produto = produto
-        this.quantidade = bean.quantProduto ?: 0
+    bean.toEntity()
+      ?.let {item ->
+        item.apply {
+          this.nota = nota
+          this.produto = produto
+          this.quantidade = bean.quantProduto ?: 0
+          this.status = bean.status!!
+        }
+        item.update()
+        item.produto?.recalculaSaldos(bean.localizacao?.localizacao ?: "")
       }
-      item.update()
-      item.produto?.recalculaSaldos(bean.localizacao?.localizacao)
-    }
   }
 
   private fun saveProduto(produto: Produto?): Produto {
@@ -164,19 +186,24 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   override val query: QItemNota
     get() {
       Repositories.updateViewProdutosLoc()
-      val query = ItemNota.where()
-       // .setUseQueryCache(true)
-       // .fetch("nota")
-       // .fetch("usuario")
-       // .fetch("produto")
-       // .fetch("produto.vproduto")
-       // .fetch("produto.viewProdutoLoc")
+      return ItemNota.where()
+        .setUseQueryCache(true)
+        .fetch("nota")
+        .fetch("usuario")
+        .fetch("produto")
+        .fetch("produto.vproduto")
+        .fetch("produto.viewProdutoLoc")
         .nota.tipoMov.eq(tipo)
-      return query.nota.loja.id.eq(lojaDefault.id).localizacao.between(abreviacaoDefault, "${abreviacaoDefault}zzzzzzzzzzzzzzzzzzz")
+        .filtroStatus()
+        .nota.loja.id.eq(lojaDefault.id)
+        .let {query ->
+          if(usuarioDefault.admin) query
+          else query.localizacao.startsWith(abreviacaoNota)
+        }
     }
 
   abstract fun createVo(): VO
-
+  //TODO fazer o createVo generico
   override fun ItemNota.toVO(): VO {
     val itemNota = this
     return createVo().apply {
@@ -184,6 +211,8 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
       entityVo = itemNota
       val nota = itemNota.nota
       this.numeroNF = nota?.numero
+      this.numeroCodigo = itemNota.codigoBarraConferencia
+      this.numeroCodigoReduzido = itemNota.codigoBarraCliente
       this.lojaNF = nota?.loja
       this.observacaoNota = nota?.observacao
       this.produto = itemNota.produto
@@ -191,18 +220,21 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
       this.rota = nota?.rota
       this.usuario = itemNota.usuario ?: usuarioDefault
       this.localizacao = LocProduto(itemNota.localizacao)
+      this.status = itemNota.status
       readOnly = false
     }
   }
 
-  override fun QItemNota.orderQuery(): QItemNota {
-    return this.order().id.desc()
-  }
-
   override fun QItemNota.filterString(text: String): QItemNota {
     val idLoja = RegistryUserInfo.lojaDefault.id
-    return nota.numero.eq(text).produto.vproduto.codigo.eq(text).produto.vproduto.nome.contains(text).and()
-      .produto.viewProdutoLoc.localizacao.contains(text).produto.viewProdutoLoc.loja.id.eq(idLoja).endAnd()
+    return nota.numero.startsWith(text)
+      .codigoBarraCliente.startsWith(text)
+      .and()
+      .produto.viewProdutoLoc.localizacao.contains(text)
+      .produto.viewProdutoLoc.loja.id.eq(idLoja)
+      .endAnd()
+      .produto.vproduto.codigo.contains(" $text")
+      .produto.vproduto.nome.contains(text)
   }
 
   override fun QItemNota.filterDate(date: LocalDate): QItemNota {
@@ -210,9 +242,10 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   }
 
   override fun delete(bean: VO) {
-    bean.toEntity()?.also {item ->
-      item.delete()
-    }
+    bean.toEntity()
+      ?.also {item ->
+        item.delete()
+      }
   }
 
   fun findLojas(loja: Loja?): List<Loja> = execList {
@@ -220,31 +253,61 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   }
 
   fun localizacaoes(): List<String> {
-    return ViewProdutoLoc.localizacoes(abreviacaoDefault)
+    return ViewProdutoLoc.localizacoesAbreviacaoCache(abreviacaoNota)
   }
 
-  fun imprimir(itemNota: ItemNota?) = execString {
-    val template = Etiqueta.template(itemNota?.tipoMov)
-    val print = itemNota?.printEtiqueta()
-    itemNota?.let {
+  private fun imprimir(itemNota: ItemNota?, etiqueta: Etiqueta) = execString {
+    itemNota ?: return@execString ""
+    val tipoNota = itemNota.tipoNota ?: return@execString ""
+    if(!etiqueta.imprimivel(tipoNota)) return@execString ""
+    val print = itemNota.printEtiqueta()
+    itemNota.let {
+      it.refresh()
       it.impresso = true
-      it.save()
+      it.update()
     }
-    print?.print(template ?: "") ?: ""
+    print.print(etiqueta.template)
   }
 
-  fun imprime(): String {
-    val list = query.impresso.eq(false).order().id.desc().findList()
-    return list.joinToString(separator = "\n") {imprimir(it)}
+  fun imprimir(itemNota: ItemNota?): String {
+    itemNota ?: return ""
+    val etiquetas = itemNota.etiquetas
+
+    return etiquetas.joinToString(separator = "\n") {etiqueta ->
+      imprimir(itemNota, etiqueta)
+    }
+  }
+
+  fun imprime() = execString {
+    val etiquetas = Etiqueta.findByStatus(statusDefault)
+    //TODO Refatorar
+    val itens =
+      ItemNota.where()
+        .impresso.eq(false)
+        .status.eq(statusImpressao)
+        .findList()
+    etiquetas.joinToString(separator = "\n") {etiqueta ->
+      itens.map {imprimir(it, etiqueta)}
+        .distinct()
+        .joinToString(separator = "\n")
+    }
+  }
+
+  abstract fun QItemNota.filtroStatus(): QItemNota
+
+  fun desfazOperacao(item: ItemNota?) = exec {
+    item?.desfazerOperacao()
   }
 }
 
-abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
+abstract class NotaVo(val tipo: TipoMov, private val abreviacaoNota: String): EntityVo<ItemNota>() {
   override fun findEntity(): ItemNota? {
     return ItemNota.find(nota, produto)
   }
 
-  var usuario: Usuario = RegistryUserInfo.usuarioDefault
+  var usuario: Usuario = usuarioDefault
+  var numeroCodigo: String? = ""
+  var numeroCodigoReduzido: String? = ""
   var numeroNF: String? = ""
     set(value) {
       if(field != value) {
@@ -283,58 +346,61 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
       SAIDA   -> Nota.findSaida(numeroNF)
       ENTRADA -> Nota.findEntrada(numeroNF)
     }
-  val msgAviso: String
-    get() {
-      val quantProdutos = produtos.size
-      val quantInsert = produtos.filter {it.isInsert}.size
-      return if(quantInsert == quantProdutos && quantProdutos > 0) "Essa nota já foi lançada"
-      else ""
-    }
 
   private fun atualizaNota() {
     if(!readOnly) if(entityVo == null) {
       val nota = notaSaci
       if(nota != null) {
-        tipoNota = TipoNota.values().find {it.toString() == nota.tipo} ?: OUTROS_E
+        tipoNota = TipoNota.value(nota.tipo) ?: OUTROS_E
         rota = nota.rota
-      } else {
+      }
+      else {
         tipoNota = OUTROS_E
         rota = ""
       }
       produtos.clear()
-      val produtosVo = notaProdutoSaci.flatMap {notaSaci ->
-        val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
-        val localizacoes = prd?.localizacoes().orEmpty().sorted()
-        val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
-        val isInsert = ItemNota.isInsert(notaSaci)
-        val prdLocs: List<ProdutoVO> = if(tipoNota.tipoMov == SAIDA) {
-          var quant = notaSaci.quant ?: 0
-          val produtosLocais = localizacoes.asSequence().map {localizacao ->
-            ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao), isInsert).apply {
-              val saldo = this.saldo
-              if(quant > 0) if(quant > saldo) {
-                if(localizacao == ultimaLocalizacao) {
-                  this.quantidade = quant
-                  quant = 0
-                } else {
-                  this.quantidade = saldo
-                  quant -= saldo
-                }
-              } else {
-                this.quantidade = quant
-                quant = 0
-              }
-              else this.quantidade = 0
+      val produtosVo =
+        notaProdutoSaci.filter {!it.isSave()}
+          .flatMap {notaSaci ->
+            val prd = Produto.findProduto(notaSaci.prdno, notaSaci.grade)
+            val localizacoes =
+              prd?.localizacoes()
+                .orEmpty()
+                .sorted()
+            val ultimaLocalizacao = localizacoes.sorted().lastOrNull() ?: ""
+            return@flatMap if(tipoNota.tipoMov == SAIDA) {
+              var quant = notaSaci.quant ?: 0
+              val produtosLocais =
+                localizacoes.asSequence()
+                  .map {localizacao ->
+                    ProdutoVO(prd, tipoNota.tipoMov, LocProduto(localizacao)).apply {
+                      val saldo = saldo
+                      if(quant > 0) if(quant > saldo) {
+                        if(localizacao == ultimaLocalizacao) {
+                          quantidade = quant
+                          quant = 0
+                        }
+                        else {
+                          quantidade = saldo
+                          quant -= saldo
+                        }
+                      }
+                      else {
+                        quantidade = quant
+                        quant = 0
+                      }
+                      else quantidade = 0
+                    }
+                  }
+                  .toList()
+              produtosLocais
             }
-          }.toList()
-          produtosLocais
-        } else listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao), isInsert).apply {
-          this.quantidade = notaSaci.quant ?: 0
-        })
-        return@flatMap prdLocs
-      }
+            else listOf(ProdutoVO(prd, tipoNota.tipoMov, LocProduto(ultimaLocalizacao)).apply {
+              quantidade = notaSaci.quant ?: 0
+            })
+          }
       produtos.addAll(produtosVo.asSequence().filter {
-        it.quantidade != 0 && it.codigo != "" && it.localizacao?.localizacao?.startsWith(RegistryUserInfo.abreviacaoDefault) ?: false
+        it.quantidade != 0 && it.codigo != "" && it.localizacao?.localizacao?.startsWith(abreviacaoNota) ?: false
       }.sortedWith(compareBy(ProdutoVO::codigo, ProdutoVO::grade, ProdutoVO::localizacao)).toList())
     }
   }
@@ -346,6 +412,10 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
     }
   val dataNota: LocalDate
     get() = toEntity()?.dataNota ?: notaSaci?.date?.localDate() ?: LocalDate.now()
+  val lancamento: LocalDate
+    get() = toEntity()?.nota?.lancamento ?: LocalDate.now()
+  val horaLacamento: LocalDateTime
+    get() = toEntity()?.nota?.run {LocalDateTime.of(lancamento, hora)} ?: LocalDateTime.now()
   val dataEmissao: LocalDate
     get() = toEntity()?.nota?.dataEmissao ?: notaSaci?.dt_emissao?.localDate() ?: LocalDate.now()
   val numeroInterno: Int
@@ -365,7 +435,7 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
       }.filter {produto ->
         usuario.temProduto(produto)
       }.toList()
-      else ViewProdutoLoc.produtos() // Produto.all().filter { usuario.temProduto(it) }
+      else ViewProdutoLoc.produtosCache() // Produto.all().filter { usuario.temProduto(it) }
       return produtos.sortedBy {it.codigo + it.grade}
     }
   val quantidadeReadOnly
@@ -373,7 +443,6 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
   val itemNota
     get() = toEntity()
   val produtos = ArrayList<ProdutoVO>()
-  val produtosNaoInseridos get() = produtos.filter {!it.isInsert}
   var produto: Produto? = null
     set(value) {
       field = value
@@ -392,19 +461,15 @@ abstract class NotaVo(val tipo: TipoMov): EntityVo<ItemNota>() {
     get() = produto?.saldoLoja(localizacao?.localizacao) ?: 0
   var localizacao: LocProduto? = null
   val localizacaoProduto
-    get() = produto?.localizacoes().orEmpty().map {LocProduto(it)}
+    get() = produto?.localizacoes()?.map {LocProduto(it)}.orEmpty()
+  var status: StatusNota? = null
 }
 
-class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?, val isInsert: Boolean) {
+class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: LocProduto?) {
   val codigo: String = produto?.codigo ?: ""
   val grade: String = produto?.grade ?: ""
   var quantidade: Int = 0
   var selecionado: Boolean = false
-    set(value) {
-      field = if(isInsert) {
-        false
-      } else value
-    }
   val saldoInsuficiente: Boolean
     get() = if(tipoMov == SAIDA) saldo < quantidade
     else false
@@ -414,4 +479,5 @@ class ProdutoVO(val produto: Produto?, val tipoMov: TipoMov, var localizacao: Lo
     get() = saldo + if(tipoMov == SAIDA) -quantidade else quantidade
   val descricaoProduto: String
     get() = produto?.descricao ?: ""
+  var value: ItemNota? = null
 }

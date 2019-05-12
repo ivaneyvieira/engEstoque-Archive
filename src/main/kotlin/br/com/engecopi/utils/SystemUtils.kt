@@ -98,7 +98,7 @@ object SystemUtils {
   }
   
   private fun hashString(type: String, input: String): String {
-    val HEX_CHARS = "0123456789ABCDEF"
+    val hexChar = "0123456789ABCDEF"
     val bytes = MessageDigest
             .getInstance(type)
             .digest(input.toByteArray())
@@ -106,8 +106,8 @@ object SystemUtils {
     
     bytes.forEach {
       val i = it.toInt()
-      result.append(HEX_CHARS[i shr 4 and 0x0f])
-      result.append(HEX_CHARS[i and 0x0f])
+      result.append(hexChar[i shr 4 and 0x0f])
+      result.append(hexChar[i and 0x0f])
     }
     
     return result.toString()

@@ -14,7 +14,6 @@ import javax.persistence.OneToOne
 @Entity
 @View(name = "tab_produtos", dependentTables = ["produtos"])
 class ViewProduto {
-
   @Id
   @Column(name = "produto_id")
   var id: Long? = null

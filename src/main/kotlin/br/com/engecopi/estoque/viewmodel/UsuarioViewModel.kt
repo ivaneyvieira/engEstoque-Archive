@@ -1,16 +1,20 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.Loja
+import br.com.engecopi.estoque.model.NotaSerie
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.Usuario
-import br.com.engecopi.estoque.model.ViewProdutoLoc
 import br.com.engecopi.estoque.model.query.QUsuario
 import br.com.engecopi.framework.viewmodel.CrudViewModel
 import br.com.engecopi.framework.viewmodel.EntityVo
 import br.com.engecopi.framework.viewmodel.IView
 
-class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCrudVo>(view, UsuarioCrudVo::class) {
-  val queryProduto get() = Produto.where()
+class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCrudVo>(view) {
+  override fun newBean(): UsuarioCrudVo {
+    return UsuarioCrudVo()
+  }
+
+  private val queryProduto get() = Produto.where()
 
   fun findProduto(offset: Int, limit: Int): List<Produto> {
     return queryProduto
@@ -30,6 +34,10 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
         usuario.loginName = loginName
       usuario.loja = bean.loja
       usuario.locais = bean.localizacaoes.toList()
+      usuario.estoque = bean.estoque
+      usuario.series = bean.series.toList()
+      usuario.expedicao = bean.expedicao
+      usuario.admin = bean.admin ?: false
       usuario.update()
     }
   }
@@ -39,6 +47,10 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = bean.loginName ?: ""
       this.loja = bean.loja
       this.locais = bean.localizacaoes.toList()
+      this.series = bean.series.toList()
+      this.estoque = bean.estoque
+      this.expedicao = bean.expedicao
+      this.admin = bean.admin ?: false
     }
     usuario.insert()
   }
@@ -53,6 +65,10 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
       this.loginName = usuario.loginName
       this.loja = usuario.loja
       this.localizacaoes = usuario.locais.toHashSet()
+      this.series = usuario.series.toSet()
+      this.estoque = usuario.estoque
+      this.expedicao = usuario.expedicao
+      this.admin = usuario.admin
     }
   }
 
@@ -64,7 +80,8 @@ class UsuarioViewModel(view: IView) : CrudViewModel<Usuario, QUsuario, UsuarioCr
     Usuario.findUsuario(bean.loginName ?: "")?.delete()
   }
 
-  val lojas = execList { Loja.all() }
+  val lojas
+    get() = Loja.all()
   val produtos: List<Produto>
     get() = Produto.all()
 }
@@ -85,7 +102,16 @@ class UsuarioCrudVo : EntityVo<Usuario>() {
   val nome
     get() = Usuario.nomeSaci(loginName ?: "")
   var locaisLoja: MutableSet<String> = HashSet()
+  var series: Set<NotaSerie> = HashSet()
   var localizacaoes: Set<String> = HashSet()
   val localStr
     get() = localizacaoes.joinToString()
+  var estoque: Boolean = true
+  var expedicao: Boolean = false
+  var admin: Boolean? = false
+  val tipoUsuarioStr = if (estoque)
+    if (expedicao) "Estoque/Expedição"
+    else "Estoque"
+  else if (expedicao) "Expedição"
+  else ""
 }

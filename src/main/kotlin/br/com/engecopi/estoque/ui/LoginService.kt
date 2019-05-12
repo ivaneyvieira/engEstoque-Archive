@@ -2,6 +2,7 @@ package br.com.engecopi.estoque.ui
 
 import br.com.engecopi.estoque.model.LoginInfo
 import br.com.engecopi.estoque.model.Usuario
+import br.com.engecopi.framework.ui.view.expand
 import br.com.engecopi.saci.saci
 import com.github.mvysny.karibudsl.v8.alignment
 import com.github.mvysny.karibudsl.v8.button
@@ -76,7 +77,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
           isResponsive = true
           username = textField("Usuário") {
             isResponsive = true
-            expandRatio = 1f
+            expand = 1
             w = fillParent
             icon = VaadinIcons.USER
             styleName = ValoTheme.TEXTFIELD_INLINE_ICON
@@ -86,6 +87,7 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
           }
           abreviacao = comboBox("Localizacao") {
             isResponsive = true
+            isVisible = false
             expandRatio = 1f
             w = fillParent
             isEmptySelectionAllowed = false
@@ -112,22 +114,24 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
     }
   }
 
-  private fun changeUserName(value: String?) {
+  private fun changeUserName(loginName:  String?) {
     if (::abreviacao.isInitialized) {
-      val abreviacoes = abreviacaoes(value)
+      val abreviacoes = abreviacaoes(loginName)
+
       abreviacao.setItems(abreviacoes)
       abreviacao.value = abreviacoes.firstOrNull()
+      abreviacao.isVisible = abreviacoes.isNotEmpty()
     }
   }
 
-  fun abreviacaoes(username: String?): List<String> {
+  private fun abreviacaoes(username: String?): List<String> {
     return Usuario.abreviacaoes(username).sorted()
   }
 
   private fun login() {
     val user = saci.findUser(username.value)
     val pass = password.value
-    val abrev = abreviacao.value
+    val abrev = abreviacao.value ?: ""
     if (user == null || user.senha != pass) {
       Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
       LoginService.logout()

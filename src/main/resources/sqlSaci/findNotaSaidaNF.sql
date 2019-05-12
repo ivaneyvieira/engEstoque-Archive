@@ -1,6 +1,6 @@
 SELECT CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        N.storeno,
-       CAST(N.nfno AS CHAR)                 AS numero,
+       N.nfno                               AS numero,
        N.nfse                               AS serie,
        N.issuedate                          AS date,
        N.issuedate                          AS dt_emissao,

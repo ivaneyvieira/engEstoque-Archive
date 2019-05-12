@@ -5,7 +5,8 @@ import br.com.engecopi.estoque.model.TipoMov
 import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocItemNota
 import br.com.engecopi.estoque.model.query.assoc.QAssocLoja
-import io.ebean.EbeanServer
+import br.com.engecopi.estoque.model.query.assoc.QAssocUsuario
+import io.ebean.Database
 import io.ebean.typequery.PEnum
 import io.ebean.typequery.PInteger
 import io.ebean.typequery.PLocalDate
@@ -42,21 +43,25 @@ class QNota : TQRootBean<Nota, QNota> {
   lateinit var rota: PString<QNota>
   lateinit var fornecedor: PString<QNota>
   lateinit var cliente: PString<QNota>
+  lateinit var lancamento: PLocalDate<QNota>
   lateinit var data: PLocalDate<QNota>
   lateinit var dataEmissao: PLocalDate<QNota>
   lateinit var hora: PLocalTime<QNota>
   lateinit var observacao: PString<QNota>
   lateinit var loja: QAssocLoja<QNota>
   lateinit var itensNota: QAssocItemNota<QNota>
+  lateinit var sequencia: PInteger<QNota>
+  lateinit var usuario: QAssocUsuario<QNota>
+  lateinit var maxSequencia: PInteger<QNota>
 
 
   /**
-   * Construct with a given EbeanServer.
+   * Construct with a given Database.
    */
-  constructor(server: EbeanServer) : super(Nota::class.java, server)
+  constructor(database: Database) : super(Nota::class.java, database)
 
   /**
-   * Construct using the default EbeanServer.
+   * Construct using the default Database.
    */
   constructor() : super(Nota::class.java)
 

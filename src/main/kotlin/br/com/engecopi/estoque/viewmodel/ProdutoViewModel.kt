@@ -19,7 +19,14 @@ import br.com.engecopi.utils.lpad
 import java.time.LocalDate
 
 class ProdutoViewModel(view: IView) :
-  CrudViewModel<Produto, QProduto, ProdutoVo>(view, ProdutoVo::class) {
+  CrudViewModel<Produto, QProduto, ProdutoVo>(view) {
+  override fun newBean(): ProdutoVo {
+    val bean = crudBean ?: ProdutoVo()
+    return bean.apply {
+      bean.codigoProduto = ""
+    }
+  }
+
   override fun update(bean: ProdutoVo) {
     bean.toEntity()?.let {produto ->
       produto.codigo = bean.codigoProduto.lpad(
@@ -31,7 +38,7 @@ class ProdutoViewModel(view: IView) :
     }
   }
 
-  override fun add(bean: ProdutoVo) = exec {
+  override fun add(bean: ProdutoVo) {
     Produto().apply {
       val gradesSalvas = Produto.findProdutos(bean.codigoProduto).map {it.grade}
       if(!ViewProdutoSaci.existe(bean.codigoProduto))
@@ -94,6 +101,10 @@ class ProdutoViewModel(view: IView) :
   fun localizacoes(bean: ProdutoVo?): List<LocProduto> {
     return bean?.produto?.localizacoes().orEmpty().map { LocProduto(it) }
   }
+
+  fun saveItem(item: ItemNota?) {
+    item?.save()
+  }
 }
 
 class ProdutoVo : EntityVo<Produto>() {
@@ -126,7 +137,7 @@ class ProdutoVo : EntityVo<Produto>() {
   val temGrade get() = toEntity()?.temGrade
   val grade get() = produto?.grade ?: ""
   val saldo
-    get() = produto?.saldo_total ?: 0
+    get() = produto?.saldoTotal() ?: 0
   val comprimento: Int?
     get() = produto?.vproduto?.comp
   val lagura: Int?
@@ -143,16 +154,18 @@ class ProdutoVo : EntityVo<Produto>() {
     get() {
       produto?.recalculaSaldos()
 
-      return produto?.findItensNota().orEmpty().asSequence().filter {
-        (lojaDefault?.let { lDef -> it.nota?.loja?.id == lDef.id } ?: true)
+      return produto?.findItensNota().orEmpty().asSequence().filter {item ->
+        (lojaDefault?.let { lDef -> item.nota?.loja?.id == lDef.id } ?: true)
         &&
-        (filtroDI?.let { di -> (it.nota?.data?.isAfter(di) ?: true) || (it.nota?.data?.isEqual(di) ?: true) } ?: true)
+        (filtroDI?.let { di -> (item.nota?.data?.isAfter(di) ?: true) || (item.nota?.data?.isEqual(di) ?: true) } ?: true)
         &&
-        (filtroDF?.let { df -> (it.nota?.data?.isBefore(df) ?: true) || (it.nota?.data?.isEqual(df) ?: true) } ?: true)
+        (filtroDF?.let { df -> (item.nota?.data?.isBefore(df) ?: true) || (item.nota?.data?.isEqual(df) ?: true) } ?: true)
         &&
-        (filtroTipo?.let { t -> it.nota?.tipoNota == t } ?: true)
+        (filtroTipo?.let { t -> item.nota?.tipoNota == t } ?: true)
         &&
-        (filtroLocalizacao?.let { loc -> it.localizacao == loc.localizacao } ?: true)
-      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::data, ItemNota::id)).toList()
+        (filtroLocalizacao?.let { loc -> item.localizacao == loc.localizacao } ?: true)
+        &&
+        (item.quantidadeSaldo != 0)
+      }.sortedWith(compareBy(ItemNota::localizacao, ItemNota::data, ItemNota::hora)).toList()
     }
 }

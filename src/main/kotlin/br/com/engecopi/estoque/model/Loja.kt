@@ -30,7 +30,8 @@ class Loja : BaseModel() {
     fun findLoja(storeno: Int?): Loja? {
       return if (storeno == 0 || storeno == null) null
       else
-        where().numero.eq(storeno).findOne()
+        where().numero.eq(storeno).findList()
+          .firstOrNull()
         ?: saci.findLojas(storeno).firstOrNull()?.let { lojaSaci ->
           val loja = Loja().apply {
             numero = lojaSaci.storeno ?: 0
