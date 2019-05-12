@@ -19,7 +19,6 @@ class NotaSaci(
   val clienteName: String? = "",
   val tipo: String?,
   val invno: Int?
-<<<<<<< HEAD
 ) {
   fun isSave(): Boolean {
    return ItemNota.isSave(this)
@@ -31,6 +30,3 @@ class NotaSaci(
     else "$numero/$serie"
   }
 }
-=======
-)
->>>>>>> dd0cbfadd54ad10a28f17046ede4ba69d92fbb43
