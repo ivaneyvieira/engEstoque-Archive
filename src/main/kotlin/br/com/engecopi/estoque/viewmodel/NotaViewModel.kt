@@ -269,18 +269,18 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
     print.print(etiqueta.template)
   }
 
-  fun imprimir(itemNota: ItemNota?): String {
-    itemNota ?: return ""
-    val etiquetas = itemNota.etiquetas
-
-    return etiquetas.joinToString(separator = "\n") {etiqueta ->
-      imprimir(itemNota, etiqueta)
-    }
+  fun imprimir(itemNota: ItemNota?) = execString {
+    val itens =
+      ItemNota.where()
+        .nota.eq(itemNota?.nota)
+        .order()
+        .nota.loja.numero.asc()
+        .nota.numero.asc()
+        .findList()
+    imprime(itens)
   }
 
   fun imprime() = execString {
-    val etiquetas = Etiqueta.findByStatus(statusImpressao)
-    //TODO Refatorar
     val itens =
       ItemNota.where()
         .impresso.eq(false)
@@ -289,6 +289,12 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
         .nota.loja.numero.asc()
         .nota.numero.asc()
         .findList()
+    imprime(itens)
+  }
+
+  fun imprime(itens: List<ItemNota>) = execString {
+    val etiquetas = Etiqueta.findByStatus(statusImpressao)
+    //TODO Refatorar
     etiquetas.joinToString(separator = "\n") {etiqueta ->
       imprime(itens, etiqueta)
     }
