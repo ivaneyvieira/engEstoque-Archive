@@ -261,7 +261,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
     val tipoNota = itemNota.tipoNota ?: return@execString ""
     if(!etiqueta.imprimivel(tipoNota)) return@execString ""
     val print = itemNota.printEtiqueta()
-    itemNota.let {
+    if(!usuarioDefault.admin) itemNota.let {
       it.refresh()
       it.impresso = true
       it.update()
@@ -279,18 +279,25 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   }
 
   fun imprime() = execString {
-    val etiquetas = Etiqueta.findByStatus(statusDefault)
+    val etiquetas = Etiqueta.findByStatus(statusImpressao)
     //TODO Refatorar
     val itens =
       ItemNota.where()
         .impresso.eq(false)
         .status.eq(statusImpressao)
+        .order()
+        .nota.loja.numero.asc()
+        .nota.numero.asc()
         .findList()
     etiquetas.joinToString(separator = "\n") {etiqueta ->
-      itens.map {imprimir(it, etiqueta)}
-        .distinct()
-        .joinToString(separator = "\n")
+      imprime(itens, etiqueta)
     }
+  }
+
+  private fun imprime(itens: List<ItemNota>, etiqueta: Etiqueta): String {
+    return itens.map {imprimir(it, etiqueta)}
+      .distinct()
+      .joinToString(separator = "\n")
   }
 
   abstract fun QItemNota.filtroStatus(): QItemNota
