@@ -80,7 +80,8 @@ class Usuario: BaseModel() {
 
   fun isTipoCompativel(tipo: TipoNota?): Boolean {
     tipo ?: return false
-    return series.any {it.tipoNota == tipo}
+
+    return series.any {it.tipoNota == tipo} || admin
   }
 
   val produtoLoc: List<Produto>
