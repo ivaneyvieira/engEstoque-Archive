@@ -1,23 +1,20 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
-import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
+import br.com.engecopi.estoque.model.StatusNota.ENT_LOJA
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.estoque.model.ViewCodBarConferencia
 import br.com.engecopi.estoque.model.ViewCodBarEntrega
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
 
-class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view,
-                                                                            SAIDA,
-                                                                            ENTREGUE,
-                                                                            CONFERIDA,
-                                                                            "") {
+class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view, SAIDA, ENTREGUE, CONFERIDA, "") {
   override fun newBean(): EntregaClienteVo {
     return EntregaClienteVo()
   }
@@ -34,15 +31,24 @@ class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view
   override fun createVo() = EntregaClienteVo()
 
   fun processaKey(key: String) = execList {
-    val item = ViewCodBarEntrega.findNota(key) ?: throw EViewModel("Produto não encontrado")
-
-    if(item.status != CONFERIDA) {
-      if(item.status == ENTREGUE) throw  EViewModel("Produto já foi entregue")
-      else if(item.status == INCLUIDA) throw  EViewModel("Produto ainda não foi conferido")
+    val itens = findItens(key)
+    if(itens.isEmpty()) throw EViewModel("Produto não encontrado")
+    itens.forEach {item ->
+      val codigoProduto = item.produto?.codigo?.trim() ?: ""
+      if(item.status == ENTREGUE || item.status == ENT_LOJA) showWarning("Produto $codigoProduto já foi entregue")
+      else if(item.status == INCLUIDA) showWarning("Produto $codigoProduto ainda não foi conferido")
+      else if(item.status == CONFERIDA) {
+        item.status = ENTREGUE
+        item.save()
+      }
     }
-    item.status = ENTREGUE
-    item.save()
-    return@execList listOf(item)
+    return@execList itens
+  }
+
+  private fun findItens(key: String): List<ItemNota> {
+    val itemUnico = ViewCodBarEntrega.findNota(key)
+    return if(itemUnico == null) ViewCodBarConferencia.findKeyItemNota(key)
+    else listOf(itemUnico)
   }
 
   fun notasConferidas(): List<EntregaClienteVo> {

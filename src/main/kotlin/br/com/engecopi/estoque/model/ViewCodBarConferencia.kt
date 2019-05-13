@@ -43,8 +43,13 @@ class ViewCodBarConferencia {
     }
 
     fun findNota(key: String): ViewCodBarConferencia? {
-      return findNotaCodbarCliente(key)
-             ?: findNotaCodBarConferencia(key)
+      return findNotaCodbarCliente(key) ?: findNotaCodBarConferencia(key)
+    }
+
+    fun findKeyItemNota(key: String): List<ItemNota> {
+      return where().codbar.eq(key)
+        .findList()
+        .mapNotNull {ItemNota.byId(it.id)}
     }
   }
 }

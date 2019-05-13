@@ -78,6 +78,10 @@ abstract class ViewModel(val view: IView) {
       //Não faz nada
     }
   }
+
+  protected fun showWarning(msg : String){
+    view.showWarning(msg)
+  }
 }
 
 class EViewModel(msg: String): Exception(msg)
