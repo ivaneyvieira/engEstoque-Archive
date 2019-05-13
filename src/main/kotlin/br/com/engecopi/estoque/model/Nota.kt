@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
 import br.com.engecopi.estoque.model.TipoNota.ACERTO_S
@@ -79,8 +80,9 @@ class Nota: BaseModel() {
       notasaci ?: return null
       return Nota().apply {
         numero = "${notasaci.numero}/${notasaci.serie}"
-        tipoNota = TipoNota.values()
-          .find {it.toString() == notasaci.tipo}
+        tipoNota =
+          TipoNota.values()
+            .find {it.toString() == notasaci.tipo}
         tipoMov = tipoNota?.tipoMov ?: ENTRADA
         rota = notasaci.rota ?: ""
         fornecedor = notasaci.vendName ?: ""
@@ -91,9 +93,22 @@ class Nota: BaseModel() {
       }
     }
 
-    fun maxSequencia(serie: String): Int {
-      return where().select(QNota._alias.maxSequencia).numero.endsWith("/$serie").findList().firstOrNull()?.maxSequencia
-             ?: 0
+    fun createNotaItens(notasaci: List<NotaSaci>): Nota? {
+      val nota = createNota(notasaci.firstOrNull()) ?: return null
+      nota.sequencia = maxSequencia() + 1
+      nota.save()
+      notasaci.forEach {item ->
+        ItemNota.createItemNota(item, nota)
+          ?.let {
+            it.status = INCLUIDA
+            it.save()
+          }
+      }
+      return nota
+    }
+
+    fun maxSequencia(): Int {
+      return where().select(QNota._alias.maxSequencia).findList().firstOrNull()?.maxSequencia ?: 0
     }
 
     fun findEntrada(numero: String?): Nota? {
@@ -223,13 +238,13 @@ data class NotaSerie(val id: Long, val tipoNota: TipoNota) {
       return values.find {it.tipoNota == tipo}
     }
 
-    val values = listOf(NotaSerie(1, VENDA),
-                        NotaSerie(2, ENT_RET),
-                        NotaSerie(3, TRANSFERENCIA_S),
-                        NotaSerie(4, ACERTO_S),
-                        NotaSerie(5, PEDIDO_S),
-                        NotaSerie(6, DEV_FOR),
-                        NotaSerie(7, OUTROS_S)
-                        )
+    val values =
+      listOf(NotaSerie(1, VENDA),
+             NotaSerie(2, ENT_RET),
+             NotaSerie(3, TRANSFERENCIA_S),
+             NotaSerie(4, ACERTO_S),
+             NotaSerie(5, PEDIDO_S),
+             NotaSerie(6, DEV_FOR),
+             NotaSerie(7, OUTROS_S))
   }
 }

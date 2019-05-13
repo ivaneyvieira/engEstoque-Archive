@@ -31,5 +31,9 @@ class NotaSaci(
     else "$numero/$serie"
   }
 
+  fun localizacaoes(): List<ViewProdutoLoc> {
+    return ViewProdutoLoc.findByCodigoGrade(prdno, grade)
+  }
+
   fun tipoNota(): TipoNota? = TipoNota.value(tipo)
 }

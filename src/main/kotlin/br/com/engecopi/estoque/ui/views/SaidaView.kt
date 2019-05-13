@@ -275,9 +275,10 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
         row {
           gridProdutos = grid(ProdutoVO::class) {
             val abreviacao = RegistryUserInfo.abreviacaoDefault
-            val itens = nota.itensNota?.filter {it.status == INCLUIDA}
-              ?.filter {it.localizacao.startsWith(abreviacao)}
-              .orEmpty()
+            //nota.refresh()
+            val itens = nota.itensNota().filter {it.status == INCLUIDA}
+              .filter {it.localizacao.startsWith(abreviacao)}
+
             this.dataProvider = ListDataProvider(itens.map {item ->
               ProdutoVO(item.produto, item.tipoMov ?: SAIDA, LocProduto(item.localizacao)).apply {
                 this.quantidade = item.quantidade

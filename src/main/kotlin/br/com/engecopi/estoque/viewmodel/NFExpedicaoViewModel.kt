@@ -109,8 +109,7 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
           //TODO Verificar notas já cadastrada
           if(it.existe()) Nota.findSaida(it.numero)
           else {
-            val serie = it.numero.split("/").getOrNull(1) ?: ""
-            it.sequencia = Nota.maxSequencia(serie) + 1
+            it.sequencia = Nota.maxSequencia() + 1
             it.usuario = usuarioDefault
             it.save()
             it

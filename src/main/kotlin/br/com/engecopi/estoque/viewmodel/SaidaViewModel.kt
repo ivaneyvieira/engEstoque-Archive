@@ -34,11 +34,15 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   }
 
   private fun processaKeyNumero(key: String): Nota? {
-    val notaSaci =
+    val notasSaci =
       Nota.findNotaSaidaSaci(key)
-        .firstOrNull()
+        .filter {loc ->
+          loc.localizacaoes()
+            .any {it.abreviacao == abreviacaoDefault}
+        }
+    val notaSaci = notasSaci.firstOrNull()
     return if(usuarioDefault.isTipoCompativel(notaSaci?.tipoNota())) Nota.findSaida(notaSaci?.numeroSerie())
-                                                                     ?: Nota.createNota(notaSaci)
+                                                                     ?: Nota.createNotaItens(notasSaci)
     else null
   }
 
@@ -48,9 +52,8 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
     return Nota.findSaida(item.numero)
   }
 
-
-  fun confirmaProdutos(itens: List<ProdutoVO>, situacao : StatusNota) = exec {
-    itens.forEach { produtoVO ->
+  fun confirmaProdutos(itens: List<ProdutoVO>, situacao: StatusNota) = exec {
+    itens.forEach {produtoVO ->
       produtoVO.value?.run {
         refresh()
         status = situacao
@@ -64,4 +67,4 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   }
 }
 
-class SaidaVo : NotaVo(SAIDA, abreviacaoDefault)
+class SaidaVo: NotaVo(SAIDA, abreviacaoDefault)
