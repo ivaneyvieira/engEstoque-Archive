@@ -401,6 +401,7 @@ abstract class CrudLayoutView<C: EntityVo<*>, V: CrudViewModel<*, *, C>>: Layout
   }
 
   override fun updateModel() {
+
   }
 }
 

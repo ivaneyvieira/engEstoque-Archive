@@ -98,6 +98,8 @@ class NFExpedicaoViewModel(view: IView): CrudViewModel<ViewNotaExpedicao, QViewN
 
   fun processaKey(key: String, abreviacoes: List<String>) = execValue {
     val notasSaci = findNotaSaidaKey(key)
+    if(notasSaci.all {it.isSave()})
+      throw EViewModel("Todos os itens dessa nota já estão lançados")
     if(notasSaci.isNotEmpty()) {
       val loja = RegistryUserInfo.lojaDefault.numero
       val lojaSaci = notasSaci.firstOrNull()?.storeno ?: 0

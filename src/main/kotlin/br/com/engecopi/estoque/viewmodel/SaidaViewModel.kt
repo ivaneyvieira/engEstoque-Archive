@@ -4,6 +4,7 @@ import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
@@ -29,11 +30,24 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   override fun createVo() = SaidaVo()
 
   fun processaKey(key: String) = execValue {
-    val item = ViewCodBarConferencia.findNota(key) ?: return@execValue null
-    if (item.abreviacao != abreviacaoDefault)
-      throw EViewModel("Código de barras inválido")
-    return@execValue Nota.findSaida(item.numero)
+    processaKeyBarcode(key) ?: processaKeyNumero(key)
   }
+
+  private fun processaKeyNumero(key: String): Nota? {
+    val notaSaci =
+      Nota.findNotaSaidaSaci(key)
+        .firstOrNull()
+    return if(usuarioDefault.isTipoCompativel(notaSaci?.tipoNota())) Nota.findSaida(notaSaci?.numeroSerie())
+                                                                     ?: Nota.createNota(notaSaci)
+    else null
+  }
+
+  private fun processaKeyBarcode(key: String): Nota? {
+    val item = ViewCodBarConferencia.findNota(key) ?: return null
+    if(item.abreviacao != abreviacaoDefault) throw EViewModel("Código de barras inválido")
+    return Nota.findSaida(item.numero)
+  }
+
 
   fun confirmaProdutos(itens: List<ProdutoVO>, situacao : StatusNota) = exec {
     itens.forEach { produtoVO ->
@@ -41,7 +55,7 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
         refresh()
         status = situacao
         impresso = false
-        usuario = RegistryUserInfo.usuarioDefault
+        usuario = usuarioDefault
         localizacao = produtoVO.localizacao?.localizacao ?: ""
         update()
         recalculaSaldos()

@@ -3,6 +3,7 @@ package br.com.engecopi.saci.beans
 import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Nota.Find
+import br.com.engecopi.estoque.model.TipoNota
 import br.com.engecopi.estoque.model.ViewProdutoLoc
 
 class NotaSaci(
@@ -29,4 +30,6 @@ class NotaSaci(
     return if(serie.isNullOrBlank()) numero
     else "$numero/$serie"
   }
+
+  fun tipoNota(): TipoNota? = TipoNota.value(tipo)
 }

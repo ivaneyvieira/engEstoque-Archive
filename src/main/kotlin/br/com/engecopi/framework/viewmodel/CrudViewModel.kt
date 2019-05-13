@@ -7,7 +7,8 @@ import io.ebean.typequery.TQRootBean
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: EntityVo<MODEL>>(view: IView): ViewModel(view) {
+abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: EntityVo<MODEL>>(view: IView): ViewModel(
+  view) {
   private var queryView: QueryView? = null
   private var pagedList: PagedList<MODEL>? = null
   var crudBean: VO? = null
@@ -16,7 +17,7 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
   protected abstract fun update(bean: VO)
   protected abstract fun add(bean: VO)
   protected abstract fun delete(bean: VO)
-  protected abstract fun newBean() : VO
+  protected abstract fun newBean(): VO
 
   fun read(bean: VO) {
     val entity = bean.toEntity() ?: throw EViewModel("Registro inválido")
@@ -111,7 +112,7 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
     }
   }
 
-  open fun findQuery(): List<VO>  {
+  open fun findQuery(): List<VO> {
     val list = pagedList?.list.orEmpty()
     return list.map {model ->
       val vo = model.toVO()
@@ -121,29 +122,26 @@ abstract class CrudViewModel<MODEL: BaseModel, Q: TQRootBean<MODEL, Q>, VO: Enti
     }
   }
 
-  open fun countQuery(): Int  {
+  open fun countQuery(): Int {
     return pagedList?.totalCount ?: 0
   }
 
   fun updateQueryView(queryView: QueryView) {
     if(this.queryView != queryView) {
       this.queryView = queryView
-      pagedList = query.filterBlank(queryView.filter)
-        .makeSort(queryView.sorts)
-        .setFirstRow(queryView.offset)
-        .setMaxRows(queryView.limit)
-        .findPagedList()
+      pagedList =
+        query.filterBlank(queryView.filter)
+          .makeSort(queryView.sorts)
+          .setFirstRow(queryView.offset)
+          .setMaxRows(queryView.limit)
+          .findPagedList()
       pagedList?.loadCount()
     }
   }
 
   fun existsBean(bean: VO): Boolean {
     val entity = bean.toEntity() ?: return false
-    return query.filterBlank(queryView?.filter)
-      .query()
-      .where()
-      .eq("id", entity.id)
-      .exists()
+    return pagedList?.list?.any {it.id == entity.id} ?: false
   }
 }
 
