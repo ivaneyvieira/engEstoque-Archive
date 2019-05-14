@@ -25,7 +25,7 @@ where N.invno = (SELECT MAX(invno)
                  FROM sqldados.inv AS N
                  where N.storeno = :storeno
                      and nfname = :nfname
-                     and invse = :invse)
+                     and invse = :invse
                      AND N.bits & POW(2, 4) = 0
                      AND N.auxShort13 & pow(2, 15) = 0
                      AND invse <> ''
