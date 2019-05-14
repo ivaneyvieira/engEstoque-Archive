@@ -1,8 +1,6 @@
 package br.com.engecopi.estoque.viewmodel
 
-import br.com.engecopi.estoque.model.ItemNota
 import br.com.engecopi.estoque.model.Nota
-import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota

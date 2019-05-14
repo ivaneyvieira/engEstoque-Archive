@@ -1,5 +1,6 @@
 package br.com.engecopi.estoque.model
 
+import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.ENTRADA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
@@ -101,6 +102,7 @@ class Nota: BaseModel() {
         ItemNota.createItemNota(item, nota)
           ?.let {
             it.status = INCLUIDA
+            it.usuario = usuarioDefault
             it.save()
           }
       }
@@ -150,7 +152,7 @@ class Nota: BaseModel() {
       val loja = RegistryUserInfo.lojaDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaEntrada(loja.numero, numero, serie)
+      return saci.findNotaEntrada(loja.numero, numero, serie, usuarioDefault.admin)
     }
 
     fun findNotaSaidaSaci(numeroNF: String?): List<NotaSaci> {
@@ -158,7 +160,7 @@ class Nota: BaseModel() {
       val loja = RegistryUserInfo.lojaDefault
       val numero = numeroNF.split("/").getOrNull(0) ?: return emptyList()
       val serie = numeroNF.split("/").getOrNull(1) ?: ""
-      return saci.findNotaSaida(loja.numero, numero, serie)
+      return saci.findNotaSaida(loja.numero, numero, serie, usuarioDefault.admin)
     }
 
     fun itemDuplicado(nota: Nota?, produto: Produto?): Boolean {
@@ -171,7 +173,7 @@ class Nota: BaseModel() {
     }
 
     fun findNotaSaidaKey(nfeKey: String): List<NotaSaci> {
-      return saci.findNotaSaidaKey(nfeKey)
+      return saci.findNotaSaidaKey(nfeKey, usuarioDefault.admin)
     }
   }
 
