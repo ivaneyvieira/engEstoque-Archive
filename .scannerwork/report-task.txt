@@ -1,0 +1,6 @@
+projectKey=engEstoque
+serverUrl=http://localhost:9000
+serverVersion=7.7.0.23042
+dashboardUrl=http://localhost:9000/dashboard?id=engEstoque
+ceTaskId=AWq0qY-19ItxRbz0FN4O
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWq0qY-19ItxRbz0FN4O
