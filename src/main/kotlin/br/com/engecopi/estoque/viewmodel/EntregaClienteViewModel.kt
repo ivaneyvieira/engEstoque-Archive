@@ -8,6 +8,7 @@ import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.StatusNota.ENT_LOJA
 import br.com.engecopi.estoque.model.StatusNota.INCLUIDA
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.estoque.model.ViewCodBarCliente
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
 import br.com.engecopi.estoque.model.ViewCodBarEntrega
 import br.com.engecopi.estoque.model.query.QItemNota
@@ -47,7 +48,12 @@ class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view
 
   private fun findItens(key: String): List<ItemNota> {
     val itemUnico = ViewCodBarEntrega.findNota(key)
-    return if(itemUnico == null) ViewCodBarConferencia.findKeyItemNota(key)
+    return if(itemUnico == null) {
+      val itensConferencia = ViewCodBarConferencia.findKeyItemNota(key)
+      if(itensConferencia.isEmpty())
+        ViewCodBarCliente.findKeyItemNota(key, abreviacaoDefault, CONFERIDA)
+        else itensConferencia
+    }
     else listOf(itemUnico)
   }
 
