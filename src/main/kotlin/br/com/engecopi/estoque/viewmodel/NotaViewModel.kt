@@ -273,6 +273,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
     val itens =
       ItemNota.where()
         .nota.eq(itemNota?.nota)
+        .status.eq(statusImpressao)
         .order()
         .nota.loja.numero.asc()
         .nota.numero.asc()
