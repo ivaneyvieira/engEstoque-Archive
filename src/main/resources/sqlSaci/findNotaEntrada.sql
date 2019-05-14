@@ -25,8 +25,7 @@ where N.invno = (SELECT MAX(invno)
                  FROM sqldados.inv AS N
                  where N.storeno = :storeno
                      and nfname = :nfname
-                     and invse = :invse AND
-                       N.date > DATE_SUB(current_date, INTERVAL 6 MONTH)
+                     and invse = :invse)
                      AND N.bits & POW(2, 4) = 0
                      AND N.auxShort13 & pow(2, 15) = 0
                      AND invse <> ''
@@ -46,8 +45,7 @@ from sqldados.eord AS N
     ON E.codigo = P.prdno AND E.grade = P.grade
   left join sqldados.custp AS C
     ON C.no = N.custno
-WHERE N.date > DATE_SUB(current_date, INTERVAL 6 MONTH) AND
-      N.paymno = 290 AND
+WHERE N.paymno = 290 AND
       N.storeno = :storeno
       and (N.ordno = :nfname)
       and (:invse = '')
