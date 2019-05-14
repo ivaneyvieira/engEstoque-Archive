@@ -45,7 +45,7 @@ object LoginService {
   }
 }
 
-class LoginForm(private val appTitle: String) : VerticalLayout() {
+class LoginForm(private val appTitle: String): VerticalLayout() {
   private lateinit var username: TextField
   private lateinit var password: TextField
   private lateinit var abreviacao: ComboBox<String>
@@ -107,15 +107,15 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
             isResponsive = true
             alignment = Alignment.BOTTOM_RIGHT
             setPrimary()
-            onLeftClick { login() }
+            onLeftClick {login()}
           }
         }
       }
     }
   }
 
-  private fun changeUserName(loginName:  String?) {
-    if (::abreviacao.isInitialized) {
+  private fun changeUserName(loginName: String?) {
+    if(::abreviacao.isInitialized) {
       val abreviacoes = abreviacaoes(loginName)
 
       abreviacao.setItems(abreviacoes)
@@ -125,22 +125,25 @@ class LoginForm(private val appTitle: String) : VerticalLayout() {
   }
 
   private fun abreviacaoes(username: String?): List<String> {
-    return Usuario.abreviacaoes(username).sorted()
+    return Usuario.abreviacaoes(username)
+      .sorted()
   }
 
   private fun login() {
     val user = saci.findUser(username.value)
     val pass = password.value
     val abrev = abreviacao.value ?: ""
-    if (user == null || user.senha != pass) {
+    if(user == null || user.senha != pass) {
       Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
       LoginService.logout()
-    } else {
+    }
+    else {
       val usuario = Usuario.findUsuario(user.login)
-      if (usuario == null) {
+      if(usuario == null) {
         Notification.show("Usuário ou senha inválidos. Por favor, tente novamente.")
         LoginService.logout()
-      } else {
+      }
+      else {
         val loginInfo = LoginInfo(usuario, abrev)
         LoginService.login(loginInfo)
       }

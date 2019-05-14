@@ -10,23 +10,18 @@ import javax.servlet.ServletResponse
 import javax.servlet.annotation.WebFilter
 
 @WebFilter(value = ["/*"])
-class ConnectionFilter : Filter {
-  
+class ConnectionFilter: Filter {
   @Throws(ServletException::class)
   override fun init(arg0: FilterConfig) {
   }
-  
+
   @Throws(IOException::class, ServletException::class)
-  override fun doFilter(
-          request: ServletRequest,
-          response: ServletResponse,
-          chain: FilterChain
-                       ) {
+  override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
     Transaction.execTransacao {
       chain.doFilter(request, response)
     }
   }
-  
+
   override fun destroy() {
   }
 }
