@@ -16,22 +16,25 @@ class ViewCodBarCliente {
   val id: Long = 0
   val codbar: String = ""
   val codbarLimpo: String = ""
+  val codbarNota: String = ""
   val storeno: Int = 0
   val numero: String = ""
   val sequencia: Int = 0
 
   companion object Find: ViewCodBarClienteFinder() {
     fun findNota(key: String): ViewCodBarCliente? {
-      return where().codbar.eq(key)
+      return where().or()
+        .codbar.eq(key)
+        .codbarNota.eq(key)
+        .endOr()
         .findList()
         .firstOrNull()
     }
 
-    fun findKeyItemNota(key: String, abreviacao: String, statusNota: StatusNota): List<ItemNota> {
+    fun findKeyItemNota(key: String, statusNota: StatusNota): List<ItemNota> {
       val nota = findNota(key) ?: return emptyList()
       return ItemNota.where()
         .nota.id.eq(nota.id)
-        .localizacao.startsWith(abreviacao)
         .status.eq(statusNota)
         .findList()
     }

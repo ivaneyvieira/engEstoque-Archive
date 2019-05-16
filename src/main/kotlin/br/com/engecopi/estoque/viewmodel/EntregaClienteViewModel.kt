@@ -50,7 +50,7 @@ class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view
     val itemUnico = ViewCodBarEntrega.findNota(key)
     return if(itemUnico == null) {
       val itensConferencia = ViewCodBarConferencia.findKeyItemNota(key)
-      if(itensConferencia.isEmpty()) ViewCodBarCliente.findKeyItemNota(key, abreviacaoDefault, CONFERIDA)
+      if(itensConferencia.isEmpty()) ViewCodBarCliente.findKeyItemNota(key, CONFERIDA)
       else itensConferencia
     }
     else listOf(itemUnico)

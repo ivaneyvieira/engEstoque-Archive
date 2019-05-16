@@ -20,6 +20,7 @@ class QAssocViewCodBarCliente<R>(name: String, root: R) : TQAssocBean<ViewCodBar
   lateinit var id: PLong<R>
   lateinit var codbar: PString<R>
   lateinit var codbarLimpo: PString<R>
+  lateinit var codbarNota: PString<R>
   lateinit var storeno: PInteger<R>
   lateinit var numero: PString<R>
   lateinit var sequencia: PInteger<R>
