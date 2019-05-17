@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.StatusNota
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
 import br.com.engecopi.estoque.model.StatusNota.ENTREGUE
 import br.com.engecopi.estoque.model.TipoMov.SAIDA
+import br.com.engecopi.estoque.model.ViewCodBarCliente
 import br.com.engecopi.estoque.model.ViewCodBarConferencia
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
@@ -28,7 +29,7 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   override fun createVo() = SaidaVo()
 
   fun processaKey(key: String) = execValue {
-    processaKeyBarcode(key) ?: processaKeyNumero(key)
+    processaKeyBarcodeConferencia(key) ?: processaKeyBarcodeCliente(key)
   }
 
   private fun processaKeyNumero(key: String): Nota? {
@@ -44,10 +45,20 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
     else null
   }
 
-  private fun processaKeyBarcode(key: String): Nota? {
+  private fun processaKeyBarcodeConferencia(key: String): Nota? {
     val item = ViewCodBarConferencia.findNota(key) ?: return null
-    if(item.abreviacao != abreviacaoDefault) throw EViewModel("Código de barras inválido")
+    if(item.abreviacao != abreviacaoDefault) throw EViewModel("Esta nota não pertence ao cd $abreviacaoDefault")
     return Nota.findSaida(item.numero)
+  }
+
+  private fun processaKeyBarcodeCliente(key: String): Nota? {
+    val item = ViewCodBarCliente.findNota(key) ?: return null
+    val nota = Nota.findSaida(item.numero)
+    nota?.let {n ->
+      if(n.itensNota().all {it.abreviacao != abreviacaoDefault })
+        throw EViewModel("Esta nota não pertence ao cd $abreviacaoDefault")
+    }
+    return nota
   }
 
   fun confirmaProdutos(itens: List<ProdutoVO>, situacao: StatusNota) = exec {
