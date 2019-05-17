@@ -64,7 +64,7 @@ class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view
     val loja = if(key.isNotEmpty()) key.mid(0, 1).toIntOrNull() ?: return emptyList() else return emptyList()
     val numero = if(key.length > 1) key.mid(1) else return emptyList()
     if(loja != RegistryUserInfo.lojaDefault.numero) return emptyList()
-    return Nota.findSaida(numero)
+    return Nota.findSaida(if(numero.contains("/")) numero else "$numero/")
       ?.itensNota()
       .orEmpty()
   }
