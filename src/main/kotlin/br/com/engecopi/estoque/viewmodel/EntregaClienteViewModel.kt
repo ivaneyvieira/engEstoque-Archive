@@ -1,6 +1,8 @@
 package br.com.engecopi.estoque.viewmodel
 
 import br.com.engecopi.estoque.model.ItemNota
+import br.com.engecopi.estoque.model.Nota
+import br.com.engecopi.estoque.model.RegistryUserInfo
 import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.StatusNota.CONFERIDA
@@ -14,6 +16,7 @@ import br.com.engecopi.estoque.model.ViewCodBarEntrega
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
+import br.com.engecopi.utils.mid
 
 class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view, SAIDA, ENTREGUE, CONFERIDA, "") {
   override fun newBean(): EntregaClienteVo {
@@ -47,13 +50,23 @@ class EntregaClienteViewModel(view: IView): NotaViewModel<EntregaClienteVo>(view
   }
 
   private fun findItens(key: String): List<ItemNota> {
-    val itemUnico = ViewCodBarEntrega.findNota(key)
-    return if(itemUnico == null) {
+    val itemUnico = processaKeyBarcodeCliente(key)
+    val itens = if(itemUnico.isEmpty()) {
       val itensConferencia = ViewCodBarConferencia.findKeyItemNota(key)
       if(itensConferencia.isEmpty()) ViewCodBarCliente.findKeyItemNota(key, CONFERIDA)
       else itensConferencia
     }
-    else listOf(itemUnico)
+    else itemUnico
+    return itens.filter {it.status == CONFERIDA}
+  }
+
+  private fun processaKeyBarcodeCliente(key: String): List<ItemNota> {
+    val loja = if(key.isNotEmpty()) key.mid(0, 1).toIntOrNull() ?: return emptyList() else return emptyList()
+    val numero = if(key.length > 1) key.mid(1) else return emptyList()
+    if(loja != RegistryUserInfo.lojaDefault.numero) return emptyList()
+    return Nota.findSaida(numero)
+      ?.itensNota()
+      .orEmpty()
   }
 
   fun notasConferidas(): List<EntregaClienteVo> {
