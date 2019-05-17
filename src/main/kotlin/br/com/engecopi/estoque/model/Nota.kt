@@ -80,7 +80,7 @@ class Nota: BaseModel() {
     fun createNota(notasaci: NotaSaci?): Nota? {
       notasaci ?: return null
       return Nota().apply {
-        numero = "${notasaci.numero}/${notasaci.serie}"
+        numero = notasaci.numeroSerie()
         tipoNota =
           TipoNota.values()
             .find {it.toString() == notasaci.tipo}
