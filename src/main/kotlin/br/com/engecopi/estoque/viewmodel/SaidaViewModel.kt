@@ -12,6 +12,7 @@ import br.com.engecopi.estoque.model.ViewCodBarConferencia
 import br.com.engecopi.estoque.model.query.QItemNota
 import br.com.engecopi.framework.viewmodel.EViewModel
 import br.com.engecopi.framework.viewmodel.IView
+import br.com.engecopi.utils.mid
 
 class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE, CONFERIDA, abreviacaoDefault) {
   override fun newBean(): SaidaVo {
@@ -52,12 +53,9 @@ class SaidaViewModel(view: IView): NotaViewModel<SaidaVo>(view, SAIDA, ENTREGUE,
   }
 
   private fun processaKeyBarcodeCliente(key: String): Nota? {
-    val partes = key.split(" ")
-    val loja = partes.getOrNull(0)?.toIntOrNull() ?: return null
-    val nfno = partes.getOrNull(1) ?: return null
-    val nfse = partes.getOrNull(2) ?: ""
+    val loja = if(key.isNotEmpty()) key.mid(0, 1).toIntOrNull() ?: return null else return null
+    val numero = if(key.length > 1) key.mid(1) else return null
     if(loja != lojaDefault.numero) return null
-    val numero = if(nfse == "") nfno else "$nfno/$nfse"
     return processaKeyNumero(numero)
   }
 
