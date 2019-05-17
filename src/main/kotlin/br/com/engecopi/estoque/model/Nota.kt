@@ -97,6 +97,7 @@ class Nota: BaseModel() {
     fun createNotaItens(notasaci: List<NotaSaci>): Nota? {
       val nota = createNota(notasaci.firstOrNull()) ?: return null
       nota.sequencia = maxSequencia() + 1
+      nota.usuario = usuarioDefault
       nota.save()
       notasaci.forEach {item ->
         ItemNota.createItemNota(item, nota)
