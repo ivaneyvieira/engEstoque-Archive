@@ -79,7 +79,7 @@ class Nota: BaseModel() {
   companion object Find: NotaFinder() {
     fun createNota(notasaci: NotaSaci?): Nota? {
       notasaci ?: return null
-      val tipoNota = TipoNota.values().find {it.toString() == notasaci.tipo} ?: return null
+      val tipoNota = TipoNota.value(notasaci.tipo) ?: return null
       val numero = notasaci.numero ?: return null
 
       return findNota(numero, tipoNota) ?: Nota().apply {
