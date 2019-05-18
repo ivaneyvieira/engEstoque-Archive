@@ -42,7 +42,7 @@ import javax.validation.constraints.Size
 @Cache(enableQueryCache = true)
 @CacheQueryTuning(maxSecsToLive = 30)
 @Table(name = "notas")
-@Index(columnNames = ["loja_id", "tipo_mov"])
+@Index(columnNames = ["loja_id", "tipo_mov", "numero"], unique = true)
 class Nota: BaseModel() {
   @Size(max = 40)
   @Index(unique = false)
@@ -79,18 +79,18 @@ class Nota: BaseModel() {
   companion object Find: NotaFinder() {
     fun createNota(notasaci: NotaSaci?): Nota? {
       notasaci ?: return null
-      return Nota().apply {
-        numero = notasaci.numeroSerie()
-        tipoNota =
-          TipoNota.values()
-            .find {it.toString() == notasaci.tipo}
-        tipoMov = tipoNota?.tipoMov ?: ENTRADA
-        rota = notasaci.rota ?: ""
-        fornecedor = notasaci.vendName ?: ""
-        cliente = notasaci.clienteName ?: ""
-        data = notasaci.date?.localDate() ?: LocalDate.now()
-        dataEmissao = notasaci.dt_emissao?.localDate() ?: LocalDate.now()
-        loja = Loja.findLoja(notasaci.storeno)
+      val tipoNota = TipoNota.values().find {it.toString() == notasaci.tipo} ?: return null
+      val numero = notasaci.numero ?: return null
+
+      return findNota(numero, tipoNota) ?: Nota().apply {
+        this.numero = notasaci.numeroSerie()
+        this.tipoMov = tipoNota.tipoMov
+        this.rota = notasaci.rota ?: ""
+        this.fornecedor = notasaci.vendName ?: ""
+        this.cliente = notasaci.clienteName ?: ""
+        this.data = notasaci.date?.localDate() ?: LocalDate.now()
+        this.dataEmissao = notasaci.dt_emissao?.localDate() ?: LocalDate.now()
+        this.loja = Loja.findLoja(notasaci.storeno)
       }
     }
 
@@ -124,6 +124,13 @@ class Nota: BaseModel() {
       val loja = RegistryUserInfo.lojaDefault
       return if(numero.isNullOrBlank()) null
       else Nota.where().tipoMov.eq(SAIDA).numero.eq(numero).loja.id.eq(loja.id).findList().firstOrNull()
+    }
+
+    fun findNota(numero: String?, tipoNota: TipoNota): Nota? {
+      return when(tipoNota.tipoMov) {
+        ENTRADA -> findEntrada(numero)
+        SAIDA   -> findSaida(numero)
+      }
     }
 
     fun findEntradas(): List<Nota> {
