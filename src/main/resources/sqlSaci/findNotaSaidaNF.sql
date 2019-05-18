@@ -8,7 +8,9 @@ SELECT CAST(IFNULL(X.xrouteno, '') AS CHAR) AS rota,
        P.grade,
        P.qtty                               AS quant,
        C.name                               AS clienteName,
-       CASE WHEN N.nfse = '66'
+       CASE WHEN N.nfse = 1 AND N.cfo IN (5922, 6922)
+                 THEN ''
+            WHEN N.nfse = '66'
                  THEN 'ACERTO_S'
             WHEN N.nfse = '3'
                  THEN 'ENT_RET'
@@ -38,3 +40,4 @@ WHERE N.storeno = :storeno AND
       N.nfno = :nfno AND
       N.nfse = :nfse AND
       N.status <> 1
+HAVING tipo <> ''
