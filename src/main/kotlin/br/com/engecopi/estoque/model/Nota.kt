@@ -84,6 +84,7 @@ class Nota: BaseModel() {
 
       return findNota(numero, tipoNota) ?: Nota().apply {
         this.numero = notasaci.numeroSerie()
+        this.tipoNota = tipoNota
         this.tipoMov = tipoNota.tipoMov
         this.rota = notasaci.rota ?: ""
         this.fornecedor = notasaci.vendName ?: ""
