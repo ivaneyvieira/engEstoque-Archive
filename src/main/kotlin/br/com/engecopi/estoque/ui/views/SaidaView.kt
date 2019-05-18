@@ -248,7 +248,7 @@ class DlgNotaSaida(val nota: Nota, val viewModel: SaidaViewModel): Window("Nota 
             textField("Tipo") {
               expand = 2
               isReadOnly = true
-              value = nota.tipoNota?.descricao
+              value = nota.tipoNota?.descricao ?: ""
             }
             dateField("Data") {
               expand = 1
