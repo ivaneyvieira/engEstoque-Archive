@@ -7,6 +7,7 @@ import br.com.engecopi.estoque.model.Loja
 import br.com.engecopi.estoque.model.Nota
 import br.com.engecopi.estoque.model.Produto
 import br.com.engecopi.estoque.model.RegistryUserInfo
+import br.com.engecopi.estoque.model.RegistryUserInfo.abreviacaoDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.lojaDefault
 import br.com.engecopi.estoque.model.RegistryUserInfo.usuarioDefault
 import br.com.engecopi.estoque.model.Repositories
@@ -302,7 +303,7 @@ abstract class NotaViewModel<VO: NotaVo>(view: IView,
   }
 
   private fun imprime(itens: List<ItemNota>, etiqueta: Etiqueta): String {
-    return itens.map {imprimir(it, etiqueta)}
+    return itens.filter {it.abreviacao == abreviacaoDefault}.map {imprimir(it, etiqueta)}
       .distinct()
       .joinToString(separator = "\n")
   }
