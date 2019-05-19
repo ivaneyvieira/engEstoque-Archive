@@ -62,6 +62,10 @@ compileTestKotlin.kotlinOptions {
   jvmTarget = "1.8"
 }
 
+tasks.named<Test>("test") {
+  useJUnitPlatform()
+}
+
 dependencies {
   compile(project(":trayServerBiometrico"))
   // Karibu-DSL dependency
@@ -112,7 +116,8 @@ dependencies {
   compile("org.vaadin.addons:filtering-grid:0.1.1")
   compile("com.fo0.advancedtokenfield:AdvancedTokenField:0.5.1")
   // heroku app runner
-  testImplementation("junit:junit:4.11")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+  testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
 
